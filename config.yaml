@@ -9,10 +9,10 @@ vault_root: ~/Documents/WHID_Vaults
 
 # Gmail Collector settings
 gmail:
-  # Concurrent batch workers (each sends 1 batch request with up to 100 messages)
-  max_workers: 10
-  # Messages per batch API request (Gmail max is 100)
-  batch_size: 100
+  # Concurrent batch workers — keep at 5 to avoid rate limiting
+  max_workers: 5
+  # Messages per batch API request (Gmail max is 100, 50 is safer)
+  batch_size: 50
   # Messages fetched per listing page
   page_size: 500
   # OAuth scope (readonly = safe, no email modification)

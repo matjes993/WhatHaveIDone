@@ -3,7 +3,8 @@ WHID Gmail Collector
 Exports Gmail messages to a local JSONL vault organized by year/month.
 Uses gmail.readonly scope — your email is never modified.
 
-Uses the Gmail Batch API to fetch up to 100 messages per HTTP request (~10x faster).
+Uses the Gmail Batch API to fetch up to 100 messages per HTTP request.
+Automatically retries on rate limiting with exponential backoff.
 """
 
 import os
@@ -12,6 +13,7 @@ import base64
 import sys
 import logging
 import threading
+import time
 import concurrent.futures
 from collections import defaultdict
 from datetime import datetime
@@ -27,6 +29,10 @@ logger = logging.getLogger("whid.gmail")
 
 # Lock for writing vault files to disk
 _write_lock = threading.Lock()
+
+# Max retries for rate-limited batches
+MAX_RETRIES = 3
+RETRY_BASE_DELAY = 5  # seconds
 
 
 def get_credentials(credentials_file, token_file, scopes):
@@ -179,12 +185,6 @@ def _flush_entries_to_vault(entries, vault_root):
 
     for entry in entries:
         dt, is_valid = _parse_message_date(entry["date"])
-        if not is_valid:
-            logger.warning(
-                "Unparseable date for message %s: '%s' — filing under _unknown/",
-                entry["id"],
-                entry["date"],
-            )
 
         if is_valid and dt:
             target_dir = os.path.join(vault_root, dt.strftime("%Y"))
@@ -211,7 +211,10 @@ def _flush_entries_to_vault(entries, vault_root):
                 raise
             except OSError as e:
                 if "No space left" in str(e) or e.errno == 28:
-                    logger.error("Disk full — cannot write to %s. Free up space and re-run.", file_path)
+                    logger.error(
+                        "Disk full — cannot write to %s. Free up space and re-run.",
+                        file_path,
+                    )
                 else:
                     logger.error("Failed to write %s: %s", file_path, e)
                 raise
@@ -225,26 +228,36 @@ def _fetch_batch(service, message_ids):
     """
     entries = []
     failed = []
+    rate_limited = []
     lock = threading.Lock()
 
     def callback(request_id, response, exception):
         if exception is not None:
             if isinstance(exception, HttpError):
                 status = exception.resp.status
-                if status == 404:
-                    logger.warning("Message %s no longer exists (deleted from Gmail).", request_id)
-                elif status == 429:
-                    logger.error("Rate limited by Gmail API. Reduce max_workers or batch_size in config.yaml.")
+                if status == 429:
+                    with lock:
+                        rate_limited.append(request_id)
+                    return
+                elif status == 404:
+                    pass  # silently skip deleted messages
                 elif status == 403:
                     logger.error(
                         "Permission denied for message %s. "
-                        "Make sure Gmail API is enabled and scope is correct.",
+                        "Check Gmail API is enabled and scope is correct.",
                         request_id,
                     )
                 else:
-                    logger.error("API error %d for message %s: %s", status, request_id, exception)
+                    logger.error(
+                        "API error %d for message %s: %s",
+                        status,
+                        request_id,
+                        exception,
+                    )
             else:
-                logger.error("Unexpected error for message %s: %s", request_id, exception)
+                logger.error(
+                    "Unexpected error for message %s: %s", request_id, exception
+                )
 
             with lock:
                 failed.append(request_id)
@@ -262,7 +275,7 @@ def _fetch_batch(service, message_ids):
         )
     batch.execute()
 
-    return entries, failed
+    return entries, failed, rate_limited
 
 
 def _handle_api_error(e):
@@ -275,10 +288,17 @@ def _handle_api_error(e):
 
     if status == 403:
         error_detail = str(e)
-        if "Gmail API has not been used" in error_detail or "accessNotConfigured" in error_detail:
-            print("\nError: Gmail API is not enabled for your Google Cloud project.\n")
+        if (
+            "Gmail API has not been used" in error_detail
+            or "accessNotConfigured" in error_detail
+        ):
+            print(
+                "\nError: Gmail API is not enabled for your Google Cloud project.\n"
+            )
             print("To fix:")
-            print("  1. Go to https://console.cloud.google.com/apis/library/gmail.googleapis.com")
+            print(
+                "  1. Go to https://console.cloud.google.com/apis/library/gmail.googleapis.com"
+            )
             print("  2. Click 'Enable'")
             print("  3. Wait 1-2 minutes for it to activate")
             print("  4. Run whid again")
@@ -298,7 +318,7 @@ def _handle_api_error(e):
     elif status == 429:
         print("\nError: Rate limited by Gmail API.\n")
         print("You're sending too many requests. To fix:")
-        print("  - Lower max_workers in config.yaml (try 5)")
+        print("  - Lower max_workers in config.yaml (try 3)")
         print("  - Lower batch_size in config.yaml (try 50)")
         print("  - Wait a few minutes and try again")
     elif status == 401:
@@ -322,11 +342,13 @@ def run_export(vault_name="Primary", config=None):
         os.path.expanduser(config.get("vault_root", "~/Documents/WHID_Vaults")),
         f"Gmail_{vault_name}",
     )
-    max_workers = gmail_config.get("max_workers", 10)
+    max_workers = gmail_config.get("max_workers", 5)
     page_size = gmail_config.get("page_size", 500)
-    batch_size = gmail_config.get("batch_size", 100)
+    batch_size = gmail_config.get("batch_size", 50)
     scopes = [
-        gmail_config.get("scope", "https://www.googleapis.com/auth/gmail.readonly")
+        gmail_config.get(
+            "scope", "https://www.googleapis.com/auth/gmail.readonly"
+        )
     ]
     credentials_file = gmail_config.get("credentials_file", "credentials.json")
     token_file = gmail_config.get("token_file", "token.json")
@@ -338,7 +360,9 @@ def run_export(vault_name="Primary", config=None):
     try:
         os.makedirs(vault_root, exist_ok=True)
     except PermissionError:
-        print(f"\nError: Permission denied creating vault directory: {vault_root}")
+        print(
+            f"\nError: Permission denied creating vault directory: {vault_root}"
+        )
         print("Check folder permissions or change vault_root in config.yaml.")
         sys.exit(1)
     except OSError as e:
@@ -352,7 +376,7 @@ def run_export(vault_name="Primary", config=None):
     )
     logger.addHandler(file_handler)
 
-    logger.info("Vault: %s", vault_root)
+    print(f"\nSaving to: {vault_root}")
 
     creds = get_credentials(credentials_file, token_file, scopes)
 
@@ -369,15 +393,18 @@ def run_export(vault_name="Primary", config=None):
         with open(processed_log, "r") as f:
             processed_ids = {line.strip() for line in f if line.strip()}
 
+    if processed_ids:
+        print(f"Already vaulted: {len(processed_ids):,} messages")
+
     # Determine which messages to process
     is_sniper_run = False
     if os.path.exists(missing_log):
         with open(missing_log, "r") as f:
             to_process_ids = [line.strip() for line in f if line.strip()]
         is_sniper_run = True
-        logger.info("Sniper mode: recovering %d ghost IDs", len(to_process_ids))
+        print(f"Sniper mode: recovering {len(to_process_ids):,} missing messages")
     else:
-        logger.info("Fetching message list from Gmail...")
+        print("Scanning Gmail for messages...", end="", flush=True)
         to_process_ids = []
 
         try:
@@ -388,14 +415,17 @@ def run_export(vault_name="Primary", config=None):
                 .execute()
             )
         except HttpError as e:
+            print()
             _handle_api_error(e)
         except Exception as e:
+            print()
             print(f"\nError: Failed to fetch message list: {e}")
             print("Check your internet connection and try again.")
             sys.exit(1)
 
         msgs = results.get("messages", [])
         to_process_ids.extend(m["id"] for m in msgs)
+        print(f" {len(to_process_ids):,}", end="", flush=True)
 
         while "nextPageToken" in results:
             try:
@@ -410,24 +440,25 @@ def run_export(vault_name="Primary", config=None):
                     .execute()
                 )
             except HttpError as e:
+                print()
                 _handle_api_error(e)
             except Exception as e:
                 logger.error("Error fetching message list page: %s", e)
-                logger.info("Continuing with %d messages collected so far.", len(to_process_ids))
+                print(f" (stopped early: {e})")
                 break
 
             msgs = results.get("messages", [])
             to_process_ids.extend(m["id"] for m in msgs)
+            print(f"...{len(to_process_ids):,}", end="", flush=True)
 
-        logger.info("Found %d total messages in Gmail", len(to_process_ids))
-        to_process_ids = [mid for mid in to_process_ids if mid not in processed_ids]
+        print(f" done. ({len(to_process_ids):,} total)")
+
+        to_process_ids = [
+            mid for mid in to_process_ids if mid not in processed_ids
+        ]
 
     if not to_process_ids:
-        logger.info("Nothing new to process — vault is up to date.")
-        if processed_ids:
-            logger.info("You have %d messages already vaulted.", len(processed_ids))
-        else:
-            logger.info("Your Gmail inbox appears empty.")
+        print("Nothing new to process — vault is up to date.")
         logger.removeHandler(file_handler)
         file_handler.close()
         return
@@ -440,40 +471,61 @@ def run_export(vault_name="Primary", config=None):
 
     total_msgs = len(to_process_ids)
     total_batches = len(batches)
-    logger.info(
-        "Processing %d new messages in %d batches (batch_size=%d, workers=%d)...",
-        total_msgs,
-        total_batches,
-        batch_size,
-        max_workers,
+    print(
+        f"Downloading {total_msgs:,} messages in {total_batches} batches "
+        f"({max_workers} workers)...\n"
     )
 
     vaulted = 0
     failed = 0
+    retried = 0
     all_vaulted_ids = []
+    start_time = time.time()
 
-    def process_batch(batch_ids):
+    def process_batch_with_retry(batch_ids, attempt=1):
+        """Process a batch with automatic retry on rate limiting."""
         thread_service = build(
             "gmail", "v1", credentials=creds, cache_discovery=False
         )
-        return _fetch_batch(thread_service, batch_ids)
+        entries, batch_failed, rate_limited = _fetch_batch(
+            thread_service, batch_ids
+        )
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        if rate_limited and attempt <= MAX_RETRIES:
+            delay = RETRY_BASE_DELAY * (2 ** (attempt - 1))
+            logger.info(
+                "Rate limited on %d messages — retrying in %ds (attempt %d/%d)",
+                len(rate_limited),
+                delay,
+                attempt,
+                MAX_RETRIES,
+            )
+            time.sleep(delay)
+            retry_entries, retry_failed, still_limited = _fetch_batch(
+                thread_service, rate_limited
+            )
+            entries.extend(retry_entries)
+            batch_failed.extend(retry_failed)
+            batch_failed.extend(still_limited)
+        elif rate_limited:
+            batch_failed.extend(rate_limited)
+
+        return entries, batch_failed, len(rate_limited) > 0
+
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=max_workers
+    ) as executor:
         future_to_idx = {
-            executor.submit(process_batch, batch_ids): idx
+            executor.submit(process_batch_with_retry, batch_ids): idx
             for idx, batch_ids in enumerate(batches)
         }
 
         for future in concurrent.futures.as_completed(future_to_idx):
             idx = future_to_idx[future]
             try:
-                entries, batch_failed = future.result()
+                entries, batch_failed, was_retried = future.result()
             except HttpError as e:
                 logger.error("Batch %d hit API error: %s", idx, e)
-                if e.resp.status == 429:
-                    logger.error(
-                        "Rate limited — reduce max_workers or batch_size in config.yaml."
-                    )
                 failed += batch_size
                 continue
             except Exception as e:
@@ -486,18 +538,31 @@ def run_export(vault_name="Primary", config=None):
                 vaulted += len(entries)
                 all_vaulted_ids.extend(e["id"] for e in entries)
 
+            if was_retried:
+                retried += 1
+
             failed += len(batch_failed)
 
+            # Progress bar
+            elapsed = time.time() - start_time
+            rate = vaulted / elapsed if elapsed > 0 else 0
             processed_so_far = vaulted + failed
-            logger.info(
-                "Progress: %d/%d messages (vaulted: %d, failed: %d) — batch %d/%d done",
-                processed_so_far,
-                total_msgs,
-                vaulted,
-                failed,
-                idx + 1,
-                total_batches,
+            pct = int(processed_so_far / total_msgs * 100)
+
+            bar_width = 30
+            filled = int(bar_width * processed_so_far / total_msgs)
+            bar = "=" * filled + "-" * (bar_width - filled)
+
+            print(
+                f"\r  [{bar}] {pct}% | "
+                f"{vaulted:,}/{total_msgs:,} vaulted | "
+                f"{rate:.0f} msg/s | "
+                f"{failed} failed",
+                end="",
+                flush=True,
             )
+
+    print()  # newline after progress bar
 
     if all_vaulted_ids:
         with open(processed_log, "a") as f:
@@ -510,18 +575,24 @@ def run_export(vault_name="Primary", config=None):
         except OSError as e:
             logger.warning("Could not remove missing_ids.txt: %s", e)
 
-    logger.info(
-        "Export complete: %d vaulted, %d failed out of %d total",
-        vaulted,
-        failed,
-        total_msgs,
+    elapsed = time.time() - start_time
+    print(
+        f"\nDone! {vaulted:,} messages vaulted in {elapsed:.1f}s"
+        f" ({vaulted / elapsed:.0f} msg/s)"
     )
+    print(f"Saved to: {vault_root}")
 
     if failed > 0:
-        logger.warning(
-            "%d messages failed. Run 'whid groom gmail' then 'whid collect gmail' "
-            "to recover them via Sniper mode.",
-            failed,
+        print(
+            f"\n{failed} messages failed — run 'whid groom gmail' then "
+            "'whid collect gmail' to recover via Sniper."
+        )
+
+    if retried > 0:
+        logger.info(
+            "%d batches were rate-limited and retried. "
+            "If this happens often, lower max_workers in config.yaml.",
+            retried,
         )
 
     # Clean up file handler
