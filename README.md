@@ -107,14 +107,11 @@ WhatHaveIDone/
 
 ```bash
 git clone https://github.com/matjes993/WhatHaveIDone.git
-cd WhatHaveIDone
-python3 -m venv venv
-source venv/bin/activate
-pip install -e .
-
-# Guided setup — opens browser, walks you through everything
+./WhatHaveIDone/install.sh
 whid setup gmail
 ```
+
+That's it. The install script handles Python, dependencies, and adds `whid` to your PATH. The setup wizard walks you through Google credentials.
 
 The setup wizard:
 1. Opens Google Cloud Console for you
