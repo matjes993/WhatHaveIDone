@@ -5,7 +5,7 @@
 # Examples:
 #   ~/WHID_Vaults
 #   /Volumes/ExternalDrive/WHID_Vaults
-vault_root: ~/WHID_Vaults
+vault_root: ~/Documents/WHID_Vaults
 
 # Gmail Collector settings
 gmail:

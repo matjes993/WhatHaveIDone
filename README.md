@@ -86,7 +86,7 @@ WhatHaveIDone/
 │   └── groomer.py           # Universal dedup, sort, and Sniper logic
 └── config.yaml              # All settings in one place
 
-~/WHID_Vaults/                   # Your data (separate from the repo)
+~/Documents/WHID_Vaults/                   # Your data (separate from the repo)
 └── Gmail_Primary/
     ├── 2024/
     │   ├── 01_January.jsonl
@@ -123,12 +123,12 @@ Place your `credentials.json` in the project root.
 python -m collectors.gmail_collector Primary
 
 # Clean and deduplicate
-python -m core.groomer ~/WHID_Vaults/Gmail_Primary
+python -m core.groomer ~/Documents/WHID_Vaults/Gmail_Primary
 ```
 
 A browser window opens on first run for Google OAuth. After that, it's fully automatic.
 
-Your data is saved to `~/WHID_Vaults/` by default — completely separate from the codebase.
+Your data is saved to `~/Documents/WHID_Vaults/` by default — completely separate from the codebase.
 
 ### Configuration
 
@@ -136,7 +136,7 @@ All settings live in `config.yaml`:
 
 ```yaml
 # Store vaults anywhere — home dir, external drive, NAS, etc.
-vault_root: ~/WHID_Vaults
+vault_root: ~/Documents/WHID_Vaults
 
 gmail:
   max_workers: 10       # Parallel batch workers
