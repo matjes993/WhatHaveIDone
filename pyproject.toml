@@ -23,6 +23,14 @@ whid = "whid:main"
 Homepage = "https://github.com/matjes993/WhatHaveIDone"
 Issues = "https://github.com/matjes993/WhatHaveIDone/issues"
 
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
 [tool.setuptools]
 py-modules = ["whid"]
 packages = ["core", "collectors"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Skip integration tests by default (need real credentials)
+addopts = "--ignore=tests/test_integration.py"

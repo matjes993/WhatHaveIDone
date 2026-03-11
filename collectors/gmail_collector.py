@@ -4,7 +4,7 @@ Exports Gmail messages to a local JSONL vault organized by year/month.
 Uses gmail.readonly scope — your email is never modified.
 
 Uses the Gmail Batch API to fetch up to 100 messages per HTTP request.
-Automatically retries on rate limiting with exponential backoff.
+Adaptive rate limiting: automatically slows down when hitting API limits.
 """
 
 import os
@@ -31,8 +31,59 @@ logger = logging.getLogger("whid.gmail")
 _write_lock = threading.Lock()
 
 # Max retries for rate-limited batches
-MAX_RETRIES = 3
-RETRY_BASE_DELAY = 5  # seconds
+MAX_RETRIES = 4
+RETRY_BASE_DELAY = 3  # seconds
+
+
+class AdaptiveThrottle:
+    """Automatically reduces concurrency when rate-limited."""
+
+    def __init__(self, max_workers, batch_size):
+        self._lock = threading.Lock()
+        self.original_workers = max_workers
+        self.original_batch_size = batch_size
+        self.max_workers = max_workers
+        self.batch_size = batch_size
+        self.rate_limit_count = 0
+        self.success_streak = 0
+
+    def on_rate_limit(self):
+        with self._lock:
+            self.rate_limit_count += 1
+            self.success_streak = 0
+
+            old_workers = self.max_workers
+            old_batch = self.batch_size
+
+            # Halve workers (min 1)
+            if self.max_workers > 1:
+                self.max_workers = max(1, self.max_workers // 2)
+
+            # Halve batch size (min 10)
+            if self.batch_size > 10:
+                self.batch_size = max(10, self.batch_size // 2)
+
+            if old_workers != self.max_workers or old_batch != self.batch_size:
+                print(
+                    f"\n  Throttling: workers {old_workers}->{self.max_workers}, "
+                    f"batch {old_batch}->{self.batch_size}"
+                )
+
+    def on_success(self):
+        with self._lock:
+            self.success_streak += 1
+
+            # After 20 consecutive successful batches, try ramping back up
+            if self.success_streak >= 20:
+                if self.max_workers < self.original_workers:
+                    self.max_workers = min(
+                        self.original_workers, self.max_workers + 1
+                    )
+                if self.batch_size < self.original_batch_size:
+                    self.batch_size = min(
+                        self.original_batch_size, self.batch_size + 10
+                    )
+                self.success_streak = 0
 
 
 def get_credentials(credentials_file, token_file, scopes):
@@ -223,8 +274,7 @@ def _flush_entries_to_vault(entries, vault_root):
 def _fetch_batch(service, message_ids):
     """
     Fetch a batch of messages using the Gmail Batch API.
-    Sends up to 100 requests in a single HTTP call.
-    Returns (list of entries, list of failed IDs).
+    Returns (entries, failed_ids, rate_limited_ids).
     """
     entries = []
     failed = []
@@ -256,7 +306,9 @@ def _fetch_batch(service, message_ids):
                     )
             else:
                 logger.error(
-                    "Unexpected error for message %s: %s", request_id, exception
+                    "Unexpected error for message %s: %s",
+                    request_id,
+                    exception,
                 )
 
             with lock:
@@ -319,7 +371,7 @@ def _handle_api_error(e):
         print("\nError: Rate limited by Gmail API.\n")
         print("You're sending too many requests. To fix:")
         print("  - Lower max_workers in config.yaml (try 3)")
-        print("  - Lower batch_size in config.yaml (try 50)")
+        print("  - Lower batch_size in config.yaml (try 25)")
         print("  - Wait a few minutes and try again")
     elif status == 401:
         print("\nError: Authentication failed.\n")
@@ -331,6 +383,45 @@ def _handle_api_error(e):
         print(f"\nGmail API error (HTTP {status}): {e}")
 
     sys.exit(1)
+
+
+def _process_batch_with_retry(batch_ids, creds, throttle):
+    """Process a batch with automatic retry on rate limiting."""
+    thread_service = build(
+        "gmail", "v1", credentials=creds, cache_discovery=False
+    )
+    entries, batch_failed, rate_limited = _fetch_batch(
+        thread_service, batch_ids
+    )
+
+    remaining = rate_limited
+    attempt = 1
+
+    while remaining and attempt <= MAX_RETRIES:
+        throttle.on_rate_limit()
+        delay = RETRY_BASE_DELAY * (2 ** (attempt - 1))
+        logger.info(
+            "Rate limited on %d messages — waiting %ds before retry %d/%d",
+            len(remaining),
+            delay,
+            attempt,
+            MAX_RETRIES,
+        )
+        time.sleep(delay)
+        retry_entries, retry_failed, remaining = _fetch_batch(
+            thread_service, remaining
+        )
+        entries.extend(retry_entries)
+        batch_failed.extend(retry_failed)
+        attempt += 1
+
+    # Any still rate-limited after all retries go to failed
+    batch_failed.extend(remaining)
+
+    if not rate_limited:
+        throttle.on_success()
+
+    return entries, batch_failed, len(rate_limited) > 0
 
 
 def run_export(vault_name="Primary", config=None):
@@ -402,7 +493,9 @@ def run_export(vault_name="Primary", config=None):
         with open(missing_log, "r") as f:
             to_process_ids = [line.strip() for line in f if line.strip()]
         is_sniper_run = True
-        print(f"Sniper mode: recovering {len(to_process_ids):,} missing messages")
+        print(
+            f"Sniper mode: recovering {len(to_process_ids):,} missing messages"
+        )
     else:
         print("Scanning Gmail for messages...", end="", flush=True)
         to_process_ids = []
@@ -463,17 +556,13 @@ def run_export(vault_name="Primary", config=None):
         file_handler.close()
         return
 
-    # Split into batches
-    batches = [
-        to_process_ids[i : i + batch_size]
-        for i in range(0, len(to_process_ids), batch_size)
-    ]
+    # Adaptive throttle
+    throttle = AdaptiveThrottle(max_workers, batch_size)
 
     total_msgs = len(to_process_ids)
-    total_batches = len(batches)
     print(
-        f"Downloading {total_msgs:,} messages in {total_batches} batches "
-        f"({max_workers} workers)...\n"
+        f"Downloading {total_msgs:,} messages "
+        f"(workers={max_workers}, batch={batch_size})...\n"
     )
 
     vaulted = 0
@@ -482,85 +571,73 @@ def run_export(vault_name="Primary", config=None):
     all_vaulted_ids = []
     start_time = time.time()
 
-    def process_batch_with_retry(batch_ids, attempt=1):
-        """Process a batch with automatic retry on rate limiting."""
-        thread_service = build(
-            "gmail", "v1", credentials=creds, cache_discovery=False
-        )
-        entries, batch_failed, rate_limited = _fetch_batch(
-            thread_service, batch_ids
-        )
+    # Process in waves — allows adaptive throttle to adjust between waves
+    offset = 0
+    while offset < total_msgs:
+        current_batch_size = throttle.batch_size
+        current_workers = throttle.max_workers
 
-        if rate_limited and attempt <= MAX_RETRIES:
-            delay = RETRY_BASE_DELAY * (2 ** (attempt - 1))
-            logger.info(
-                "Rate limited on %d messages — retrying in %ds (attempt %d/%d)",
-                len(rate_limited),
-                delay,
-                attempt,
-                MAX_RETRIES,
-            )
-            time.sleep(delay)
-            retry_entries, retry_failed, still_limited = _fetch_batch(
-                thread_service, rate_limited
-            )
-            entries.extend(retry_entries)
-            batch_failed.extend(retry_failed)
-            batch_failed.extend(still_limited)
-        elif rate_limited:
-            batch_failed.extend(rate_limited)
+        # Slice the next wave of work
+        wave_end = min(offset + current_batch_size * current_workers * 2, total_msgs)
+        wave_ids = to_process_ids[offset:wave_end]
 
-        return entries, batch_failed, len(rate_limited) > 0
+        batches = [
+            wave_ids[i : i + current_batch_size]
+            for i in range(0, len(wave_ids), current_batch_size)
+        ]
 
-    with concurrent.futures.ThreadPoolExecutor(
-        max_workers=max_workers
-    ) as executor:
-        future_to_idx = {
-            executor.submit(process_batch_with_retry, batch_ids): idx
-            for idx, batch_ids in enumerate(batches)
-        }
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=current_workers
+        ) as executor:
+            futures = {
+                executor.submit(
+                    _process_batch_with_retry, batch_ids, creds, throttle
+                ): batch_ids
+                for batch_ids in batches
+            }
 
-        for future in concurrent.futures.as_completed(future_to_idx):
-            idx = future_to_idx[future]
-            try:
-                entries, batch_failed, was_retried = future.result()
-            except HttpError as e:
-                logger.error("Batch %d hit API error: %s", idx, e)
-                failed += batch_size
-                continue
-            except Exception as e:
-                logger.error("Batch %d failed: %s", idx, e)
-                failed += batch_size
-                continue
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    entries, batch_failed, was_retried = future.result()
+                except HttpError as e:
+                    logger.error("Batch hit API error: %s", e)
+                    failed += len(futures[future])
+                    continue
+                except Exception as e:
+                    logger.error("Batch failed: %s", e)
+                    failed += len(futures[future])
+                    continue
 
-            if entries:
-                _flush_entries_to_vault(entries, vault_root)
-                vaulted += len(entries)
-                all_vaulted_ids.extend(e["id"] for e in entries)
+                if entries:
+                    _flush_entries_to_vault(entries, vault_root)
+                    vaulted += len(entries)
+                    all_vaulted_ids.extend(e["id"] for e in entries)
 
-            if was_retried:
-                retried += 1
+                if was_retried:
+                    retried += 1
 
-            failed += len(batch_failed)
+                failed += len(batch_failed)
 
-            # Progress bar
-            elapsed = time.time() - start_time
-            rate = vaulted / elapsed if elapsed > 0 else 0
-            processed_so_far = vaulted + failed
-            pct = int(processed_so_far / total_msgs * 100)
+                # Progress bar
+                elapsed = time.time() - start_time
+                rate = vaulted / elapsed if elapsed > 0 else 0
+                processed_so_far = vaulted + failed
+                pct = int(processed_so_far / total_msgs * 100)
 
-            bar_width = 30
-            filled = int(bar_width * processed_so_far / total_msgs)
-            bar = "=" * filled + "-" * (bar_width - filled)
+                bar_width = 30
+                filled = int(bar_width * processed_so_far / total_msgs)
+                bar = "=" * filled + "-" * (bar_width - filled)
 
-            print(
-                f"\r  [{bar}] {pct}% | "
-                f"{vaulted:,}/{total_msgs:,} vaulted | "
-                f"{rate:.0f} msg/s | "
-                f"{failed} failed",
-                end="",
-                flush=True,
-            )
+                print(
+                    f"\r  [{bar}] {pct}% | "
+                    f"{vaulted:,}/{total_msgs:,} vaulted | "
+                    f"{rate:.0f} msg/s | "
+                    f"{failed} failed",
+                    end="",
+                    flush=True,
+                )
+
+        offset = wave_end
 
     print()  # newline after progress bar
 
@@ -576,10 +653,8 @@ def run_export(vault_name="Primary", config=None):
             logger.warning("Could not remove missing_ids.txt: %s", e)
 
     elapsed = time.time() - start_time
-    print(
-        f"\nDone! {vaulted:,} messages vaulted in {elapsed:.1f}s"
-        f" ({vaulted / elapsed:.0f} msg/s)"
-    )
+    rate = vaulted / elapsed if elapsed > 0 else 0
+    print(f"\nDone! {vaulted:,} messages vaulted in {elapsed:.1f}s ({rate:.0f} msg/s)")
     print(f"Saved to: {vault_root}")
 
     if failed > 0:
@@ -589,11 +664,17 @@ def run_export(vault_name="Primary", config=None):
         )
 
     if retried > 0:
-        logger.info(
-            "%d batches were rate-limited and retried. "
-            "If this happens often, lower max_workers in config.yaml.",
-            retried,
+        print(
+            f"\nNote: {retried} batches hit rate limits and were auto-retried."
         )
+        if throttle.max_workers < throttle.original_workers:
+            print(
+                f"  Throttle adapted: workers {throttle.original_workers}->{throttle.max_workers}, "
+                f"batch {throttle.original_batch_size}->{throttle.batch_size}"
+            )
+            print(
+                "  Consider updating config.yaml with these lower values to avoid future throttling."
+            )
 
     # Clean up file handler
     logger.removeHandler(file_handler)

@@ -1,0 +1,214 @@
+"""Tests for core/groomer.py — vault grooming logic."""
+
+import json
+import os
+import tempfile
+
+import pytest
+
+from core.groomer import groom_vault, parse_date, _sort_key, _atomic_write
+
+
+class TestParseDate:
+    def test_rfc2822_format(self):
+        dt = parse_date("Mon, 01 Jan 2024 12:00:00 +0000")
+        assert dt is not None
+        assert dt.year == 2024
+        assert dt.month == 1
+        assert dt.day == 1
+
+    def test_rfc2822_with_timezone_name(self):
+        dt = parse_date("Mon, 01 Jan 2024 12:00:00 +0000 (UTC)")
+        assert dt is not None
+        assert dt.year == 2024
+
+    def test_iso_format(self):
+        dt = parse_date("2024-06-15T10:30:00+02:00")
+        assert dt is not None
+        assert dt.year == 2024
+        assert dt.month == 6
+
+    def test_empty_string(self):
+        assert parse_date("") is None
+
+    def test_none(self):
+        assert parse_date(None) is None
+
+    def test_garbage(self):
+        assert parse_date("not a date at all") is None
+
+
+class TestAtomicWrite:
+    def test_writes_file(self, tmp_path):
+        file_path = str(tmp_path / "test.txt")
+        _atomic_write(file_path, ["line1\n", "line2\n"])
+
+        with open(file_path) as f:
+            content = f.read()
+        assert content == "line1\nline2\n"
+
+    def test_overwrites_existing(self, tmp_path):
+        file_path = str(tmp_path / "test.txt")
+        with open(file_path, "w") as f:
+            f.write("old content\n")
+
+        _atomic_write(file_path, ["new content\n"])
+
+        with open(file_path) as f:
+            assert f.read() == "new content\n"
+
+    def test_no_partial_writes(self, tmp_path):
+        """If write fails, original file should be unchanged."""
+        file_path = str(tmp_path / "test.txt")
+        with open(file_path, "w") as f:
+            f.write("original\n")
+
+        class FailingIter:
+            def __init__(self):
+                self.count = 0
+            def __iter__(self):
+                return self
+            def __next__(self):
+                self.count += 1
+                if self.count > 1:
+                    raise RuntimeError("simulated write failure")
+                return "line1\n"
+
+        with pytest.raises(RuntimeError):
+            _atomic_write(file_path, FailingIter())
+
+        with open(file_path) as f:
+            assert f.read() == "original\n"
+
+
+class TestGroomVault:
+    def _make_entry(self, id, date="Mon, 01 Jan 2024 12:00:00 +0000", subject="Test"):
+        return {"id": id, "date": date, "subject": subject}
+
+    def test_deduplication(self, tmp_path):
+        vault = str(tmp_path / "vault")
+        os.makedirs(vault)
+
+        jsonl = os.path.join(vault, "test.jsonl")
+        entries = [
+            self._make_entry("a"),
+            self._make_entry("b"),
+            self._make_entry("a"),  # duplicate
+        ]
+        with open(jsonl, "w") as f:
+            for e in entries:
+                f.write(json.dumps(e) + "\n")
+
+        groom_vault(vault)
+
+        with open(jsonl) as f:
+            lines = [json.loads(l) for l in f if l.strip()]
+        assert len(lines) == 2
+        ids = [l["id"] for l in lines]
+        assert "a" in ids
+        assert "b" in ids
+
+    def test_chronological_sort(self, tmp_path):
+        vault = str(tmp_path / "vault")
+        os.makedirs(vault)
+
+        jsonl = os.path.join(vault, "test.jsonl")
+        entries = [
+            self._make_entry("b", "Wed, 15 Mar 2024 12:00:00 +0000"),
+            self._make_entry("a", "Mon, 01 Jan 2024 12:00:00 +0000"),
+            self._make_entry("c", "Fri, 28 Jun 2024 12:00:00 +0000"),
+        ]
+        with open(jsonl, "w") as f:
+            for e in entries:
+                f.write(json.dumps(e) + "\n")
+
+        groom_vault(vault)
+
+        with open(jsonl) as f:
+            lines = [json.loads(l) for l in f if l.strip()]
+        assert [l["id"] for l in lines] == ["a", "b", "c"]
+
+    def test_ghost_detection(self, tmp_path):
+        """Sniper mechanism: detect IDs in processed_ids.txt that are missing from disk."""
+        vault = str(tmp_path / "vault")
+        os.makedirs(vault)
+
+        # Simulate: processed_ids.txt has 3 IDs, but only 2 are on disk
+        with open(os.path.join(vault, "processed_ids.txt"), "w") as f:
+            f.write("a\nb\nc\n")
+
+        jsonl = os.path.join(vault, "test.jsonl")
+        entries = [
+            self._make_entry("a"),
+            self._make_entry("b"),
+            # "c" is missing — it's a ghost
+        ]
+        with open(jsonl, "w") as f:
+            for e in entries:
+                f.write(json.dumps(e) + "\n")
+
+        groom_vault(vault)
+
+        missing_log = os.path.join(vault, "missing_ids.txt")
+        assert os.path.exists(missing_log)
+        with open(missing_log) as f:
+            ghosts = [l.strip() for l in f if l.strip()]
+        assert ghosts == ["c"]
+
+    def test_no_ghosts_no_missing_file(self, tmp_path):
+        vault = str(tmp_path / "vault")
+        os.makedirs(vault)
+
+        with open(os.path.join(vault, "processed_ids.txt"), "w") as f:
+            f.write("a\nb\n")
+
+        jsonl = os.path.join(vault, "test.jsonl")
+        entries = [self._make_entry("a"), self._make_entry("b")]
+        with open(jsonl, "w") as f:
+            for e in entries:
+                f.write(json.dumps(e) + "\n")
+
+        groom_vault(vault)
+
+        assert not os.path.exists(os.path.join(vault, "missing_ids.txt"))
+
+    def test_malformed_json_skipped(self, tmp_path):
+        vault = str(tmp_path / "vault")
+        os.makedirs(vault)
+
+        jsonl = os.path.join(vault, "test.jsonl")
+        with open(jsonl, "w") as f:
+            f.write(json.dumps(self._make_entry("a")) + "\n")
+            f.write("this is not json\n")
+            f.write(json.dumps(self._make_entry("b")) + "\n")
+
+        groom_vault(vault)
+
+        with open(jsonl) as f:
+            lines = [json.loads(l) for l in f if l.strip()]
+        assert len(lines) == 2
+
+    def test_entry_without_id_skipped(self, tmp_path):
+        vault = str(tmp_path / "vault")
+        os.makedirs(vault)
+
+        jsonl = os.path.join(vault, "test.jsonl")
+        with open(jsonl, "w") as f:
+            f.write(json.dumps(self._make_entry("a")) + "\n")
+            f.write(json.dumps({"date": "Mon, 01 Jan 2024 12:00:00 +0000", "subject": "no id"}) + "\n")
+            f.write(json.dumps(self._make_entry("b")) + "\n")
+
+        groom_vault(vault)
+
+        with open(jsonl) as f:
+            lines = [json.loads(l) for l in f if l.strip()]
+        assert len(lines) == 2
+
+    def test_nonexistent_vault(self, tmp_path):
+        """Should not crash on missing vault path."""
+        groom_vault(str(tmp_path / "nonexistent"))
+
+    def test_empty_vault(self, tmp_path):
+        vault = str(tmp_path / "vault")
+        os.makedirs(vault)
+        groom_vault(vault)  # should not crash
