@@ -42,7 +42,7 @@ CONFIG = load_config()
 GMAIL_CONFIG = CONFIG.get("gmail", {})
 
 VAULT_NAME = sys.argv[1] if len(sys.argv) > 1 else "Primary"
-VAULT_ROOT = os.path.join(CONFIG.get("vault_root", "Vaults"), f"Gmail_{VAULT_NAME}")
+VAULT_ROOT = os.path.join(os.path.expanduser(CONFIG.get("vault_root", "Vaults")), f"Gmail_{VAULT_NAME}")
 PROCESSED_LOG = os.path.join(VAULT_ROOT, "processed_ids.txt")
 MISSING_LOG = os.path.join(VAULT_ROOT, "missing_ids.txt")
 LOG_FILE = os.path.join(VAULT_ROOT, "extraction.log")

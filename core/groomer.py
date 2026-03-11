@@ -164,4 +164,4 @@ if __name__ == "__main__":
         print("Usage: python -m core.groomer <vault_path>")
         sys.exit(1)
 
-    groom_vault(sys.argv[1])
+    groom_vault(os.path.expanduser(sys.argv[1]))

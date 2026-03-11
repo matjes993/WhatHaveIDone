@@ -1,7 +1,11 @@
 # WhatHaveIDone (WHID) Configuration
 
 # Directory where all vaults are stored
-vault_root: Vaults
+# Default vault location — override with your own path
+# Examples:
+#   ~/WHID_Vaults
+#   /Volumes/ExternalDrive/WHID_Vaults
+vault_root: ~/WHID_Vaults
 
 # Gmail Collector settings
 gmail:
