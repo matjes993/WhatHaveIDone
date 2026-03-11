@@ -4,91 +4,52 @@ Exports Gmail messages to a local JSONL vault organized by year/month.
 Uses gmail.readonly scope — your email is never modified.
 
 Uses the Gmail Batch API to fetch up to 100 messages per HTTP request (~10x faster).
-
-Usage:
-    python -m collectors.gmail_collector [vault_name]
-    python -m collectors.gmail_collector Primary
 """
 
 import os
 import json
 import base64
-import sys
 import logging
 import threading
 import concurrent.futures
 from collections import defaultdict
 from datetime import datetime
 
-import yaml
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.http import BatchHttpRequest
 from bs4 import BeautifulSoup
 
-# --- Configuration ---
-
-CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "config.yaml")
-
-
-def load_config():
-    with open(CONFIG_PATH, "r") as f:
-        return yaml.safe_load(f)
-
-
-CONFIG = load_config()
-GMAIL_CONFIG = CONFIG.get("gmail", {})
-
-VAULT_NAME = sys.argv[1] if len(sys.argv) > 1 else "Primary"
-VAULT_ROOT = os.path.join(os.path.expanduser(CONFIG.get("vault_root", "Vaults")), f"Gmail_{VAULT_NAME}")
-PROCESSED_LOG = os.path.join(VAULT_ROOT, "processed_ids.txt")
-MISSING_LOG = os.path.join(VAULT_ROOT, "missing_ids.txt")
-LOG_FILE = os.path.join(VAULT_ROOT, "extraction.log")
-MAX_WORKERS = GMAIL_CONFIG.get("max_workers", 10)
-PAGE_SIZE = GMAIL_CONFIG.get("page_size", 500)
-BATCH_SIZE = GMAIL_CONFIG.get("batch_size", 100)
-SCOPES = [GMAIL_CONFIG.get("scope", "https://www.googleapis.com/auth/gmail.readonly")]
-CREDENTIALS_FILE = GMAIL_CONFIG.get("credentials_file", "credentials.json")
-TOKEN_FILE = GMAIL_CONFIG.get("token_file", "token.json")
-
-os.makedirs(VAULT_ROOT, exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_FILE),
-        logging.StreamHandler(sys.stdout),
-    ],
-)
 logger = logging.getLogger("whid.gmail")
 
 # Lock for writing vault files to disk
 _write_lock = threading.Lock()
 
 
-def get_credentials():
+def get_credentials(credentials_file, token_file, scopes):
     """Authenticate with Google OAuth2. Opens browser on first run."""
     creds = None
-    if os.path.exists(TOKEN_FILE):
-        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
+    if os.path.exists(token_file):
+        creds = Credentials.from_authorized_user_file(token_file, scopes)
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            if not os.path.exists(CREDENTIALS_FILE):
+            if not os.path.exists(credentials_file):
                 logger.error(
                     "Missing %s — download it from Google Cloud Console "
                     "(APIs & Services > Credentials > OAuth 2.0 Client ID)",
-                    CREDENTIALS_FILE,
+                    credentials_file,
                 )
-                sys.exit(1)
-            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_FILE, SCOPES)
+                raise FileNotFoundError(
+                    f"OAuth credentials not found: {credentials_file}\n"
+                    "Download from: Google Cloud Console > APIs & Services > Credentials > OAuth 2.0 Client ID"
+                )
+            flow = InstalledAppFlow.from_client_secrets_file(credentials_file, scopes)
             creds = flow.run_local_server(port=0)
-        with open(TOKEN_FILE, "w") as f:
+        with open(token_file, "w") as f:
             f.write(creds.to_json())
 
     return creds
@@ -172,9 +133,8 @@ def _msg_to_entry(m_id, msg):
     }
 
 
-def _flush_entries_to_vault(entries):
+def _flush_entries_to_vault(entries, vault_root):
     """Write a batch of entries to vault files, grouped by target file."""
-    # Group entries by destination file
     file_groups = defaultdict(list)
 
     for entry in entries:
@@ -187,16 +147,15 @@ def _flush_entries_to_vault(entries):
             )
 
         if is_valid and dt:
-            target_dir = os.path.join(VAULT_ROOT, dt.strftime("%Y"))
+            target_dir = os.path.join(vault_root, dt.strftime("%Y"))
             filename = dt.strftime("%m_%B.jsonl")
         else:
-            target_dir = os.path.join(VAULT_ROOT, "_unknown")
+            target_dir = os.path.join(vault_root, "_unknown")
             filename = "unknown_date.jsonl"
 
         file_path = os.path.join(target_dir, filename)
         file_groups[file_path].append((target_dir, entry))
 
-    # Write each group in one go
     with _write_lock:
         for file_path, items in file_groups.items():
             os.makedirs(items[0][0], exist_ok=True)
@@ -237,21 +196,48 @@ def _fetch_batch(service, message_ids):
     return entries, failed
 
 
-def run_export():
-    """Main export loop: fetch message IDs, batch-fetch in parallel, track progress."""
-    creds = get_credentials()
+def run_export(vault_name="Primary", config=None):
+    """Main export: fetch message IDs, batch-fetch in parallel, track progress."""
+    config = config or {}
+    gmail_config = config.get("gmail", {})
+
+    vault_root = os.path.join(
+        os.path.expanduser(config.get("vault_root", "~/Documents/WHID_Vaults")),
+        f"Gmail_{vault_name}",
+    )
+    max_workers = gmail_config.get("max_workers", 10)
+    page_size = gmail_config.get("page_size", 500)
+    batch_size = gmail_config.get("batch_size", 100)
+    scopes = [gmail_config.get("scope", "https://www.googleapis.com/auth/gmail.readonly")]
+    credentials_file = gmail_config.get("credentials_file", "credentials.json")
+    token_file = gmail_config.get("token_file", "token.json")
+
+    processed_log = os.path.join(vault_root, "processed_ids.txt")
+    missing_log = os.path.join(vault_root, "missing_ids.txt")
+    log_file = os.path.join(vault_root, "extraction.log")
+
+    os.makedirs(vault_root, exist_ok=True)
+
+    # Add file handler for this vault's log
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+    logger.addHandler(file_handler)
+
+    logger.info("Vault: %s", vault_root)
+
+    creds = get_credentials(credentials_file, token_file, scopes)
     service = build("gmail", "v1", credentials=creds)
 
     # Load already-processed IDs
     processed_ids = set()
-    if os.path.exists(PROCESSED_LOG):
-        with open(PROCESSED_LOG, "r") as f:
+    if os.path.exists(processed_log):
+        with open(processed_log, "r") as f:
             processed_ids = {line.strip() for line in f if line.strip()}
 
     # Determine which messages to process
     is_sniper_run = False
-    if os.path.exists(MISSING_LOG):
-        with open(MISSING_LOG, "r") as f:
+    if os.path.exists(missing_log):
+        with open(missing_log, "r") as f:
             to_process_ids = [line.strip() for line in f if line.strip()]
         is_sniper_run = True
         logger.info("Sniper mode: recovering %d ghost IDs", len(to_process_ids))
@@ -259,7 +245,7 @@ def run_export():
         logger.info("Fetching message list from Gmail...")
         to_process_ids = []
         results = service.users().messages().list(
-            userId="me", maxResults=PAGE_SIZE
+            userId="me", maxResults=page_size
         ).execute()
         msgs = results.get("messages", [])
         to_process_ids.extend(m["id"] for m in msgs)
@@ -267,7 +253,7 @@ def run_export():
         while "nextPageToken" in results:
             results = service.users().messages().list(
                 userId="me",
-                maxResults=PAGE_SIZE,
+                maxResults=page_size,
                 pageToken=results["nextPageToken"],
             ).execute()
             msgs = results.get("messages", [])
@@ -280,10 +266,10 @@ def run_export():
         logger.info("Nothing to process — vault is up to date.")
         return
 
-    # Split into batches of BATCH_SIZE (max 100 per Gmail batch request)
+    # Split into batches
     batches = [
-        to_process_ids[i : i + BATCH_SIZE]
-        for i in range(0, len(to_process_ids), BATCH_SIZE)
+        to_process_ids[i : i + batch_size]
+        for i in range(0, len(to_process_ids), batch_size)
     ]
 
     total_msgs = len(to_process_ids)
@@ -292,8 +278,8 @@ def run_export():
         "Processing %d messages in %d batches (batch_size=%d, workers=%d)...",
         total_msgs,
         total_batches,
-        BATCH_SIZE,
-        MAX_WORKERS,
+        batch_size,
+        max_workers,
     )
 
     vaulted = 0
@@ -301,12 +287,10 @@ def run_export():
     all_vaulted_ids = []
 
     def process_batch(batch_ids):
-        """Process one batch: fetch via batch API, return entries and failures."""
-        # Each thread gets its own service instance (connection pooling)
         thread_service = build("gmail", "v1", credentials=creds, cache_discovery=False)
         return _fetch_batch(thread_service, batch_ids)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_idx = {
             executor.submit(process_batch, batch_ids): idx
             for idx, batch_ids in enumerate(batches)
@@ -318,18 +302,16 @@ def run_export():
                 entries, batch_failed = future.result()
             except Exception as e:
                 logger.error("Batch %d raised an exception: %s", idx, e)
-                failed += BATCH_SIZE
+                failed += batch_size
                 continue
 
-            # Flush entries to disk
             if entries:
-                _flush_entries_to_vault(entries)
+                _flush_entries_to_vault(entries, vault_root)
                 vaulted += len(entries)
                 all_vaulted_ids.extend(e["id"] for e in entries)
 
             failed += len(batch_failed)
 
-            # Progress update
             processed_so_far = vaulted + failed
             logger.info(
                 "Progress: %d/%d messages (vaulted: %d, failed: %d) — batch %d/%d done",
@@ -341,15 +323,13 @@ def run_export():
                 total_batches,
             )
 
-    # Append newly processed IDs
     if all_vaulted_ids:
-        with open(PROCESSED_LOG, "a") as f:
+        with open(processed_log, "a") as f:
             for mid in all_vaulted_ids:
                 f.write(f"{mid}\n")
 
-    # Clean up missing_ids.txt after successful sniper run
-    if is_sniper_run and vaulted > 0 and os.path.exists(MISSING_LOG):
-        os.remove(MISSING_LOG)
+    if is_sniper_run and vaulted > 0 and os.path.exists(missing_log):
+        os.remove(missing_log)
 
     logger.info(
         "Export complete: %d vaulted, %d failed out of %d total",
@@ -358,6 +338,6 @@ def run_export():
         total_msgs,
     )
 
-
-if __name__ == "__main__":
-    run_export()
+    # Clean up file handler
+    logger.removeHandler(file_handler)
+    file_handler.close()

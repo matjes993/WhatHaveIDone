@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "whid"
+version = "0.1.0"
+description = "WhatHaveIDone — Your life. Your data. Your hard drive."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+dependencies = [
+    "google-api-python-client>=2.116.0",
+    "google-auth-oauthlib>=1.2.0",
+    "beautifulsoup4>=4.12.3",
+    "pyyaml>=6.0.1",
+]
+
+[project.scripts]
+whid = "whid:main"
+
+[project.urls]
+Homepage = "https://github.com/matjes993/WhatHaveIDone"
+Issues = "https://github.com/matjes993/WhatHaveIDone/issues"
+
+[tool.setuptools]
+py-modules = ["whid"]
+packages = ["core", "collectors"]

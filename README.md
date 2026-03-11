@@ -111,24 +111,34 @@ git clone https://github.com/matjes993/WhatHaveIDone.git
 cd WhatHaveIDone
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -e .
 ```
 
-Place your `credentials.json` in the project root.
+Place your `credentials.json` in the project root ([how to get one](https://developers.google.com/gmail/api/quickstart/python)).
 
 ### Run
 
 ```bash
 # Export your entire Gmail
-python -m collectors.gmail_collector Primary
+whid collect gmail
 
 # Clean and deduplicate
-python -m core.groomer ~/Documents/WHID_Vaults/Gmail_Primary
+whid groom gmail
+
+# See what you've got
+whid status
 ```
 
 A browser window opens on first run for Google OAuth. After that, it's fully automatic.
 
 Your data is saved to `~/Documents/WHID_Vaults/` by default — completely separate from the codebase.
+
+You can also specify a vault name for multiple accounts:
+
+```bash
+whid collect gmail Work
+whid collect gmail Personal
+```
 
 ### Configuration
 
