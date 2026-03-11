@@ -5,9 +5,11 @@ vault_root: Vaults
 
 # Gmail Collector settings
 gmail:
-  # Maximum concurrent API threads
-  max_workers: 3
-  # Messages fetched per API page
+  # Concurrent batch workers (each sends 1 batch request with up to 100 messages)
+  max_workers: 10
+  # Messages per batch API request (Gmail max is 100)
+  batch_size: 100
+  # Messages fetched per listing page
   page_size: 500
   # OAuth scope (readonly = safe, no email modification)
   scope: https://www.googleapis.com/auth/gmail.readonly
