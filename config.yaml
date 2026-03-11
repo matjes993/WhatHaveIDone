@@ -1,0 +1,16 @@
+# WhatHaveIDone (WHID) Configuration
+
+# Directory where all vaults are stored
+vault_root: Vaults
+
+# Gmail Collector settings
+gmail:
+  # Maximum concurrent API threads
+  max_workers: 3
+  # Messages fetched per API page
+  page_size: 500
+  # OAuth scope (readonly = safe, no email modification)
+  scope: https://www.googleapis.com/auth/gmail.readonly
+  # Path to Google OAuth credentials
+  credentials_file: credentials.json
+  token_file: token.json
