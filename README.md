@@ -101,10 +101,9 @@ WhatHaveIDone/
 ### Prerequisites
 
 - Python 3.9+
-- A Google Cloud project with the Gmail API enabled
-- OAuth 2.0 credentials (`credentials.json`) — [setup guide](docs/GOOGLE_SETUP.md)
+- A Google account
 
-### Install
+### Install & Setup
 
 ```bash
 git clone https://github.com/matjes993/WhatHaveIDone.git
@@ -112,28 +111,28 @@ cd WhatHaveIDone
 python3 -m venv venv
 source venv/bin/activate
 pip install -e .
+
+# Guided setup — opens browser, walks you through everything
+whid setup gmail
 ```
 
-Place your `credentials.json` in the project root ([step-by-step guide](docs/GOOGLE_SETUP.md)).
+The setup wizard:
+1. Opens Google Cloud Console for you
+2. Finds the downloaded credentials file automatically
+3. Signs you in to Google (read-only access)
+4. Tests the connection and shows your message count
 
 ### Run
 
 ```bash
-# Export your entire Gmail
-whid collect gmail
-
-# Clean and deduplicate
-whid groom gmail
-
-# See what you've got
-whid status
+whid collect gmail     # download your inbox
+whid groom gmail       # deduplicate and sort
+whid status            # see what you've got
 ```
 
-A browser window opens on first run for Google OAuth. After that, it's fully automatic.
+Your data is saved to `~/Documents/WHID_Vaults/` — completely separate from the codebase.
 
-Your data is saved to `~/Documents/WHID_Vaults/` by default — completely separate from the codebase.
-
-You can also specify a vault name for multiple accounts:
+Multiple accounts? Just use different vault names:
 
 ```bash
 whid collect gmail Work

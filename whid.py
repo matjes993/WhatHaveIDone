@@ -3,15 +3,22 @@
 WHID CLI — WhatHaveIDone command-line interface.
 
 Usage:
-    whid collect gmail [vault_name]
-    whid groom gmail [vault_name]
-    whid status
+    whid setup gmail         Guided setup (opens browser, finds credentials)
+    whid collect gmail       Export your Gmail
+    whid groom gmail         Deduplicate and sort
+    whid status              See your vaults
 """
 
 import argparse
+import glob
+import json
 import logging
 import os
+import platform
+import shutil
+import subprocess
 import sys
+import webbrowser
 
 import yaml
 
@@ -20,6 +27,8 @@ CONFIG_LOCATIONS = [
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.yaml"),
     os.path.expanduser("~/.config/whid/config.yaml"),
 ]
+
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 logger = logging.getLogger("whid")
 
@@ -51,14 +60,12 @@ def load_config():
                 sys.exit(1)
 
     logger.info("No config.yaml found — using defaults.")
-    logger.info("Searched: %s", ", ".join(CONFIG_LOCATIONS))
     return {}
 
 
 def get_vault_root(config):
     vault_root = os.path.expanduser(config.get("vault_root", "~/Documents/WHID_Vaults"))
 
-    # Check if parent directory exists (e.g., if pointing to external drive)
     parent = os.path.dirname(vault_root)
     if not os.path.exists(parent):
         print(f"\nError: Vault root parent directory does not exist: {parent}")
@@ -93,26 +100,180 @@ def validate_gmail_config(config):
     return config
 
 
+def _find_credentials_file():
+    """Search common locations for a Google OAuth credentials file."""
+    search_paths = [
+        os.path.join(PROJECT_ROOT, "credentials.json"),
+        os.path.expanduser("~/Downloads/credentials.json"),
+    ]
+
+    # Also check for client_secret_*.json in Downloads (Google's default name)
+    downloads = os.path.expanduser("~/Downloads")
+    if os.path.exists(downloads):
+        search_paths.extend(
+            sorted(
+                glob.glob(os.path.join(downloads, "client_secret_*.json")),
+                key=os.path.getmtime,
+                reverse=True,
+            )
+        )
+
+    for path in search_paths:
+        if os.path.exists(path):
+            # Validate it looks like a Google credentials file
+            try:
+                with open(path) as f:
+                    data = json.load(f)
+                if "installed" in data or "web" in data:
+                    return path
+            except (json.JSONDecodeError, KeyError):
+                continue
+
+    return None
+
+
+def _prompt(message, default=None):
+    """Prompt user for input with optional default."""
+    if default:
+        result = input(f"{message} [{default}]: ").strip()
+        return result if result else default
+    return input(f"{message}: ").strip()
+
+
+def cmd_setup(args, config):
+    """Guided setup for a collector."""
+    if args.source != "gmail":
+        print(f"Setup not available for '{args.source}' yet.")
+        print("Available: gmail")
+        sys.exit(1)
+
+    target = os.path.join(PROJECT_ROOT, "credentials.json")
+    token = os.path.join(PROJECT_ROOT, "token.json")
+
+    print("\n" + "=" * 50)
+    print("  WHID Gmail Setup")
+    print("=" * 50)
+
+    # Step 0: Check if already set up
+    if os.path.exists(target) and os.path.exists(token):
+        print("\nGmail is already set up!")
+        print(f"  Credentials: {target}")
+        print(f"  Token: {token}")
+        print("\nRun 'whid collect gmail' to start downloading.")
+        return
+
+    # Step 1: Check for existing credentials
+    if os.path.exists(target):
+        print(f"\nCredentials found: {target}")
+    else:
+        print("\nStep 1: Get Google OAuth credentials")
+        print("-" * 40)
+
+        found = _find_credentials_file()
+        if found:
+            print(f"\nFound credentials file: {found}")
+            answer = _prompt("Use this file? (y/n)", "y")
+            if answer.lower() in ("y", "yes", ""):
+                shutil.copy2(found, target)
+                print(f"Copied to {target}")
+            else:
+                found = None
+
+        if not found and not os.path.exists(target):
+            print("\nI'll open Google Cloud Console in your browser.")
+            print("Follow these steps:\n")
+            print("  1. Create a project (or select existing)")
+            print("  2. Enable the Gmail API")
+            print("  3. Go to Credentials > Create > OAuth Client ID > Desktop App")
+            print("  4. Download the JSON file")
+
+            input("\nPress Enter to open Google Cloud Console...")
+            webbrowser.open("https://console.cloud.google.com/apis/credentials")
+
+            print("\nAfter downloading, I'll look for the file automatically.")
+            input("Press Enter when you've downloaded the credentials file...")
+
+            found = _find_credentials_file()
+            if found:
+                print(f"\nFound: {found}")
+                shutil.copy2(found, target)
+                print(f"Copied to {target}")
+            else:
+                print("\nCouldn't find the credentials file automatically.")
+                path = _prompt("Paste the full path to the file you downloaded")
+                path = path.strip("'\"")  # strip quotes if pasted
+                path = os.path.expanduser(path)
+
+                if os.path.exists(path):
+                    shutil.copy2(path, target)
+                    print(f"Copied to {target}")
+                else:
+                    print(f"\nFile not found: {path}")
+                    print("Please manually copy your credentials JSON to:")
+                    print(f"  {target}")
+                    sys.exit(1)
+
+    # Step 2: Authenticate
+    if not os.path.exists(target):
+        print("\nError: credentials.json still not found. Setup incomplete.")
+        sys.exit(1)
+
+    print("\nStep 2: Sign in with Google")
+    print("-" * 40)
+    print("\nA browser window will open for Google sign-in.")
+    print("Sign in with the Gmail account you want to export.")
+    print("(WHID uses read-only access — it cannot modify your email)\n")
+
+    input("Press Enter to open the sign-in page...")
+
+    try:
+        from collectors.gmail_collector import get_credentials
+
+        scopes = [config.get("gmail", {}).get(
+            "scope", "https://www.googleapis.com/auth/gmail.readonly"
+        )]
+        creds = get_credentials(target, token, scopes)
+    except Exception as e:
+        print(f"\nAuthentication failed: {e}")
+        print("Try running 'whid setup gmail' again.")
+        sys.exit(1)
+
+    # Step 3: Test connection
+    print("\nStep 3: Testing connection")
+    print("-" * 40)
+
+    try:
+        from googleapiclient.discovery import build
+
+        service = build("gmail", "v1", credentials=creds)
+        profile = service.users().getProfile(userId="me").execute()
+        email = profile.get("emailAddress", "unknown")
+        total = int(profile.get("messagesTotal", 0))
+
+        print(f"\n  Connected to: {email}")
+        print(f"  Total messages: {total:,}")
+    except Exception as e:
+        print(f"\n  Connection test failed: {e}")
+        print("  But credentials are saved — try 'whid collect gmail' anyway.")
+
+    # Done
+    print("\n" + "=" * 50)
+    print("  Setup complete!")
+    print("=" * 50)
+    print(f"\n  Run:  whid collect gmail")
+    print(f"  Data: ~/Documents/WHID_Vaults/Gmail_Primary/")
+    print()
+
+
 def cmd_collect(args, config):
     """Run a collector."""
     if args.source == "gmail":
         config = validate_gmail_config(config)
 
-        # Check for credentials.json before importing (faster feedback)
         creds_file = config.get("gmail", {}).get("credentials_file", "credentials.json")
         if not os.path.exists(creds_file):
-            print(f"\nError: Google OAuth credentials not found: {os.path.abspath(creds_file)}")
-            print()
-            print("To get credentials.json:")
-            print("  1. Go to https://console.cloud.google.com")
-            print("  2. Create a project (or select existing)")
-            print("  3. Enable the Gmail API (Library > search 'Gmail API')")
-            print("  4. Go to APIs & Services > Credentials")
-            print("  5. Create Credentials > OAuth Client ID > Desktop App")
-            print("  6. Download the JSON and save as: credentials.json")
-            print(f"  7. Place it here: {os.path.abspath('.')}/credentials.json")
-            print()
-            print("For detailed instructions, see: docs/GOOGLE_SETUP.md")
+            print("\nGmail is not set up yet. Run:\n")
+            print("  whid setup gmail\n")
             sys.exit(1)
 
         try:
@@ -165,6 +326,7 @@ def cmd_status(args, config):
         print(f"No vaults found at {vault_root}")
         print()
         print("Get started:")
+        print("  whid setup gmail      Set up Gmail export")
         print("  whid collect gmail    Export your Gmail inbox")
         return
 
@@ -178,7 +340,6 @@ def cmd_status(args, config):
 
         entries_found = True
 
-        # Count JSONL entries
         total_entries = 0
         jsonl_files = 0
         for root, _dirs, files in os.walk(vault_path):
@@ -191,7 +352,6 @@ def cmd_status(args, config):
                     except (OSError, PermissionError) as e:
                         logger.warning("Could not read %s: %s", os.path.join(root, f), e)
 
-        # Check processed IDs
         processed_log = os.path.join(vault_path, "processed_ids.txt")
         processed = 0
         if os.path.exists(processed_log):
@@ -201,7 +361,6 @@ def cmd_status(args, config):
             except (OSError, PermissionError) as e:
                 logger.warning("Could not read processed log: %s", e)
 
-        # Check for ghosts
         missing_log = os.path.join(vault_path, "missing_ids.txt")
         ghosts = 0
         if os.path.exists(missing_log):
@@ -226,7 +385,7 @@ def cmd_status(args, config):
     if not entries_found:
         print("  (no vaults yet)")
         print()
-        print("  Get started: whid collect gmail")
+        print("  Get started: whid setup gmail")
 
 
 def main():
@@ -235,6 +394,10 @@ def main():
         description="WhatHaveIDone — Your life. Your data. Your hard drive.",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
+
+    # whid setup
+    setup_parser = subparsers.add_parser("setup", help="Guided setup for a data source")
+    setup_parser.add_argument("source", help="Data source to set up (e.g., gmail)")
 
     # whid collect
     collect_parser = subparsers.add_parser("collect", help="Collect data from a source")
@@ -261,6 +424,7 @@ def main():
         parser.print_help()
         print()
         print("Quick start:")
+        print("  whid setup gmail      Guided setup (first time)")
         print("  whid collect gmail    Export your Gmail inbox")
         print("  whid groom gmail      Deduplicate and sort")
         print("  whid status           See your vaults")
@@ -275,7 +439,9 @@ def main():
 
     config = load_config()
 
-    if args.command == "collect":
+    if args.command == "setup":
+        cmd_setup(args, config)
+    elif args.command == "collect":
         cmd_collect(args, config)
     elif args.command == "groom":
         cmd_groom(args, config)
