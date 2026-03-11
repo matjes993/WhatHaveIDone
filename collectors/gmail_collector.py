@@ -9,6 +9,7 @@ Uses the Gmail Batch API to fetch up to 100 messages per HTTP request (~10x fast
 import os
 import json
 import base64
+import sys
 import logging
 import threading
 import concurrent.futures
@@ -19,6 +20,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger("whid.gmail")
@@ -31,24 +33,62 @@ def get_credentials(credentials_file, token_file, scopes):
     """Authenticate with Google OAuth2. Opens browser on first run."""
     creds = None
     if os.path.exists(token_file):
-        creds = Credentials.from_authorized_user_file(token_file, scopes)
+        try:
+            creds = Credentials.from_authorized_user_file(token_file, scopes)
+        except (json.JSONDecodeError, ValueError, KeyError) as e:
+            logger.warning(
+                "Existing token.json is corrupted (%s) — re-authenticating.", e
+            )
+            os.remove(token_file)
+            creds = None
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
+            try:
+                creds.refresh(Request())
+            except Exception as e:
+                logger.warning(
+                    "Token refresh failed (%s) — re-authenticating. "
+                    "You may need to sign in again.",
+                    e,
+                )
+                creds = None
+
+        if not creds:
             if not os.path.exists(credentials_file):
-                logger.error(
-                    "Missing %s — download it from Google Cloud Console "
-                    "(APIs & Services > Credentials > OAuth 2.0 Client ID)",
-                    credentials_file,
-                )
                 raise FileNotFoundError(
-                    f"OAuth credentials not found: {credentials_file}\n"
-                    "Download from: Google Cloud Console > APIs & Services > Credentials > OAuth 2.0 Client ID"
+                    f"OAuth credentials not found: {credentials_file}\n\n"
+                    "To get credentials.json:\n"
+                    "  1. Go to https://console.cloud.google.com\n"
+                    "  2. Create a project (or select existing)\n"
+                    "  3. Enable the Gmail API (Library > search 'Gmail API')\n"
+                    "  4. Go to APIs & Services > Credentials\n"
+                    "  5. Create Credentials > OAuth Client ID > Desktop App\n"
+                    "  6. Download the JSON and save as: credentials.json\n\n"
+                    "For detailed instructions, see: docs/GOOGLE_SETUP.md"
                 )
-            flow = InstalledAppFlow.from_client_secrets_file(credentials_file, scopes)
-            creds = flow.run_local_server(port=0)
+
+            try:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    credentials_file, scopes
+                )
+            except (json.JSONDecodeError, ValueError) as e:
+                print(f"\nError: credentials.json is not valid JSON: {e}")
+                print(
+                    "Re-download it from Google Cloud Console > APIs & Services > Credentials."
+                )
+                sys.exit(1)
+
+            try:
+                creds = flow.run_local_server(port=0)
+            except OSError as e:
+                print(f"\nError: Could not start local OAuth server: {e}")
+                print(
+                    "This usually means another process is blocking the port."
+                )
+                print("Close other running WHID instances and try again.")
+                sys.exit(1)
+
         with open(token_file, "w") as f:
             f.write(creds.to_json())
 
@@ -158,10 +198,23 @@ def _flush_entries_to_vault(entries, vault_root):
 
     with _write_lock:
         for file_path, items in file_groups.items():
-            os.makedirs(items[0][0], exist_ok=True)
-            with open(file_path, "a", encoding="utf-8") as f:
-                for _, entry in items:
-                    f.write(json.dumps(entry) + "\n")
+            try:
+                os.makedirs(items[0][0], exist_ok=True)
+                with open(file_path, "a", encoding="utf-8") as f:
+                    for _, entry in items:
+                        f.write(json.dumps(entry) + "\n")
+            except PermissionError:
+                logger.error(
+                    "Permission denied writing to %s — check folder permissions.",
+                    file_path,
+                )
+                raise
+            except OSError as e:
+                if "No space left" in str(e) or e.errno == 28:
+                    logger.error("Disk full — cannot write to %s. Free up space and re-run.", file_path)
+                else:
+                    logger.error("Failed to write %s: %s", file_path, e)
+                raise
 
 
 def _fetch_batch(service, message_ids):
@@ -176,7 +229,23 @@ def _fetch_batch(service, message_ids):
 
     def callback(request_id, response, exception):
         if exception is not None:
-            logger.error("Batch fetch failed for %s: %s", request_id, exception)
+            if isinstance(exception, HttpError):
+                status = exception.resp.status
+                if status == 404:
+                    logger.warning("Message %s no longer exists (deleted from Gmail).", request_id)
+                elif status == 429:
+                    logger.error("Rate limited by Gmail API. Reduce max_workers or batch_size in config.yaml.")
+                elif status == 403:
+                    logger.error(
+                        "Permission denied for message %s. "
+                        "Make sure Gmail API is enabled and scope is correct.",
+                        request_id,
+                    )
+                else:
+                    logger.error("API error %d for message %s: %s", status, request_id, exception)
+            else:
+                logger.error("Unexpected error for message %s: %s", request_id, exception)
+
             with lock:
                 failed.append(request_id)
             return
@@ -196,6 +265,54 @@ def _fetch_batch(service, message_ids):
     return entries, failed
 
 
+def _handle_api_error(e):
+    """Print a helpful message for common Gmail API errors and exit."""
+    if not isinstance(e, HttpError):
+        print(f"\nUnexpected error: {e}")
+        sys.exit(1)
+
+    status = e.resp.status
+
+    if status == 403:
+        error_detail = str(e)
+        if "Gmail API has not been used" in error_detail or "accessNotConfigured" in error_detail:
+            print("\nError: Gmail API is not enabled for your Google Cloud project.\n")
+            print("To fix:")
+            print("  1. Go to https://console.cloud.google.com/apis/library/gmail.googleapis.com")
+            print("  2. Click 'Enable'")
+            print("  3. Wait 1-2 minutes for it to activate")
+            print("  4. Run whid again")
+        elif "insufficientPermissions" in error_detail:
+            print("\nError: Insufficient permissions.\n")
+            print("Your OAuth token may have the wrong scope.")
+            print("To fix:")
+            print("  1. Delete token.json")
+            print("  2. Run 'whid collect gmail' again")
+            print("  3. Re-authorize in the browser")
+        else:
+            print(f"\nError: Access denied by Gmail API (403).\n")
+            print(f"Details: {error_detail}")
+            print("\nCommon fixes:")
+            print("  - Enable Gmail API in Google Cloud Console")
+            print("  - Delete token.json and re-authorize")
+    elif status == 429:
+        print("\nError: Rate limited by Gmail API.\n")
+        print("You're sending too many requests. To fix:")
+        print("  - Lower max_workers in config.yaml (try 5)")
+        print("  - Lower batch_size in config.yaml (try 50)")
+        print("  - Wait a few minutes and try again")
+    elif status == 401:
+        print("\nError: Authentication failed.\n")
+        print("Your token may be expired or revoked. To fix:")
+        print("  1. Delete token.json")
+        print("  2. Run 'whid collect gmail' again")
+        print("  3. Re-authorize in the browser")
+    else:
+        print(f"\nGmail API error (HTTP {status}): {e}")
+
+    sys.exit(1)
+
+
 def run_export(vault_name="Primary", config=None):
     """Main export: fetch message IDs, batch-fetch in parallel, track progress."""
     config = config or {}
@@ -208,7 +325,9 @@ def run_export(vault_name="Primary", config=None):
     max_workers = gmail_config.get("max_workers", 10)
     page_size = gmail_config.get("page_size", 500)
     batch_size = gmail_config.get("batch_size", 100)
-    scopes = [gmail_config.get("scope", "https://www.googleapis.com/auth/gmail.readonly")]
+    scopes = [
+        gmail_config.get("scope", "https://www.googleapis.com/auth/gmail.readonly")
+    ]
     credentials_file = gmail_config.get("credentials_file", "credentials.json")
     token_file = gmail_config.get("token_file", "token.json")
 
@@ -216,17 +335,33 @@ def run_export(vault_name="Primary", config=None):
     missing_log = os.path.join(vault_root, "missing_ids.txt")
     log_file = os.path.join(vault_root, "extraction.log")
 
-    os.makedirs(vault_root, exist_ok=True)
+    try:
+        os.makedirs(vault_root, exist_ok=True)
+    except PermissionError:
+        print(f"\nError: Permission denied creating vault directory: {vault_root}")
+        print("Check folder permissions or change vault_root in config.yaml.")
+        sys.exit(1)
+    except OSError as e:
+        print(f"\nError: Cannot create vault directory {vault_root}: {e}")
+        sys.exit(1)
 
     # Add file handler for this vault's log
     file_handler = logging.FileHandler(log_file)
-    file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+    file_handler.setFormatter(
+        logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+    )
     logger.addHandler(file_handler)
 
     logger.info("Vault: %s", vault_root)
 
     creds = get_credentials(credentials_file, token_file, scopes)
-    service = build("gmail", "v1", credentials=creds)
+
+    try:
+        service = build("gmail", "v1", credentials=creds)
+    except Exception as e:
+        print(f"\nError: Could not connect to Gmail API: {e}")
+        print("Check your internet connection and try again.")
+        sys.exit(1)
 
     # Load already-processed IDs
     processed_ids = set()
@@ -244,18 +379,43 @@ def run_export(vault_name="Primary", config=None):
     else:
         logger.info("Fetching message list from Gmail...")
         to_process_ids = []
-        results = service.users().messages().list(
-            userId="me", maxResults=page_size
-        ).execute()
+
+        try:
+            results = (
+                service.users()
+                .messages()
+                .list(userId="me", maxResults=page_size)
+                .execute()
+            )
+        except HttpError as e:
+            _handle_api_error(e)
+        except Exception as e:
+            print(f"\nError: Failed to fetch message list: {e}")
+            print("Check your internet connection and try again.")
+            sys.exit(1)
+
         msgs = results.get("messages", [])
         to_process_ids.extend(m["id"] for m in msgs)
 
         while "nextPageToken" in results:
-            results = service.users().messages().list(
-                userId="me",
-                maxResults=page_size,
-                pageToken=results["nextPageToken"],
-            ).execute()
+            try:
+                results = (
+                    service.users()
+                    .messages()
+                    .list(
+                        userId="me",
+                        maxResults=page_size,
+                        pageToken=results["nextPageToken"],
+                    )
+                    .execute()
+                )
+            except HttpError as e:
+                _handle_api_error(e)
+            except Exception as e:
+                logger.error("Error fetching message list page: %s", e)
+                logger.info("Continuing with %d messages collected so far.", len(to_process_ids))
+                break
+
             msgs = results.get("messages", [])
             to_process_ids.extend(m["id"] for m in msgs)
 
@@ -263,7 +423,13 @@ def run_export(vault_name="Primary", config=None):
         to_process_ids = [mid for mid in to_process_ids if mid not in processed_ids]
 
     if not to_process_ids:
-        logger.info("Nothing to process — vault is up to date.")
+        logger.info("Nothing new to process — vault is up to date.")
+        if processed_ids:
+            logger.info("You have %d messages already vaulted.", len(processed_ids))
+        else:
+            logger.info("Your Gmail inbox appears empty.")
+        logger.removeHandler(file_handler)
+        file_handler.close()
         return
 
     # Split into batches
@@ -275,7 +441,7 @@ def run_export(vault_name="Primary", config=None):
     total_msgs = len(to_process_ids)
     total_batches = len(batches)
     logger.info(
-        "Processing %d messages in %d batches (batch_size=%d, workers=%d)...",
+        "Processing %d new messages in %d batches (batch_size=%d, workers=%d)...",
         total_msgs,
         total_batches,
         batch_size,
@@ -287,7 +453,9 @@ def run_export(vault_name="Primary", config=None):
     all_vaulted_ids = []
 
     def process_batch(batch_ids):
-        thread_service = build("gmail", "v1", credentials=creds, cache_discovery=False)
+        thread_service = build(
+            "gmail", "v1", credentials=creds, cache_discovery=False
+        )
         return _fetch_batch(thread_service, batch_ids)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -300,8 +468,16 @@ def run_export(vault_name="Primary", config=None):
             idx = future_to_idx[future]
             try:
                 entries, batch_failed = future.result()
+            except HttpError as e:
+                logger.error("Batch %d hit API error: %s", idx, e)
+                if e.resp.status == 429:
+                    logger.error(
+                        "Rate limited — reduce max_workers or batch_size in config.yaml."
+                    )
+                failed += batch_size
+                continue
             except Exception as e:
-                logger.error("Batch %d raised an exception: %s", idx, e)
+                logger.error("Batch %d failed: %s", idx, e)
                 failed += batch_size
                 continue
 
@@ -329,7 +505,10 @@ def run_export(vault_name="Primary", config=None):
                 f.write(f"{mid}\n")
 
     if is_sniper_run and vaulted > 0 and os.path.exists(missing_log):
-        os.remove(missing_log)
+        try:
+            os.remove(missing_log)
+        except OSError as e:
+            logger.warning("Could not remove missing_ids.txt: %s", e)
 
     logger.info(
         "Export complete: %d vaulted, %d failed out of %d total",
@@ -337,6 +516,13 @@ def run_export(vault_name="Primary", config=None):
         failed,
         total_msgs,
     )
+
+    if failed > 0:
+        logger.warning(
+            "%d messages failed. Run 'whid groom gmail' then 'whid collect gmail' "
+            "to recover them via Sniper mode.",
+            failed,
+        )
 
     # Clean up file handler
     logger.removeHandler(file_handler)

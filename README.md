@@ -102,7 +102,7 @@ WhatHaveIDone/
 
 - Python 3.9+
 - A Google Cloud project with the Gmail API enabled
-- OAuth 2.0 credentials (`credentials.json`) — [setup guide](https://developers.google.com/gmail/api/quickstart/python)
+- OAuth 2.0 credentials (`credentials.json`) — [setup guide](docs/GOOGLE_SETUP.md)
 
 ### Install
 
@@ -114,7 +114,7 @@ source venv/bin/activate
 pip install -e .
 ```
 
-Place your `credentials.json` in the project root ([how to get one](https://developers.google.com/gmail/api/quickstart/python)).
+Place your `credentials.json` in the project root ([step-by-step guide](docs/GOOGLE_SETUP.md)).
 
 ### Run
 
@@ -188,6 +188,14 @@ Create a file in `collectors/`. A collector should:
 3. Track processed IDs in `processed_ids.txt`
 
 The groomer handles deduplication and sorting automatically for any vault that follows this convention.
+
+## Documentation
+
+| Doc | Description |
+|-----|-------------|
+| [Google OAuth Setup](docs/GOOGLE_SETUP.md) | Step-by-step guide to get `credentials.json` |
+| [Troubleshooting](docs/TROUBLESHOOTING.md) | Common errors and how to fix them |
+| [Contributing](.github/CONTRIBUTING.md) | How to contribute to WHID |
 
 ## Contributing
 
