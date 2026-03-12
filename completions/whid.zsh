@@ -11,6 +11,7 @@ _whid() {
         'clean:RAG-optimized cleaning pass'
         'groom:Deduplicate, sort, and detect ghosts'
         'vectorize:Vectorize vault data for semantic search'
+        'search:Semantic search across your data'
         'status:Show vault status overview'
         'update:Pull latest version from GitHub'
     )

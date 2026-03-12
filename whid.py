@@ -16,6 +16,8 @@ Usage:
     whid groom gmail              Deduplicate and sort
     whid vectorize                Vectorize all vaults for semantic search
     whid vectorize gmail          Vectorize Gmail only
+    whid search 'query'           Search your data (no LLM needed)
+    whid search 'query' -s gmail  Search Gmail only
     whid status                   See your vaults
     whid update                   Pull latest version from GitHub
 """
@@ -825,8 +827,25 @@ def cmd_update():
     print("\nUpdated successfully!")
 
 
+def _ensure_search_deps():
+    """Auto-install chromadb + sentence-transformers if missing."""
+    try:
+        import chromadb  # noqa: F401
+        import sentence_transformers  # noqa: F401
+    except ImportError:
+        print("\n  Search dependencies not installed (chromadb, sentence-transformers).")
+        print("  Installing now — this is a one-time setup...\n")
+        import subprocess
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install",
+             "chromadb>=1.0.0", "sentence-transformers>=3.0.0"],
+        )
+        print("\n  Done! Continuing...\n")
+
+
 def cmd_vectorize(args, config):
     """Vectorize vault data into ChromaDB for semantic search."""
+    _ensure_search_deps()
     from core.vectordb import get_client, vectorize_all, get_status
 
     vault_root = config.get("vault_root", os.path.join(PROJECT_ROOT, "vaults"))
@@ -910,6 +929,117 @@ def cmd_vectorize(args, config):
     else:
         print(f"  No vaults to vectorize.")
     print()
+
+
+def cmd_search(args, config):
+    """Search the vector database using semantic similarity (no LLM needed)."""
+    _ensure_search_deps()
+    from core.vectordb import get_client, search, get_full_entry
+
+    vault_root = config.get("vault_root", os.path.join(PROJECT_ROOT, "vaults"))
+    vault_root = os.path.expanduser(vault_root)
+    if not os.path.isabs(vault_root):
+        vault_root = os.path.join(PROJECT_ROOT, vault_root)
+
+    query = args.query
+    n_results = getattr(args, "n", 10)
+    source = getattr(args, "source", None)
+    show_full = getattr(args, "full", False)
+    year = getattr(args, "year", None)
+
+    client = get_client(vault_root)
+
+    # Determine which collections to search
+    collections = None
+    if source:
+        source_map = {
+            "gmail": "gmail_",
+            "contacts": "contacts",
+            "books": "books",
+            "youtube": "youtube",
+            "music": "music",
+            "finance": "finance",
+            "shopping": "shopping",
+            "notes": "notes",
+            "podcasts": "podcasts",
+            "health": "health",
+            "browser": "browser",
+            "calendar": "calendar",
+            "maps": "maps",
+        }
+        prefix = source_map.get(source.lower())
+        if not prefix:
+            print(f"  Unknown source: {source}")
+            print(f"  Available: {', '.join(sorted(source_map.keys()))}")
+            return
+
+        all_cols = client.list_collections()
+        collections = [c.name for c in all_cols if c.name.startswith(prefix)]
+        if not collections:
+            print(f"  No vectorized data for '{source}'. Run 'whid vectorize {source}' first.")
+            return
+
+    where_filter = None
+    if year:
+        where_filter = {"year": year}
+
+    results = search(client, query, collections=collections,
+                     n_results=n_results, where_filter=where_filter, config=config)
+
+    if not results:
+        print(f"\n  No results for: {query}")
+        if source:
+            print(f"  (filtered to source: {source})")
+        print()
+        return
+
+    print(f"\n  {len(results)} results for: \"{query}\"\n")
+
+    for i, r in enumerate(results, 1):
+        meta = r.get("metadata", {})
+        distance = r.get("distance", 0)
+        relevance = max(0, round((1 - distance) * 100))
+        collection = r.get("collection", "?")
+
+        # Header line
+        title = meta.get("subject") or meta.get("title") or "(untitled)"
+        print(f"  {i}. [{relevance}%] {title}")
+
+        # Metadata line
+        parts = []
+        if meta.get("from"):
+            parts.append(f"From: {meta['from']}")
+        if meta.get("date"):
+            parts.append(meta["date"])
+        if meta.get("tags"):
+            parts.append(f"Tags: {meta['tags']}")
+        parts.append(f"[{collection}]")
+        print(f"     {' | '.join(parts)}")
+
+        if show_full:
+            # Show full entry from vault
+            vault_dir = meta.get("source", "")
+            entry_id = meta.get("entry_id", r.get("id", ""))
+            full = get_full_entry(vault_root, vault_dir, entry_id)
+            if full:
+                import json
+                print(f"     ---")
+                for k, v in full.items():
+                    if k.endswith("_for_embedding"):
+                        continue
+                    val_str = str(v)
+                    if len(val_str) > 200:
+                        val_str = val_str[:200] + "..."
+                    print(f"     {k}: {val_str}")
+        else:
+            # Show snippet
+            doc = r.get("document", "")
+            snippet = doc[:200].replace("\n", " ")
+            if len(doc) > 200:
+                snippet += "..."
+            print(f"     {snippet}")
+
+        print()
 
 
 def cmd_status(args, config):
@@ -1055,6 +1185,28 @@ def main():
         help="Show vectorization status without processing",
     )
 
+    # whid search
+    search_parser = subparsers.add_parser(
+        "search", help="Semantic search across your vault data"
+    )
+    search_parser.add_argument("query", help="Search query (natural language)")
+    search_parser.add_argument(
+        "--source", "-s", default=None,
+        help="Limit to a source (gmail, contacts, notes, etc.)",
+    )
+    search_parser.add_argument(
+        "--n", type=int, default=10,
+        help="Number of results (default: 10)",
+    )
+    search_parser.add_argument(
+        "--year", "-y", type=int, default=None,
+        help="Filter by year (e.g. 2024)",
+    )
+    search_parser.add_argument(
+        "--full", "-f", action="store_true",
+        help="Show full entry details instead of snippets",
+    )
+
     # whid status
     subparsers.add_parser("status", help="Show vault status overview")
 
@@ -1079,6 +1231,8 @@ def main():
         print("  whid groom gmail               Deduplicate and sort")
         print("  whid vectorize                 Vectorize all vaults for search")
         print("  whid vectorize gmail           Vectorize Gmail only")
+        print("  whid search 'your query'       Search across all your data")
+        print("  whid search 'query' -s gmail   Search Gmail only")
         print("  whid status                    See your vaults")
         print("  whid update                    Pull latest version")
         sys.exit(0)
@@ -1108,6 +1262,8 @@ def main():
         cmd_groom(args, config)
     elif args.command == "vectorize":
         cmd_vectorize(args, config)
+    elif args.command == "search":
+        cmd_search(args, config)
     elif args.command == "status":
         cmd_status(args, config)
 

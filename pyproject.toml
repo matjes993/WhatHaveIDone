@@ -24,6 +24,15 @@ Homepage = "https://github.com/matjes993/WhatHaveIDone"
 Issues = "https://github.com/matjes993/WhatHaveIDone/issues"
 
 [project.optional-dependencies]
+search = [
+    "chromadb>=1.0.0",
+    "sentence-transformers>=3.0.0",
+]
+mcp = [
+    "chromadb>=1.0.0",
+    "sentence-transformers>=3.0.0",
+    "mcp>=1.0.0",
+]
 dev = ["pytest>=8.0"]
 
 [tool.setuptools]
