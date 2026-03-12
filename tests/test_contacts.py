@@ -57,6 +57,8 @@ class TestGoogleContactToEntry:
                     "displayName": "John Doe",
                     "givenName": "John",
                     "familyName": "Doe",
+                    "middleName": "M",
+                    "honorificPrefix": "Dr",
                 }
             ],
             "emailAddresses": [
@@ -64,13 +66,28 @@ class TestGoogleContactToEntry:
                 {"value": "john.doe@work.com"},
             ],
             "phoneNumbers": [
-                {"value": "+1-555-0100"},
+                {"value": "+1-555-0100", "type": "mobile"},
             ],
             "organizations": [
-                {"name": "Acme Corp", "title": "Engineer"},
+                {"name": "Acme Corp", "title": "Engineer", "department": "R&D"},
+            ],
+            "addresses": [
+                {"formattedValue": "123 Main St, NYC", "city": "New York", "type": "home"},
+            ],
+            "birthdays": [
+                {"date": {"year": 1990, "month": 6, "day": 15}},
+            ],
+            "urls": [
+                {"value": "https://johndoe.com", "type": "homepage"},
+            ],
+            "biographies": [
+                {"value": "A great engineer."},
+            ],
+            "relations": [
+                {"person": "Jane Doe", "type": "spouse"},
             ],
             "metadata": {
-                "sources": [{"updateTime": "2024-01-15T10:00:00Z"}],
+                "sources": [{"updateTime": "2024-01-15T10:00:00Z", "type": "CONTACT"}],
             },
         }
         entry = _contact_to_entry(person)
@@ -81,11 +98,32 @@ class TestGoogleContactToEntry:
         assert entry["name"]["display"] == "John Doe"
         assert entry["name"]["given"] == "John"
         assert entry["name"]["family"] == "Doe"
-        assert entry["emails"] == ["john@example.com", "john.doe@work.com"]
-        assert entry["phones"] == ["+1-555-0100"]
-        assert entry["organization"] == "Acme Corp"
-        assert entry["title"] == "Engineer"
+        assert entry["name"]["middle"] == "M"
+        assert entry["name"]["prefix"] == "Dr"
+        assert len(entry["emails"]) == 2
+        assert entry["emails"][0]["value"] == "john@example.com"
+        assert len(entry["phones"]) == 1
+        assert entry["phones"][0]["value"] == "+1-555-0100"
+        assert entry["phones"][0]["type"] == "mobile"
+        assert len(entry["organizations"]) == 1
+        assert entry["organizations"][0]["name"] == "Acme Corp"
+        assert entry["organizations"][0]["title"] == "Engineer"
+        assert entry["organizations"][0]["department"] == "R&D"
+        assert len(entry["addresses"]) == 1
+        assert entry["addresses"][0]["city"] == "New York"
+        assert len(entry["birthdays"]) == 1
+        assert entry["birthdays"][0]["year"] == 1990
+        assert entry["birthdays"][0]["month"] == 6
+        assert len(entry["urls"]) == 1
+        assert entry["urls"][0]["value"] == "https://johndoe.com"
+        assert len(entry["biographies"]) == 1
+        assert "great engineer" in entry["biographies"][0]["value"]
+        assert len(entry["relations"]) == 1
+        assert entry["relations"][0]["person"] == "Jane Doe"
+        assert entry["relations"][0]["type"] == "spouse"
         assert entry["updated_at"] == "2024-01-15T10:00:00Z"
+        assert "John Doe" in entry["contact_for_embedding"]
+        assert "Acme Corp" in entry["contact_for_embedding"]
 
     def test_minimal_data(self):
         person = {
@@ -100,8 +138,8 @@ class TestGoogleContactToEntry:
         assert entry["name"]["family"] == ""
         assert entry["emails"] == []
         assert entry["phones"] == []
-        assert entry["organization"] == ""
-        assert entry["title"] == ""
+        assert entry["organizations"] == []
+        assert entry["addresses"] == []
         assert entry["updated_at"] == ""
 
     def test_empty_person(self):
@@ -128,7 +166,8 @@ class TestGoogleContactToEntry:
             ],
         }
         entry = _contact_to_entry(person)
-        assert entry["emails"] == ["real@test.com"]
+        assert len(entry["emails"]) == 1
+        assert entry["emails"][0]["value"] == "real@test.com"
 
     def test_phone_with_empty_value_filtered(self):
         person = {
@@ -140,9 +179,10 @@ class TestGoogleContactToEntry:
             ],
         }
         entry = _contact_to_entry(person)
-        assert entry["phones"] == ["+1-555-0101"]
+        assert len(entry["phones"]) == 1
+        assert entry["phones"][0]["value"] == "+1-555-0101"
 
-    def test_multiple_organizations_uses_first(self):
+    def test_multiple_organizations_all_captured(self):
         person = {
             "resourceName": "people/c3",
             "organizations": [
@@ -151,8 +191,9 @@ class TestGoogleContactToEntry:
             ],
         }
         entry = _contact_to_entry(person)
-        assert entry["organization"] == "First Co"
-        assert entry["title"] == "CEO"
+        assert len(entry["organizations"]) == 2
+        assert entry["organizations"][0]["name"] == "First Co"
+        assert entry["organizations"][1]["name"] == "Second Co"
 
     def test_metadata_no_sources(self):
         person = {
@@ -161,6 +202,110 @@ class TestGoogleContactToEntry:
         }
         entry = _contact_to_entry(person)
         assert entry["updated_at"] == ""
+
+    def test_nicknames(self):
+        person = {
+            "resourceName": "people/c5",
+            "nicknames": [{"value": "Johnny", "type": "DEFAULT"}],
+        }
+        entry = _contact_to_entry(person)
+        assert len(entry["nicknames"]) == 1
+        assert entry["nicknames"][0]["value"] == "Johnny"
+
+    def test_im_clients(self):
+        person = {
+            "resourceName": "people/c6",
+            "imClients": [
+                {"username": "johndoe", "protocol": "whatsapp", "type": "home"},
+            ],
+        }
+        entry = _contact_to_entry(person)
+        assert len(entry["im_clients"]) == 1
+        assert entry["im_clients"][0]["username"] == "johndoe"
+        assert entry["im_clients"][0]["protocol"] == "whatsapp"
+
+    def test_external_ids(self):
+        person = {
+            "resourceName": "people/c7",
+            "externalIds": [
+                {"value": "@johndoe", "type": "account", "formattedType": "Twitter"},
+            ],
+        }
+        entry = _contact_to_entry(person)
+        assert len(entry["external_ids"]) == 1
+        assert entry["external_ids"][0]["value"] == "@johndoe"
+
+    def test_interests_and_skills(self):
+        person = {
+            "resourceName": "people/c8",
+            "interests": [{"value": "hiking"}, {"value": "cooking"}],
+            "skills": [{"value": "Python"}, {"value": "Go"}],
+        }
+        entry = _contact_to_entry(person)
+        assert entry["interests"] == ["hiking", "cooking"]
+        assert entry["skills"] == ["Python", "Go"]
+
+    def test_memberships(self):
+        person = {
+            "resourceName": "people/c9",
+            "memberships": [
+                {"contactGroupMembership": {
+                    "contactGroupId": "friends",
+                    "contactGroupResourceName": "contactGroups/friends",
+                }},
+            ],
+        }
+        entry = _contact_to_entry(person)
+        assert len(entry["memberships"]) == 1
+        assert entry["memberships"][0]["group_id"] == "friends"
+
+    def test_user_defined_fields(self):
+        person = {
+            "resourceName": "people/c10",
+            "userDefined": [
+                {"key": "Favorite Color", "value": "Blue"},
+            ],
+        }
+        entry = _contact_to_entry(person)
+        assert len(entry["user_defined"]) == 1
+        assert entry["user_defined"][0]["key"] == "Favorite Color"
+
+    def test_events(self):
+        person = {
+            "resourceName": "people/c11",
+            "events": [
+                {"type": "anniversary", "date": {"year": 2020, "month": 3, "day": 14}},
+            ],
+        }
+        entry = _contact_to_entry(person)
+        assert len(entry["events"]) == 1
+        assert entry["events"][0]["date"] == "2020-03-14"
+
+    def test_photos(self):
+        person = {
+            "resourceName": "people/c12",
+            "photos": [
+                {"url": "https://lh3.google.com/photo123", "default": False},
+            ],
+        }
+        entry = _contact_to_entry(person)
+        assert len(entry["photos"]) == 1
+        assert "photo123" in entry["photos"][0]["url"]
+
+    def test_contact_for_embedding(self):
+        person = {
+            "resourceName": "people/c13",
+            "names": [{"displayName": "Alice Smith"}],
+            "organizations": [{"name": "BigCorp", "title": "VP Sales"}],
+            "emailAddresses": [{"value": "alice@bigcorp.com"}],
+            "biographies": [{"value": "Experienced sales leader in tech."}],
+        }
+        entry = _contact_to_entry(person)
+        embed = entry["contact_for_embedding"]
+        assert "Alice Smith" in embed
+        assert "VP Sales at BigCorp" in embed
+        assert "alice@bigcorp.com" in embed
+        assert "Experienced sales leader" in embed
 
 
 class TestGoogleRunExport:
@@ -183,6 +328,13 @@ class TestGoogleRunExport:
 
         mock_list.side_effect = side_effects
         service.people.return_value.connections.return_value.list = mock_list
+
+        # Mock contactGroups().list()
+        mock_groups_execute = MagicMock(return_value={"contactGroups": []})
+        mock_groups_req = MagicMock()
+        mock_groups_req.execute = mock_groups_execute
+        service.contactGroups.return_value.list.return_value = mock_groups_req
+
         return service
 
     @patch("collectors.google_contacts.get_credentials")
