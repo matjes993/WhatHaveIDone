@@ -106,18 +106,20 @@ def _find_credentials_file():
     search_paths = [
         os.path.join(PROJECT_ROOT, "credentials.json"),
         os.path.expanduser("~/Downloads/credentials.json"),
+        os.path.expanduser("~/Desktop/credentials.json"),
     ]
 
-    # Also check for client_secret_*.json in Downloads (Google's default name)
-    downloads = os.path.expanduser("~/Downloads")
-    if os.path.exists(downloads):
-        search_paths.extend(
-            sorted(
-                glob.glob(os.path.join(downloads, "client_secret_*.json")),
-                key=os.path.getmtime,
-                reverse=True,
+    # Also check for client_secret_*.json in Downloads and Desktop (Google's default name)
+    for folder in ["~/Downloads", "~/Desktop"]:
+        folder_path = os.path.expanduser(folder)
+        if os.path.exists(folder_path):
+            search_paths.extend(
+                sorted(
+                    glob.glob(os.path.join(folder_path, "client_secret_*.json")),
+                    key=os.path.getmtime,
+                    reverse=True,
+                )
             )
-        )
 
     for path in search_paths:
         if os.path.exists(path):
@@ -187,11 +189,14 @@ def cmd_setup(args, config):
             print("  2. Enable the Gmail API")
             print("  3. Go to Credentials > Create > OAuth Client ID > Desktop App")
             print("  4. Download the JSON file")
+            print()
+            print("  The file will be named 'client_secret_<something>.json'")
 
             input("\nPress Enter to open Google Cloud Console...")
             webbrowser.open("https://console.cloud.google.com/apis/credentials")
 
-            print("\nAfter downloading, I'll look for the file automatically.")
+            print("\nAfter downloading, I'll search your Downloads folder for")
+            print("'client_secret_*.json' or 'credentials.json' automatically.")
             input("Press Enter when you've downloaded the credentials file...")
 
             found = _find_credentials_file()
@@ -227,7 +232,7 @@ def cmd_setup(args, config):
                                 continue
                         else:
                             print(f"No credentials file found in {path}")
-                            print("Look for a file named 'client_secret_*.json'\n")
+                            print("Look for 'client_secret_<something>.json' or 'credentials.json'\n")
                             continue
 
                     if not os.path.exists(path):
