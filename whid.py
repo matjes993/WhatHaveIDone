@@ -7,6 +7,7 @@ Usage:
     whid collect gmail       Export your Gmail
     whid groom gmail         Deduplicate and sort
     whid status              See your vaults
+    whid update              Pull latest version from GitHub
 """
 
 import argparse
@@ -358,6 +359,42 @@ def cmd_groom(args, config):
     groom_vault(vault_path)
 
 
+def cmd_update():
+    """Pull the latest version from GitHub and reinstall."""
+    print("\nUpdating WHID...")
+
+    # git pull from the project root
+    result = subprocess.run(
+        ["git", "pull", "--ff-only"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+    )
+
+    if result.returncode != 0:
+        print(f"\nGit pull failed:\n{result.stderr.strip()}")
+        print(f"\nTry manually: cd {PROJECT_ROOT} && git pull")
+        sys.exit(1)
+
+    output = result.stdout.strip()
+    if "Already up to date" in output:
+        print("Already up to date.")
+        return
+
+    print(output)
+
+    # Reinstall in case dependencies changed
+    venv_pip = os.path.join(PROJECT_ROOT, "venv", "bin", "pip")
+    if os.path.exists(venv_pip):
+        print("Reinstalling dependencies...")
+        subprocess.run(
+            [venv_pip, "install", "-q", "-e", PROJECT_ROOT],
+            check=False,
+        )
+
+    print("\nUpdated successfully!")
+
+
 def cmd_status(args, config):
     """Show vault status."""
     vault_root = get_vault_root(config)
@@ -458,6 +495,9 @@ def main():
     # whid status
     subparsers.add_parser("status", help="Show vault status overview")
 
+    # whid update
+    subparsers.add_parser("update", help="Pull the latest version from GitHub")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -468,6 +508,7 @@ def main():
         print("  whid collect gmail    Export your Gmail inbox")
         print("  whid groom gmail      Deduplicate and sort")
         print("  whid status           See your vaults")
+        print("  whid update           Pull latest version")
         sys.exit(0)
 
     # Setup logging
@@ -476,6 +517,10 @@ def main():
         format="%(asctime)s [%(levelname)s] %(message)s",
         handlers=[logging.StreamHandler(sys.stdout)],
     )
+
+    if args.command == "update":
+        cmd_update()
+        return
 
     config = load_config()
 
