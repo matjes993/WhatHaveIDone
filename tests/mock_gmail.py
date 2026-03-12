@@ -28,9 +28,13 @@ def _make_email(
     subject="Test Email",
     sender="alice@example.com",
     to="bob@example.com",
+    cc="",
     body="This is a test email body.",
     date=None,
     labels=None,
+    thread_id=None,
+    attachments=None,
+    list_unsubscribe="",
 ):
     """Create a realistic Gmail API message response."""
     msg_id = msg_id or _random_id()
@@ -38,22 +42,46 @@ def _make_email(
         date = datetime.now(timezone.utc)
 
     date_str = date.strftime("%a, %d %b %Y %H:%M:%S %z")
+    internal_date = str(int(date.timestamp() * 1000))
     body_encoded = base64.urlsafe_b64encode(body.encode()).decode()
+
+    headers = [
+        {"name": "Date", "value": date_str},
+        {"name": "Subject", "value": subject},
+        {"name": "From", "value": sender},
+        {"name": "To", "value": to},
+    ]
+    if cc:
+        headers.append({"name": "Cc", "value": cc})
+    if list_unsubscribe:
+        headers.append({"name": "List-Unsubscribe", "value": list_unsubscribe})
+
+    payload = {
+        "headers": headers,
+        "mimeType": "text/plain",
+        "body": {"data": body_encoded},
+    }
+
+    # Add attachment parts if specified
+    if attachments:
+        payload["mimeType"] = "multipart/mixed"
+        payload["parts"] = [
+            {"mimeType": "text/plain", "body": {"data": body_encoded}, "filename": ""},
+        ]
+        for att in attachments:
+            payload["parts"].append({
+                "filename": att.get("filename", "file.bin"),
+                "mimeType": att.get("mimeType", "application/octet-stream"),
+                "body": {"size": att.get("size", 0)},
+            })
 
     return {
         "id": msg_id,
-        "threadId": f"thread_{msg_id}",
+        "threadId": thread_id or f"thread_{msg_id}",
+        "internalDate": internal_date,
+        "sizeEstimate": len(body) + 500,
         "labelIds": labels or ["INBOX"],
-        "payload": {
-            "headers": [
-                {"name": "Date", "value": date_str},
-                {"name": "Subject", "value": subject},
-                {"name": "From", "value": sender},
-                {"name": "To", "value": to},
-            ],
-            "mimeType": "text/plain",
-            "body": {"data": body_encoded},
-        },
+        "payload": payload,
     }
 
 
@@ -63,10 +91,13 @@ def _make_html_email(msg_id=None, subject="HTML Email", body_html="<p>Hello <b>W
     html_encoded = base64.urlsafe_b64encode(body_html.encode()).decode()
     date = datetime.now(timezone.utc)
     date_str = date.strftime("%a, %d %b %Y %H:%M:%S %z")
+    internal_date = str(int(date.timestamp() * 1000))
 
     return {
         "id": msg_id,
         "threadId": f"thread_{msg_id}",
+        "internalDate": internal_date,
+        "sizeEstimate": len(body_html) + 500,
         "labelIds": ["INBOX"],
         "payload": {
             "headers": [
@@ -151,6 +182,7 @@ class MockGmailInbox:
                 self.messages[msg_id]["payload"]["headers"][0]["value"] = date.strftime(
                     "%a, %d %b %Y %H:%M:%S %z"
                 )
+                self.messages[msg_id]["internalDate"] = str(int(date.timestamp() * 1000))
             elif include_bad_dates and i % 20 == 0:
                 msg = _make_email(
                     msg_id=msg_id,
@@ -201,7 +233,7 @@ class MockGmailInbox:
         messages.list = mock_list
 
         # Mock messages().get()
-        def mock_get(userId="me", id=None):
+        def mock_get(userId="me", id=None, format=None, metadataHeaders=None):
             self.fetch_count += 1
 
             # Simulate rate limiting
@@ -228,8 +260,28 @@ class MockGmailInbox:
                 )
                 return mock_request
 
+            msg = self.messages[id]
+
+            # If format=metadata, return only headers (no body)
+            if format == "metadata":
+                headers = msg.get("payload", {}).get("headers", [])
+                if metadataHeaders:
+                    allowed = {h.lower() for h in metadataHeaders}
+                    headers = [h for h in headers if h["name"].lower() in allowed]
+                metadata_msg = {
+                    "id": msg["id"],
+                    "threadId": msg.get("threadId", ""),
+                    "internalDate": msg.get("internalDate", ""),
+                    "sizeEstimate": msg.get("sizeEstimate", 0),
+                    "labelIds": msg.get("labelIds", []),
+                    "payload": {"headers": headers},
+                }
+                mock_request = MagicMock()
+                mock_request.execute.return_value = metadata_msg
+                return mock_request
+
             mock_request = MagicMock()
-            mock_request.execute.return_value = self.messages[id]
+            mock_request.execute.return_value = msg
             return mock_request
 
         messages.get = mock_get

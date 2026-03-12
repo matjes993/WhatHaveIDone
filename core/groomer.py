@@ -10,8 +10,9 @@ import os
 import json
 import sys
 import logging
-import tempfile
 from datetime import datetime
+
+from core.vault import atomic_write as _atomic_write
 
 logger = logging.getLogger("whid.groomer")
 
@@ -91,34 +92,6 @@ def _sort_key(entry):
     if dt is None:
         return datetime.max.replace(tzinfo=None)
     return dt.replace(tzinfo=None)
-
-
-def _atomic_write(file_path, lines):
-    """Write lines to file atomically via temp file + rename."""
-    dir_name = os.path.dirname(file_path)
-    try:
-        fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".tmp")
-    except PermissionError:
-        logger.error("Permission denied creating temp file in %s", dir_name)
-        raise
-    except OSError as e:
-        if e.errno == 28:
-            logger.error("Disk full — cannot write to %s. Free up space and re-run.", dir_name)
-        else:
-            logger.error("Cannot create temp file in %s: %s", dir_name, e)
-        raise
-
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            for line in lines:
-                f.write(line)
-        os.replace(tmp_path, file_path)
-    except Exception:
-        try:
-            os.unlink(tmp_path)
-        except OSError:
-            pass
-        raise
 
 
 def groom_vault(vault_path):

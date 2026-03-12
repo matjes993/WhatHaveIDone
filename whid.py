@@ -11,6 +11,8 @@ Usage:
     whid collect contacts-linkedin <file>   Import LinkedIn CSV export
     whid collect contacts-facebook <file>   Import Facebook JSON export
     whid collect contacts-instagram <dir>   Import Instagram JSON export
+    whid enrich gmail             Backfill metadata from Gmail API
+    whid clean gmail              RAG-optimized cleaning pass
     whid groom gmail              Deduplicate and sort
     whid status                   See your vaults
     whid update                   Pull latest version from GitHub
@@ -536,6 +538,36 @@ _VAULT_DIR_MAP = {
 }
 
 
+def cmd_enrich(args, config):
+    """Enrich vault entries with additional metadata from the API."""
+    if args.source == "gmail":
+        config = validate_gmail_config(config)
+
+        creds_file = config.get("gmail", {}).get("credentials_file", "credentials.json")
+        if not os.path.exists(creds_file):
+            print("\nGmail is not set up yet. Run:\n")
+            print("  whid setup gmail\n")
+            sys.exit(1)
+
+        from collectors.gmail_enricher import run_enrich
+        run_enrich(vault_name=args.vault, config=config)
+    else:
+        print(f"\nEnrich not available for '{args.source}' yet.")
+        print("Available: gmail")
+        sys.exit(1)
+
+
+def cmd_clean(args, config):
+    """RAG-optimized cleaning pass (local processing, no API calls)."""
+    if args.source == "gmail":
+        from core.cleaner import run_clean
+        run_clean(vault_name=args.vault, config=config)
+    else:
+        print(f"\nClean not available for '{args.source}' yet.")
+        print("Available: gmail")
+        sys.exit(1)
+
+
 def cmd_groom(args, config):
     """Groom a vault."""
     from core.groomer import groom_vault
@@ -692,6 +724,24 @@ def main():
         help="Force a full scan instead of incremental (Gmail only)",
     )
 
+    # whid enrich
+    enrich_parser = subparsers.add_parser(
+        "enrich", help="Backfill metadata from the API (Gmail only)"
+    )
+    enrich_parser.add_argument("source", help="Data source (e.g., gmail)")
+    enrich_parser.add_argument(
+        "vault", nargs="?", default="Primary", help="Vault name (default: Primary)"
+    )
+
+    # whid clean
+    clean_parser = subparsers.add_parser(
+        "clean", help="RAG-optimized cleaning pass (local processing)"
+    )
+    clean_parser.add_argument("source", help="Data source (e.g., gmail)")
+    clean_parser.add_argument(
+        "vault", nargs="?", default="Primary", help="Vault name (default: Primary)"
+    )
+
     # whid groom
     groom_parser = subparsers.add_parser(
         "groom", help="Groom a vault (deduplicate, sort, detect ghosts)"
@@ -720,6 +770,8 @@ def main():
         print("  whid collect contacts-linkedin ~/Downloads/Connections.csv")
         print("  whid collect contacts-facebook ~/Downloads/facebook-export/")
         print("  whid collect contacts-instagram ~/Downloads/instagram-export/")
+        print("  whid enrich gmail              Backfill metadata from Gmail API")
+        print("  whid clean gmail               RAG-optimized cleaning pass")
         print("  whid groom gmail               Deduplicate and sort")
         print("  whid status                    See your vaults")
         print("  whid update                    Pull latest version")
@@ -742,6 +794,10 @@ def main():
         cmd_setup(args, config)
     elif args.command == "collect":
         cmd_collect(args, config)
+    elif args.command == "enrich":
+        cmd_enrich(args, config)
+    elif args.command == "clean":
+        cmd_clean(args, config)
     elif args.command == "groom":
         cmd_groom(args, config)
     elif args.command == "status":

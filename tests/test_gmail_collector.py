@@ -266,8 +266,80 @@ class TestMsgToEntry:
         """Entry must have all required fields for vault storage."""
         msg = {}
         entry = _msg_to_entry("msg_fields", msg)
-        required = {"id", "threadId", "date", "subject", "from", "to", "tags", "body_raw"}
+        required = {
+            "id", "threadId", "date", "subject", "from", "to", "tags", "body_raw",
+            "cc", "bcc", "reply_to", "message_id", "in_reply_to", "references",
+            "list_unsubscribe", "internalDate", "sizeEstimate", "attachments",
+        }
         assert required.issubset(set(entry.keys()))
+
+    def test_new_fields_extracted(self):
+        """New metadata fields should be correctly extracted."""
+        msg = {
+            "threadId": "t1",
+            "internalDate": "1704067200000",
+            "sizeEstimate": 5000,
+            "labelIds": ["INBOX"],
+            "payload": {
+                "headers": [
+                    {"name": "Date", "value": "Mon, 01 Jan 2024 12:00:00 +0000"},
+                    {"name": "Subject", "value": "Test"},
+                    {"name": "From", "value": "alice@ex.com"},
+                    {"name": "To", "value": "bob@ex.com"},
+                    {"name": "Cc", "value": "carol@ex.com"},
+                    {"name": "Bcc", "value": "secret@ex.com"},
+                    {"name": "Reply-To", "value": "reply@ex.com"},
+                    {"name": "Message-ID", "value": "<001@ex.com>"},
+                    {"name": "In-Reply-To", "value": "<000@ex.com>"},
+                    {"name": "References", "value": "<000@ex.com>"},
+                    {"name": "List-Unsubscribe", "value": "<https://unsub.link>"},
+                ],
+                "body": {"data": ""},
+            },
+        }
+        entry = _msg_to_entry("msg_new", msg)
+        assert entry["cc"] == "carol@ex.com"
+        assert entry["bcc"] == "secret@ex.com"
+        assert entry["reply_to"] == "reply@ex.com"
+        assert entry["message_id"] == "<001@ex.com>"
+        assert entry["in_reply_to"] == "<000@ex.com>"
+        assert entry["references"] == "<000@ex.com>"
+        assert entry["list_unsubscribe"] == "<https://unsub.link>"
+        assert entry["internalDate"] == "1704067200000"
+        assert entry["sizeEstimate"] == 5000
+
+    def test_attachment_extraction(self):
+        """Attachment metadata should be extracted from payload parts."""
+        msg = {
+            "payload": {
+                "headers": [],
+                "mimeType": "multipart/mixed",
+                "parts": [
+                    {"mimeType": "text/plain", "body": {"data": ""}, "filename": ""},
+                    {
+                        "filename": "report.pdf",
+                        "mimeType": "application/pdf",
+                        "body": {"size": 12345},
+                    },
+                    {
+                        "filename": "photo.jpg",
+                        "mimeType": "image/jpeg",
+                        "body": {"size": 54321},
+                    },
+                ],
+            },
+        }
+        entry = _msg_to_entry("msg_att", msg)
+        assert len(entry["attachments"]) == 2
+        assert entry["attachments"][0]["filename"] == "report.pdf"
+        assert entry["attachments"][0]["mimeType"] == "application/pdf"
+        assert entry["attachments"][0]["size"] == 12345
+        assert entry["attachments"][1]["filename"] == "photo.jpg"
+
+    def test_no_attachments(self):
+        msg = {"payload": {"headers": [], "body": {"data": ""}}}
+        entry = _msg_to_entry("msg_noatt", msg)
+        assert entry["attachments"] == []
 
 
 # ---------------------------------------------------------------------------

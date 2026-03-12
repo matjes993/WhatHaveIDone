@@ -6,6 +6,7 @@ Thread-safe writes, entry counting, integrity checks.
 
 import os
 import json
+import tempfile
 import threading
 import logging
 from collections import defaultdict
@@ -227,3 +228,69 @@ def append_processed_ids(vault_path, ids):
     with open(processed_log, "a") as f:
         for entry_id in ids:
             f.write(f"{entry_id}\n")
+
+
+def atomic_write(file_path, lines):
+    """Write lines to file atomically via temp file + rename."""
+    dir_name = os.path.dirname(file_path)
+    try:
+        fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".tmp")
+    except PermissionError:
+        logger.error("Permission denied creating temp file in %s", dir_name)
+        raise
+    except OSError as e:
+        if e.errno == 28:
+            logger.error("Disk full — cannot write to %s.", dir_name)
+        else:
+            logger.error("Cannot create temp file in %s: %s", dir_name, e)
+        raise
+
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            for line in lines:
+                f.write(line)
+        os.replace(tmp_path, file_path)
+    except Exception:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
+
+
+def read_entries_by_file(vault_path):
+    """Return dict: {file_path: [entry, ...]} for all JSONL files.
+    Skips malformed JSON lines with a warning.
+    """
+    result = {}
+    for root, _dirs, files in os.walk(vault_path):
+        for f in sorted(files):
+            if not f.endswith(".jsonl"):
+                continue
+            file_path = os.path.join(root, f)
+            entries = []
+            try:
+                with open(file_path, "r", encoding="utf-8") as fh:
+                    for line_num, line in enumerate(fh, 1):
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            entries.append(json.loads(line))
+                        except json.JSONDecodeError:
+                            logger.warning(
+                                "Skipping malformed JSON in %s line %d",
+                                file_path, line_num,
+                            )
+            except (OSError, PermissionError) as e:
+                logger.warning("Cannot read %s: %s", file_path, e)
+                continue
+            if entries:
+                result[file_path] = entries
+    return result
+
+
+def rewrite_file_entries(file_path, entries):
+    """Atomically rewrite a JSONL file with the given entries."""
+    lines = [json.dumps(e) + "\n" for e in entries]
+    atomic_write(file_path, lines)

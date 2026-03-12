@@ -7,6 +7,8 @@ _whid() {
     commands=(
         'setup:Guided setup for a data source'
         'collect:Collect data from a source'
+        'enrich:Backfill metadata from the API'
+        'clean:RAG-optimized cleaning pass'
         'groom:Deduplicate, sort, and detect ghosts'
         'status:Show vault status overview'
         'update:Pull latest version from GitHub'
@@ -26,7 +28,7 @@ _whid() {
             ;;
         3)
             case "${words[2]}" in
-                setup|collect|groom)
+                setup|collect|enrich|clean|groom)
                     _describe 'source' sources
                     ;;
             esac

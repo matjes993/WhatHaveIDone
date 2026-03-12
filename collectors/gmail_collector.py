@@ -223,7 +223,7 @@ def clean_html_to_text(payload):
                     soup = BeautifulSoup(html, "html.parser")
                     for tag in soup(["script", "style", "header", "footer", "nav"]):
                         tag.decompose()
-                    text += soup.get_text(separator=" ")
+                    text += soup.get_text(separator="\n")
             elif "parts" in part:
                 text += parse_parts(part["parts"])
         return text
@@ -238,7 +238,14 @@ def clean_html_to_text(payload):
             else ""
         )
 
-    return " ".join(body.split())
+    # Normalize runs of whitespace but preserve line breaks for quote detection
+    lines = body.split("\n")
+    cleaned_lines = []
+    for line in lines:
+        stripped = " ".join(line.split())
+        if stripped:
+            cleaned_lines.append(stripped)
+    return "\n".join(cleaned_lines)
 
 
 def _parse_message_date(date_str):
@@ -309,6 +316,27 @@ def _parse_message_date(date_str):
     return None, False
 
 
+def _extract_attachments(payload):
+    """Recursively extract attachment metadata from payload parts."""
+    attachments = []
+
+    def _walk(parts):
+        for part in parts:
+            filename = part.get("filename", "")
+            if filename:
+                attachments.append({
+                    "filename": filename,
+                    "mimeType": part.get("mimeType", ""),
+                    "size": part.get("body", {}).get("size", 0),
+                })
+            if "parts" in part:
+                _walk(part["parts"])
+
+    if "parts" in payload:
+        _walk(payload["parts"])
+    return attachments
+
+
 def _msg_to_entry(m_id, msg):
     """Convert a raw Gmail API message dict into a vault entry."""
     headers = {
@@ -316,15 +344,27 @@ def _msg_to_entry(m_id, msg):
         for h in msg.get("payload", {}).get("headers", [])
     }
 
+    payload = msg.get("payload", {})
+
     return {
         "id": m_id,
         "threadId": msg.get("threadId", ""),
+        "internalDate": msg.get("internalDate", ""),
+        "sizeEstimate": msg.get("sizeEstimate", 0),
         "date": headers.get("date", ""),
         "subject": headers.get("subject", "No Subject"),
         "from": headers.get("from", ""),
         "to": headers.get("to", ""),
+        "cc": headers.get("cc", ""),
+        "bcc": headers.get("bcc", ""),
+        "reply_to": headers.get("reply-to", ""),
+        "message_id": headers.get("message-id", ""),
+        "in_reply_to": headers.get("in-reply-to", ""),
+        "references": headers.get("references", ""),
+        "list_unsubscribe": headers.get("list-unsubscribe", ""),
         "tags": msg.get("labelIds", []),
-        "body_raw": clean_html_to_text(msg.get("payload", {})),
+        "attachments": _extract_attachments(payload),
+        "body_raw": clean_html_to_text(payload),
     }
 
 
@@ -759,6 +799,20 @@ def run_export(vault_name="Primary", config=None, full_scan=False):
             mid for mid in to_process_ids if mid not in processed_ids
         ]
 
+    # Load retry IDs from previous failed run
+    retry_file = os.path.join(vault_root, "retry_ids.txt")
+    if os.path.exists(retry_file):
+        with open(retry_file, "r") as f:
+            retry_ids = [line.strip() for line in f if line.strip()]
+        # Only retry IDs not already processed
+        retry_ids = [mid for mid in retry_ids if mid not in processed_ids]
+        if retry_ids:
+            # Deduplicate against scan results, put retries first
+            existing = set(to_process_ids)
+            new_retries = [mid for mid in retry_ids if mid not in existing]
+            to_process_ids = new_retries + to_process_ids
+            print(f"  + Retrying {len(new_retries):,} previously failed messages")
+
     if not to_process_ids:
         print("  + Nothing new — vault is up to date.")
         logger.removeHandler(file_handler)
@@ -776,6 +830,7 @@ def run_export(vault_name="Primary", config=None, full_scan=False):
     failed = 0
     retried = 0
     all_vaulted_ids = []
+    all_failed_ids = []
     start_time = time.time()
 
     # Pre-build one service per worker thread (avoids repeated discovery calls)
@@ -820,13 +875,13 @@ def run_export(vault_name="Primary", config=None, full_scan=False):
                 except HttpError as e:
                     logger.error("Batch hit API error: %s", e)
                     failed += len(futures[future])
+                    all_failed_ids.extend(futures[future])
                     continue
                 except Exception as e:
                     if _is_network_error(e):
                         logger.warning("Batch lost to network error: %s", e)
-                        # Don't count as failed — these IDs stay unprocessed
-                        # and will be picked up on next run via Sniper
                         failed += len(futures[future])
+                        all_failed_ids.extend(futures[future])
                         if _wait_for_network():
                             logger.info("Network restored — continuing remaining batches")
                         else:
@@ -837,6 +892,7 @@ def run_export(vault_name="Primary", config=None, full_scan=False):
                     else:
                         logger.error("Batch failed: %s", e)
                         failed += len(futures[future])
+                        all_failed_ids.extend(futures[future])
                     continue
 
                 if entries:
@@ -848,6 +904,7 @@ def run_export(vault_name="Primary", config=None, full_scan=False):
                     retried += 1
 
                 failed += len(batch_failed)
+                all_failed_ids.extend(batch_failed)
 
                 # Progress display
                 elapsed = time.time() - start_time
@@ -908,11 +965,20 @@ def run_export(vault_name="Primary", config=None, full_scan=False):
     print(f"    Saved to: {vault_root}")
     print("  " + "=" * 45)
 
-    if failed > 0:
+    retry_file = os.path.join(vault_root, "retry_ids.txt")
+    if all_failed_ids:
+        with open(retry_file, "w") as f:
+            for mid in all_failed_ids:
+                f.write(f"{mid}\n")
         print(
-            f"\n  {failed} messages failed — run 'whid groom gmail' then "
-            "'whid collect gmail' to recover via Sniper."
+            f"\n  {failed} messages failed — saved to retry_ids.txt."
+            "\n  Next 'whid collect gmail' will auto-retry them."
         )
+    elif os.path.exists(retry_file):
+        try:
+            os.remove(retry_file)
+        except OSError:
+            pass
 
     if retried > 0:
         print(
