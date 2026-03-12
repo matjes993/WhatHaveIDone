@@ -14,6 +14,8 @@ Usage:
     whid enrich gmail             Backfill metadata from Gmail API
     whid clean gmail              RAG-optimized cleaning pass
     whid groom gmail              Deduplicate and sort
+    whid vectorize                Vectorize all vaults for semantic search
+    whid vectorize gmail          Vectorize Gmail only
     whid status                   See your vaults
     whid update                   Pull latest version from GitHub
 """
@@ -823,6 +825,93 @@ def cmd_update():
     print("\nUpdated successfully!")
 
 
+def cmd_vectorize(args, config):
+    """Vectorize vault data into ChromaDB for semantic search."""
+    from core.vectordb import get_client, vectorize_all, get_status
+
+    vault_root = config.get("vault_root", os.path.join(PROJECT_ROOT, "vaults"))
+    vault_root = os.path.expanduser(vault_root)
+    if not os.path.isabs(vault_root):
+        vault_root = os.path.join(PROJECT_ROOT, vault_root)
+
+    source = getattr(args, "source", None)
+    force = getattr(args, "force", False)
+    show_status = getattr(args, "status", False)
+
+    print(f"\n  WHID Vectorizer")
+    print(f"  {'=' * 45}")
+    print(f"  Vault root: {vault_root}")
+
+    client = get_client(vault_root)
+
+    if show_status:
+        status = get_status(client, vault_root)
+        if not status:
+            print("  No vectorized data yet. Run 'whid vectorize' first.")
+            return
+        print()
+        for s in sorted(status, key=lambda x: x["collection"]):
+            pct = ""
+            if s["vault_entries"] > 0:
+                pct = f" ({s['vectorized'] / s['vault_entries'] * 100:.0f}%)"
+            print(f"  {s['collection']}: {s['vectorized']:,} / {s['vault_entries']:,}{pct}")
+        print()
+        return
+
+    # Map CLI source name to vault directory
+    source_filter = None
+    if source:
+        # Try direct match first (e.g. "gmail" → "Gmail_Primary")
+        # Check _VAULT_DIR_MAP for the mapping
+        if source.lower() == "gmail":
+            # Find all Gmail_* directories
+            if os.path.isdir(vault_root):
+                gmail_dirs = [d for d in os.listdir(vault_root)
+                              if d.startswith("Gmail") and os.path.isdir(os.path.join(vault_root, d))]
+                if gmail_dirs:
+                    for gd in gmail_dirs:
+                        print(f"\n  Processing {gd}...")
+                        from core.vectordb import vectorize_vault
+                        vault_path = os.path.join(vault_root, gd)
+                        new, skipped, total = vectorize_vault(vault_path, gd, client, config, force)
+                    print(f"\n  {'=' * 45}")
+                    print(f"  Vectorization complete!")
+                    print()
+                    return
+        else:
+            # Map source names to vault directories
+            source_map = {
+                "contacts": "Contacts",
+                "books": "Books",
+                "youtube": "YouTube",
+                "music": "Music",
+                "finance": "Finance",
+                "shopping": "Shopping",
+                "notes": "Notes",
+                "podcasts": "Podcasts",
+                "health": "Health",
+                "browser": "Browser",
+                "calendar": "Calendar",
+                "maps": "Maps",
+            }
+            source_filter = source_map.get(source.lower())
+            if not source_filter:
+                print(f"  Unknown source: {source}")
+                print(f"  Available: gmail, {', '.join(sorted(source_map.keys()))}")
+                return
+
+    results = vectorize_all(vault_root, client, config, source_filter, force)
+
+    print(f"\n  {'=' * 45}")
+    if results:
+        total_new = sum(r["new"] for r in results.values())
+        total_db = sum(r["total"] for r in results.values())
+        print(f"  Vectorization complete! {total_new:,} new entries ({total_db:,} total in DB)")
+    else:
+        print(f"  No vaults to vectorize.")
+    print()
+
+
 def cmd_status(args, config):
     """Show vault status."""
     vault_root = get_vault_root(config)
@@ -949,6 +1038,23 @@ def main():
         "vault", nargs="?", default="Primary", help="Vault name (default: Primary)"
     )
 
+    # whid vectorize
+    vectorize_parser = subparsers.add_parser(
+        "vectorize", help="Vectorize vault data for semantic search"
+    )
+    vectorize_parser.add_argument(
+        "source", nargs="?", default=None,
+        help="Source to vectorize (gmail, contacts, notes, etc.) — omit for all",
+    )
+    vectorize_parser.add_argument(
+        "--force", action="store_true",
+        help="Re-vectorize all entries (ignore existing)",
+    )
+    vectorize_parser.add_argument(
+        "--status", action="store_true",
+        help="Show vectorization status without processing",
+    )
+
     # whid status
     subparsers.add_parser("status", help="Show vault status overview")
 
@@ -971,6 +1077,8 @@ def main():
         print("  whid enrich gmail              Backfill metadata from Gmail API")
         print("  whid clean gmail               RAG-optimized cleaning pass")
         print("  whid groom gmail               Deduplicate and sort")
+        print("  whid vectorize                 Vectorize all vaults for search")
+        print("  whid vectorize gmail           Vectorize Gmail only")
         print("  whid status                    See your vaults")
         print("  whid update                    Pull latest version")
         sys.exit(0)
@@ -998,6 +1106,8 @@ def main():
         cmd_clean(args, config)
     elif args.command == "groom":
         cmd_groom(args, config)
+    elif args.command == "vectorize":
+        cmd_vectorize(args, config)
     elif args.command == "status":
         cmd_status(args, config)
 

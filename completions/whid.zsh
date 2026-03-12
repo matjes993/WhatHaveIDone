@@ -10,6 +10,7 @@ _whid() {
         'enrich:Backfill metadata from the API'
         'clean:RAG-optimized cleaning pass'
         'groom:Deduplicate, sort, and detect ghosts'
+        'vectorize:Vectorize vault data for semantic search'
         'status:Show vault status overview'
         'update:Pull latest version from GitHub'
     )
@@ -44,6 +45,25 @@ _whid() {
             case "${words[2]}" in
                 setup|collect|enrich|clean|groom)
                     _describe 'source' sources
+                    ;;
+                vectorize)
+                    local -a vsources
+                    vsources=(
+                        'gmail:Vectorize Gmail'
+                        'contacts:Vectorize Contacts'
+                        'books:Vectorize Books'
+                        'youtube:Vectorize YouTube'
+                        'music:Vectorize Music'
+                        'finance:Vectorize Finance'
+                        'shopping:Vectorize Shopping'
+                        'notes:Vectorize Notes'
+                        'podcasts:Vectorize Podcasts'
+                        'health:Vectorize Health'
+                        'browser:Vectorize Browser'
+                        'calendar:Vectorize Calendar'
+                        'maps:Vectorize Maps'
+                    )
+                    _describe 'source' vsources
                     ;;
             esac
             ;;
