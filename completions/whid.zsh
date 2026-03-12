@@ -15,11 +15,25 @@ _whid() {
     )
 
     sources=(
-        'gmail:Google Gmail'
-        'contacts-google:Google Contacts'
-        'contacts-linkedin:LinkedIn connections (CSV import)'
-        'contacts-facebook:Facebook friends (JSON import)'
-        'contacts-instagram:Instagram followers (JSON import)'
+        'gmail:Gmail inbox (API)'
+        'contacts-google:Google Contacts (API)'
+        'contacts-linkedin:LinkedIn export (CSV or full dir)'
+        'contacts-facebook:Facebook export (JSON)'
+        'contacts-instagram:Instagram export (JSON)'
+        'books-goodreads:Goodreads library (CSV)'
+        'books-audible:Audible library (CSV)'
+        'youtube:YouTube history (Takeout JSON)'
+        'music-spotify:Spotify streaming history (JSON)'
+        'finance-paypal:PayPal transactions (CSV)'
+        'finance-bank:Bank transactions (CSV)'
+        'shopping-amazon:Amazon orders (CSV)'
+        'notes:Markdown/text notes (directory)'
+        'podcasts:Podcast history (DB or CSV)'
+        'health:Apple Health (XML export)'
+        'browser-chrome:Chrome browsing history (local)'
+        'calendar:Google Calendar (API)'
+        'calendar-ics:Calendar events (ICS file)'
+        'maps:Google Maps timeline (Takeout JSON)'
     )
 
     case "$CURRENT" in

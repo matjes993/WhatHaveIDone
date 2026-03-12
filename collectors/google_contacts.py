@@ -450,7 +450,7 @@ def _contact_to_entry(person):
 
     return {
         "id": f"contacts:google:{resource_name}",
-        "source": "google",
+        "sources": ["google"],
         "source_id": resource_name,
 
         # Identity
@@ -524,7 +524,7 @@ def run_export(config=None):
     vault_root_base = os.path.expanduser(vault_root_base)
     if not os.path.isabs(vault_root_base):
         vault_root_base = os.path.join(project_root, vault_root_base)
-    vault_root = os.path.join(vault_root_base, "Contacts_Google")
+    vault_root = os.path.join(vault_root_base, "Contacts")
 
     credentials_file = contacts_config.get("credentials_file", "credentials.json")
     token_file = contacts_config.get("token_file", "token_contacts.json")

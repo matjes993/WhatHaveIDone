@@ -89,7 +89,7 @@ def _parse_friends(data: dict, file_path: str) -> list[dict]:
         name = _decode_fb_name(raw_name)
         entries.append({
             "id": _make_id(name),
-            "source": "facebook",
+            "sources": ["facebook"],
             "source_id": "",
             "name": {"display": name},
             "emails": [],
@@ -131,7 +131,7 @@ def _parse_address_book(data: dict, file_path: str) -> list[dict]:
 
         entries.append({
             "id": _make_id(name),
-            "source": "facebook",
+            "sources": ["facebook"],
             "source_id": "",
             "name": {"display": name},
             "emails": emails,
@@ -191,7 +191,7 @@ def run_import(export_path: str, config: dict | None = None):
     vault_root_base = os.path.expanduser(vault_root_base)
     if not os.path.isabs(vault_root_base):
         vault_root_base = os.path.join(project_root, vault_root_base)
-    vault_path = os.path.join(vault_root_base, "Contacts_Facebook")
+    vault_path = os.path.join(vault_root_base, "Contacts")
 
     os.makedirs(vault_path, exist_ok=True)
 

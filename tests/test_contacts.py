@@ -21,6 +21,12 @@ from collectors.linkedin_contacts import (
     _parse_connected_on,
     _row_to_entry,
     _read_csv,
+    _detect_export_dir,
+    _parse_messages,
+    _parse_endorsements,
+    _parse_recommendations,
+    _parse_invitations,
+    _enrich_entry,
     run_import as linkedin_run_import,
 )
 from collectors.facebook_contacts import (
@@ -93,7 +99,7 @@ class TestGoogleContactToEntry:
         entry = _contact_to_entry(person)
 
         assert entry["id"] == "contacts:google:people/c123456"
-        assert entry["source"] == "google"
+        assert entry["sources"] == ["google"]
         assert entry["source_id"] == "people/c123456"
         assert entry["name"]["display"] == "John Doe"
         assert entry["name"]["given"] == "John"
@@ -307,15 +313,18 @@ class TestGoogleContactToEntry:
         assert "alice@bigcorp.com" in embed
         assert "Experienced sales leader" in embed
 
+    def test_sources_field_is_list(self):
+        person = {"resourceName": "people/c99"}
+        entry = _contact_to_entry(person)
+        assert isinstance(entry["sources"], list)
+        assert "google" in entry["sources"]
+
 
 class TestGoogleRunExport:
     """Test run_export with mocked API service."""
 
     def _build_mock_service(self, pages):
-        """Build a mock People API service returning the given pages.
-
-        pages: list of dicts, each with "connections" and optionally "nextPageToken".
-        """
+        """Build a mock People API service returning the given pages."""
         service = MagicMock()
         mock_list = MagicMock()
 
@@ -329,7 +338,6 @@ class TestGoogleRunExport:
         mock_list.side_effect = side_effects
         service.people.return_value.connections.return_value.list = mock_list
 
-        # Mock contactGroups().list()
         mock_groups_execute = MagicMock(return_value={"contactGroups": []})
         mock_groups_req = MagicMock()
         mock_groups_req.execute = mock_groups_execute
@@ -360,7 +368,7 @@ class TestGoogleRunExport:
         config = {"vault_root": str(tmp_path), "contacts": {}}
         run_export(config)
 
-        vault_dir = tmp_path / "Contacts_Google"
+        vault_dir = tmp_path / "Contacts"
         assert vault_dir.exists()
 
         jsonl = vault_dir / "contacts.jsonl"
@@ -370,6 +378,7 @@ class TestGoogleRunExport:
 
         first = json.loads(lines[0])
         assert first["name"]["display"] == "Alice"
+        assert first["sources"] == ["google"]
         second = json.loads(lines[1])
         assert second["name"]["display"] == "Bob"
 
@@ -395,7 +404,7 @@ class TestGoogleRunExport:
         config = {"vault_root": str(tmp_path), "contacts": {}}
         run_export(config)
 
-        jsonl = tmp_path / "Contacts_Google" / "contacts.jsonl"
+        jsonl = tmp_path / "Contacts" / "contacts.jsonl"
         lines = jsonl.read_text().strip().split("\n")
         assert len(lines) == 2
 
@@ -414,7 +423,7 @@ class TestGoogleRunExport:
         mock_build.return_value = service
 
         # Pre-populate processed IDs
-        vault_dir = tmp_path / "Contacts_Google"
+        vault_dir = tmp_path / "Contacts"
         vault_dir.mkdir(parents=True)
         (vault_dir / "processed_ids.txt").write_text("contacts:google:people/c1\n")
 
@@ -533,16 +542,20 @@ class TestLinkedInRowToEntry:
         row = ["John", "Doe", "john@test.com", "Acme", "CTO", "15 Jan 2024", "https://linkedin.com/in/jdoe"]
         entry = _row_to_entry(row, col_map, "2024-06-01T00:00:00")
 
-        assert entry["source"] == "linkedin"
+        assert entry["sources"] == ["linkedin"]
         assert entry["name"]["display"] == "John Doe"
         assert entry["name"]["given"] == "John"
         assert entry["name"]["family"] == "Doe"
-        assert entry["emails"] == ["john@test.com"]
-        assert entry["organization"] == "Acme"
-        assert entry["title"] == "CTO"
+        assert len(entry["emails"]) == 1
+        assert entry["emails"][0]["value"] == "john@test.com"
+        assert entry["emails"][0]["type"] == "linkedin"
+        assert entry["organizations"][0]["name"] == "Acme"
+        assert entry["organizations"][0]["title"] == "CTO"
         assert entry["connected_on"] == "2024-01-15"
         assert entry["source_id"] == "https://linkedin.com/in/jdoe"
         assert entry["updated_at"] == "2024-06-01T00:00:00"
+        assert "John Doe" in entry["contact_for_embedding"]
+        assert "CTO at Acme" in entry["contact_for_embedding"]
 
     def test_minimal_row(self):
         col_map = self._make_col_map()
@@ -552,11 +565,26 @@ class TestLinkedInRowToEntry:
         assert entry is not None
         assert entry["name"]["display"] == "Jane"
         assert entry["emails"] == []
+        assert entry["organizations"] == []
 
     def test_empty_row_returns_none(self):
         col_map = self._make_col_map()
         row = ["", "", "", "", "", "", ""]
         assert _row_to_entry(row, col_map, "2024-01-01T00:00:00") is None
+
+    def test_has_urls_field(self):
+        col_map = self._make_col_map()
+        row = ["Alice", "B", "", "", "", "", "https://linkedin.com/in/ab"]
+        entry = _row_to_entry(row, col_map, "2024-01-01T00:00:00")
+        assert len(entry["urls"]) == 1
+        assert entry["urls"][0]["value"] == "https://linkedin.com/in/ab"
+        assert entry["urls"][0]["type"] == "linkedin"
+
+    def test_no_url(self):
+        col_map = self._make_col_map()
+        row = ["Alice", "B", "", "", "", "", ""]
+        entry = _row_to_entry(row, col_map, "2024-01-01T00:00:00")
+        assert entry["urls"] == []
 
 
 class TestLinkedInReadCsv:
@@ -601,8 +629,180 @@ class TestLinkedInReadCsv:
             _read_csv(str(tmp_path / "nope.csv"))
 
 
+class TestLinkedInDetectExportDir:
+    def test_single_csv_no_other_files(self, tmp_path):
+        csv_file = tmp_path / "Connections.csv"
+        csv_file.write_text("First Name,Last Name\n")
+        csv_path, export_dir = _detect_export_dir(str(csv_file))
+        assert csv_path == str(csv_file)
+        assert export_dir is None  # Not a full export
+
+    def test_csv_in_full_export_dir(self, tmp_path):
+        csv_file = tmp_path / "Connections.csv"
+        csv_file.write_text("First Name,Last Name\n")
+        (tmp_path / "messages.csv").write_text("FROM,TO,DATE\n")
+        csv_path, export_dir = _detect_export_dir(str(csv_file))
+        assert csv_path == str(csv_file)
+        assert export_dir == str(tmp_path)  # Detected full export
+
+    def test_directory_with_connections(self, tmp_path):
+        (tmp_path / "Connections.csv").write_text("First Name,Last Name\n")
+        csv_path, export_dir = _detect_export_dir(str(tmp_path))
+        assert csv_path == str(tmp_path / "Connections.csv")
+        assert export_dir == str(tmp_path)
+
+    def test_directory_without_connections(self, tmp_path):
+        csv_path, export_dir = _detect_export_dir(str(tmp_path))
+        assert csv_path is None
+        assert export_dir == str(tmp_path)
+
+    def test_nonexistent_path(self, tmp_path):
+        csv_path, export_dir = _detect_export_dir(str(tmp_path / "nope"))
+        assert csv_path is None
+        assert export_dir is None
+
+
+class TestLinkedInParseMessages:
+    def test_parses_message_stats(self, tmp_path):
+        msg_csv = tmp_path / "messages.csv"
+        msg_csv.write_text(
+            "FROM,TO,DATE,SUBJECT,CONTENT\n"
+            "Alice Smith,Me,2024-01-15,Hello,Hi there\n"
+            "Alice Smith,Me,2024-02-20,Follow up,Checking in\n"
+            "Bob Jones,Me,2024-03-01,Question,Hey\n",
+            encoding="utf-8",
+        )
+        stats = _parse_messages(str(tmp_path))
+        assert "alice smith" in stats
+        assert stats["alice smith"]["message_count"] == 2
+        assert stats["alice smith"]["last_message_date"] == "2024-02-20"
+        assert "bob jones" in stats
+        assert stats["bob jones"]["message_count"] == 1
+
+    def test_no_messages_file(self, tmp_path):
+        stats = _parse_messages(str(tmp_path))
+        assert stats == {}
+
+    def test_empty_messages(self, tmp_path):
+        msg_csv = tmp_path / "messages.csv"
+        msg_csv.write_text("FROM,TO,DATE\n", encoding="utf-8")
+        stats = _parse_messages(str(tmp_path))
+        assert stats == {}
+
+
+class TestLinkedInParseEndorsements:
+    def test_parses_endorsements(self, tmp_path):
+        endo_csv = tmp_path / "Endorsement_Received_Info.csv"
+        endo_csv.write_text(
+            "Endorser First Name,Endorser Last Name,Skill Name\n"
+            "Alice,Smith,Python\n"
+            "Alice,Smith,Machine Learning\n"
+            "Bob,Jones,Leadership\n",
+            encoding="utf-8",
+        )
+        result = _parse_endorsements(str(tmp_path))
+        assert "alice smith" in result
+        assert "Python" in result["alice smith"]
+        assert "Machine Learning" in result["alice smith"]
+        assert "bob jones" in result
+        assert result["bob jones"] == ["Leadership"]
+
+    def test_no_endorsements_file(self, tmp_path):
+        result = _parse_endorsements(str(tmp_path))
+        assert result == {}
+
+
+class TestLinkedInParseRecommendations:
+    def test_parses_recommendations(self, tmp_path):
+        rec_csv = tmp_path / "Recommendations_Received.csv"
+        rec_csv.write_text(
+            "First Name,Last Name,Recommendation Text,Status\n"
+            "Alice,Smith,Great collaborator and leader,VISIBLE\n",
+            encoding="utf-8",
+        )
+        result = _parse_recommendations(str(tmp_path))
+        assert "alice smith" in result
+        assert "Great collaborator" in result["alice smith"]["text"]
+        assert result["alice smith"]["status"] == "VISIBLE"
+
+    def test_no_recommendations_file(self, tmp_path):
+        result = _parse_recommendations(str(tmp_path))
+        assert result == {}
+
+
+class TestLinkedInParseInvitations:
+    def test_parses_invitations(self, tmp_path):
+        inv_csv = tmp_path / "Invitations.csv"
+        inv_csv.write_text(
+            "From,To,Sent At,Message,Direction\n"
+            "Me,Alice Smith,2024-01-15,Let's connect!,OUTGOING\n"
+            "Bob Jones,Me,2024-02-20,Hi there,INCOMING\n",
+            encoding="utf-8",
+        )
+        result = _parse_invitations(str(tmp_path))
+        assert "alice smith" in result
+        assert result["alice smith"]["direction"] == "sent"
+        assert result["alice smith"]["message"] == "Let's connect!"
+        assert "bob jones" in result
+        assert result["bob jones"]["direction"] == "received"
+
+    def test_no_invitations_file(self, tmp_path):
+        result = _parse_invitations(str(tmp_path))
+        assert result == {}
+
+
+class TestLinkedInEnrichEntry:
+    def test_enriches_with_messages(self):
+        entry = {
+            "name": {"display": "Alice Smith"},
+            "contact_for_embedding": "Alice Smith",
+        }
+        messages = {"alice smith": {"message_count": 5, "last_message_date": "2024-01-15"}}
+        result = _enrich_entry(entry, messages, {}, {}, {})
+        assert result["linkedin_messages"]["message_count"] == 5
+
+    def test_enriches_with_endorsements(self):
+        entry = {
+            "name": {"display": "Bob Jones"},
+            "contact_for_embedding": "Bob Jones",
+        }
+        endorsements = {"bob jones": ["Python", "Go"]}
+        result = _enrich_entry(entry, {}, endorsements, {}, {})
+        assert result["linkedin_endorsed_skills"] == ["Python", "Go"]
+
+    def test_enriches_with_recommendation(self):
+        entry = {
+            "name": {"display": "Carol Lee"},
+            "contact_for_embedding": "Carol Lee",
+        }
+        recommendations = {"carol lee": {"text": "Brilliant engineer", "status": "VISIBLE"}}
+        result = _enrich_entry(entry, {}, {}, recommendations, {})
+        assert "Brilliant engineer" in result["linkedin_recommendation"]["text"]
+        assert "Brilliant engineer" in result["contact_for_embedding"]
+
+    def test_enriches_with_invitation(self):
+        entry = {
+            "name": {"display": "Dave Kim"},
+            "contact_for_embedding": "Dave Kim",
+        }
+        invitations = {"dave kim": {"direction": "sent", "sent_at": "2024-01-01", "message": "Hello"}}
+        result = _enrich_entry(entry, {}, {}, {}, invitations)
+        assert result["linkedin_invitation"]["direction"] == "sent"
+
+    def test_no_enrichment_data(self):
+        entry = {
+            "name": {"display": "Nobody"},
+            "contact_for_embedding": "Nobody",
+        }
+        result = _enrich_entry(entry, {}, {}, {}, {})
+        assert "linkedin_messages" not in result
+        assert "linkedin_endorsed_skills" not in result
+        assert "linkedin_recommendation" not in result
+        assert "linkedin_invitation" not in result
+
+
 class TestLinkedInRunImport:
-    def test_end_to_end(self, tmp_path):
+    def test_end_to_end_csv(self, tmp_path):
         csv_file = tmp_path / "connections.csv"
         csv_file.write_text(
             "First Name,Last Name,Email Address,Company,Position,Connected On\n"
@@ -614,7 +814,7 @@ class TestLinkedInRunImport:
         config = {"vault_root": str(vault_dir)}
         linkedin_run_import(str(csv_file), config)
 
-        vault_path = vault_dir / "Contacts_LinkedIn"
+        vault_path = vault_dir / "Contacts"
         jsonl = vault_path / "contacts.jsonl"
         assert jsonl.exists()
 
@@ -625,6 +825,55 @@ class TestLinkedInRunImport:
         names = {e["name"]["display"] for e in entries}
         assert "Alice Wonder" in names
         assert "Bob Builder" in names
+        # Verify sources field
+        assert entries[0]["sources"] == ["linkedin"]
+
+    def test_end_to_end_full_export(self, tmp_path):
+        """Test full export directory with enrichment files."""
+        export_dir = tmp_path / "linkedin-export"
+        export_dir.mkdir()
+
+        # Connections
+        (export_dir / "Connections.csv").write_text(
+            "First Name,Last Name,Email Address,Company,Position,Connected On,URL\n"
+            "Alice,Smith,alice@test.com,TechCo,Engineer,15 Jan 2024,https://linkedin.com/in/asmith\n"
+            "Bob,Jones,,StartupX,Founder,2024-02-20,\n",
+            encoding="utf-8",
+        )
+
+        # Messages
+        (export_dir / "messages.csv").write_text(
+            "FROM,TO,DATE,SUBJECT,CONTENT\n"
+            "Alice Smith,Me,2024-03-01,Catch up,Let's chat\n"
+            "Alice Smith,Me,2024-04-15,Re: Catch up,Sounds good\n",
+            encoding="utf-8",
+        )
+
+        # Endorsements
+        (export_dir / "Endorsement_Received_Info.csv").write_text(
+            "Endorser First Name,Endorser Last Name,Skill Name\n"
+            "Alice,Smith,Python\n",
+            encoding="utf-8",
+        )
+
+        vault_dir = tmp_path / "vaults"
+        config = {"vault_root": str(vault_dir)}
+        linkedin_run_import(str(export_dir), config)
+
+        jsonl = vault_dir / "Contacts" / "contacts.jsonl"
+        assert jsonl.exists()
+
+        lines = jsonl.read_text().strip().split("\n")
+        assert len(lines) == 2
+
+        entries = [json.loads(line) for line in lines]
+        alice = next(e for e in entries if e["name"]["given"] == "Alice")
+
+        # Check enrichment
+        assert "linkedin_messages" in alice
+        assert alice["linkedin_messages"]["message_count"] == 2
+        assert "linkedin_endorsed_skills" in alice
+        assert "Python" in alice["linkedin_endorsed_skills"]
 
     def test_skips_duplicates_on_reimport(self, tmp_path):
         csv_file = tmp_path / "connections.csv"
@@ -639,9 +888,18 @@ class TestLinkedInRunImport:
         linkedin_run_import(str(csv_file), config)
         linkedin_run_import(str(csv_file), config)
 
-        jsonl = vault_dir / "Contacts_LinkedIn" / "contacts.jsonl"
+        jsonl = vault_dir / "Contacts" / "contacts.jsonl"
         lines = jsonl.read_text().strip().split("\n")
         assert len(lines) == 1
+
+    def test_no_connections_csv_in_dir(self, tmp_path, capsys):
+        export_dir = tmp_path / "empty-export"
+        export_dir.mkdir()
+        vault_dir = tmp_path / "vaults"
+        config = {"vault_root": str(vault_dir)}
+        linkedin_run_import(str(export_dir), config)
+        captured = capsys.readouterr()
+        assert "No Connections.csv" in captured.out
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -653,12 +911,10 @@ class TestFacebookDecodeName:
         assert _decode_fb_name("John Doe") == "John Doe"
 
     def test_mojibake_decode(self):
-        # "Ren\u00c3\u00a9" is how Facebook stores "René"
         encoded = "Ren\u00c3\u00a9"
         assert _decode_fb_name(encoded) == "René"
 
     def test_already_correct_unicode(self):
-        # If it can't re-encode to latin-1, it returns as-is
         result = _decode_fb_name("日本語")
         assert isinstance(result, str)
 
@@ -672,7 +928,6 @@ class TestFacebookMakeId:
 
     def test_length(self):
         result = fb_make_id("Charlie")
-        # "contacts:facebook:" + 12 hex chars
         assert len(result) == len("contacts:facebook:") + 12
 
 
@@ -689,7 +944,6 @@ class TestFacebookTsToIso:
         assert _ts_to_iso("not-a-number") == ""
 
     def test_zero_timestamp(self):
-        # ts=0 is not None, so it passes the None check and produces epoch date
         result = _ts_to_iso(0)
         assert "1970" in result
 
@@ -708,7 +962,7 @@ class TestFacebookParseFriends:
 
         assert len(entries) == 2
         assert entries[0]["name"]["display"] == "Alice"
-        assert entries[0]["source"] == "facebook"
+        assert entries[0]["sources"] == ["facebook"]
         assert entries[1]["name"]["display"] == "Bob"
 
     def test_skips_empty_names(self, tmp_path):
@@ -834,7 +1088,7 @@ class TestFacebookRunImport:
         config = {"vault_root": str(vault_dir)}
         fb_run_import(str(export_dir), config)
 
-        jsonl = vault_dir / "Contacts_Facebook" / "contacts.jsonl"
+        jsonl = vault_dir / "Contacts" / "contacts.jsonl"
         assert jsonl.exists()
         lines = jsonl.read_text().strip().split("\n")
         assert len(lines) == 2
@@ -851,7 +1105,7 @@ class TestFacebookRunImport:
         config = {"vault_root": str(vault_dir)}
         fb_run_import(str(json_file), config)
 
-        jsonl = vault_dir / "Contacts_Facebook" / "contacts.jsonl"
+        jsonl = vault_dir / "Contacts" / "contacts.jsonl"
         assert jsonl.exists()
         lines = jsonl.read_text().strip().split("\n")
         assert len(lines) == 1
@@ -865,11 +1119,8 @@ class TestFacebookRunImport:
                 {"name": "Alice", "timestamp": 1700000000},
             ]
         }))
-        # Also put same person in address book
         ab_dir = export_dir / "about_you"
         ab_dir.mkdir(parents=True)
-        # Use "auto" by creating a single file that has both keys
-        # Actually we need address book candidate path
         (ab_dir / "your_address_books.json").write_text(json.dumps({
             "address_book": {
                 "address_book_v2": [
@@ -882,9 +1133,8 @@ class TestFacebookRunImport:
         config = {"vault_root": str(vault_dir)}
         fb_run_import(str(export_dir), config)
 
-        jsonl = vault_dir / "Contacts_Facebook" / "contacts.jsonl"
+        jsonl = vault_dir / "Contacts" / "contacts.jsonl"
         lines = jsonl.read_text().strip().split("\n")
-        # Same name "Alice" should produce same ID, so deduplicated to 1
         assert len(lines) == 1
 
 
@@ -907,7 +1157,6 @@ class TestInstagramDecodeText:
         assert _decode_facebook_text("") == ""
 
     def test_non_string_returns_as_is(self):
-        # Non-string, non-falsy values are returned unchanged
         assert _decode_facebook_text(12345) == 12345
 
 
@@ -1015,10 +1264,8 @@ class TestInstagramFindExportFiles:
         assert following == []
 
     def test_deduplicates(self, tmp_path):
-        # File in root that also matches from connections subdir
         (tmp_path / "followers.json").write_text("[]")
         followers, _ = _find_export_files(str(tmp_path))
-        # Even if searched multiple patterns, should deduplicate
         assert len(followers) == 1
 
 
@@ -1026,7 +1273,7 @@ class TestInstagramBuildEntry:
     def test_basic_entry(self):
         entry = _build_entry("testuser", "mutual", 1700000000, "2024-01-01T00:00:00Z")
         assert entry["id"] == "contacts:instagram:testuser"
-        assert entry["source"] == "instagram"
+        assert entry["sources"] == ["instagram"]
         assert entry["source_id"] == "testuser"
         assert entry["name"]["display"] == "testuser"
         assert entry["handles"]["instagram"] == "testuser"
@@ -1063,7 +1310,7 @@ class TestInstagramRunImport:
         config = {"vault_root": str(vault_dir)}
         ig_run_import(str(followers_file), config)
 
-        jsonl = vault_dir / "Contacts_Instagram" / "contacts.jsonl"
+        jsonl = vault_dir / "Contacts" / "contacts.jsonl"
         assert jsonl.exists()
         lines = jsonl.read_text().strip().split("\n")
         assert len(lines) == 2
@@ -1102,12 +1349,11 @@ class TestInstagramRunImport:
         config = {"vault_root": str(vault_dir)}
         ig_run_import(str(export_dir), config)
 
-        jsonl = vault_dir / "Contacts_Instagram" / "contacts.jsonl"
+        jsonl = vault_dir / "Contacts" / "contacts.jsonl"
         assert jsonl.exists()
         lines = jsonl.read_text().strip().split("\n")
         entries = [json.loads(line) for line in lines]
 
-        # alice=mutual, charlie=follower, dave=following
         assert len(entries) == 3
         by_name = {e["source_id"]: e for e in entries}
         assert by_name["alice"]["relationship"] == "mutual"
@@ -1127,12 +1373,10 @@ class TestInstagramRunImport:
         vault_dir = tmp_path / "vaults"
         config = {"vault_root": str(vault_dir)}
 
-        # Run once
         ig_run_import(str(followers_file), config)
-        # Run again
         ig_run_import(str(followers_file), config)
 
-        jsonl = vault_dir / "Contacts_Instagram" / "contacts.jsonl"
+        jsonl = vault_dir / "Contacts" / "contacts.jsonl"
         lines = jsonl.read_text().strip().split("\n")
         assert len(lines) == 1
 
@@ -1157,9 +1401,86 @@ class TestInstagramRunImport:
         config = {"vault_root": str(vault_dir)}
         ig_run_import(str(following_file), config)
 
-        jsonl = vault_dir / "Contacts_Instagram" / "contacts.jsonl"
+        jsonl = vault_dir / "Contacts" / "contacts.jsonl"
         lines = jsonl.read_text().strip().split("\n")
         entries = [json.loads(line) for line in lines]
         assert len(entries) == 1
-        # "following" in filename, so role should be "following"
         assert entries[0]["relationship"] == "following"
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# Cross-source unified vault tests
+# ═══════════════════════════════════════════════════════════════════════
+
+class TestUnifiedVault:
+    """Verify all collectors write to the same Contacts/ directory."""
+
+    @patch("collectors.google_contacts.get_credentials")
+    @patch("collectors.google_contacts.build")
+    def test_google_and_linkedin_same_vault(self, mock_build, mock_creds, tmp_path):
+        """Both sources should write to the same Contacts/ directory."""
+        # Google contacts
+        mock_creds.return_value = MagicMock()
+        service = MagicMock()
+        mock_execute = MagicMock(return_value={
+            "connections": [
+                {"resourceName": "people/c1", "names": [{"displayName": "Google Alice"}]},
+            ],
+        })
+        mock_req = MagicMock()
+        mock_req.execute = mock_execute
+        service.people.return_value.connections.return_value.list.return_value = mock_req
+        mock_groups_execute = MagicMock(return_value={"contactGroups": []})
+        mock_groups_req = MagicMock()
+        mock_groups_req.execute = mock_groups_execute
+        service.contactGroups.return_value.list.return_value = mock_groups_req
+        mock_build.return_value = service
+
+        config = {"vault_root": str(tmp_path), "contacts": {}}
+        run_export(config)
+
+        # LinkedIn contacts
+        csv_file = tmp_path / "connections.csv"
+        csv_file.write_text(
+            "First Name,Last Name,Email Address\n"
+            "LinkedIn,Bob,bob@test.com\n",
+            encoding="utf-8",
+        )
+        linkedin_run_import(str(csv_file), config)
+
+        # Both should be in the same vault
+        vault_dir = tmp_path / "Contacts"
+        jsonl = vault_dir / "contacts.jsonl"
+        assert jsonl.exists()
+
+        lines = jsonl.read_text().strip().split("\n")
+        assert len(lines) == 2
+
+        entries = [json.loads(line) for line in lines]
+        sources_found = set()
+        for e in entries:
+            for s in e["sources"]:
+                sources_found.add(s)
+        assert "google" in sources_found
+        assert "linkedin" in sources_found
+
+    def test_all_collectors_use_sources_list(self, tmp_path):
+        """Verify the sources field is always a list, not a string."""
+        # Google
+        person = {"resourceName": "people/c1"}
+        entry = _contact_to_entry(person)
+        assert isinstance(entry["sources"], list)
+
+        # LinkedIn
+        col_map = _normalize_columns(["First Name", "Last Name", "Email Address"])
+        entry = _row_to_entry(["Test", "User", ""], col_map, "2024-01-01")
+        assert isinstance(entry["sources"], list)
+
+        # Instagram
+        entry = _build_entry("user", "follower", 0, "")
+        assert isinstance(entry["sources"], list)
+
+        # Facebook
+        data = {"friends_v2": [{"name": "FB User", "timestamp": 0}]}
+        entries = _parse_friends(data, "/fake")
+        assert isinstance(entries[0]["sources"], list)

@@ -421,7 +421,7 @@ def _setup_contacts_google(args, config):
     print("  Setup complete!")
     print("=" * 50)
     print(f"\n  Run:  whid collect contacts-google")
-    print(f"  Data: {os.path.join(PROJECT_ROOT, 'vaults', 'Contacts_Google')}/")
+    print(f"  Data: {os.path.join(PROJECT_ROOT, 'vaults', 'Contacts')}/")
     print()
 
 
@@ -463,17 +463,18 @@ def cmd_collect(args, config):
 
     elif args.source == "contacts-linkedin":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect contacts-linkedin <path-to-csv>")
-            print("\nExport your LinkedIn connections:")
+            print("\nUsage: whid collect contacts-linkedin <path-to-csv-or-export-dir>")
+            print("\nExport your LinkedIn data:")
             print("  1. Go to linkedin.com > Settings > Data Privacy")
-            print("  2. Get a copy of your data > Connections")
-            print("  3. Download the CSV file")
-            print("  4. Run: whid collect contacts-linkedin ~/Downloads/Connections.csv")
+            print("  2. Get a copy of your data (select all or at least Connections)")
+            print("  3. Download and unzip the archive")
+            print("  4. Run: whid collect contacts-linkedin ~/Downloads/linkedin-export/")
+            print("     or:  whid collect contacts-linkedin ~/Downloads/Connections.csv")
             sys.exit(1)
 
         export_path = os.path.expanduser(args.vault)
         if not os.path.exists(export_path):
-            print(f"\nFile not found: {export_path}")
+            print(f"\nPath not found: {export_path}")
             sys.exit(1)
 
         from collectors.linkedin_contacts import run_import
@@ -515,26 +516,223 @@ def cmd_collect(args, config):
         from collectors.instagram_contacts import run_import
         run_import(export_path=export_path, config=config)
 
+    elif args.source == "books-goodreads":
+        if not args.vault or args.vault == "Primary":
+            print("\nUsage: whid collect books-goodreads <path-to-csv>")
+            print("\nExport from Goodreads: My Books > Import/Export > Export Library")
+            sys.exit(1)
+        export_path = os.path.expanduser(args.vault)
+        if not os.path.exists(export_path):
+            print(f"\nFile not found: {export_path}")
+            sys.exit(1)
+        from collectors.books import run_import_goodreads
+        run_import_goodreads(export_path, config)
+
+    elif args.source == "books-audible":
+        if not args.vault or args.vault == "Primary":
+            print("\nUsage: whid collect books-audible <path-to-csv>")
+            print("\nExport your Audible library as CSV.")
+            sys.exit(1)
+        export_path = os.path.expanduser(args.vault)
+        if not os.path.exists(export_path):
+            print(f"\nFile not found: {export_path}")
+            sys.exit(1)
+        from collectors.books import run_import_audible
+        run_import_audible(export_path, config)
+
+    elif args.source == "youtube":
+        if not args.vault or args.vault == "Primary":
+            print("\nUsage: whid collect youtube <path-to-watch-history-json-or-dir>")
+            print("\nGoogle Takeout: takeout.google.com > YouTube > watch-history.json")
+            print("(YouTube watch history API was deprecated — Takeout is the only option)")
+            sys.exit(1)
+        export_path = os.path.expanduser(args.vault)
+        if not os.path.exists(export_path):
+            print(f"\nPath not found: {export_path}")
+            sys.exit(1)
+        from collectors.youtube import run_import
+        run_import(export_path, config)
+
+    elif args.source == "music-spotify":
+        if not args.vault or args.vault == "Primary":
+            print("\nUsage: whid collect music-spotify <path-to-json-or-dir>")
+            print("\nRequest your data: spotify.com > Account > Privacy > Download your data")
+            sys.exit(1)
+        export_path = os.path.expanduser(args.vault)
+        if not os.path.exists(export_path):
+            print(f"\nPath not found: {export_path}")
+            sys.exit(1)
+        from collectors.music import run_import
+        run_import(export_path, config)
+
+    elif args.source == "finance-paypal":
+        if not args.vault or args.vault == "Primary":
+            print("\nUsage: whid collect finance-paypal <path-to-csv>")
+            print("\nPayPal: Activity > Download > CSV")
+            sys.exit(1)
+        export_path = os.path.expanduser(args.vault)
+        if not os.path.exists(export_path):
+            print(f"\nFile not found: {export_path}")
+            sys.exit(1)
+        from collectors.finance import run_import_paypal
+        run_import_paypal(export_path, config)
+
+    elif args.source == "finance-bank":
+        if not args.vault or args.vault == "Primary":
+            print("\nUsage: whid collect finance-bank <path-to-csv>")
+            print("\nExport your bank transactions as CSV.")
+            print("Use --bank-name to tag the source (e.g., --bank-name deutschebank)")
+            sys.exit(1)
+        export_path = os.path.expanduser(args.vault)
+        if not os.path.exists(export_path):
+            print(f"\nFile not found: {export_path}")
+            sys.exit(1)
+        from collectors.finance import run_import_bank
+        bank_name = getattr(args, "bank_name", "bank")
+        run_import_bank(export_path, config, bank_name=bank_name)
+
+    elif args.source == "shopping-amazon":
+        if not args.vault or args.vault == "Primary":
+            print("\nUsage: whid collect shopping-amazon <path-to-csv>")
+            print("\nAmazon: Account > Order History > Download order reports")
+            sys.exit(1)
+        export_path = os.path.expanduser(args.vault)
+        if not os.path.exists(export_path):
+            print(f"\nFile not found: {export_path}")
+            sys.exit(1)
+        from collectors.shopping import run_import_amazon
+        run_import_amazon(export_path, config)
+
+    elif args.source == "notes":
+        if not args.vault or args.vault == "Primary":
+            print("\nUsage: whid collect notes <path-to-directory>")
+            print("\nPoint to a directory of .md, .txt, or .markdown files.")
+            sys.exit(1)
+        export_path = os.path.expanduser(args.vault)
+        if not os.path.exists(export_path):
+            print(f"\nPath not found: {export_path}")
+            sys.exit(1)
+        from collectors.notes import run_import
+        run_import(export_path, config)
+
+    elif args.source == "podcasts":
+        if not args.vault or args.vault == "Primary":
+            print("\nUsage: whid collect podcasts <path-to-backup-db-or-csv>")
+            print("\nPodcast Addict: Settings > Backup/Restore > Backup")
+            sys.exit(1)
+        export_path = os.path.expanduser(args.vault)
+        if not os.path.exists(export_path):
+            print(f"\nFile not found: {export_path}")
+            sys.exit(1)
+        from collectors.podcasts import run_import
+        run_import(export_path, config)
+
+    elif args.source == "health":
+        if not args.vault or args.vault == "Primary":
+            print("\nUsage: whid collect health <path-to-export-xml-or-dir>")
+            print("\nApple Health: Health app > Profile > Export All Health Data")
+            sys.exit(1)
+        export_path = os.path.expanduser(args.vault)
+        if not os.path.exists(export_path):
+            print(f"\nPath not found: {export_path}")
+            sys.exit(1)
+        from collectors.health import run_import
+        run_import(export_path, config)
+
+    elif args.source == "browser-chrome":
+        from collectors.browser import run_import
+        run_import(config=config)
+
+    elif args.source == "calendar":
+        creds_file = config.get("calendar", {}).get("credentials_file", "credentials.json")
+        if not os.path.exists(creds_file):
+            print("\nGoogle Calendar is not set up yet.")
+            print("Make sure credentials.json exists and Calendar API is enabled.")
+            print("Run: whid setup gmail  (shares the same credentials)")
+            sys.exit(1)
+        from collectors.calendar_collector import run_export
+        run_export(config=config)
+
+    elif args.source == "calendar-ics":
+        if not args.vault or args.vault == "Primary":
+            print("\nUsage: whid collect calendar-ics <path-to-ics-file>")
+            print("\nExport your calendar as .ics file from any calendar app.")
+            sys.exit(1)
+        export_path = os.path.expanduser(args.vault)
+        if not os.path.exists(export_path):
+            print(f"\nFile not found: {export_path}")
+            sys.exit(1)
+        from collectors.calendar_collector import run_import_ics
+        run_import_ics(export_path, config)
+
+    elif args.source == "maps":
+        if not args.vault or args.vault == "Primary":
+            print("\nUsage: whid collect maps <path-to-semantic-location-history-dir>")
+            print("\nGoogle Takeout: takeout.google.com > Location History")
+            print("(No API available for Maps Timeline — Takeout is the only option)")
+            sys.exit(1)
+        export_path = os.path.expanduser(args.vault)
+        if not os.path.exists(export_path):
+            print(f"\nPath not found: {export_path}")
+            sys.exit(1)
+        from collectors.maps import run_import
+        run_import(export_path, config)
+
     else:
         print(f"\nError: Unknown source '{args.source}'")
         print()
         print("Available collectors:")
-        print("  gmail               Export your Gmail inbox")
-        print("  contacts-google     Export your Google Contacts")
-        print("  contacts-linkedin   Import LinkedIn connections (CSV)")
-        print("  contacts-facebook   Import Facebook friends (JSON)")
-        print("  contacts-instagram  Import Instagram followers (JSON)")
         print()
-        print("Coming soon: whatsapp, gdrive, telegram")
+        print("  Google API-based:")
+        print("    gmail               Gmail inbox (API)")
+        print("    contacts-google     Google Contacts (API)")
+        print("    calendar            Google Calendar (API)")
+        print()
+        print("  File imports — Contacts:")
+        print("    contacts-linkedin   LinkedIn export (CSV or full dir)")
+        print("    contacts-facebook   Facebook export (JSON)")
+        print("    contacts-instagram  Instagram export (JSON)")
+        print()
+        print("  File imports — Media:")
+        print("    books-goodreads     Goodreads library (CSV)")
+        print("    books-audible       Audible library (CSV)")
+        print("    youtube             YouTube history (Takeout JSON)")
+        print("    music-spotify       Spotify streaming history (JSON)")
+        print("    podcasts            Podcast history (DB or CSV)")
+        print()
+        print("  File imports — Life data:")
+        print("    finance-paypal      PayPal transactions (CSV)")
+        print("    finance-bank        Bank transactions (CSV)")
+        print("    shopping-amazon     Amazon orders (CSV)")
+        print("    notes               Markdown/text notes (directory)")
+        print("    maps                Google Maps timeline (Takeout JSON)")
+        print("    health              Apple Health (XML export)")
+        print("    browser-chrome      Chrome browsing history (local)")
+        print("    calendar-ics        Calendar events (ICS file)")
+        print()
         sys.exit(1)
 
 
 _VAULT_DIR_MAP = {
     "gmail": lambda vault: f"Gmail_{vault}",
-    "contacts-google": lambda vault: "Contacts_Google",
-    "contacts-linkedin": lambda vault: "Contacts_LinkedIn",
-    "contacts-facebook": lambda vault: "Contacts_Facebook",
-    "contacts-instagram": lambda vault: "Contacts_Instagram",
+    "contacts-google": lambda vault: "Contacts",
+    "contacts-linkedin": lambda vault: "Contacts",
+    "contacts-facebook": lambda vault: "Contacts",
+    "contacts-instagram": lambda vault: "Contacts",
+    "books-goodreads": lambda vault: "Books",
+    "books-audible": lambda vault: "Books",
+    "youtube": lambda vault: "YouTube",
+    "music-spotify": lambda vault: "Music",
+    "finance-paypal": lambda vault: "Finance",
+    "finance-bank": lambda vault: "Finance",
+    "shopping-amazon": lambda vault: "Shopping",
+    "notes": lambda vault: "Notes",
+    "podcasts": lambda vault: "Podcasts",
+    "health": lambda vault: "Health",
+    "browser-chrome": lambda vault: "Browser",
+    "calendar": lambda vault: "Calendar",
+    "calendar-ics": lambda vault: "Calendar",
+    "maps": lambda vault: "Maps",
 }
 
 

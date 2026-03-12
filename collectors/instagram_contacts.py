@@ -213,7 +213,7 @@ def _build_entry(username, relationship, timestamp, updated_at):
     """Build a vault entry dict for a single contact."""
     return {
         "id": f"contacts:instagram:{username.lower()}",
-        "source": "instagram",
+        "sources": ["instagram"],
         "source_id": username,
         "name": {"display": username},
         "handles": {"instagram": username},
@@ -238,7 +238,7 @@ def run_import(export_path, config=None):
     vault_root_base = os.path.expanduser(vault_root_base)
     if not os.path.isabs(vault_root_base):
         vault_root_base = os.path.join(project_root, vault_root_base)
-    vault_root = os.path.join(vault_root_base, "Contacts_Instagram")
+    vault_root = os.path.join(vault_root_base, "Contacts")
 
     export_path = os.path.expanduser(export_path)
 
