@@ -5,7 +5,8 @@ WHID CLI — WhatHaveIDone command-line interface.
 Usage:
     whid setup gmail              Guided setup for Gmail
     whid setup contacts-google    Guided setup for Google Contacts
-    whid collect gmail            Export your Gmail
+    whid collect gmail            Export your Gmail (incremental)
+    whid collect gmail --full     Full rescan (find missing messages)
     whid collect contacts-google  Export your Google Contacts
     whid collect contacts-linkedin <file>   Import LinkedIn CSV export
     whid collect contacts-facebook <file>   Import Facebook JSON export
@@ -440,7 +441,7 @@ def cmd_collect(args, config):
             print("Try reinstalling: pip install -e .")
             sys.exit(1)
 
-        run_export(vault_name=args.vault, config=config)
+        run_export(vault_name=args.vault, config=config, full_scan=args.full)
 
     elif args.source == "contacts-google":
         creds_file = config.get("contacts", {}).get("credentials_file", "credentials.json")
@@ -684,6 +685,11 @@ def main():
         nargs="?",
         default="Primary",
         help="Vault name (default: Primary) or path to export file for import sources",
+    )
+    collect_parser.add_argument(
+        "--full",
+        action="store_true",
+        help="Force a full scan instead of incremental (Gmail only)",
     )
 
     # whid groom

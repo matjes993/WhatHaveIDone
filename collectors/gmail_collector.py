@@ -544,7 +544,7 @@ def _process_batch_with_retry(batch_ids, service, throttle):
     return entries, batch_failed, len(rate_limited) > 0
 
 
-def run_export(vault_name="Primary", config=None):
+def run_export(vault_name="Primary", config=None, full_scan=False):
     """Main export: fetch message IDs, batch-fetch in parallel, track progress."""
     config = config or {}
     gmail_config = config.get("gmail", {})
@@ -644,7 +644,10 @@ def run_export(vault_name="Primary", config=None):
         # results.
 
         query = None
-        is_incremental = bool(processed_ids)
+        is_incremental = bool(processed_ids) and not full_scan
+
+        if full_scan and processed_ids:
+            print(f"  + Full scan requested — re-scanning all messages (skipping already-vaulted)")
 
         if is_incremental and os.path.exists(last_run_file):
             try:
