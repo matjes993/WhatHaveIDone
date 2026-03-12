@@ -824,6 +824,14 @@ def cmd_update():
             check=False,
         )
 
+    # Update zsh completions if the user has them set up
+    comp_src = os.path.join(PROJECT_ROOT, "completions", "whid.zsh")
+    comp_dst = os.path.expanduser("~/.zsh/completions/_whid")
+    if os.path.exists(comp_src) and os.path.isdir(os.path.dirname(comp_dst)):
+        import shutil
+        shutil.copy2(comp_src, comp_dst)
+        print("Updated zsh completions. Run 'exec zsh' to reload.")
+
     print("\nUpdated successfully!")
 
 
