@@ -127,7 +127,7 @@ def _find_credentials_file():
                     data = json.load(f)
                 if "installed" in data or "web" in data:
                     return path
-            except (json.JSONDecodeError, KeyError):
+            except (json.JSONDecodeError, KeyError, PermissionError, OSError):
                 continue
 
     return None

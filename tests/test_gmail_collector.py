@@ -7,6 +7,7 @@ import base64
 import json
 import os
 import tempfile
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -15,10 +16,15 @@ from collectors.gmail_collector import (
     _parse_message_date,
     _msg_to_entry,
     _flush_entries_to_vault,
+    _fetch_batch,
+    _handle_api_error,
     AdaptiveThrottle,
 )
 
 
+# ---------------------------------------------------------------------------
+# Date parsing
+# ---------------------------------------------------------------------------
 class TestParseDateCollector:
     def test_rfc2822(self):
         dt, valid = _parse_message_date("Tue, 15 Oct 2024 08:30:00 +0200")
@@ -47,7 +53,18 @@ class TestParseDateCollector:
         dt, valid = _parse_message_date("not-a-date")
         assert valid is False
 
+    def test_unix_timestamp_string(self):
+        dt, valid = _parse_message_date("1700000000")
+        assert valid is False  # not a supported format
 
+    def test_partial_date(self):
+        dt, valid = _parse_message_date("2024-01")
+        assert valid is False
+
+
+# ---------------------------------------------------------------------------
+# HTML cleaning
+# ---------------------------------------------------------------------------
 class TestCleanHtmlToText:
     def test_plain_text(self):
         data = base64.urlsafe_b64encode(b"Hello World").decode()
@@ -71,6 +88,16 @@ class TestCleanHtmlToText:
         assert "World" in result
         assert "evil" not in result
         assert "<script>" not in result
+
+    def test_style_tags_removed(self):
+        html = "<html><style>.red { color: red; }</style><body>Content</body></html>"
+        data = base64.urlsafe_b64encode(html.encode()).decode()
+        payload = {
+            "parts": [{"mimeType": "text/html", "body": {"data": data}}]
+        }
+        result = clean_html_to_text(payload)
+        assert "Content" in result
+        assert ".red" not in result
 
     def test_nested_parts(self):
         data = base64.urlsafe_b64encode(b"Nested content").decode()
@@ -99,7 +126,40 @@ class TestCleanHtmlToText:
         payload = {"body": {"data": data}}
         assert clean_html_to_text(payload) == "lots of spaces"
 
+    def test_unicode_body(self):
+        text = "Héllo Wörld 你好 🎉"
+        data = base64.urlsafe_b64encode(text.encode("utf-8")).decode()
+        payload = {"body": {"data": data}}
+        result = clean_html_to_text(payload)
+        assert "Héllo" in result
+        assert "Wörld" in result
+        assert "你好" in result
 
+    def test_empty_body_data(self):
+        payload = {"body": {"data": ""}}
+        assert clean_html_to_text(payload) == ""
+
+    def test_body_without_data_key(self):
+        payload = {"body": {}}
+        assert clean_html_to_text(payload) == ""
+
+    def test_multipart_prefers_plain_text(self):
+        """When both plain and HTML parts exist, plain text should be included."""
+        plain = base64.urlsafe_b64encode(b"Plain version").decode()
+        html = base64.urlsafe_b64encode(b"<p>HTML version</p>").decode()
+        payload = {
+            "parts": [
+                {"mimeType": "text/plain", "body": {"data": plain}},
+                {"mimeType": "text/html", "body": {"data": html}},
+            ]
+        }
+        result = clean_html_to_text(payload)
+        assert "Plain version" in result
+
+
+# ---------------------------------------------------------------------------
+# Message to entry conversion
+# ---------------------------------------------------------------------------
 class TestMsgToEntry:
     def test_basic_conversion(self):
         msg = {
@@ -137,7 +197,55 @@ class TestMsgToEntry:
         assert entry["id"] == "msg123"
         assert entry["subject"] == "No Subject"
 
+    def test_no_labels(self):
+        msg = {"payload": {"headers": [], "body": {"data": ""}}}
+        entry = _msg_to_entry("msg123", msg)
+        assert entry["tags"] == []
 
+    def test_no_thread_id(self):
+        msg = {"payload": {"headers": [], "body": {"data": ""}}}
+        entry = _msg_to_entry("msg123", msg)
+        assert entry["threadId"] == ""
+
+    def test_unicode_subject(self):
+        msg = {
+            "payload": {
+                "headers": [
+                    {"name": "Subject", "value": "Ré: Ünïcödé 你好"},
+                ],
+                "body": {"data": ""},
+            }
+        }
+        entry = _msg_to_entry("msg_unicode", msg)
+        assert entry["subject"] == "Ré: Ünïcödé 你好"
+
+    def test_case_insensitive_headers(self):
+        """Gmail headers should be matched case-insensitively."""
+        msg = {
+            "payload": {
+                "headers": [
+                    {"name": "DATE", "value": "Mon, 01 Jan 2024 12:00:00 +0000"},
+                    {"name": "SUBJECT", "value": "Upper Case Headers"},
+                ],
+                "body": {"data": ""},
+            }
+        }
+        entry = _msg_to_entry("msg_case", msg)
+        # Headers are lowercased in _msg_to_entry
+        assert entry["date"] == "Mon, 01 Jan 2024 12:00:00 +0000"
+        assert entry["subject"] == "Upper Case Headers"
+
+    def test_all_required_fields_present(self):
+        """Entry must have all required fields for vault storage."""
+        msg = {}
+        entry = _msg_to_entry("msg_fields", msg)
+        required = {"id", "threadId", "date", "subject", "from", "to", "tags", "body_raw"}
+        assert required.issubset(set(entry.keys()))
+
+
+# ---------------------------------------------------------------------------
+# Flush entries to vault
+# ---------------------------------------------------------------------------
 class TestFlushEntriesToVault:
     def test_writes_to_correct_year_month(self, tmp_path):
         vault = str(tmp_path / "vault")
@@ -196,7 +304,43 @@ class TestFlushEntriesToVault:
             lines = [json.loads(l) for l in f if l.strip()]
         assert len(lines) == 2
 
+    def test_multiple_years(self, tmp_path):
+        vault = str(tmp_path / "vault")
+        entries = [
+            {"id": "msg1", "date": "Mon, 15 Jan 2020 12:00:00 +0000", "subject": "2020"},
+            {"id": "msg2", "date": "Wed, 15 Jun 2022 12:00:00 +0000", "subject": "2022"},
+            {"id": "msg3", "date": "Fri, 15 Mar 2024 12:00:00 +0000", "subject": "2024"},
+        ]
+        _flush_entries_to_vault(entries, vault)
 
+        assert os.path.isdir(os.path.join(vault, "2020"))
+        assert os.path.isdir(os.path.join(vault, "2022"))
+        assert os.path.isdir(os.path.join(vault, "2024"))
+
+    def test_empty_entries_list(self, tmp_path):
+        vault = str(tmp_path / "vault")
+        _flush_entries_to_vault([], vault)
+        # Should not create any directories
+        assert not os.path.exists(vault)
+
+    def test_entries_are_valid_json_lines(self, tmp_path):
+        vault = str(tmp_path / "vault")
+        entries = [
+            {"id": f"msg{i}", "date": "Mon, 15 Jan 2024 12:00:00 +0000", "subject": f"Test {i}"}
+            for i in range(10)
+        ]
+        _flush_entries_to_vault(entries, vault)
+
+        jan_file = os.path.join(vault, "2024", "01_January.jsonl")
+        with open(jan_file) as f:
+            for line in f:
+                entry = json.loads(line)  # should not raise
+                assert "id" in entry
+
+
+# ---------------------------------------------------------------------------
+# Adaptive throttle
+# ---------------------------------------------------------------------------
 class TestAdaptiveThrottle:
     def test_initial_values(self):
         t = AdaptiveThrottle(5, 50)
@@ -241,7 +385,143 @@ class TestAdaptiveThrottle:
         t.on_rate_limit()
         assert t.success_streak == 0
 
+    def test_ramp_up_does_not_exceed_original(self):
+        t = AdaptiveThrottle(5, 50)
+        t.on_rate_limit()
+        # Ramp up many times
+        for _ in range(200):
+            t.on_success()
+        assert t.max_workers <= 5
+        assert t.batch_size <= 50
 
+    def test_thread_safety(self):
+        """Throttle should be safe to use from multiple threads."""
+        import threading
+
+        t = AdaptiveThrottle(10, 100)
+        errors = []
+
+        def rate_limit_loop():
+            try:
+                for _ in range(50):
+                    t.on_rate_limit()
+                    t.on_success()
+            except Exception as e:
+                errors.append(e)
+
+        threads = [threading.Thread(target=rate_limit_loop) for _ in range(5)]
+        for th in threads:
+            th.start()
+        for th in threads:
+            th.join()
+
+        assert len(errors) == 0
+        assert t.max_workers >= 1
+        assert t.batch_size >= 10
+
+
+# ---------------------------------------------------------------------------
+# Fetch batch
+# ---------------------------------------------------------------------------
+class TestFetchBatch:
+    def test_successful_fetch(self):
+        from tests.mock_gmail import MockGmailInbox
+        inbox = MockGmailInbox(num_messages=5)
+        service = inbox.build_service()
+
+        ids = [f"msg_{i:06d}" for i in range(5)]
+        entries, failed, rate_limited = _fetch_batch(service, ids)
+
+        assert len(entries) == 5
+        assert len(failed) == 0
+        assert len(rate_limited) == 0
+
+    def test_404_goes_to_failed(self):
+        from tests.mock_gmail import MockGmailInbox
+        inbox = MockGmailInbox(num_messages=3)
+        service = inbox.build_service()
+
+        # Mix real and nonexistent IDs
+        ids = ["msg_000000", "nonexistent_id", "msg_000001"]
+        entries, failed, rate_limited = _fetch_batch(service, ids)
+
+        assert len(entries) == 2
+        assert "nonexistent_id" in failed
+        assert len(rate_limited) == 0
+
+    def test_rate_limited_separated(self):
+        from tests.mock_gmail import MockGmailInbox
+        inbox = MockGmailInbox(num_messages=10, rate_limit_after=5, rate_limit_count=3)
+        service = inbox.build_service()
+
+        ids = [f"msg_{i:06d}" for i in range(10)]
+        entries, failed, rate_limited = _fetch_batch(service, ids)
+
+        assert len(entries) + len(failed) + len(rate_limited) == 10
+        assert len(rate_limited) > 0
+
+    def test_empty_batch(self):
+        from tests.mock_gmail import MockGmailInbox
+        inbox = MockGmailInbox(num_messages=5)
+        service = inbox.build_service()
+
+        entries, failed, rate_limited = _fetch_batch(service, [])
+        assert len(entries) == 0
+        assert len(failed) == 0
+        assert len(rate_limited) == 0
+
+
+# ---------------------------------------------------------------------------
+# Handle API error
+# ---------------------------------------------------------------------------
+class TestHandleApiError:
+    def test_403_api_not_enabled(self, capsys):
+        from googleapiclient.errors import HttpError
+        resp = MagicMock()
+        resp.status = 403
+        error = HttpError(resp, b'{"error": {"message": "Gmail API has not been used"}}')
+
+        with pytest.raises(SystemExit):
+            _handle_api_error(error)
+
+        output = capsys.readouterr().out
+        assert "not enabled" in output or "Enable" in output
+
+    def test_429_rate_limit(self, capsys):
+        from googleapiclient.errors import HttpError
+        resp = MagicMock()
+        resp.status = 429
+        error = HttpError(resp, b'{"error": {"message": "Rate limit"}}')
+
+        with pytest.raises(SystemExit):
+            _handle_api_error(error)
+
+        output = capsys.readouterr().out
+        assert "Rate limited" in output
+
+    def test_401_auth_failed(self, capsys):
+        from googleapiclient.errors import HttpError
+        resp = MagicMock()
+        resp.status = 401
+        error = HttpError(resp, b'{"error": {"message": "Unauthorized"}}')
+
+        with pytest.raises(SystemExit):
+            _handle_api_error(error)
+
+        output = capsys.readouterr().out
+        assert "Authentication failed" in output
+
+    def test_non_http_error(self, capsys):
+        with pytest.raises(SystemExit):
+            _handle_api_error(RuntimeError("Something broke"))
+
+        output = capsys.readouterr().out
+        assert "Unexpected error" in output
+
+
+# ---------------------------------------------------------------------------
+# End-to-end unit test
+# ---------------------------------------------------------------------------
 class TestEndToEnd:
     """Test the full collect->groom->sniper pipeline with mocked data."""
 
