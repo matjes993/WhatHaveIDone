@@ -200,18 +200,58 @@ def cmd_setup(args, config):
                 print(f"Copied to {target}")
             else:
                 print("\nCouldn't find the credentials file automatically.")
-                path = _prompt("Paste the full path to the file you downloaded")
-                path = path.strip("'\"")  # strip quotes if pasted
-                path = os.path.expanduser(path)
+                print("(On macOS, you may need to grant Terminal access to Downloads")
+                print(" in System Settings > Privacy & Security > Files and Folders)\n")
 
-                if os.path.exists(path):
+                while True:
+                    path = _prompt("Drag the file here or paste its full path")
+                    path = path.strip("'\" ")
+                    path = os.path.expanduser(path)
+
+                    if not path:
+                        continue
+
+                    if os.path.isdir(path):
+                        # User gave a directory — search inside it
+                        candidates = glob.glob(os.path.join(path, "client_secret_*.json"))
+                        candidates += glob.glob(os.path.join(path, "credentials.json"))
+                        for c in sorted(candidates, key=os.path.getmtime, reverse=True):
+                            try:
+                                with open(c) as f:
+                                    data = json.load(f)
+                                if "installed" in data or "web" in data:
+                                    path = c
+                                    break
+                            except (json.JSONDecodeError, PermissionError, OSError):
+                                continue
+                        else:
+                            print(f"No credentials file found in {path}")
+                            print("Look for a file named 'client_secret_*.json'\n")
+                            continue
+
+                    if not os.path.exists(path):
+                        print(f"File not found: {path}\n")
+                        continue
+
+                    if not os.path.isfile(path):
+                        print(f"Not a file: {path}\n")
+                        continue
+
+                    # Validate it's a real Google credentials file
+                    try:
+                        with open(path) as f:
+                            data = json.load(f)
+                        if "installed" not in data and "web" not in data:
+                            print("This doesn't look like a Google OAuth credentials file.")
+                            print("Make sure you downloaded the OAuth Client ID JSON.\n")
+                            continue
+                    except (json.JSONDecodeError, PermissionError) as e:
+                        print(f"Can't read file: {e}\n")
+                        continue
+
                     shutil.copy2(path, target)
                     print(f"Copied to {target}")
-                else:
-                    print(f"\nFile not found: {path}")
-                    print("Please manually copy your credentials JSON to:")
-                    print(f"  {target}")
-                    sys.exit(1)
+                    break
 
     # Step 2: Authenticate
     if not os.path.exists(target):
