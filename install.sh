@@ -71,6 +71,15 @@ exec "$VENV_DIR/bin/python" "$SCRIPT_DIR/whid.py" "\$@"
 WRAPPER
 chmod +x "$WHID_BIN"
 
+# Install zsh tab completion
+COMPLETION_FILE="$SCRIPT_DIR/completions/whid.zsh"
+if [ -f "$COMPLETION_FILE" ]; then
+    ZSH_COMP_DIR="$HOME/.zsh/completions"
+    mkdir -p "$ZSH_COMP_DIR"
+    cp "$COMPLETION_FILE" "$ZSH_COMP_DIR/_whid"
+    echo "Installed tab completion for zsh"
+fi
+
 echo ""
 
 # Check if ~/.local/bin is in PATH
@@ -83,10 +92,14 @@ if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
         *)    RC_FILE="$HOME/.profile" ;;
     esac
 
-    # Add to PATH
+    # Add to PATH and completions
     echo "" >> "$RC_FILE"
     echo '# WHID (WhatHaveIDone)' >> "$RC_FILE"
     echo "export PATH=\"$BIN_DIR:\$PATH\"" >> "$RC_FILE"
+    if [ "$SHELL_NAME" = "zsh" ]; then
+        echo "fpath=(~/.zsh/completions \$fpath)" >> "$RC_FILE"
+        echo "autoload -Uz compinit && compinit" >> "$RC_FILE"
+    fi
 
     echo "Added $BIN_DIR to PATH in $RC_FILE"
     echo ""
