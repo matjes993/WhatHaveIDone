@@ -11,6 +11,9 @@ import logging
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+# Suppress "file_cache is only supported with oauth2client<4.0.0" warning
+logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
+
 from core.auth import get_google_credentials
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 

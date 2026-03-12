@@ -24,6 +24,9 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+
+# Suppress "file_cache is only supported with oauth2client<4.0.0" warning
+logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 from bs4 import BeautifulSoup
 from requests.exceptions import ConnectionError as RequestsConnectionError
 from requests.exceptions import Timeout as RequestsTimeout
@@ -360,18 +363,14 @@ def _fetch_batch(service, message_ids):
         if exception is not None:
             if isinstance(exception, HttpError):
                 status = exception.resp.status
-                if status == 429:
+                if status in (429, 403):
+                    # Gmail Batch API often returns 403 instead of 429
+                    # during rate limiting. Treat both as retryable.
                     with lock:
                         rate_limited.append(request_id)
                     return
                 elif status == 404:
                     pass  # silently skip deleted messages
-                elif status == 403:
-                    logger.error(
-                        "Permission denied for message %s. "
-                        "Check Gmail API is enabled and scope is correct.",
-                        request_id,
-                    )
                 else:
                     logger.error(
                         "API error %d for message %s: %s",
