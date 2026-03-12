@@ -1,10 +1,10 @@
 """
-WHID LinkedIn Contacts Collector
+NOMOLO LinkedIn Contacts Collector
 Parses LinkedIn's full data export into the unified contacts JSONL vault.
 
 Supports two modes:
-  1. Single CSV file: whid collect contacts-linkedin ~/Downloads/Connections.csv
-  2. Full export directory: whid collect contacts-linkedin ~/Downloads/linkedin-export/
+  1. Single CSV file: nomolo collect contacts-linkedin ~/Downloads/Connections.csv
+  2. Full export directory: nomolo collect contacts-linkedin ~/Downloads/linkedin-export/
      Parses Connections.csv + enriches with messages, endorsements, recommendations.
 
 LinkedIn exports via: Settings > Data Privacy > Get a copy of your data.
@@ -20,7 +20,7 @@ from pathlib import Path
 
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.linkedin_contacts")
+logger = logging.getLogger("nomolo.linkedin_contacts")
 
 
 # ---------------------------------------------------------------------------

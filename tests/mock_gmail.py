@@ -1,5 +1,5 @@
 """
-Mock Gmail API for testing the full WHID pipeline without credentials.
+Mock Gmail API for testing the full NOMOLO pipeline without credentials.
 
 Simulates:
 - OAuth credentials

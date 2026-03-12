@@ -1,9 +1,9 @@
 """
-WHID Shopping Collector
+NOMOLO Shopping Collector
 Parses Amazon order history CSV into the unified Shopping JSONL vault.
 
 Usage:
-  whid collect shopping-amazon ~/Downloads/amazon_order_history.csv
+  nomolo collect shopping-amazon ~/Downloads/amazon_order_history.csv
 """
 
 import csv
@@ -14,7 +14,7 @@ from datetime import datetime
 
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.shopping")
+logger = logging.getLogger("nomolo.shopping")
 
 
 # ---------------------------------------------------------------------------
@@ -223,7 +223,7 @@ def run_import_amazon(export_path, config=None):
         vault_root_base = os.path.join(project_root, vault_root_base)
     vault_path = os.path.join(vault_root_base, "Shopping")
 
-    print(f"\n  WHID Shopping Collector — Amazon")
+    print(f"\n  NOMOLO Shopping Collector — Amazon")
     print(f"  {'=' * 45}")
     print(f"  CSV: {export_path}")
     print(f"  Vault: {vault_path}")

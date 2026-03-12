@@ -1,4 +1,4 @@
-# Contributing to WhatHaveIDone
+# Contributing to Nomolo
 
 Thanks for your interest in contributing! Here's how to get started.
 

@@ -1,11 +1,11 @@
 """
-WHID Books Collector
+NOMOLO Books Collector
 Parses book data from Goodreads CSV export and Audible library CSV
 into the unified Books JSONL vault.
 
 Supports two import modes:
-  1. Goodreads CSV: whid collect books-goodreads ~/Downloads/goodreads_library_export.csv
-  2. Audible CSV:   whid collect books-audible ~/Downloads/audible_library.csv
+  1. Goodreads CSV: nomolo collect books-goodreads ~/Downloads/goodreads_library_export.csv
+  2. Audible CSV:   nomolo collect books-audible ~/Downloads/audible_library.csv
 
 Both write to the Books/ vault directory with unified schema.
 """
@@ -18,7 +18,7 @@ from datetime import datetime
 
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.books")
+logger = logging.getLogger("nomolo.books")
 
 
 # ---------------------------------------------------------------------------
@@ -286,7 +286,7 @@ def run_import_goodreads(export_path, config=None):
         vault_root_base = os.path.join(project_root, vault_root_base)
     vault_path = os.path.join(vault_root_base, "Books")
 
-    print(f"\n  WHID Books Collector — Goodreads")
+    print(f"\n  NOMOLO Books Collector — Goodreads")
     print(f"  {'=' * 45}")
     print(f"  CSV: {export_path}")
     print(f"  Vault: {vault_path}")
@@ -379,7 +379,7 @@ def run_import_audible(export_path, config=None):
         vault_root_base = os.path.join(project_root, vault_root_base)
     vault_path = os.path.join(vault_root_base, "Books")
 
-    print(f"\n  WHID Books Collector — Audible")
+    print(f"\n  NOMOLO Books Collector — Audible")
     print(f"  {'=' * 45}")
     print(f"  CSV: {export_path}")
     print(f"  Vault: {vault_path}")

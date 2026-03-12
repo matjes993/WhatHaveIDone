@@ -1,5 +1,5 @@
 """
-WHID Gmail Enricher
+NOMOLO Gmail Enricher
 Re-fetches metadata from the Gmail API (format=metadata) to backfill
 fields that weren't captured during the original collection:
 cc, bcc, reply-to, message-id, in-reply-to, references,
@@ -36,7 +36,7 @@ from collectors.gmail_collector import (
 )
 from core.vault import read_entries_by_file, rewrite_file_entries
 
-logger = logging.getLogger("whid.enricher")
+logger = logging.getLogger("nomolo.enricher")
 
 # Headers to fetch via format=metadata
 METADATA_HEADERS = [
@@ -222,7 +222,7 @@ def run_enrich(vault_name="Primary", config=None):
 
     if not os.path.exists(vault_path):
         print(f"\nError: Vault not found: {vault_path}")
-        print("Run 'whid collect gmail' first.")
+        print("Run 'nomolo collect gmail' first.")
         sys.exit(1)
 
     max_workers = gmail_config.get("max_workers", 8)
@@ -237,7 +237,7 @@ def run_enrich(vault_name="Primary", config=None):
 
     log_file = os.path.join(vault_path, "enrichment.log")
 
-    print(f"\n  WHID Gmail Enricher")
+    print(f"\n  NOMOLO Gmail Enricher")
     print(f"  {'=' * 45}")
     print(f"  Vault: {vault_path}")
 
@@ -451,7 +451,7 @@ def run_enrich(vault_name="Primary", config=None):
     print(f"    in_reply_to      — parent message reference")
     print(f"    references       — full thread reference chain")
     print(f"    list_unsubscribe — newsletter detection header")
-    print(f"\n  Next step: run 'whid clean gmail' for RAG-optimized processing.")
+    print(f"\n  Next step: run 'nomolo clean gmail' for RAG-optimized processing.")
     print()
 
     logger.removeHandler(file_handler)

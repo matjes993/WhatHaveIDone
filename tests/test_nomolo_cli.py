@@ -1,4 +1,4 @@
-"""Tests for whid.py — CLI interface logic."""
+"""Tests for nomolo.py — CLI interface logic."""
 
 import json
 import os
@@ -7,7 +7,7 @@ import sys
 
 import pytest
 
-from whid import (
+from nomolo import (
     load_config,
     get_vault_root,
     validate_gmail_config,
@@ -26,16 +26,16 @@ class TestLoadConfig:
         config_file = tmp_path / "config.yaml"
         config_file.write_text("vault_root: /tmp/test\ngmail:\n  max_workers: 3\n")
 
-        import whid
-        monkeypatch.setattr(whid, "CONFIG_LOCATIONS", [str(config_file)])
+        import nomolo
+        monkeypatch.setattr(nomolo, "CONFIG_LOCATIONS", [str(config_file)])
 
         config = load_config()
         assert config["vault_root"] == "/tmp/test"
         assert config["gmail"]["max_workers"] == 3
 
     def test_returns_empty_on_missing(self, monkeypatch):
-        import whid
-        monkeypatch.setattr(whid, "CONFIG_LOCATIONS", ["/nonexistent/config.yaml"])
+        import nomolo
+        monkeypatch.setattr(nomolo, "CONFIG_LOCATIONS", ["/nonexistent/config.yaml"])
 
         config = load_config()
         assert config == {}
@@ -44,8 +44,8 @@ class TestLoadConfig:
         config_file = tmp_path / "config.yaml"
         config_file.write_text("")
 
-        import whid
-        monkeypatch.setattr(whid, "CONFIG_LOCATIONS", [str(config_file)])
+        import nomolo
+        monkeypatch.setattr(nomolo, "CONFIG_LOCATIONS", [str(config_file)])
 
         config = load_config()
         assert config == {}
@@ -54,8 +54,8 @@ class TestLoadConfig:
         config_file = tmp_path / "config.yaml"
         config_file.write_text("invalid: yaml: [broken\n")
 
-        import whid
-        monkeypatch.setattr(whid, "CONFIG_LOCATIONS", [str(config_file)])
+        import nomolo
+        monkeypatch.setattr(nomolo, "CONFIG_LOCATIONS", [str(config_file)])
 
         with pytest.raises(SystemExit):
             load_config()
@@ -66,8 +66,8 @@ class TestLoadConfig:
         config1.write_text("vault_root: /first\n")
         config2.write_text("vault_root: /second\n")
 
-        import whid
-        monkeypatch.setattr(whid, "CONFIG_LOCATIONS", [str(config1), str(config2)])
+        import nomolo
+        monkeypatch.setattr(nomolo, "CONFIG_LOCATIONS", [str(config1), str(config2)])
 
         config = load_config()
         assert config["vault_root"] == "/first"
@@ -93,9 +93,9 @@ class TestGetVaultRoot:
             get_vault_root(config)
 
     def test_absolute_path_preserved(self):
-        config = {"vault_root": "/tmp/whid_test_vaults"}
+        config = {"vault_root": "/tmp/nomolo_test_vaults"}
         root = get_vault_root(config)
-        assert root == "/tmp/whid_test_vaults"
+        assert root == "/tmp/nomolo_test_vaults"
 
 
 # ---------------------------------------------------------------------------
@@ -162,8 +162,8 @@ class TestFindCredentialsFile:
         creds_file = tmp_path / "credentials.json"
         creds_file.write_text(json.dumps(creds))
 
-        import whid
-        monkeypatch.setattr(whid, "PROJECT_ROOT", str(tmp_path))
+        import nomolo
+        monkeypatch.setattr(nomolo, "PROJECT_ROOT", str(tmp_path))
 
         result = _find_credentials_file()
         assert result == str(creds_file)
@@ -172,8 +172,8 @@ class TestFindCredentialsFile:
         creds_file = tmp_path / "credentials.json"
         creds_file.write_text("not json")
 
-        import whid
-        monkeypatch.setattr(whid, "PROJECT_ROOT", str(tmp_path))
+        import nomolo
+        monkeypatch.setattr(nomolo, "PROJECT_ROOT", str(tmp_path))
 
         # Should not find it since it's invalid JSON
         result = _find_credentials_file()
@@ -184,15 +184,15 @@ class TestFindCredentialsFile:
         creds_file = tmp_path / "credentials.json"
         creds_file.write_text(json.dumps({"not_google": True}))
 
-        import whid
-        monkeypatch.setattr(whid, "PROJECT_ROOT", str(tmp_path))
+        import nomolo
+        monkeypatch.setattr(nomolo, "PROJECT_ROOT", str(tmp_path))
 
         result = _find_credentials_file()
         assert result != str(creds_file)
 
     def test_returns_none_when_nothing_found(self, tmp_path, monkeypatch):
-        import whid
-        monkeypatch.setattr(whid, "PROJECT_ROOT", str(tmp_path))
+        import nomolo
+        monkeypatch.setattr(nomolo, "PROJECT_ROOT", str(tmp_path))
         # Also prevent searching Downloads
         monkeypatch.setenv("HOME", str(tmp_path))
 
@@ -294,15 +294,15 @@ class TestCmdUpdate:
 class TestCLIHelp:
     def test_help_flag(self):
         project_root = os.path.dirname(os.path.dirname(__file__))
-        whid_script = os.path.join(project_root, "whid.py")
+        nomolo_script = os.path.join(project_root, "nomolo.py")
         result = subprocess.run(
-            [sys.executable, whid_script, "--help"],
+            [sys.executable, nomolo_script, "--help"],
             capture_output=True,
             text=True,
             cwd=project_root,
         )
         assert result.returncode == 0
-        assert "WhatHaveIDone" in result.stdout
+        assert "Nomolo" in result.stdout
         assert "collect" in result.stdout
         assert "groom" in result.stdout
         assert "status" in result.stdout
@@ -310,22 +310,22 @@ class TestCLIHelp:
 
     def test_no_args_shows_help(self):
         project_root = os.path.dirname(os.path.dirname(__file__))
-        whid_script = os.path.join(project_root, "whid.py")
+        nomolo_script = os.path.join(project_root, "nomolo.py")
         result = subprocess.run(
-            [sys.executable, whid_script],
+            [sys.executable, nomolo_script],
             capture_output=True,
             text=True,
             cwd=project_root,
         )
         assert result.returncode == 0
         assert "Quick start" in result.stdout
-        assert "whid update" in result.stdout
+        assert "nomolo update" in result.stdout
 
     def test_unknown_source_exits(self):
         project_root = os.path.dirname(os.path.dirname(__file__))
-        whid_script = os.path.join(project_root, "whid.py")
+        nomolo_script = os.path.join(project_root, "nomolo.py")
         result = subprocess.run(
-            [sys.executable, whid_script, "collect", "fakesource"],
+            [sys.executable, nomolo_script, "collect", "fakesource"],
             capture_output=True,
             text=True,
             cwd=project_root,
@@ -335,13 +335,13 @@ class TestCLIHelp:
 
     def test_collect_without_credentials_exits(self):
         project_root = os.path.dirname(os.path.dirname(__file__))
-        whid_script = os.path.join(project_root, "whid.py")
+        nomolo_script = os.path.join(project_root, "nomolo.py")
         result = subprocess.run(
-            [sys.executable, whid_script, "collect", "gmail"],
+            [sys.executable, nomolo_script, "collect", "gmail"],
             capture_output=True,
             text=True,
             cwd=project_root,
-            env={**os.environ, "HOME": "/tmp/whid_test_no_creds"},
+            env={**os.environ, "HOME": "/tmp/nomolo_test_no_creds"},
         )
         assert result.returncode == 1
         assert "not set up" in result.stdout or "setup" in result.stdout.lower()

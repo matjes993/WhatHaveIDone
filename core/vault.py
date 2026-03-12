@@ -1,5 +1,5 @@
 """
-WHID Vault I/O Utilities
+NOMOLO Vault I/O Utilities
 Shared read/write helpers for vault JSONL files.
 Thread-safe writes, entry counting, integrity checks.
 Supports both plain .jsonl and compressed .jsonl.zst files transparently.
@@ -12,7 +12,7 @@ import threading
 import logging
 from collections import defaultdict
 
-logger = logging.getLogger("whid.vault")
+logger = logging.getLogger("nomolo.vault")
 
 try:
     import zstandard as zstd

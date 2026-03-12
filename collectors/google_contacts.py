@@ -1,5 +1,5 @@
 """
-WHID Google Contacts Collector
+NOMOLO Google Contacts Collector
 Comprehensive export of Google Contacts to a local JSONL vault.
 Captures the full contact record: names, communication channels,
 addresses, social profiles, relationships, dates, notes, photos, and more.
@@ -21,7 +21,7 @@ logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 from core.auth import get_google_credentials
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.contacts")
+logger = logging.getLogger("nomolo.contacts")
 
 SCOPES = ["https://www.googleapis.com/auth/contacts.readonly"]
 
@@ -539,7 +539,7 @@ def run_export(config=None):
         print(f"\nError: Cannot create vault directory {vault_root}: {e}")
         sys.exit(1)
 
-    print(f"\n  WHID Google Contacts Collector")
+    print(f"\n  NOMOLO Google Contacts Collector")
     print(f"  {'=' * 45}")
     print(f"  Vault: {vault_root}")
 

@@ -1,7 +1,7 @@
-#compdef whid
-# WHID tab completion for zsh
+#compdef nomolo
+# NOMOLO tab completion for zsh
 
-_whid() {
+_nomolo() {
     local -a commands sources
 
     commands=(
@@ -72,4 +72,4 @@ _whid() {
     esac
 }
 
-_whid "$@"
+_nomolo "$@"

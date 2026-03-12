@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 """
-WHID CLI — WhatHaveIDone command-line interface.
+NOMOLO CLI — Nomolo command-line interface.
 
 Usage:
-    whid setup gmail              Guided setup for Gmail
-    whid setup contacts-google    Guided setup for Google Contacts
-    whid collect gmail            Export your Gmail (incremental)
-    whid collect gmail --full     Full rescan (find missing messages)
-    whid collect contacts-google  Export your Google Contacts
-    whid collect contacts-linkedin <file>   Import LinkedIn CSV export
-    whid collect contacts-facebook <file>   Import Facebook JSON export
-    whid collect contacts-instagram <dir>   Import Instagram JSON export
-    whid enrich gmail             Backfill metadata from Gmail API
-    whid clean gmail              RAG-optimized cleaning pass
-    whid groom gmail              Deduplicate and sort
-    whid vectorize                Vectorize all vaults for semantic search
-    whid vectorize gmail          Vectorize Gmail only
-    whid search 'query'           Search your data (no LLM needed)
-    whid search 'query' -s gmail  Search Gmail only
-    whid status                   See your vaults
-    whid update                   Pull latest version from GitHub
+    nomolo setup gmail              Guided setup for Gmail
+    nomolo setup contacts-google    Guided setup for Google Contacts
+    nomolo collect gmail            Export your Gmail (incremental)
+    nomolo collect gmail --full     Full rescan (find missing messages)
+    nomolo collect contacts-google  Export your Google Contacts
+    nomolo collect contacts-linkedin <file>   Import LinkedIn CSV export
+    nomolo collect contacts-facebook <file>   Import Facebook JSON export
+    nomolo collect contacts-instagram <dir>   Import Instagram JSON export
+    nomolo enrich gmail             Backfill metadata from Gmail API
+    nomolo clean gmail              RAG-optimized cleaning pass
+    nomolo groom gmail              Deduplicate and sort
+    nomolo vectorize                Vectorize all vaults for semantic search
+    nomolo vectorize gmail          Vectorize Gmail only
+    nomolo search 'query'           Search your data (no LLM needed)
+    nomolo search 'query' -s gmail  Search Gmail only
+    nomolo status                   See your vaults
+    nomolo update                   Pull latest version from GitHub
 """
 
 import argparse
@@ -38,12 +38,12 @@ import yaml
 CONFIG_LOCATIONS = [
     os.path.join(os.getcwd(), "config.yaml"),
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.yaml"),
-    os.path.expanduser("~/.config/whid/config.yaml"),
+    os.path.expanduser("~/.config/nomolo/config.yaml"),
 ]
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-logger = logging.getLogger("whid")
+logger = logging.getLogger("nomolo")
 
 
 def load_config():
@@ -278,7 +278,7 @@ def _setup_gmail(args, config):
     token = os.path.join(PROJECT_ROOT, "token.json")
 
     print("\n" + "=" * 50)
-    print("  WHID Gmail Setup")
+    print("  NOMOLO Gmail Setup")
     print("=" * 50)
 
     target = os.path.join(PROJECT_ROOT, "credentials.json")
@@ -288,7 +288,7 @@ def _setup_gmail(args, config):
         print("\nGmail is already set up!")
         print(f"  Credentials: {target}")
         print(f"  Token: {token}")
-        print("\nRun 'whid collect gmail' to start downloading.")
+        print("\nRun 'nomolo collect gmail' to start downloading.")
         return
 
     _setup_google_credentials(config)
@@ -301,7 +301,7 @@ def _setup_gmail(args, config):
     print("-" * 40)
     print("\nA browser window will open for Google sign-in.")
     print("Sign in with the Gmail account you want to export.")
-    print("(WHID uses read-only access — it cannot modify your email)\n")
+    print("(NOMOLO uses read-only access — it cannot modify your email)\n")
 
     input("Press Enter to open the sign-in page...")
 
@@ -314,7 +314,7 @@ def _setup_gmail(args, config):
         creds = get_credentials(target, token, scopes)
     except Exception as e:
         print(f"\nAuthentication failed: {e}")
-        print("Try running 'whid setup gmail' again.")
+        print("Try running 'nomolo setup gmail' again.")
         sys.exit(1)
 
     # Test connection
@@ -333,12 +333,12 @@ def _setup_gmail(args, config):
         print(f"  Total messages: {total:,}")
     except Exception as e:
         print(f"\n  Connection test failed: {e}")
-        print("  But credentials are saved — try 'whid collect gmail' anyway.")
+        print("  But credentials are saved — try 'nomolo collect gmail' anyway.")
 
     print("\n" + "=" * 50)
     print("  Setup complete!")
     print("=" * 50)
-    print(f"\n  Run:  whid collect gmail")
+    print(f"\n  Run:  nomolo collect gmail")
     print(f"  Data: {os.path.join(PROJECT_ROOT, 'vaults', 'Gmail_Primary')}/")
     print()
 
@@ -351,7 +351,7 @@ def _setup_contacts_google(args, config):
     )
 
     print("\n" + "=" * 50)
-    print("  WHID Google Contacts Setup")
+    print("  NOMOLO Google Contacts Setup")
     print("=" * 50)
 
     target = os.path.join(PROJECT_ROOT, "credentials.json")
@@ -361,7 +361,7 @@ def _setup_contacts_google(args, config):
         print("\nGoogle Contacts is already set up!")
         print(f"  Credentials: {target}")
         print(f"  Token: {token}")
-        print("\nRun 'whid collect contacts-google' to start downloading.")
+        print("\nRun 'nomolo collect contacts-google' to start downloading.")
         return
 
     _setup_google_credentials(config)
@@ -385,7 +385,7 @@ def _setup_contacts_google(args, config):
     print("-" * 40)
     print("\nA browser window will open for Google sign-in.")
     print("Sign in with the account whose contacts you want to export.")
-    print("(WHID uses read-only access — it cannot modify your contacts)\n")
+    print("(NOMOLO uses read-only access — it cannot modify your contacts)\n")
 
     input("Press Enter to open the sign-in page...")
 
@@ -398,7 +398,7 @@ def _setup_contacts_google(args, config):
         creds = get_google_credentials(target, token, scopes)
     except Exception as e:
         print(f"\nAuthentication failed: {e}")
-        print("Try running 'whid setup contacts-google' again.")
+        print("Try running 'nomolo setup contacts-google' again.")
         sys.exit(1)
 
     # Test connection
@@ -419,12 +419,12 @@ def _setup_contacts_google(args, config):
         print(f"\n  Connected! Total contacts: {total}")
     except Exception as e:
         print(f"\n  Connection test failed: {e}")
-        print("  But credentials are saved — try 'whid collect contacts-google' anyway.")
+        print("  But credentials are saved — try 'nomolo collect contacts-google' anyway.")
 
     print("\n" + "=" * 50)
     print("  Setup complete!")
     print("=" * 50)
-    print(f"\n  Run:  whid collect contacts-google")
+    print(f"\n  Run:  nomolo collect contacts-google")
     print(f"  Data: {os.path.join(PROJECT_ROOT, 'vaults', 'Contacts')}/")
     print()
 
@@ -437,7 +437,7 @@ def cmd_collect(args, config):
         creds_file = config.get("gmail", {}).get("credentials_file", "credentials.json")
         if not os.path.exists(creds_file):
             print("\nGmail is not set up yet. Run:\n")
-            print("  whid setup gmail\n")
+            print("  nomolo setup gmail\n")
             sys.exit(1)
 
         try:
@@ -453,7 +453,7 @@ def cmd_collect(args, config):
         creds_file = config.get("contacts", {}).get("credentials_file", "credentials.json")
         if not os.path.exists(creds_file):
             print("\nGoogle Contacts is not set up yet. Run:\n")
-            print("  whid setup contacts-google\n")
+            print("  nomolo setup contacts-google\n")
             sys.exit(1)
 
         try:
@@ -467,13 +467,13 @@ def cmd_collect(args, config):
 
     elif args.source == "contacts-linkedin":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect contacts-linkedin <path-to-csv-or-export-dir>")
+            print("\nUsage: nomolo collect contacts-linkedin <path-to-csv-or-export-dir>")
             print("\nExport your LinkedIn data:")
             print("  1. Go to linkedin.com > Settings > Data Privacy")
             print("  2. Get a copy of your data (select all or at least Connections)")
             print("  3. Download and unzip the archive")
-            print("  4. Run: whid collect contacts-linkedin ~/Downloads/linkedin-export/")
-            print("     or:  whid collect contacts-linkedin ~/Downloads/Connections.csv")
+            print("  4. Run: nomolo collect contacts-linkedin ~/Downloads/linkedin-export/")
+            print("     or:  nomolo collect contacts-linkedin ~/Downloads/Connections.csv")
             sys.exit(1)
 
         export_path = os.path.expanduser(args.vault)
@@ -486,12 +486,12 @@ def cmd_collect(args, config):
 
     elif args.source == "contacts-facebook":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect contacts-facebook <path-to-json-or-dir>")
+            print("\nUsage: nomolo collect contacts-facebook <path-to-json-or-dir>")
             print("\nExport your Facebook data:")
             print("  1. Go to facebook.com > Settings > Your Information")
             print("  2. Download Your Information > select JSON format")
             print("  3. Download and unzip")
-            print("  4. Run: whid collect contacts-facebook ~/Downloads/facebook-export/")
+            print("  4. Run: nomolo collect contacts-facebook ~/Downloads/facebook-export/")
             sys.exit(1)
 
         export_path = os.path.expanduser(args.vault)
@@ -504,12 +504,12 @@ def cmd_collect(args, config):
 
     elif args.source == "contacts-instagram":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect contacts-instagram <path-to-json-or-dir>")
+            print("\nUsage: nomolo collect contacts-instagram <path-to-json-or-dir>")
             print("\nExport your Instagram data:")
             print("  1. Go to Instagram > Settings > Your Activity")
             print("  2. Download Your Information > select JSON format")
             print("  3. Download and unzip")
-            print("  4. Run: whid collect contacts-instagram ~/Downloads/instagram-export/")
+            print("  4. Run: nomolo collect contacts-instagram ~/Downloads/instagram-export/")
             sys.exit(1)
 
         export_path = os.path.expanduser(args.vault)
@@ -522,7 +522,7 @@ def cmd_collect(args, config):
 
     elif args.source == "books-goodreads":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect books-goodreads <path-to-csv>")
+            print("\nUsage: nomolo collect books-goodreads <path-to-csv>")
             print("\nExport from Goodreads: My Books > Import/Export > Export Library")
             sys.exit(1)
         export_path = os.path.expanduser(args.vault)
@@ -534,7 +534,7 @@ def cmd_collect(args, config):
 
     elif args.source == "books-audible":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect books-audible <path-to-csv>")
+            print("\nUsage: nomolo collect books-audible <path-to-csv>")
             print("\nExport your Audible library as CSV.")
             sys.exit(1)
         export_path = os.path.expanduser(args.vault)
@@ -546,7 +546,7 @@ def cmd_collect(args, config):
 
     elif args.source == "youtube":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect youtube <path-to-watch-history-json-or-dir>")
+            print("\nUsage: nomolo collect youtube <path-to-watch-history-json-or-dir>")
             print("\nGoogle Takeout: takeout.google.com > YouTube > watch-history.json")
             print("(YouTube watch history API was deprecated — Takeout is the only option)")
             sys.exit(1)
@@ -559,7 +559,7 @@ def cmd_collect(args, config):
 
     elif args.source == "music-spotify":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect music-spotify <path-to-json-or-dir>")
+            print("\nUsage: nomolo collect music-spotify <path-to-json-or-dir>")
             print("\nRequest your data: spotify.com > Account > Privacy > Download your data")
             sys.exit(1)
         export_path = os.path.expanduser(args.vault)
@@ -571,7 +571,7 @@ def cmd_collect(args, config):
 
     elif args.source == "finance-paypal":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect finance-paypal <path-to-csv>")
+            print("\nUsage: nomolo collect finance-paypal <path-to-csv>")
             print("\nPayPal: Activity > Download > CSV")
             sys.exit(1)
         export_path = os.path.expanduser(args.vault)
@@ -583,7 +583,7 @@ def cmd_collect(args, config):
 
     elif args.source == "finance-bank":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect finance-bank <path-to-csv>")
+            print("\nUsage: nomolo collect finance-bank <path-to-csv>")
             print("\nExport your bank transactions as CSV.")
             print("Use --bank-name to tag the source (e.g., --bank-name deutschebank)")
             sys.exit(1)
@@ -597,7 +597,7 @@ def cmd_collect(args, config):
 
     elif args.source == "shopping-amazon":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect shopping-amazon <path-to-csv>")
+            print("\nUsage: nomolo collect shopping-amazon <path-to-csv>")
             print("\nAmazon: Account > Order History > Download order reports")
             sys.exit(1)
         export_path = os.path.expanduser(args.vault)
@@ -609,7 +609,7 @@ def cmd_collect(args, config):
 
     elif args.source == "notes":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect notes <path-to-directory>")
+            print("\nUsage: nomolo collect notes <path-to-directory>")
             print("\nPoint to a directory of .md, .txt, or .markdown files.")
             sys.exit(1)
         export_path = os.path.expanduser(args.vault)
@@ -621,7 +621,7 @@ def cmd_collect(args, config):
 
     elif args.source == "podcasts":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect podcasts <path-to-backup-db-or-csv>")
+            print("\nUsage: nomolo collect podcasts <path-to-backup-db-or-csv>")
             print("\nPodcast Addict: Settings > Backup/Restore > Backup")
             sys.exit(1)
         export_path = os.path.expanduser(args.vault)
@@ -633,7 +633,7 @@ def cmd_collect(args, config):
 
     elif args.source == "health":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect health <path-to-export-xml-or-dir>")
+            print("\nUsage: nomolo collect health <path-to-export-xml-or-dir>")
             print("\nApple Health: Health app > Profile > Export All Health Data")
             sys.exit(1)
         export_path = os.path.expanduser(args.vault)
@@ -652,14 +652,14 @@ def cmd_collect(args, config):
         if not os.path.exists(creds_file):
             print("\nGoogle Calendar is not set up yet.")
             print("Make sure credentials.json exists and Calendar API is enabled.")
-            print("Run: whid setup gmail  (shares the same credentials)")
+            print("Run: nomolo setup gmail  (shares the same credentials)")
             sys.exit(1)
         from collectors.calendar_collector import run_export
         run_export(config=config)
 
     elif args.source == "calendar-ics":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect calendar-ics <path-to-ics-file>")
+            print("\nUsage: nomolo collect calendar-ics <path-to-ics-file>")
             print("\nExport your calendar as .ics file from any calendar app.")
             sys.exit(1)
         export_path = os.path.expanduser(args.vault)
@@ -671,7 +671,7 @@ def cmd_collect(args, config):
 
     elif args.source == "maps":
         if not args.vault or args.vault == "Primary":
-            print("\nUsage: whid collect maps <path-to-semantic-location-history-dir>")
+            print("\nUsage: nomolo collect maps <path-to-semantic-location-history-dir>")
             print("\nGoogle Takeout: takeout.google.com > Location History")
             print("(No API available for Maps Timeline — Takeout is the only option)")
             sys.exit(1)
@@ -748,7 +748,7 @@ def cmd_enrich(args, config):
         creds_file = config.get("gmail", {}).get("credentials_file", "credentials.json")
         if not os.path.exists(creds_file):
             print("\nGmail is not set up yet. Run:\n")
-            print("  whid setup gmail\n")
+            print("  nomolo setup gmail\n")
             sys.exit(1)
 
         from collectors.gmail_enricher import run_enrich
@@ -785,7 +785,7 @@ def cmd_groom(args, config):
     if not os.path.exists(vault_path):
         print(f"\nError: Vault not found: {vault_path}")
         print()
-        print(f"Run 'whid collect {args.source}' first to create your vault.")
+        print(f"Run 'nomolo collect {args.source}' first to create your vault.")
         sys.exit(1)
 
     groom_vault(vault_path)
@@ -793,7 +793,7 @@ def cmd_groom(args, config):
 
 def cmd_update():
     """Pull the latest version from GitHub and reinstall."""
-    print("\nUpdating WHID...")
+    print("\nUpdating NOMOLO...")
 
     # git pull from the project root
     result = subprocess.run(
@@ -825,8 +825,8 @@ def cmd_update():
         )
 
     # Update zsh completions if the user has them set up
-    comp_src = os.path.join(PROJECT_ROOT, "completions", "whid.zsh")
-    comp_dst = os.path.expanduser("~/.zsh/completions/_whid")
+    comp_src = os.path.join(PROJECT_ROOT, "completions", "nomolo.zsh")
+    comp_dst = os.path.expanduser("~/.zsh/completions/_nomolo")
     if os.path.exists(comp_src) and os.path.isdir(os.path.dirname(comp_dst)):
         import shutil
         shutil.copy2(comp_src, comp_dst)
@@ -865,7 +865,7 @@ def cmd_vectorize(args, config):
     force = getattr(args, "force", False)
     show_status = getattr(args, "status", False)
 
-    print(f"\n  WHID Vectorizer")
+    print(f"\n  NOMOLO Vectorizer")
     print(f"  {'=' * 45}")
     print(f"  Vault root: {vault_root}")
 
@@ -874,7 +874,7 @@ def cmd_vectorize(args, config):
     if show_status:
         status = get_status(client, vault_root)
         if not status:
-            print("  No vectorized data yet. Run 'whid vectorize' first.")
+            print("  No vectorized data yet. Run 'nomolo vectorize' first.")
             return
         print()
         for s in sorted(status, key=lambda x: x["collection"]):
@@ -984,7 +984,7 @@ def cmd_search(args, config):
         all_cols = client.list_collections()
         collections = [c.name for c in all_cols if c.name.startswith(prefix)]
         if not collections:
-            print(f"  No vectorized data for '{source}'. Run 'whid vectorize {source}' first.")
+            print(f"  No vectorized data for '{source}'. Run 'nomolo vectorize {source}' first.")
             return
 
     where_filter = None
@@ -1061,7 +1061,7 @@ def cmd_compress(args, config):
 
     source = getattr(args, "source", None)
 
-    print(f"\n  WHID Vault Compressor (Zstandard)")
+    print(f"\n  NOMOLO Vault Compressor (Zstandard)")
     print(f"  {'=' * 45}")
     print(f"  Vault root: {vault_root}")
 
@@ -1137,8 +1137,8 @@ def cmd_status(args, config):
         print(f"No vaults found at {vault_root}")
         print()
         print("Get started:")
-        print("  whid setup gmail      Set up Gmail export")
-        print("  whid collect gmail    Export your Gmail inbox")
+        print("  nomolo setup gmail      Set up Gmail export")
+        print("  nomolo collect gmail    Export your Gmail inbox")
         return
 
     entries_found = False
@@ -1174,7 +1174,7 @@ def cmd_status(args, config):
 
         status = "OK"
         if ghosts > 0:
-            status = f"GHOSTS ({ghosts} missing — run 'whid collect' to recover)"
+            status = f"GHOSTS ({ghosts} missing — run 'nomolo collect' to recover)"
         elif total_entries == 0:
             status = "EMPTY"
 
@@ -1187,21 +1187,21 @@ def cmd_status(args, config):
     if not entries_found:
         print("  (no vaults yet)")
         print()
-        print("  Get started: whid setup gmail")
+        print("  Get started: nomolo setup gmail")
 
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="whid",
-        description="WhatHaveIDone — Your life. Your data. Your hard drive.",
+        prog="nomolo",
+        description="Nomolo — No More Loss. Your life. Your data. Your hard drive.",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    # whid setup
+    # nomolo setup
     setup_parser = subparsers.add_parser("setup", help="Guided setup for a data source")
     setup_parser.add_argument("source", help="Data source to set up (e.g., gmail)")
 
-    # whid collect
+    # nomolo collect
     collect_parser = subparsers.add_parser("collect", help="Collect data from a source")
     collect_parser.add_argument(
         "source",
@@ -1219,7 +1219,7 @@ def main():
         help="Force a full scan instead of incremental (Gmail only)",
     )
 
-    # whid enrich
+    # nomolo enrich
     enrich_parser = subparsers.add_parser(
         "enrich", help="Backfill metadata from the API (Gmail only)"
     )
@@ -1228,7 +1228,7 @@ def main():
         "vault", nargs="?", default="Primary", help="Vault name (default: Primary)"
     )
 
-    # whid clean
+    # nomolo clean
     clean_parser = subparsers.add_parser(
         "clean", help="RAG-optimized cleaning pass (local processing)"
     )
@@ -1237,7 +1237,7 @@ def main():
         "vault", nargs="?", default="Primary", help="Vault name (default: Primary)"
     )
 
-    # whid groom
+    # nomolo groom
     groom_parser = subparsers.add_parser(
         "groom", help="Groom a vault (deduplicate, sort, detect ghosts)"
     )
@@ -1246,7 +1246,7 @@ def main():
         "vault", nargs="?", default="Primary", help="Vault name (default: Primary)"
     )
 
-    # whid vectorize
+    # nomolo vectorize
     vectorize_parser = subparsers.add_parser(
         "vectorize", help="Vectorize vault data for semantic search"
     )
@@ -1263,7 +1263,7 @@ def main():
         help="Show vectorization status without processing",
     )
 
-    # whid search
+    # nomolo search
     search_parser = subparsers.add_parser(
         "search", help="Semantic search across your vault data"
     )
@@ -1285,7 +1285,7 @@ def main():
         help="Show full entry details instead of snippets",
     )
 
-    # whid compress
+    # nomolo compress
     compress_parser = subparsers.add_parser(
         "compress", help="Compress vault files with Zstandard (~5x smaller)"
     )
@@ -1294,10 +1294,10 @@ def main():
         help="Vault to compress (gmail, contacts, etc.) — omit for all",
     )
 
-    # whid status
+    # nomolo status
     subparsers.add_parser("status", help="Show vault status overview")
 
-    # whid update
+    # nomolo update
     subparsers.add_parser("update", help="Pull the latest version from GitHub")
 
     args = parser.parse_args()
@@ -1306,22 +1306,22 @@ def main():
         parser.print_help()
         print()
         print("Quick start:")
-        print("  whid setup gmail               Guided Gmail setup")
-        print("  whid collect gmail             Export your Gmail inbox")
-        print("  whid setup contacts-google     Guided Google Contacts setup")
-        print("  whid collect contacts-google   Export your Google Contacts")
-        print("  whid collect contacts-linkedin ~/Downloads/Connections.csv")
-        print("  whid collect contacts-facebook ~/Downloads/facebook-export/")
-        print("  whid collect contacts-instagram ~/Downloads/instagram-export/")
-        print("  whid enrich gmail              Backfill metadata from Gmail API")
-        print("  whid clean gmail               RAG-optimized cleaning pass")
-        print("  whid groom gmail               Deduplicate and sort")
-        print("  whid vectorize                 Vectorize all vaults for search")
-        print("  whid vectorize gmail           Vectorize Gmail only")
-        print("  whid search 'your query'       Search across all your data")
-        print("  whid search 'query' -s gmail   Search Gmail only")
-        print("  whid status                    See your vaults")
-        print("  whid update                    Pull latest version")
+        print("  nomolo setup gmail               Guided Gmail setup")
+        print("  nomolo collect gmail             Export your Gmail inbox")
+        print("  nomolo setup contacts-google     Guided Google Contacts setup")
+        print("  nomolo collect contacts-google   Export your Google Contacts")
+        print("  nomolo collect contacts-linkedin ~/Downloads/Connections.csv")
+        print("  nomolo collect contacts-facebook ~/Downloads/facebook-export/")
+        print("  nomolo collect contacts-instagram ~/Downloads/instagram-export/")
+        print("  nomolo enrich gmail              Backfill metadata from Gmail API")
+        print("  nomolo clean gmail               RAG-optimized cleaning pass")
+        print("  nomolo groom gmail               Deduplicate and sort")
+        print("  nomolo vectorize                 Vectorize all vaults for search")
+        print("  nomolo vectorize gmail           Vectorize Gmail only")
+        print("  nomolo search 'your query'       Search across all your data")
+        print("  nomolo search 'query' -s gmail   Search Gmail only")
+        print("  nomolo status                    See your vaults")
+        print("  nomolo update                    Pull latest version")
         sys.exit(0)
 
     # Setup logging

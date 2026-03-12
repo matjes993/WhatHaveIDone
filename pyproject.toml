@@ -3,9 +3,9 @@ requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "whid"
+name = "nomolo"
 version = "0.1.0"
-description = "WhatHaveIDone — Your life. Your data. Your hard drive."
+description = "Nomolo — No More Loss. Your life. Your data. Your hard drive."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
@@ -18,11 +18,11 @@ dependencies = [
 ]
 
 [project.scripts]
-whid = "whid:main"
+nomolo = "nomolo:main"
 
 [project.urls]
-Homepage = "https://github.com/matjes993/WhatHaveIDone"
-Issues = "https://github.com/matjes993/WhatHaveIDone/issues"
+Homepage = "https://github.com/matjes993/Nomolo"
+Issues = "https://github.com/matjes993/Nomolo/issues"
 
 [project.optional-dependencies]
 search = [
@@ -37,7 +37,7 @@ mcp = [
 dev = ["pytest>=8.0"]
 
 [tool.setuptools]
-py-modules = ["whid"]
+py-modules = ["nomolo"]
 packages = ["core", "collectors"]
 
 [tool.pytest.ini_options]

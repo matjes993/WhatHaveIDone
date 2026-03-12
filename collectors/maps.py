@@ -1,5 +1,5 @@
 """
-WHID Google Maps Location History Collector
+NOMOLO Google Maps Location History Collector
 Parses Google Takeout Semantic Location History into the unified Maps JSONL vault.
 
 Google Takeout exports location history as per-month JSON files in:
@@ -9,8 +9,8 @@ This collector parses place visits and activity segments from those files.
 Raw location records (Records.json) are skipped as too granular.
 
 Usage:
-  whid collect maps ~/Downloads/Takeout/Location\ History\ (Timeline)/Semantic\ Location\ History/
-  whid collect maps ~/Downloads/2024_JANUARY.json
+  nomolo collect maps ~/Downloads/Takeout/Location\ History\ (Timeline)/Semantic\ Location\ History/
+  nomolo collect maps ~/Downloads/2024_JANUARY.json
 """
 
 import hashlib
@@ -22,7 +22,7 @@ from datetime import datetime
 
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.maps")
+logger = logging.getLogger("nomolo.maps")
 
 
 # ---------------------------------------------------------------------------
@@ -353,7 +353,7 @@ def run_import(export_path, config=None):
         vault_root_base = os.path.join(project_root, vault_root_base)
     vault_path = os.path.join(vault_root_base, "Maps")
 
-    print(f"\n  WHID Maps Collector — Google Location History")
+    print(f"\n  NOMOLO Maps Collector — Google Location History")
     print(f"  {'=' * 45}")
     print(f"  Path: {export_path}")
     print(f"  Vault: {vault_path}")

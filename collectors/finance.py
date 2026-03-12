@@ -1,11 +1,11 @@
 """
-WHID Finance Collector
+NOMOLO Finance Collector
 Parses financial transactions from PayPal CSV export and generic bank CSV
 into the unified Finance JSONL vault.
 
 Supports two import modes:
-  1. PayPal CSV:  whid collect finance-paypal ~/Downloads/paypal_export.csv
-  2. Bank CSV:    whid collect finance-bank ~/Downloads/bank_export.csv --bank deutschebank
+  1. PayPal CSV:  nomolo collect finance-paypal ~/Downloads/paypal_export.csv
+  2. Bank CSV:    nomolo collect finance-bank ~/Downloads/bank_export.csv --bank deutschebank
 
 Both write to the Finance/ vault directory with unified schema.
 """
@@ -18,7 +18,7 @@ from datetime import datetime
 
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.finance")
+logger = logging.getLogger("nomolo.finance")
 
 
 # ---------------------------------------------------------------------------
@@ -298,7 +298,7 @@ def run_import_paypal(export_path, config=None):
         vault_root_base = os.path.join(project_root, vault_root_base)
     vault_path = os.path.join(vault_root_base, "Finance")
 
-    print(f"\n  WHID Finance Collector — PayPal")
+    print(f"\n  NOMOLO Finance Collector — PayPal")
     print(f"  {'=' * 45}")
     print(f"  CSV: {export_path}")
     print(f"  Vault: {vault_path}")
@@ -390,7 +390,7 @@ def run_import_bank(export_path, config=None, bank_name="bank"):
         vault_root_base = os.path.join(project_root, vault_root_base)
     vault_path = os.path.join(vault_root_base, "Finance")
 
-    print(f"\n  WHID Finance Collector — Bank ({bank_name})")
+    print(f"\n  NOMOLO Finance Collector — Bank ({bank_name})")
     print(f"  {'=' * 45}")
     print(f"  CSV: {export_path}")
     print(f"  Vault: {vault_path}")

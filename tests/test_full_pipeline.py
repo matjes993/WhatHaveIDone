@@ -26,7 +26,7 @@ from core.groomer import groom_vault
 
 @pytest.fixture
 def temp_vault():
-    vault = tempfile.mkdtemp(prefix="whid_test_")
+    vault = tempfile.mkdtemp(prefix="nomolo_test_")
     yield vault
     shutil.rmtree(vault, ignore_errors=True)
 

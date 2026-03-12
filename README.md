@@ -1,6 +1,6 @@
 <p align="center">
-  <h1 align="center">WhatHaveIDone</h1>
-  <p align="center"><strong>Your life. Your data. Your hard drive.</strong></p>
+  <h1 align="center">Nomolo</h1>
+  <p align="center"><strong>No More Loss. Your life. Your data. Your hard drive.</strong></p>
   <p align="center">The open-source framework for recovering, owning, and understanding your personal digital history.</p>
 </p>
 
@@ -19,14 +19,14 @@ Your life is scattered across cloud services you don't control. Emails in Gmail.
 
 If a service shuts down, changes its terms, or locks you out — that piece of your life disappears.
 
-**WhatHaveIDone (WHID)** recovers it. It pulls your data out of proprietary silos and into local, structured, AI-ready archives that you own forever.
+**Nomolo (NOMOLO)** recovers it. It pulls your data out of proprietary silos and into local, structured, AI-ready archives that you own forever.
 
 ## What It Does
 
-WHID is a **modular data archeology suite**. Each data source gets its own collector plugin. A universal groomer keeps everything clean. A self-healing mechanism makes sure nothing gets lost.
+NOMOLO is a **modular data archeology suite**. Each data source gets its own collector plugin. A universal groomer keeps everything clean. A self-healing mechanism makes sure nothing gets lost.
 
 ```
-You ──> WHID ──> Your Vault (local JSONL files, organized by date)
+You ──> NOMOLO ──> Your Vault (local JSONL files, organized by date)
                     │
                     ├── Gmail_Primary/
                     │   ├── 2020/
@@ -69,7 +69,7 @@ python -m core.groomer Vaults/Gmail_Primary
 
 ### 3. Self-Heal (The Sniper)
 
-After grooming, WHID compares what's on disk against what was previously collected. If records are missing (corrupted file, interrupted run, disk error), it writes a `missing_ids.txt` file. On the next collection run, the collector automatically enters **Sniper mode** — recovering only those specific records instead of scanning everything again.
+After grooming, NOMOLO compares what's on disk against what was previously collected. If records are missing (corrupted file, interrupted run, disk error), it writes a `missing_ids.txt` file. On the next collection run, the collector automatically enters **Sniper mode** — recovering only those specific records instead of scanning everything again.
 
 ```
 Groomer detects gaps ──> missing_ids.txt ──> Collector recovers them ──> Clean vault
@@ -78,7 +78,7 @@ Groomer detects gaps ──> missing_ids.txt ──> Collector recovers them ─
 ## Architecture
 
 ```
-WhatHaveIDone/
+Nomolo/
 ├── collectors/              # One plugin per data source
 │   ├── gmail_collector.py   # Gmail (live)
 │   └── ...                  # Future collectors
@@ -105,13 +105,13 @@ WhatHaveIDone/
 ### Install & Setup
 
 ```bash
-git clone https://github.com/matjes993/WhatHaveIDone.git
-./WhatHaveIDone/install.sh
+git clone https://github.com/matjes993/Nomolo.git
+./Nomolo/install.sh
 source ~/.zshrc   # (only needed once, to pick up the new PATH)
-whid setup gmail
+nomolo setup gmail
 ```
 
-That's it. The install script handles Python, dependencies, and adds `whid` to your PATH. The setup wizard walks you through Google credentials.
+That's it. The install script handles Python, dependencies, and adds `nomolo` to your PATH. The setup wizard walks you through Google credentials.
 
 The setup wizard:
 1. Opens Google Cloud Console for you
@@ -122,10 +122,10 @@ The setup wizard:
 ### Run
 
 ```bash
-whid collect gmail     # download your inbox
-whid groom gmail       # deduplicate and sort
-whid status            # see what you've got
-whid update            # pull latest version
+nomolo collect gmail     # download your inbox
+nomolo groom gmail       # deduplicate and sort
+nomolo status            # see what you've got
+nomolo update            # pull latest version
 ```
 
 Your data is saved to `vaults/` inside the project folder (gitignored — never pushed to GitHub).
@@ -133,14 +133,14 @@ Your data is saved to `vaults/` inside the project folder (gitignored — never 
 Multiple accounts? Just use different vault names:
 
 ```bash
-whid collect gmail Work
-whid collect gmail Personal
+nomolo collect gmail Work
+nomolo collect gmail Personal
 ```
 
 ### Updating
 
 ```bash
-whid update
+nomolo update
 ```
 
 That's it — works from any directory. Pulls the latest code and reinstalls dependencies if needed.
@@ -200,7 +200,7 @@ The groomer handles deduplication and sorting automatically for any vault that f
 |-----|-------------|
 | [Google OAuth Setup](docs/GOOGLE_SETUP.md) | Step-by-step guide to get `credentials.json` |
 | [Troubleshooting](docs/TROUBLESHOOTING.md) | Common errors and how to fix them |
-| [Contributing](.github/CONTRIBUTING.md) | How to contribute to WHID |
+| [Contributing](.github/CONTRIBUTING.md) | How to contribute to NOMOLO |
 
 ## Contributing
 
@@ -215,5 +215,5 @@ MIT — see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  <strong>Your data has a story. WHID helps you read it.</strong>
+  <strong>Your data has a story. NOMOLO helps you read it.</strong>
 </p>

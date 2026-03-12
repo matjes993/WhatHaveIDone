@@ -1,5 +1,5 @@
 """
-WHID Notes Collector
+NOMOLO Notes Collector
 Scans a directory of markdown/text files, audio recordings, and video
 recordings and imports them as notes into the unified Notes JSONL vault.
 
@@ -8,8 +8,8 @@ Audio/video recordings get metadata entries (filename, duration, timestamps)
 with the actual media files staying in place — only linked from the vault.
 
 Usage:
-  whid collect notes ~/Documents/notes/
-  whid collect notes ~/Documents/journal/
+  nomolo collect notes ~/Documents/notes/
+  nomolo collect notes ~/Documents/journal/
 """
 
 import hashlib
@@ -21,7 +21,7 @@ from datetime import datetime
 
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.notes")
+logger = logging.getLogger("nomolo.notes")
 
 
 # ---------------------------------------------------------------------------
@@ -302,7 +302,7 @@ def run_import(export_path, config=None):
 
     export_path = os.path.expanduser(export_path)
 
-    print(f"\n  WHID Notes Collector")
+    print(f"\n  NOMOLO Notes Collector")
     print(f"  {'=' * 45}")
     print(f"  Directory: {export_path}")
     print(f"  Vault: {vault_path}")

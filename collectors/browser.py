@@ -1,5 +1,5 @@
 """
-WHID Browser Collector
+NOMOLO Browser Collector
 Reads Chrome browsing history from the local SQLite database or from
 a CSV export into the unified Browser JSONL vault.
 
@@ -13,9 +13,9 @@ while running), then reads from the copy.
 Also supports CSV exports from browser history export extensions.
 
 Usage:
-  whid collect browser
-  whid collect browser --profile="Profile 1"
-  whid collect browser-csv ~/Downloads/chrome_history.csv
+  nomolo collect browser
+  nomolo collect browser --profile="Profile 1"
+  nomolo collect browser-csv ~/Downloads/chrome_history.csv
 """
 
 import csv
@@ -31,7 +31,7 @@ from urllib.parse import urlparse
 
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.browser")
+logger = logging.getLogger("nomolo.browser")
 
 
 # ---------------------------------------------------------------------------
@@ -365,7 +365,7 @@ def run_import(config=None, profile="Default"):
         vault_root_base = os.path.join(project_root, vault_root_base)
     vault_path = os.path.join(vault_root_base, "Browser")
 
-    print(f"\n  WHID Browser Collector — Chrome")
+    print(f"\n  NOMOLO Browser Collector — Chrome")
     print(f"  {'=' * 45}")
     print(f"  Profile: {profile}")
     print(f"  Vault: {vault_path}")
@@ -421,7 +421,7 @@ def run_import_csv(export_path, config=None):
 
     export_path = os.path.expanduser(export_path)
 
-    print(f"\n  WHID Browser Collector — CSV")
+    print(f"\n  NOMOLO Browser Collector — CSV")
     print(f"  {'=' * 45}")
     print(f"  CSV: {export_path}")
     print(f"  Vault: {vault_path}")

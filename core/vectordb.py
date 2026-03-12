@@ -1,5 +1,5 @@
 """
-WHID Vector Database
+NOMOLO Vector Database
 ChromaDB-based vector storage for semantic search across all vault data.
 Handles ingestion, chunking, incremental updates, and search.
 """
@@ -13,7 +13,7 @@ from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunct
 
 from core.vault import read_all_entries, count_entries
 
-logger = logging.getLogger("whid.vectordb")
+logger = logging.getLogger("nomolo.vectordb")
 
 # Mapping: vault directory base name → embedding field name
 EMBEDDING_FIELDS = {

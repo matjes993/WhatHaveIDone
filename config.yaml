@@ -1,7 +1,7 @@
-# WhatHaveIDone (WHID) Configuration
+# Nomolo (NOMOLO) Configuration
 
 # Directory where all vaults are stored
-# Default: 'vaults/' subfolder next to whid.py
+# Default: 'vaults/' subfolder next to nomolo.py
 # Override with an absolute path if you want vaults elsewhere:
 #   /Volumes/ExternalDrive/my_vaults
 #   ~/Desktop/my_vaults

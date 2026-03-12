@@ -1,4 +1,4 @@
-# Troubleshooting WHID
+# Troubleshooting NOMOLO
 
 ## Installation issues
 
@@ -13,24 +13,24 @@ source venv/bin/activate    # macOS/Linux
 pip install -e .
 ```
 
-### "command not found: whid"
+### "command not found: nomolo"
 
-The `whid` command is only available inside the virtual environment:
+The `nomolo` command is only available inside the virtual environment:
 
 ```bash
 source venv/bin/activate
-whid --help
+nomolo --help
 ```
 
 If you installed with `pip install -e .` and it still doesn't work, check that the venv's `bin` directory is on your PATH:
 
 ```bash
-which whid
+which nomolo
 ```
 
 ### Python version errors
 
-WHID requires Python 3.9+. Check your version:
+NOMOLO requires Python 3.9+. Check your version:
 
 ```bash
 python3 --version
@@ -44,21 +44,21 @@ See [GOOGLE_SETUP.md](GOOGLE_SETUP.md) for detailed OAuth setup and Gmail-specif
 
 This means all your messages have already been downloaded. If you think messages are missing:
 
-1. Run `whid groom gmail` to check for gaps
-2. Run `whid collect gmail` again — if ghosts are found, Sniper mode activates automatically
-3. Check `whid status` to see entry counts
+1. Run `nomolo groom gmail` to check for gaps
+2. Run `nomolo collect gmail` again — if ghosts are found, Sniper mode activates automatically
+3. Check `nomolo status` to see entry counts
 
 ### Collection was interrupted
 
-No problem. WHID tracks progress in `processed_ids.txt`. Just run `whid collect gmail` again and it picks up where it left off.
+No problem. NOMOLO tracks progress in `processed_ids.txt`. Just run `nomolo collect gmail` again and it picks up where it left off.
 
 ### Some messages failed
 
-After a run with failures, WHID tells you how many failed. To recover:
+After a run with failures, NOMOLO tells you how many failed. To recover:
 
 ```bash
-whid groom gmail       # detects missing records
-whid collect gmail     # recovers them via Sniper mode
+nomolo groom gmail       # detects missing records
+nomolo collect gmail     # recovers them via Sniper mode
 ```
 
 Failures are usually caused by rate limiting (transient) or deleted messages (permanent). Check the extraction log for details:
@@ -75,7 +75,7 @@ cat vaults/Gmail_Primary/extraction.log
 Error: Vault not found: .../vaults/Gmail_Primary
 ```
 
-You need to run `whid collect gmail` first to create the vault.
+You need to run `nomolo collect gmail` first to create the vault.
 
 ### Corrupted JSONL files
 
@@ -85,16 +85,16 @@ To investigate:
 
 ```bash
 # Find which files have issues — look for the warnings in the log
-whid groom gmail 2>&1 | grep "Skipping"
+nomolo groom gmail 2>&1 | grep "Skipping"
 ```
 
-The groomer uses atomic writes, so corruption from WHID itself is very unlikely. If you see it, it may be a disk issue.
+The groomer uses atomic writes, so corruption from NOMOLO itself is very unlikely. If you see it, it may be a disk issue.
 
 ## Config issues
 
 ### "config.yaml has invalid YAML syntax"
 
-WHID tells you the exact line and column of the error. Common mistakes:
+NOMOLO tells you the exact line and column of the error. Common mistakes:
 
 ```yaml
 # Wrong — tabs are not allowed in YAML
@@ -124,7 +124,7 @@ If you store vaults on an external drive:
 vault_root: /Volumes/MyDrive/my_vaults
 ```
 
-Make sure the drive is mounted before running WHID. If it's not, you'll see:
+Make sure the drive is mounted before running NOMOLO. If it's not, you'll see:
 
 ```
 Error: Vault root parent directory does not exist: /Volumes/MyDrive
@@ -149,7 +149,7 @@ By default: `vaults/` inside the project folder.
 Check `config.yaml` for your `vault_root` setting, or run:
 
 ```bash
-whid status
+nomolo status
 ```
 
 ### Can I move my vaults?
@@ -166,10 +166,10 @@ To re-download everything for a vault:
 
 ```bash
 rm -rf vaults/Gmail_Primary
-whid collect gmail
+nomolo collect gmail
 ```
 
-To remove all WHID data:
+To remove all NOMOLO data:
 
 ```bash
 rm -rf vaults/

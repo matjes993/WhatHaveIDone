@@ -1,5 +1,5 @@
 """
-WHID Google Calendar Collector
+NOMOLO Google Calendar Collector
 Exports Google Calendar events to a local JSONL vault.
 Uses calendar.readonly scope — your calendar is never modified.
 
@@ -8,8 +8,8 @@ Supports two modes:
   - ICS import: parses .ics files as a fallback
 
 Usage:
-  whid collect calendar                         # API-based export
-  whid collect calendar --ics ~/calendar.ics    # ICS file import
+  nomolo collect calendar                         # API-based export
+  nomolo collect calendar --ics ~/calendar.ics    # ICS file import
 """
 
 import hashlib
@@ -30,7 +30,7 @@ logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 from core.auth import get_google_credentials
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.calendar")
+logger = logging.getLogger("nomolo.calendar")
 
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
@@ -355,7 +355,7 @@ def run_export(config=None):
         print(f"\nError: Cannot create vault directory {vault_path}: {e}")
         sys.exit(1)
 
-    print(f"\n  WHID Google Calendar Collector")
+    print(f"\n  NOMOLO Google Calendar Collector")
     print(f"  {'=' * 45}")
     print(f"  Vault: {vault_path}")
 
@@ -523,7 +523,7 @@ def run_import_ics(export_path, config=None):
 
     export_path = os.path.expanduser(export_path)
 
-    print(f"\n  WHID Calendar Collector — ICS Import")
+    print(f"\n  NOMOLO Calendar Collector — ICS Import")
     print(f"  {'=' * 45}")
     print(f"  Path: {export_path}")
     print(f"  Vault: {vault_path}")

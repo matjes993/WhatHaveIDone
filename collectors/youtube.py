@@ -1,5 +1,5 @@
 """
-WHID YouTube Collector
+NOMOLO YouTube Collector
 Parses YouTube watch history and search history from Google Takeout export
 into the unified YouTube JSONL vault.
 
@@ -7,8 +7,8 @@ Google Takeout path: Takeout/YouTube and YouTube Music/history/watch-history.jso
 Optional search:    Takeout/YouTube and YouTube Music/history/search-history.json
 
 Usage:
-  whid collect youtube ~/Downloads/Takeout/YouTube\ and\ YouTube\ Music/history/
-  whid collect youtube ~/Downloads/Takeout/.../watch-history.json
+  nomolo collect youtube ~/Downloads/Takeout/YouTube\ and\ YouTube\ Music/history/
+  nomolo collect youtube ~/Downloads/Takeout/.../watch-history.json
 """
 
 import hashlib
@@ -20,7 +20,7 @@ from datetime import datetime
 
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.youtube")
+logger = logging.getLogger("nomolo.youtube")
 
 
 # ---------------------------------------------------------------------------
@@ -285,7 +285,7 @@ def run_import(export_path, config=None):
         vault_root_base = os.path.join(project_root, vault_root_base)
     vault_path = os.path.join(vault_root_base, "YouTube")
 
-    print(f"\n  WHID YouTube Collector")
+    print(f"\n  NOMOLO YouTube Collector")
     print(f"  {'=' * 45}")
     print(f"  Path: {export_path}")
     print(f"  Vault: {vault_path}")

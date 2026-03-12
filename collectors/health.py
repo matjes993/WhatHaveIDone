@@ -1,5 +1,5 @@
 """
-WHID Health Collector
+NOMOLO Health Collector
 Parses Apple Health XML export (export.xml) into the unified Health JSONL vault.
 
 Uses iterative XML parsing (iterparse) to handle large exports efficiently
@@ -13,8 +13,8 @@ Imports:
   - Heart rate daily summaries (min, max, avg per day)
 
 Usage:
-  whid collect health ~/Downloads/apple_health_export/export.xml
-  whid collect health ~/Downloads/apple_health_export/
+  nomolo collect health ~/Downloads/apple_health_export/export.xml
+  nomolo collect health ~/Downloads/apple_health_export/
 """
 
 import hashlib
@@ -26,7 +26,7 @@ from datetime import datetime
 
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.health")
+logger = logging.getLogger("nomolo.health")
 
 
 # ---------------------------------------------------------------------------
@@ -462,7 +462,7 @@ def run_import(export_path, config=None):
         vault_root_base = os.path.join(project_root, vault_root_base)
     vault_path = os.path.join(vault_root_base, "Health")
 
-    print(f"\n  WHID Health Collector — Apple Health")
+    print(f"\n  NOMOLO Health Collector — Apple Health")
     print(f"  {'=' * 45}")
     print(f"  Path: {export_path}")
     print(f"  Vault: {vault_path}")

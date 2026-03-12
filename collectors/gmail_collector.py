@@ -1,5 +1,5 @@
 """
-WHID Gmail Collector
+NOMOLO Gmail Collector
 Exports Gmail messages to a local JSONL vault organized by year/month.
 Uses gmail.readonly scope — your email is never modified.
 
@@ -31,7 +31,7 @@ from bs4 import BeautifulSoup
 from requests.exceptions import ConnectionError as RequestsConnectionError
 from requests.exceptions import Timeout as RequestsTimeout
 
-logger = logging.getLogger("whid.gmail")
+logger = logging.getLogger("nomolo.gmail")
 
 # Lock for writing vault files to disk
 _write_lock = threading.Lock()
@@ -192,7 +192,7 @@ def get_credentials(credentials_file, token_file, scopes):
                 print(
                     "This usually means another process is blocking the port."
                 )
-                print("Close other running WHID instances and try again.")
+                print("Close other running NOMOLO instances and try again.")
                 sys.exit(1)
 
         with open(token_file, "w") as f:
@@ -519,13 +519,13 @@ def _handle_api_error(e):
             )
             print("  2. Click 'Enable'")
             print("  3. Wait 1-2 minutes for it to activate")
-            print("  4. Run whid again")
+            print("  4. Run nomolo again")
         elif "insufficientPermissions" in error_detail:
             print("\nError: Insufficient permissions.\n")
             print("Your OAuth token may have the wrong scope.")
             print("To fix:")
             print("  1. Delete token.json")
-            print("  2. Run 'whid collect gmail' again")
+            print("  2. Run 'nomolo collect gmail' again")
             print("  3. Re-authorize in the browser")
         else:
             print(f"\nError: Access denied by Gmail API (403).\n")
@@ -543,7 +543,7 @@ def _handle_api_error(e):
         print("\nError: Authentication failed.\n")
         print("Your token may be expired or revoked. To fix:")
         print("  1. Delete token.json")
-        print("  2. Run 'whid collect gmail' again")
+        print("  2. Run 'nomolo collect gmail' again")
         print("  3. Re-authorize in the browser")
     else:
         print(f"\nGmail API error (HTTP {status}): {e}")
@@ -1004,7 +1004,7 @@ def run_export(vault_name="Primary", config=None, full_scan=False):
                 f.write(f"{mid}\n")
         print(
             f"\n  {failed} messages failed — saved to retry_ids.txt."
-            "\n  Next 'whid collect gmail' will auto-retry them."
+            "\n  Next 'nomolo collect gmail' will auto-retry them."
         )
     elif os.path.exists(retry_file):
         try:
@@ -1050,10 +1050,10 @@ def run_export(vault_name="Primary", config=None, full_scan=False):
         print()
         if missing_from_disk:
             print(f"    WARNING: {len(missing_from_disk):,} IDs in log but missing from disk")
-            print(f"    Run 'whid groom gmail' then 'whid collect gmail' to recover")
+            print(f"    Run 'nomolo groom gmail' then 'nomolo collect gmail' to recover")
         if duplicates > 0:
             print(f"    INFO: {duplicates:,} duplicate entries found")
-            print(f"    Run 'whid groom gmail' to deduplicate")
+            print(f"    Run 'nomolo groom gmail' to deduplicate")
 
     # Clean up file handler
     logger.removeHandler(file_handler)

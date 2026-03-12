@@ -1,5 +1,5 @@
 """
-WHID MCP Server
+NOMOLO MCP Server
 Exposes semantic search over personal vault data via Model Context Protocol.
 Runs in stdio mode for Claude Desktop integration.
 
@@ -9,9 +9,9 @@ Usage:
 Claude Desktop config (claude_desktop_config.json):
   {
     "mcpServers": {
-      "whid": {
+      "nomolo": {
         "command": "python3",
-        "args": ["/path/to/WhatHaveIDone/mcp_server.py"]
+        "args": ["/path/to/Nomolo/mcp_server.py"]
       }
     }
   }
@@ -31,10 +31,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from core.vectordb import get_client, search, get_full_entry, get_status, _get_embedding_fn
 
-logger = logging.getLogger("whid.mcp")
+logger = logging.getLogger("nomolo.mcp")
 
 # ---------------------------------------------------------------------------
-# Config loading (mirrors whid.py logic)
+# Config loading (mirrors nomolo.py logic)
 # ---------------------------------------------------------------------------
 
 def _load_config():
@@ -67,7 +67,7 @@ def _get_vault_root(config):
 # MCP Server
 # ---------------------------------------------------------------------------
 
-app = Server("whid")
+app = Server("nomolo")
 
 # Global state (initialized in main)
 _client = None
@@ -208,7 +208,7 @@ async def _handle_search_emails(args):
     gmail_cols = [c.name for c in all_cols if c.name.startswith("gmail")]
 
     if not gmail_cols:
-        return [TextContent(type="text", text="No email data found. Run 'whid vectorize' first.")]
+        return [TextContent(type="text", text="No email data found. Run 'nomolo vectorize' first.")]
 
     where_filter = None
     if year:
@@ -231,7 +231,7 @@ async def _handle_search_contacts(args):
     contact_cols = [c.name for c in all_cols if "contact" in c.name]
 
     if not contact_cols:
-        return [TextContent(type="text", text="No contacts data found. Run 'whid vectorize' first.")]
+        return [TextContent(type="text", text="No contacts data found. Run 'nomolo vectorize' first.")]
 
     results = search(_client, query, collections=contact_cols, n_results=n_results, config=_config)
 
@@ -278,7 +278,7 @@ async def _handle_list_sources(args):
     status = get_status(_client, _vault_root)
 
     if not status:
-        return [TextContent(type="text", text="No data sources found. Run 'whid vectorize' first.")]
+        return [TextContent(type="text", text="No data sources found. Run 'nomolo vectorize' first.")]
 
     lines = ["Available data sources:\n"]
     for s in sorted(status, key=lambda x: x["collection"]):

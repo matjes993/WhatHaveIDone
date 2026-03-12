@@ -1,13 +1,13 @@
 """
-WHID Music Collector
+NOMOLO Music Collector
 Parses Spotify extended streaming history JSON into the unified Music JSONL vault.
 
 Spotify data export includes StreamingHistory_music_0.json, StreamingHistory_music_1.json,
 etc. (extended format) or older StreamingHistory0.json (legacy format).
 
 Usage:
-  whid collect music ~/Downloads/my_spotify_data/
-  whid collect music ~/Downloads/StreamingHistory_music_0.json
+  nomolo collect music ~/Downloads/my_spotify_data/
+  nomolo collect music ~/Downloads/StreamingHistory_music_0.json
 """
 
 import hashlib
@@ -19,7 +19,7 @@ from datetime import datetime
 
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.music")
+logger = logging.getLogger("nomolo.music")
 
 
 # ---------------------------------------------------------------------------
@@ -276,7 +276,7 @@ def run_import(export_path, config=None):
         vault_root_base = os.path.join(project_root, vault_root_base)
     vault_path = os.path.join(vault_root_base, "Music")
 
-    print(f"\n  WHID Music Collector — Spotify")
+    print(f"\n  NOMOLO Music Collector — Spotify")
     print(f"  {'=' * 45}")
     print(f"  Path: {export_path}")
     print(f"  Vault: {vault_path}")

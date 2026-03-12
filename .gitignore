@@ -10,4 +10,5 @@ extraction.log
 missing_ids.txt
 .env
 .env.local
+nomolo.egg-info/
 whid.egg-info/

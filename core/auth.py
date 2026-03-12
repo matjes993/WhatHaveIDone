@@ -1,5 +1,5 @@
 """
-WHID Shared Google OAuth Authentication
+NOMOLO Shared Google OAuth Authentication
 
 Reusable OAuth2 logic for any Google API collector.
 Handles token loading, refresh, and new authentication flows.
@@ -14,7 +14,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-logger = logging.getLogger("whid.auth")
+logger = logging.getLogger("nomolo.auth")
 
 
 def get_google_credentials(credentials_file, token_file, scopes):
@@ -87,7 +87,7 @@ def get_google_credentials(credentials_file, token_file, scopes):
                 print(
                     "This usually means another process is blocking the port."
                 )
-                print("Close other running WHID instances and try again.")
+                print("Close other running NOMOLO instances and try again.")
                 sys.exit(1)
 
         with open(token_file, "w") as f:

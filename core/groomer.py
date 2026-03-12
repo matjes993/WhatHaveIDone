@@ -1,5 +1,5 @@
 """
-WHID Vault Groomer
+NOMOLO Vault Groomer
 Sorts, deduplicates, and validates JSONL vault files.
 Implements the Sniper Mechanism: identifies ghost IDs (records logged as
 processed but missing from disk) and writes missing_ids.txt for collectors
@@ -14,7 +14,7 @@ from datetime import datetime
 
 from core.vault import atomic_write as _atomic_write, _open_jsonl, _find_jsonl_files, HAS_ZSTD
 
-logger = logging.getLogger("whid.groomer")
+logger = logging.getLogger("nomolo.groomer")
 
 
 def parse_date(date_str):
@@ -104,7 +104,7 @@ def groom_vault(vault_path):
     if not os.path.exists(vault_path):
         logger.error("Vault path does not exist: %s", vault_path)
         print(f"\nError: Vault not found: {vault_path}")
-        print("Run 'whid collect gmail' first to create your vault.")
+        print("Run 'nomolo collect gmail' first to create your vault.")
         return
 
     processed_log = os.path.join(vault_path, "processed_ids.txt")
@@ -181,7 +181,7 @@ def groom_vault(vault_path):
                 unparseable_dates += 1
 
         # Write back — plain JSONL (even if source was compressed)
-        # The user can re-compress afterwards with `whid compress`
+        # The user can re-compress afterwards with `nomolo compress`
         write_path = file_path[:-4] if is_compressed else file_path  # strip .zst
         lines = [json.dumps(e) + "\n" for e in sorted_entries]
         try:
@@ -209,7 +209,7 @@ def groom_vault(vault_path):
             "Sniper: found %d ghost IDs — writing missing_ids.txt", len(ghost_ids)
         )
         logger.info(
-            "Run 'whid collect gmail' to recover these missing records."
+            "Run 'nomolo collect gmail' to recover these missing records."
         )
         try:
             _atomic_write(missing_log, [f"{gid}\n" for gid in sorted(ghost_ids)])
@@ -262,7 +262,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 2:
         print("Usage: python -m core.groomer <vault_path>")
-        print("   or: whid groom gmail")
+        print("   or: nomolo groom gmail")
         sys.exit(1)
 
     groom_vault(os.path.expanduser(sys.argv[1]))

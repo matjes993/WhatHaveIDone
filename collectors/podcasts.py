@@ -1,11 +1,11 @@
 """
-WHID Podcasts Collector
+NOMOLO Podcasts Collector
 Parses podcast listening history from Podcast Addict SQLite backup or
 generic CSV export into the unified Podcasts JSONL vault.
 
 Supports two import modes:
-  1. Podcast Addict backup.db: whid collect podcasts ~/Downloads/backup.db
-  2. CSV export:               whid collect podcasts ~/Downloads/podcast_history.csv
+  1. Podcast Addict backup.db: nomolo collect podcasts ~/Downloads/backup.db
+  2. CSV export:               nomolo collect podcasts ~/Downloads/podcast_history.csv
 
 Both write to the Podcasts/ vault directory with unified schema.
 """
@@ -19,7 +19,7 @@ from datetime import datetime
 
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.podcasts")
+logger = logging.getLogger("nomolo.podcasts")
 
 
 # ---------------------------------------------------------------------------
@@ -364,7 +364,7 @@ def run_import(export_path, config=None):
 
 def _import_from_csv(export_path, vault_path):
     """Import podcast history from a CSV file."""
-    print(f"\n  WHID Podcasts Collector — CSV")
+    print(f"\n  NOMOLO Podcasts Collector — CSV")
     print(f"  {'=' * 45}")
     print(f"  CSV: {export_path}")
     print(f"  Vault: {vault_path}")
@@ -437,7 +437,7 @@ def _import_from_csv(export_path, vault_path):
 
 def _import_from_db(export_path, vault_path):
     """Import podcast history from a Podcast Addict SQLite backup."""
-    print(f"\n  WHID Podcasts Collector — Podcast Addict")
+    print(f"\n  NOMOLO Podcasts Collector — Podcast Addict")
     print(f"  {'=' * 45}")
     print(f"  Database: {export_path}")
     print(f"  Vault: {vault_path}")

@@ -1,5 +1,5 @@
 """
-WHID Facebook Contacts Collector
+NOMOLO Facebook Contacts Collector
 Parses a Facebook data export (JSON format) to extract friends and
 address-book contacts into a local JSONL vault.
 
@@ -17,7 +17,7 @@ from pathlib import Path
 
 from core.vault import append_processed_ids, flush_entries, load_processed_ids
 
-logger = logging.getLogger("whid.facebook_contacts")
+logger = logging.getLogger("nomolo.facebook_contacts")
 
 # Possible locations of the friends JSON inside a Facebook export directory.
 FRIENDS_CANDIDATES = [

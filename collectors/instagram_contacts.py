@@ -1,5 +1,5 @@
 """
-WHID Instagram Contacts Collector
+NOMOLO Instagram Contacts Collector
 Parses Instagram data export JSON files (followers/following) into a
 local JSONL vault as a flat file.
 
@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 
 from core.vault import flush_entries, load_processed_ids, append_processed_ids
 
-logger = logging.getLogger("whid.instagram_contacts")
+logger = logging.getLogger("nomolo.instagram_contacts")
 
 
 def _decode_facebook_text(text):

@@ -23,13 +23,13 @@ TOKEN_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "token.jso
 
 pytestmark = pytest.mark.skipif(
     not os.path.exists(TOKEN_FILE),
-    reason="No token.json found — run 'whid collect gmail' first to authenticate.",
+    reason="No token.json found — run 'nomolo collect gmail' first to authenticate.",
 )
 
 
 @pytest.fixture
 def temp_vault():
-    vault = tempfile.mkdtemp(prefix="whid_test_")
+    vault = tempfile.mkdtemp(prefix="nomolo_test_")
     yield vault
     shutil.rmtree(vault, ignore_errors=True)
 

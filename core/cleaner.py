@@ -1,5 +1,5 @@
 """
-WHID RAG Cleaner
+NOMOLO RAG Cleaner
 Post-processing pass that enriches vault entries with RAG-optimized fields:
 - body_clean (stripped of quotes, signatures, forwarded blocks)
 - body_for_embedding (contextual text for vector search)
@@ -17,7 +17,7 @@ from email.utils import parseaddr, getaddresses
 
 from core.vault import read_entries_by_file, rewrite_file_entries
 
-logger = logging.getLogger("whid.cleaner")
+logger = logging.getLogger("nomolo.cleaner")
 
 
 # ---------------------------------------------------------------------------
@@ -426,10 +426,10 @@ def run_clean(vault_name="Primary", config=None):
 
     if not os.path.exists(vault_path):
         print(f"\nError: Vault not found: {vault_path}")
-        print("Run 'whid collect gmail' first.")
+        print("Run 'nomolo collect gmail' first.")
         sys.exit(1)
 
-    print(f"\n  WHID RAG Cleaner")
+    print(f"\n  NOMOLO RAG Cleaner")
     print(f"  {'=' * 45}")
     print(f"  Vault: {vault_path}")
 
