@@ -63,6 +63,24 @@ def parse_date(date_str):
     except ValueError:
         pass
 
+    # No timezone: "Mon, 27 May 2013 13:51:26"
+    try:
+        return datetime.strptime(clean, "%a, %d %b %Y %H:%M:%S")
+    except ValueError:
+        pass
+
+    # 2-digit year: "01 Feb 21 11:02:06 +0100"
+    try:
+        return datetime.strptime(clean, "%d %b %y %H:%M:%S %z")
+    except ValueError:
+        pass
+
+    # 2-digit year without seconds: "04 Dec 14 00:45 +0000"
+    try:
+        return datetime.strptime(clean, "%d %b %y %H:%M %z")
+    except ValueError:
+        pass
+
     logger.warning("Unparseable date: %s", date_str)
     return None
 

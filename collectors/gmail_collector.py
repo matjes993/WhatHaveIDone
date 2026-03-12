@@ -288,6 +288,24 @@ def _parse_message_date(date_str):
     except ValueError:
         pass
 
+    # No timezone: "Mon, 27 May 2013 13:51:26"
+    try:
+        return datetime.strptime(clean, "%a, %d %b %Y %H:%M:%S"), True
+    except ValueError:
+        pass
+
+    # 2-digit year: "01 Feb 21 11:02:06 +0100"
+    try:
+        return datetime.strptime(clean, "%d %b %y %H:%M:%S %z"), True
+    except ValueError:
+        pass
+
+    # 2-digit year without seconds: "04 Dec 14 00:45 +0000"
+    try:
+        return datetime.strptime(clean, "%d %b %y %H:%M %z"), True
+    except ValueError:
+        pass
+
     return None, False
 
 
