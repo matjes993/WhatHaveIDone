@@ -1042,6 +1042,59 @@ def cmd_search(args, config):
         print()
 
 
+def cmd_compress(args, config):
+    """Compress vault JSONL files with Zstandard."""
+    from core.vault import compress_vault
+
+    vault_root = config.get("vault_root", os.path.join(PROJECT_ROOT, "vaults"))
+    vault_root = os.path.expanduser(vault_root)
+    if not os.path.isabs(vault_root):
+        vault_root = os.path.join(PROJECT_ROOT, vault_root)
+
+    source = getattr(args, "source", None)
+
+    print(f"\n  WHID Vault Compressor (Zstandard)")
+    print(f"  {'=' * 45}")
+    print(f"  Vault root: {vault_root}")
+
+    if not os.path.isdir(vault_root):
+        print(f"  Error: Vault root not found: {vault_root}")
+        return
+
+    # Find vault directories to compress
+    targets = []
+    for entry in sorted(os.listdir(vault_root)):
+        path = os.path.join(vault_root, entry)
+        if not os.path.isdir(path) or entry.startswith("."):
+            continue
+        if source and not entry.lower().startswith(source.lower()):
+            continue
+        targets.append((entry, path))
+
+    if not targets:
+        print(f"  No vaults found{f' matching {source}' if source else ''}.")
+        return
+
+    total_files = 0
+    total_saved = 0
+
+    for name, path in targets:
+        files, saved = compress_vault(path)
+        if files > 0:
+            saved_mb = saved / (1024 * 1024)
+            print(f"  {name}: {files} files compressed, {saved_mb:.1f} MB saved")
+            total_files += files
+            total_saved += saved
+
+    if total_files == 0:
+        print("  Everything already compressed.")
+    else:
+        total_mb = total_saved / (1024 * 1024)
+        print(f"\n  {'=' * 45}")
+        print(f"  Done! {total_files} files compressed, {total_mb:.1f} MB saved")
+    print()
+
+
 def cmd_status(args, config):
     """Show vault status."""
     vault_root = get_vault_root(config)
@@ -1207,6 +1260,15 @@ def main():
         help="Show full entry details instead of snippets",
     )
 
+    # whid compress
+    compress_parser = subparsers.add_parser(
+        "compress", help="Compress vault files with Zstandard (~5x smaller)"
+    )
+    compress_parser.add_argument(
+        "source", nargs="?", default=None,
+        help="Vault to compress (gmail, contacts, etc.) — omit for all",
+    )
+
     # whid status
     subparsers.add_parser("status", help="Show vault status overview")
 
@@ -1264,6 +1326,8 @@ def main():
         cmd_vectorize(args, config)
     elif args.command == "search":
         cmd_search(args, config)
+    elif args.command == "compress":
+        cmd_compress(args, config)
     elif args.command == "status":
         cmd_status(args, config)
 

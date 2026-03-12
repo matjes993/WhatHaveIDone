@@ -12,6 +12,7 @@ _whid() {
         'groom:Deduplicate, sort, and detect ghosts'
         'vectorize:Vectorize vault data for semantic search'
         'search:Semantic search across your data'
+        'compress:Compress vault files (~5x smaller)'
         'status:Show vault status overview'
         'update:Pull latest version from GitHub'
     )

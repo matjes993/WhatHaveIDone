@@ -2,6 +2,7 @@
 WHID Vault I/O Utilities
 Shared read/write helpers for vault JSONL files.
 Thread-safe writes, entry counting, integrity checks.
+Supports both plain .jsonl and compressed .jsonl.zst files transparently.
 """
 
 import os
@@ -13,6 +14,12 @@ from collections import defaultdict
 
 logger = logging.getLogger("whid.vault")
 
+try:
+    import zstandard as zstd
+    HAS_ZSTD = True
+except ImportError:
+    HAS_ZSTD = False
+
 # Global write lock for all vault file operations
 _write_lock = threading.Lock()
 
@@ -21,6 +28,28 @@ _MONTH_NAMES = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December",
 ]
+
+
+def _open_jsonl(file_path):
+    """Open a .jsonl or .jsonl.zst file for reading. Returns a context manager yielding text lines."""
+    if file_path.endswith(".zst"):
+        if not HAS_ZSTD:
+            logger.warning("Cannot read %s — install zstandard: pip install zstandard", file_path)
+            return None
+        import io
+        dctx = zstd.ZstdDecompressor()
+        fh = open(file_path, "rb")
+        reader = dctx.stream_reader(fh)
+        return io.TextIOWrapper(reader, encoding="utf-8")
+    return open(file_path, "r", encoding="utf-8")
+
+
+def _find_jsonl_files(vault_path):
+    """Find all .jsonl and .jsonl.zst files under vault_path."""
+    for root, _dirs, files in os.walk(vault_path):
+        for f in sorted(files):
+            if f.endswith(".jsonl") or f.endswith(".jsonl.zst"):
+                yield os.path.join(root, f)
 
 
 def flush_entries(entries, vault_path, file_name):
@@ -104,49 +133,48 @@ def flush_entries_by_date(entries, vault_path, parse_date_fn):
 
 
 def count_entries(vault_path):
-    """Count total entries across all JSONL files. Returns (total_entries, num_files)."""
+    """Count total entries across all JSONL/JSONL.ZST files. Returns (total_entries, num_files)."""
     total = 0
     num_files = 0
 
-    for root, _dirs, files in os.walk(vault_path):
-        for f in files:
-            if not f.endswith(".jsonl"):
+    for file_path in _find_jsonl_files(vault_path):
+        num_files += 1
+        try:
+            fh = _open_jsonl(file_path)
+            if fh is None:
                 continue
-            num_files += 1
-            try:
-                with open(os.path.join(root, f), "r", encoding="utf-8") as fh:
-                    for line in fh:
-                        if line.strip():
-                            total += 1
-            except (OSError, PermissionError) as e:
-                logger.warning("Cannot read %s: %s", f, e)
+            with fh:
+                for line in fh:
+                    if line.strip():
+                        total += 1
+        except (OSError, PermissionError) as e:
+            logger.warning("Cannot read %s: %s", file_path, e)
 
     return total, num_files
 
 
 def read_all_entries(vault_path):
-    """Generator that yields all entries from all JSONL files. Skips malformed JSON."""
-    for root, _dirs, files in os.walk(vault_path):
-        for f in sorted(files):
-            if not f.endswith(".jsonl"):
+    """Generator that yields all entries from all JSONL/JSONL.ZST files. Skips malformed JSON."""
+    for file_path in _find_jsonl_files(vault_path):
+        try:
+            fh = _open_jsonl(file_path)
+            if fh is None:
                 continue
-            file_path = os.path.join(root, f)
-            try:
-                with open(file_path, "r", encoding="utf-8") as fh:
-                    for line_num, line in enumerate(fh, 1):
-                        line = line.strip()
-                        if not line:
-                            continue
-                        try:
-                            yield json.loads(line)
-                        except json.JSONDecodeError:
-                            logger.warning(
-                                "Skipping malformed JSON in %s line %d",
-                                file_path,
-                                line_num,
-                            )
-            except (OSError, PermissionError) as e:
-                logger.warning("Cannot read %s: %s", file_path, e)
+            with fh:
+                for line_num, line in enumerate(fh, 1):
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        yield json.loads(line)
+                    except json.JSONDecodeError:
+                        logger.warning(
+                            "Skipping malformed JSON in %s line %d",
+                            file_path,
+                            line_num,
+                        )
+        except (OSError, PermissionError) as e:
+            logger.warning("Cannot read %s: %s", file_path, e)
 
 
 def read_entry_ids(vault_path):
@@ -167,25 +195,25 @@ def verify_integrity(vault_path):
     disk_ids = set()
     disk_entries = 0
 
-    for root, _dirs, files in os.walk(vault_path):
-        for f in files:
-            if not f.endswith(".jsonl"):
+    for file_path in _find_jsonl_files(vault_path):
+        try:
+            fh = _open_jsonl(file_path)
+            if fh is None:
                 continue
-            try:
-                with open(os.path.join(root, f), "r", encoding="utf-8") as fh:
-                    for line in fh:
-                        line = line.strip()
-                        if not line:
-                            continue
-                        try:
-                            entry = json.loads(line)
-                            disk_entries += 1
-                            if "id" in entry:
-                                disk_ids.add(entry["id"])
-                        except json.JSONDecodeError:
-                            pass
-            except (OSError, PermissionError):
-                pass
+            with fh:
+                for line in fh:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        entry = json.loads(line)
+                        disk_entries += 1
+                        if "id" in entry:
+                            disk_ids.add(entry["id"])
+                    except json.JSONDecodeError:
+                        pass
+        except (OSError, PermissionError):
+            pass
 
     log_ids = load_processed_ids(vault_path)
     missing = log_ids - disk_ids
@@ -259,34 +287,33 @@ def atomic_write(file_path, lines):
 
 
 def read_entries_by_file(vault_path):
-    """Return dict: {file_path: [entry, ...]} for all JSONL files.
+    """Return dict: {file_path: [entry, ...]} for all JSONL/JSONL.ZST files.
     Skips malformed JSON lines with a warning.
     """
     result = {}
-    for root, _dirs, files in os.walk(vault_path):
-        for f in sorted(files):
-            if not f.endswith(".jsonl"):
+    for file_path in _find_jsonl_files(vault_path):
+        entries = []
+        try:
+            fh = _open_jsonl(file_path)
+            if fh is None:
                 continue
-            file_path = os.path.join(root, f)
-            entries = []
-            try:
-                with open(file_path, "r", encoding="utf-8") as fh:
-                    for line_num, line in enumerate(fh, 1):
-                        line = line.strip()
-                        if not line:
-                            continue
-                        try:
-                            entries.append(json.loads(line))
-                        except json.JSONDecodeError:
-                            logger.warning(
-                                "Skipping malformed JSON in %s line %d",
-                                file_path, line_num,
-                            )
-            except (OSError, PermissionError) as e:
-                logger.warning("Cannot read %s: %s", file_path, e)
-                continue
-            if entries:
-                result[file_path] = entries
+            with fh:
+                for line_num, line in enumerate(fh, 1):
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        entries.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        logger.warning(
+                            "Skipping malformed JSON in %s line %d",
+                            file_path, line_num,
+                        )
+        except (OSError, PermissionError) as e:
+            logger.warning("Cannot read %s: %s", file_path, e)
+            continue
+        if entries:
+            result[file_path] = entries
     return result
 
 
@@ -294,3 +321,60 @@ def rewrite_file_entries(file_path, entries):
     """Atomically rewrite a JSONL file with the given entries."""
     lines = [json.dumps(e) + "\n" for e in entries]
     atomic_write(file_path, lines)
+
+
+def compress_vault(vault_path, level=9):
+    """
+    Compress all .jsonl files to .jsonl.zst using Zstandard.
+    Verifies the compressed file before deleting the original.
+    Returns (files_compressed, bytes_saved).
+    """
+    if not HAS_ZSTD:
+        raise ImportError("zstandard is required: pip install zstandard")
+
+    cctx = zstd.ZstdCompressor(level=level)
+    files_compressed = 0
+    bytes_saved = 0
+
+    for file_path in list(_find_jsonl_files(vault_path)):
+        if file_path.endswith(".zst"):
+            continue  # already compressed
+
+        zst_path = file_path + ".zst"
+        original_size = os.path.getsize(file_path)
+
+        # Compress
+        with open(file_path, "rb") as f_in:
+            with open(zst_path, "wb") as f_out:
+                cctx.copy_stream(f_in, f_out)
+
+        compressed_size = os.path.getsize(zst_path)
+
+        # Verify: count lines in compressed file match original
+        orig_lines = 0
+        with open(file_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    orig_lines += 1
+
+        comp_lines = 0
+        fh = _open_jsonl(zst_path)
+        with fh:
+            for line in fh:
+                if line.strip():
+                    comp_lines += 1
+
+        if comp_lines != orig_lines:
+            logger.error(
+                "Verification failed for %s: %d vs %d lines. Keeping original.",
+                file_path, orig_lines, comp_lines,
+            )
+            os.remove(zst_path)
+            continue
+
+        # Safe to remove original
+        os.remove(file_path)
+        files_compressed += 1
+        bytes_saved += original_size - compressed_size
+
+    return files_compressed, bytes_saved
