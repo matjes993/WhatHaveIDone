@@ -414,13 +414,10 @@ def _handle_api_error(e):
     sys.exit(1)
 
 
-def _process_batch_with_retry(batch_ids, creds, throttle):
+def _process_batch_with_retry(batch_ids, service, throttle):
     """Process a batch with automatic retry on rate limiting."""
-    thread_service = build(
-        "gmail", "v1", credentials=creds, cache_discovery=False
-    )
     entries, batch_failed, rate_limited = _fetch_batch(
-        thread_service, batch_ids
+        service, batch_ids
     )
 
     remaining = rate_limited
@@ -438,7 +435,7 @@ def _process_batch_with_retry(batch_ids, creds, throttle):
         )
         time.sleep(delay)
         retry_entries, retry_failed, remaining = _fetch_batch(
-            thread_service, remaining
+            service, remaining
         )
         entries.extend(retry_entries)
         batch_failed.extend(retry_failed)
@@ -462,9 +459,9 @@ def run_export(vault_name="Primary", config=None):
         os.path.expanduser(config.get("vault_root", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vaults"))),
         f"Gmail_{vault_name}",
     )
-    max_workers = gmail_config.get("max_workers", 5)
+    max_workers = gmail_config.get("max_workers", 8)
     page_size = gmail_config.get("page_size", 500)
-    batch_size = gmail_config.get("batch_size", 50)
+    batch_size = gmail_config.get("batch_size", 100)
     scopes = [
         gmail_config.get(
             "scope", "https://www.googleapis.com/auth/gmail.readonly"
@@ -604,14 +601,27 @@ def run_export(vault_name="Primary", config=None):
     all_vaulted_ids = []
     start_time = time.time()
 
+    # Pre-build one service per worker thread (avoids repeated discovery calls)
+    _thread_local = threading.local()
+
+    def _get_thread_service():
+        if not hasattr(_thread_local, "service"):
+            _thread_local.service = build(
+                "gmail", "v1", credentials=creds, cache_discovery=False
+            )
+        return _thread_local.service
+
+    def _worker(batch_ids):
+        return _process_batch_with_retry(batch_ids, _get_thread_service(), throttle)
+
     # Process in waves — allows adaptive throttle to adjust between waves
     offset = 0
     while offset < total_msgs:
         current_batch_size = throttle.batch_size
         current_workers = throttle.max_workers
 
-        # Slice the next wave of work
-        wave_end = min(offset + current_batch_size * current_workers * 2, total_msgs)
+        # Larger waves = better parallelism (4x instead of 2x)
+        wave_end = min(offset + current_batch_size * current_workers * 4, total_msgs)
         wave_ids = to_process_ids[offset:wave_end]
 
         batches = [
@@ -623,9 +633,7 @@ def run_export(vault_name="Primary", config=None):
             max_workers=current_workers
         ) as executor:
             futures = {
-                executor.submit(
-                    _process_batch_with_retry, batch_ids, creds, throttle
-                ): batch_ids
+                executor.submit(_worker, batch_ids): batch_ids
                 for batch_ids in batches
             }
 
@@ -705,13 +713,13 @@ def run_export(vault_name="Primary", config=None):
 
     if failed > 0:
         print(
-            f"\n{failed} messages failed — run 'whid groom gmail' then "
+            f"\n  {failed} messages failed — run 'whid groom gmail' then "
             "'whid collect gmail' to recover via Sniper."
         )
 
     if retried > 0:
         print(
-            f"\nNote: {retried} batches hit rate limits and were auto-retried."
+            f"\n  Note: {retried} batches hit rate limits and were auto-retried."
         )
         if throttle.max_workers < throttle.original_workers:
             print(
@@ -721,6 +729,48 @@ def run_export(vault_name="Primary", config=None):
             print(
                 "  Consider updating config.yaml with these lower values to avoid future throttling."
             )
+
+    # Integrity check — count entries on disk vs processed_ids
+    print("\n  Verifying vault integrity...", end="", flush=True)
+
+    disk_ids = set()
+    disk_entries = 0
+    for root, _dirs, files in os.walk(vault_root):
+        for f in files:
+            if f.endswith(".jsonl"):
+                try:
+                    with open(os.path.join(root, f), "r") as fh:
+                        for line in fh:
+                            line = line.strip()
+                            if line:
+                                try:
+                                    entry = json.loads(line)
+                                    disk_entries += 1
+                                    if "id" in entry:
+                                        disk_ids.add(entry["id"])
+                                except json.JSONDecodeError:
+                                    pass
+                except (OSError, PermissionError):
+                    pass
+
+    log_ids = set()
+    if os.path.exists(processed_log):
+        with open(processed_log, "r") as f:
+            log_ids = {line.strip() for line in f if line.strip()}
+
+    missing_from_disk = log_ids - disk_ids
+    duplicates = disk_entries - len(disk_ids)
+
+    if not missing_from_disk and duplicates == 0:
+        print(f" OK ({len(disk_ids):,} entries, all accounted for)")
+    else:
+        print()
+        if missing_from_disk:
+            print(f"    WARNING: {len(missing_from_disk):,} IDs in log but missing from disk")
+            print(f"    Run 'whid groom gmail' then 'whid collect gmail' to recover")
+        if duplicates > 0:
+            print(f"    INFO: {duplicates:,} duplicate entries found")
+            print(f"    Run 'whid groom gmail' to deduplicate")
 
     # Clean up file handler
     logger.removeHandler(file_handler)
