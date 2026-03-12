@@ -251,6 +251,8 @@ def _parse_message_date(date_str):
     # Replace named timezones with numeric offsets
     clean = clean.replace(" GMT", " +0000")
     clean = clean.replace(" UTC", " +0000")
+    if clean.endswith(" UT"):
+        clean = clean[:-3] + " +0000"
     clean = clean.replace(" EST", " -0500")
     clean = clean.replace(" EDT", " -0400")
     clean = clean.replace(" CST", " -0600")
