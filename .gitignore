@@ -1,6 +1,7 @@
 token.json
 credentials.json
 Vaults/
+vaults/
 __pycache__/
 *.pyc
 .DS_Store

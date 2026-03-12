@@ -78,14 +78,14 @@ class TestLoadConfig:
 # ---------------------------------------------------------------------------
 class TestGetVaultRoot:
     def test_expands_tilde(self):
-        config = {"vault_root": "~/Documents/WHID_Vaults"}
+        config = {"vault_root": "~/my_vaults"}
         root = get_vault_root(config)
         assert "~" not in root
-        assert "Documents/WHID_Vaults" in root
+        assert "my_vaults" in root
 
     def test_default_value(self):
         root = get_vault_root({})
-        assert "WHID_Vaults" in root
+        assert root.endswith("vaults")
 
     def test_nonexistent_parent_exits(self):
         config = {"vault_root": "/nonexistent_parent_12345/vaults"}

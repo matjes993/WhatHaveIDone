@@ -64,7 +64,7 @@ whid collect gmail     # recovers them via Sniper mode
 Failures are usually caused by rate limiting (transient) or deleted messages (permanent). Check the extraction log for details:
 
 ```bash
-cat ~/Documents/WHID_Vaults/Gmail_Primary/extraction.log
+cat vaults/Gmail_Primary/extraction.log
 ```
 
 ## Groomer issues
@@ -72,7 +72,7 @@ cat ~/Documents/WHID_Vaults/Gmail_Primary/extraction.log
 ### "Vault not found"
 
 ```
-Error: Vault not found: /Users/you/Documents/WHID_Vaults/Gmail_Primary
+Error: Vault not found: .../vaults/Gmail_Primary
 ```
 
 You need to run `whid collect gmail` first to create the vault.
@@ -108,10 +108,10 @@ gmail:
 
 ```yaml
 # Wrong — missing space after colon
-vault_root:~/Documents/WHID_Vaults
+vault_root:vaults
 
 # Correct
-vault_root: ~/Documents/WHID_Vaults
+vault_root: vaults
 ```
 
 Use [yamlchecker.com](https://yamlchecker.com) to validate your config.
@@ -121,7 +121,7 @@ Use [yamlchecker.com](https://yamlchecker.com) to validate your config.
 If you store vaults on an external drive:
 
 ```yaml
-vault_root: /Volumes/MyDrive/WHID_Vaults
+vault_root: /Volumes/MyDrive/my_vaults
 ```
 
 Make sure the drive is mounted before running WHID. If it's not, you'll see:
@@ -144,7 +144,7 @@ These are approximate — emails with lots of text will be larger.
 
 ### Where is my data?
 
-By default: `~/Documents/WHID_Vaults/`
+By default: `vaults/` inside the project folder.
 
 Check `config.yaml` for your `vault_root` setting, or run:
 
@@ -157,7 +157,7 @@ whid status
 Yes. Move the folder and update `vault_root` in `config.yaml`:
 
 ```yaml
-vault_root: /new/path/to/WHID_Vaults
+vault_root: /new/path/to/my_vaults
 ```
 
 ### How do I start over?
@@ -165,13 +165,13 @@ vault_root: /new/path/to/WHID_Vaults
 To re-download everything for a vault:
 
 ```bash
-rm -rf ~/Documents/WHID_Vaults/Gmail_Primary
+rm -rf vaults/Gmail_Primary
 whid collect gmail
 ```
 
 To remove all WHID data:
 
 ```bash
-rm -rf ~/Documents/WHID_Vaults
+rm -rf vaults/
 rm token.json
 ```

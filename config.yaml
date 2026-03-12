@@ -1,11 +1,11 @@
 # WhatHaveIDone (WHID) Configuration
 
 # Directory where all vaults are stored
-# Default vault location — override with your own path
-# Examples:
-#   ~/WHID_Vaults
-#   /Volumes/ExternalDrive/WHID_Vaults
-vault_root: ~/Documents/WHID_Vaults
+# Default: 'vaults/' subfolder next to whid.py
+# Override with an absolute path if you want vaults elsewhere:
+#   /Volumes/ExternalDrive/my_vaults
+#   ~/Desktop/my_vaults
+vault_root: vaults
 
 # Gmail Collector settings
 gmail:

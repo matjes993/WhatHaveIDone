@@ -65,12 +65,16 @@ def load_config():
 
 
 def get_vault_root(config):
-    vault_root = os.path.expanduser(config.get("vault_root", "~/Documents/WHID_Vaults"))
+    default_vault = os.path.join(PROJECT_ROOT, "vaults")
+    vault_root = config.get("vault_root", default_vault)
+    vault_root = os.path.expanduser(vault_root)
+    if not os.path.isabs(vault_root):
+        vault_root = os.path.join(PROJECT_ROOT, vault_root)
 
     parent = os.path.dirname(vault_root)
     if not os.path.exists(parent):
         print(f"\nError: Vault root parent directory does not exist: {parent}")
-        print(f"Check vault_root in config.yaml: {config.get('vault_root', '~/Documents/WHID_Vaults')}")
+        print(f"Check vault_root in config.yaml: {config.get('vault_root', 'vaults')}")
         if "/Volumes/" in parent:
             print("Hint: Is your external drive connected?")
         sys.exit(1)
@@ -310,7 +314,7 @@ def cmd_setup(args, config):
     print("  Setup complete!")
     print("=" * 50)
     print(f"\n  Run:  whid collect gmail")
-    print(f"  Data: ~/Documents/WHID_Vaults/Gmail_Primary/")
+    print(f"  Data: {os.path.join(PROJECT_ROOT, 'vaults', 'Gmail_Primary')}/")
     print()
 
 

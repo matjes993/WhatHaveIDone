@@ -430,7 +430,7 @@ def run_export(vault_name="Primary", config=None):
     gmail_config = config.get("gmail", {})
 
     vault_root = os.path.join(
-        os.path.expanduser(config.get("vault_root", "~/Documents/WHID_Vaults")),
+        os.path.expanduser(config.get("vault_root", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vaults"))),
         f"Gmail_{vault_name}",
     )
     max_workers = gmail_config.get("max_workers", 5)
