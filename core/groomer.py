@@ -12,7 +12,7 @@ import sys
 import logging
 from datetime import datetime
 
-from core.vault import atomic_write as _atomic_write
+from core.vault import atomic_write as _atomic_write, _open_jsonl, _find_jsonl_files, HAS_ZSTD
 
 logger = logging.getLogger("whid.groomer")
 
@@ -123,80 +123,84 @@ def groom_vault(vault_path):
     unparseable_dates = 0
     total_entries = 0
 
-    for root, _dirs, files in os.walk(vault_path):
-        for file in files:
-            if not file.endswith(".jsonl"):
+    for file_path in _find_jsonl_files(vault_path):
+        is_compressed = file_path.endswith(".zst")
+        entries = []
+
+        try:
+            fh = _open_jsonl(file_path)
+            if fh is None:
                 continue
+            with fh:
+                for line_num, line in enumerate(fh, 1):
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        entry = json.loads(line)
+                    except json.JSONDecodeError as e:
+                        logger.warning(
+                            "Skipping malformed JSON in %s line %d: %s",
+                            file_path,
+                            line_num,
+                            e,
+                        )
+                        entries_skipped += 1
+                        continue
 
-            file_path = os.path.join(root, file)
-            entries = []
+                    if "id" not in entry:
+                        logger.warning(
+                            "Skipping entry without 'id' in %s line %d",
+                            file_path,
+                            line_num,
+                        )
+                        entries_skipped += 1
+                        continue
 
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    for line_num, line in enumerate(f, 1):
-                        line = line.strip()
-                        if not line:
-                            continue
-                        try:
-                            entry = json.loads(line)
-                        except json.JSONDecodeError as e:
-                            logger.warning(
-                                "Skipping malformed JSON in %s line %d: %s",
-                                file_path,
-                                line_num,
-                                e,
-                            )
-                            entries_skipped += 1
-                            continue
+                    entries.append(entry)
+        except PermissionError:
+            logger.error("Permission denied reading %s — skipping.", file_path)
+            continue
+        except OSError as e:
+            logger.error("Cannot read %s: %s — skipping.", file_path, e)
+            continue
 
-                        if "id" not in entry:
-                            logger.warning(
-                                "Skipping entry without 'id' in %s line %d",
-                                file_path,
-                                line_num,
-                            )
-                            entries_skipped += 1
-                            continue
+        if not entries:
+            continue
 
-                        entries.append(entry)
-            except PermissionError:
-                logger.error("Permission denied reading %s — skipping.", file_path)
-                continue
-            except OSError as e:
-                logger.error("Cannot read %s: %s — skipping.", file_path, e)
-                continue
+        # Deduplicate by ID (last occurrence wins)
+        before_count = len(entries)
+        unique = {e["id"]: e for e in entries}
+        entries_deduped += before_count - len(unique)
+        total_entries += len(unique)
 
-            if not entries:
-                continue
+        # Sort chronologically and count unparseable dates
+        sorted_entries = sorted(unique.values(), key=_sort_key)
+        for e in sorted_entries:
+            if parse_date(e.get("date", "")) is None and e.get("date", ""):
+                unparseable_dates += 1
 
-            # Deduplicate by ID (last occurrence wins)
-            before_count = len(entries)
-            unique = {e["id"]: e for e in entries}
-            entries_deduped += before_count - len(unique)
-            total_entries += len(unique)
+        # Write back — plain JSONL (even if source was compressed)
+        # The user can re-compress afterwards with `whid compress`
+        write_path = file_path[:-4] if is_compressed else file_path  # strip .zst
+        lines = [json.dumps(e) + "\n" for e in sorted_entries]
+        try:
+            _atomic_write(write_path, lines)
+            # Remove old compressed file if we wrote a new plain one
+            if is_compressed and os.path.exists(file_path):
+                os.remove(file_path)
+        except (PermissionError, OSError) as e:
+            logger.error(
+                "Failed to write groomed file %s: %s — original file unchanged.",
+                write_path,
+                e,
+            )
+            continue
 
-            # Sort chronologically and count unparseable dates
-            sorted_entries = sorted(unique.values(), key=_sort_key)
-            for e in sorted_entries:
-                if parse_date(e.get("date", "")) is None and e.get("date", ""):
-                    unparseable_dates += 1
+        for e in sorted_entries:
+            all_found_ids.add(e["id"])
 
-            # Atomic write back
-            lines = [json.dumps(e) + "\n" for e in sorted_entries]
-            try:
-                _atomic_write(file_path, lines)
-            except (PermissionError, OSError) as e:
-                logger.error(
-                    "Failed to write groomed file %s: %s — original file unchanged.",
-                    file_path,
-                    e,
-                )
-                continue
-
-            for e in sorted_entries:
-                all_found_ids.add(e["id"])
-
-            files_processed += 1
+        files_processed += 1
 
     # Sniper Mechanism: detect ghosts
     ghost_ids = old_log_ids - all_found_ids

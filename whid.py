@@ -1052,7 +1052,7 @@ def cmd_search(args, config):
 
 def cmd_compress(args, config):
     """Compress vault JSONL files with Zstandard."""
-    from core.vault import compress_vault
+    from core.vault import compress_vault, _find_jsonl_files
 
     vault_root = config.get("vault_root", os.path.join(PROJECT_ROOT, "vaults"))
     vault_root = os.path.expanduser(vault_root)
@@ -1083,23 +1083,49 @@ def cmd_compress(args, config):
         print(f"  No vaults found{f' matching {source}' if source else ''}.")
         return
 
-    total_files = 0
-    total_saved = 0
+    grand_files = 0
+    grand_original = 0
+    grand_compressed = 0
 
     for name, path in targets:
-        files, saved = compress_vault(path)
-        if files > 0:
-            saved_mb = saved / (1024 * 1024)
-            print(f"  {name}: {files} files compressed, {saved_mb:.1f} MB saved")
-            total_files += files
-            total_saved += saved
+        # Count uncompressed files
+        plain_files = [f for f in _find_jsonl_files(path) if not f.endswith(".zst")]
+        if not plain_files:
+            continue
 
-    if total_files == 0:
-        print("  Everything already compressed.")
+        print(f"\n  {name} ({len(plain_files)} files)")
+
+        file_count = [0]
+
+        def on_progress(file_path, orig, comp):
+            file_count[0] += 1
+            ratio = orig / comp if comp > 0 else 0
+            fname = os.path.basename(file_path)
+            print(f"\r    [{file_count[0]}/{len(plain_files)}] {fname}"
+                  f" — {orig / 1024:.0f} KB → {comp / 1024:.0f} KB ({ratio:.1f}x)",
+                  end="", flush=True)
+
+        files, orig_total, comp_total = compress_vault(path, progress_fn=on_progress)
+
+        if files > 0:
+            ratio = orig_total / comp_total if comp_total > 0 else 0
+            print(f"\r    {files} files: {orig_total / (1024*1024):.1f} MB → "
+                  f"{comp_total / (1024*1024):.1f} MB ({ratio:.1f}x compression)"
+                  f"          ")  # trailing spaces to clear progress line
+            grand_files += files
+            grand_original += orig_total
+            grand_compressed += comp_total
+
+    if grand_files == 0:
+        print("\n  Everything already compressed.")
     else:
-        total_mb = total_saved / (1024 * 1024)
+        saved = grand_original - grand_compressed
+        ratio = grand_original / grand_compressed if grand_compressed > 0 else 0
         print(f"\n  {'=' * 45}")
-        print(f"  Done! {total_files} files compressed, {total_mb:.1f} MB saved")
+        print(f"  Done! {grand_files} files compressed")
+        print(f"  Original:   {grand_original / (1024*1024):,.1f} MB")
+        print(f"  Compressed: {grand_compressed / (1024*1024):,.1f} MB")
+        print(f"  Saved:      {saved / (1024*1024):,.1f} MB ({ratio:.1f}x)")
     print()
 
 
@@ -1125,17 +1151,8 @@ def cmd_status(args, config):
 
         entries_found = True
 
-        total_entries = 0
-        jsonl_files = 0
-        for root, _dirs, files in os.walk(vault_path):
-            for f in files:
-                if f.endswith(".jsonl"):
-                    jsonl_files += 1
-                    try:
-                        with open(os.path.join(root, f), "r") as fh:
-                            total_entries += sum(1 for _ in fh)
-                    except (OSError, PermissionError) as e:
-                        logger.warning("Could not read %s: %s", os.path.join(root, f), e)
+        from core.vault import count_entries as _count_entries
+        total_entries, jsonl_files = _count_entries(vault_path)
 
         processed_log = os.path.join(vault_path, "processed_ids.txt")
         processed = 0

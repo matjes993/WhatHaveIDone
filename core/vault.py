@@ -323,23 +323,32 @@ def rewrite_file_entries(file_path, entries):
     atomic_write(file_path, lines)
 
 
-def compress_vault(vault_path, level=9):
+def compress_vault(vault_path, level=9, progress_fn=None):
     """
     Compress all .jsonl files to .jsonl.zst using Zstandard.
     Verifies the compressed file before deleting the original.
-    Returns (files_compressed, bytes_saved).
+
+    Args:
+        vault_path: Path to vault directory.
+        level: Zstandard compression level (1-22, default 9).
+        progress_fn: Optional callback(file_path, original_bytes, compressed_bytes)
+                     called after each file is compressed.
+
+    Returns (files_compressed, original_total, compressed_total).
     """
     if not HAS_ZSTD:
         raise ImportError("zstandard is required: pip install zstandard")
 
     cctx = zstd.ZstdCompressor(level=level)
     files_compressed = 0
-    bytes_saved = 0
+    original_total = 0
+    compressed_total = 0
 
-    for file_path in list(_find_jsonl_files(vault_path)):
-        if file_path.endswith(".zst"):
-            continue  # already compressed
+    jsonl_files = [f for f in _find_jsonl_files(vault_path) if not f.endswith(".zst")]
+    if not jsonl_files:
+        return 0, 0, 0
 
+    for file_path in jsonl_files:
         zst_path = file_path + ".zst"
         original_size = os.path.getsize(file_path)
 
@@ -375,6 +384,10 @@ def compress_vault(vault_path, level=9):
         # Safe to remove original
         os.remove(file_path)
         files_compressed += 1
-        bytes_saved += original_size - compressed_size
+        original_total += original_size
+        compressed_total += compressed_size
 
-    return files_compressed, bytes_saved
+        if progress_fn:
+            progress_fn(file_path, original_size, compressed_size)
+
+    return files_compressed, original_total, compressed_total

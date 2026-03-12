@@ -1028,25 +1028,13 @@ def run_export(vault_name="Primary", config=None, full_scan=False):
     # Integrity check — count entries on disk vs processed_ids
     print("\n  Verifying vault integrity...", end="", flush=True)
 
+    from core.vault import read_all_entries
     disk_ids = set()
     disk_entries = 0
-    for root, _dirs, files in os.walk(vault_root):
-        for f in files:
-            if f.endswith(".jsonl"):
-                try:
-                    with open(os.path.join(root, f), "r") as fh:
-                        for line in fh:
-                            line = line.strip()
-                            if line:
-                                try:
-                                    entry = json.loads(line)
-                                    disk_entries += 1
-                                    if "id" in entry:
-                                        disk_ids.add(entry["id"])
-                                except json.JSONDecodeError:
-                                    pass
-                except (OSError, PermissionError):
-                    pass
+    for entry in read_all_entries(vault_root):
+        disk_entries += 1
+        if "id" in entry:
+            disk_ids.add(entry["id"])
 
     log_ids = set()
     if os.path.exists(processed_log):
