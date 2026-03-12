@@ -485,7 +485,7 @@ def run_export(vault_name="Primary", config=None):
             processed_ids = {line.strip() for line in f if line.strip()}
 
     if processed_ids:
-        print(f"Already vaulted: {len(processed_ids):,} messages")
+        print(f"  + Already vaulted: {len(processed_ids):,} messages")
 
     # Determine which messages to process
     is_sniper_run = False
@@ -494,11 +494,19 @@ def run_export(vault_name="Primary", config=None):
             to_process_ids = [line.strip() for line in f if line.strip()]
         is_sniper_run = True
         print(
-            f"Sniper mode: recovering {len(to_process_ids):,} missing messages"
+            f"  + Sniper mode: recovering {len(to_process_ids):,} missing messages"
         )
     else:
-        print("Scanning Gmail for messages...", end="", flush=True)
         to_process_ids = []
+
+        def _print_scan_progress(count):
+            frames = ["|", "/", "-", "\\"]
+            frame = frames[(count // 500) % len(frames)]
+            print(
+                f"\r  {frame} Scanning inbox... {count:,} messages found",
+                end="",
+                flush=True,
+            )
 
         try:
             results = (
@@ -508,17 +516,15 @@ def run_export(vault_name="Primary", config=None):
                 .execute()
             )
         except HttpError as e:
-            print()
             _handle_api_error(e)
         except Exception as e:
-            print()
             print(f"\nError: Failed to fetch message list: {e}")
             print("Check your internet connection and try again.")
             sys.exit(1)
 
         msgs = results.get("messages", [])
         to_process_ids.extend(m["id"] for m in msgs)
-        print(f" {len(to_process_ids):,}", end="", flush=True)
+        _print_scan_progress(len(to_process_ids))
 
         while "nextPageToken" in results:
             try:
@@ -537,21 +543,21 @@ def run_export(vault_name="Primary", config=None):
                 _handle_api_error(e)
             except Exception as e:
                 logger.error("Error fetching message list page: %s", e)
-                print(f" (stopped early: {e})")
+                print(f"\n  (stopped early: {e})")
                 break
 
             msgs = results.get("messages", [])
             to_process_ids.extend(m["id"] for m in msgs)
-            print(f"...{len(to_process_ids):,}", end="", flush=True)
+            _print_scan_progress(len(to_process_ids))
 
-        print(f" done. ({len(to_process_ids):,} total)")
+        print(f"\r  + Scan complete: {len(to_process_ids):,} messages found        ")
 
         to_process_ids = [
             mid for mid in to_process_ids if mid not in processed_ids
         ]
 
     if not to_process_ids:
-        print("Nothing new to process — vault is up to date.")
+        print("  + Nothing new — vault is up to date.")
         logger.removeHandler(file_handler)
         file_handler.close()
         return
@@ -560,10 +566,8 @@ def run_export(vault_name="Primary", config=None):
     throttle = AdaptiveThrottle(max_workers, batch_size)
 
     total_msgs = len(to_process_ids)
-    print(
-        f"Downloading {total_msgs:,} messages "
-        f"(workers={max_workers}, batch={batch_size})...\n"
-    )
+    print(f"  + Downloading {total_msgs:,} messages "
+          f"(workers={max_workers}, batch={batch_size})\n")
 
     vaulted = 0
     failed = 0
@@ -618,21 +622,29 @@ def run_export(vault_name="Primary", config=None):
 
                 failed += len(batch_failed)
 
-                # Progress bar
+                # Progress display
                 elapsed = time.time() - start_time
                 rate = vaulted / elapsed if elapsed > 0 else 0
                 processed_so_far = vaulted + failed
                 pct = int(processed_so_far / total_msgs * 100)
 
-                bar_width = 30
+                bar_width = 25
                 filled = int(bar_width * processed_so_far / total_msgs)
-                bar = "=" * filled + "-" * (bar_width - filled)
+                bar = "#" * filled + "." * (bar_width - filled)
+
+                fail_str = f" | {failed} failed" if failed > 0 else ""
+                eta = ""
+                if rate > 0 and vaulted < total_msgs:
+                    remaining = (total_msgs - processed_so_far) / rate
+                    if remaining > 60:
+                        eta = f" | ~{remaining / 60:.0f}m left"
+                    else:
+                        eta = f" | ~{remaining:.0f}s left"
 
                 print(
-                    f"\r  [{bar}] {pct}% | "
-                    f"{vaulted:,}/{total_msgs:,} vaulted | "
-                    f"{rate:.0f} msg/s | "
-                    f"{failed} failed",
+                    f"\r  [{bar}] {pct:3d}% | "
+                    f"{vaulted:,}/{total_msgs:,} | "
+                    f"{rate:.0f} msg/s{fail_str}{eta}   ",
                     end="",
                     flush=True,
                 )
@@ -654,8 +666,13 @@ def run_export(vault_name="Primary", config=None):
 
     elapsed = time.time() - start_time
     rate = vaulted / elapsed if elapsed > 0 else 0
-    print(f"\nDone! {vaulted:,} messages vaulted in {elapsed:.1f}s ({rate:.0f} msg/s)")
-    print(f"Saved to: {vault_root}")
+
+    print()
+    print("  " + "=" * 45)
+    print(f"    Done! {vaulted:,} messages vaulted")
+    print(f"    Time: {elapsed:.1f}s ({rate:.0f} msg/s)")
+    print(f"    Saved to: {vault_root}")
+    print("  " + "=" * 45)
 
     if failed > 0:
         print(
