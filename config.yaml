@@ -20,3 +20,12 @@ gmail:
   # Path to Google OAuth credentials
   credentials_file: credentials.json
   token_file: token.json
+
+# Google Contacts Collector settings
+contacts:
+  # OAuth scope (readonly = safe, no contact modification)
+  scope: https://www.googleapis.com/auth/contacts.readonly
+  # Uses same credentials.json as Gmail
+  credentials_file: credentials.json
+  # Separate token (contacts need a different scope)
+  token_file: token_contacts.json

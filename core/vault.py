@@ -1,0 +1,229 @@
+"""
+WHID Vault I/O Utilities
+Shared read/write helpers for vault JSONL files.
+Thread-safe writes, entry counting, integrity checks.
+"""
+
+import os
+import json
+import threading
+import logging
+from collections import defaultdict
+
+logger = logging.getLogger("whid.vault")
+
+# Global write lock for all vault file operations
+_write_lock = threading.Lock()
+
+# Month names for file naming (01_January.jsonl, etc.)
+_MONTH_NAMES = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+]
+
+
+def flush_entries(entries, vault_path, file_name):
+    """Append JSONL entries to a specific file in vault_path. Thread-safe."""
+    if not entries:
+        return
+
+    os.makedirs(vault_path, exist_ok=True)
+    file_path = os.path.join(vault_path, file_name)
+
+    with _write_lock:
+        try:
+            with open(file_path, "a", encoding="utf-8") as f:
+                for entry in entries:
+                    f.write(json.dumps(entry) + "\n")
+        except PermissionError:
+            logger.error(
+                "Permission denied writing to %s — check folder permissions.",
+                file_path,
+            )
+            raise
+        except OSError as e:
+            if "No space left" in str(e) or e.errno == 28:
+                logger.error(
+                    "Disk full — cannot write to %s. Free up space and re-run.",
+                    file_path,
+                )
+            else:
+                logger.error("Failed to write %s: %s", file_path, e)
+            raise
+
+
+def flush_entries_by_date(entries, vault_path, parse_date_fn):
+    """
+    Group entries by year/month and write to JSONL files.
+    Uses parse_date_fn(date_str) to parse the "date" field.
+    Entries with unparseable dates go to _unknown/unknown_date.jsonl.
+    Thread-safe.
+    """
+    if not entries:
+        return
+
+    file_groups = defaultdict(list)
+
+    for entry in entries:
+        dt = parse_date_fn(entry.get("date", ""))
+
+        if dt:
+            year_dir = os.path.join(vault_path, dt.strftime("%Y"))
+            month_num = dt.month
+            filename = f"{month_num:02d}_{_MONTH_NAMES[month_num - 1]}.jsonl"
+        else:
+            year_dir = os.path.join(vault_path, "_unknown")
+            filename = "unknown_date.jsonl"
+
+        file_path = os.path.join(year_dir, filename)
+        file_groups[file_path].append((year_dir, entry))
+
+    with _write_lock:
+        for file_path, items in file_groups.items():
+            try:
+                os.makedirs(items[0][0], exist_ok=True)
+                with open(file_path, "a", encoding="utf-8") as f:
+                    for _, entry in items:
+                        f.write(json.dumps(entry) + "\n")
+            except PermissionError:
+                logger.error(
+                    "Permission denied writing to %s — check folder permissions.",
+                    file_path,
+                )
+                raise
+            except OSError as e:
+                if "No space left" in str(e) or e.errno == 28:
+                    logger.error(
+                        "Disk full — cannot write to %s. Free up space and re-run.",
+                        file_path,
+                    )
+                else:
+                    logger.error("Failed to write %s: %s", file_path, e)
+                raise
+
+
+def count_entries(vault_path):
+    """Count total entries across all JSONL files. Returns (total_entries, num_files)."""
+    total = 0
+    num_files = 0
+
+    for root, _dirs, files in os.walk(vault_path):
+        for f in files:
+            if not f.endswith(".jsonl"):
+                continue
+            num_files += 1
+            try:
+                with open(os.path.join(root, f), "r", encoding="utf-8") as fh:
+                    for line in fh:
+                        if line.strip():
+                            total += 1
+            except (OSError, PermissionError) as e:
+                logger.warning("Cannot read %s: %s", f, e)
+
+    return total, num_files
+
+
+def read_all_entries(vault_path):
+    """Generator that yields all entries from all JSONL files. Skips malformed JSON."""
+    for root, _dirs, files in os.walk(vault_path):
+        for f in sorted(files):
+            if not f.endswith(".jsonl"):
+                continue
+            file_path = os.path.join(root, f)
+            try:
+                with open(file_path, "r", encoding="utf-8") as fh:
+                    for line_num, line in enumerate(fh, 1):
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            yield json.loads(line)
+                        except json.JSONDecodeError:
+                            logger.warning(
+                                "Skipping malformed JSON in %s line %d",
+                                file_path,
+                                line_num,
+                            )
+            except (OSError, PermissionError) as e:
+                logger.warning("Cannot read %s: %s", file_path, e)
+
+
+def read_entry_ids(vault_path):
+    """Return set of all entry IDs found in JSONL files."""
+    ids = set()
+    for entry in read_all_entries(vault_path):
+        if "id" in entry:
+            ids.add(entry["id"])
+    return ids
+
+
+def verify_integrity(vault_path):
+    """
+    Compare entries on disk with processed_ids.txt.
+    Returns dict with: disk_ids, log_ids, missing, duplicates.
+    Prints a status line.
+    """
+    disk_ids = set()
+    disk_entries = 0
+
+    for root, _dirs, files in os.walk(vault_path):
+        for f in files:
+            if not f.endswith(".jsonl"):
+                continue
+            try:
+                with open(os.path.join(root, f), "r", encoding="utf-8") as fh:
+                    for line in fh:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            entry = json.loads(line)
+                            disk_entries += 1
+                            if "id" in entry:
+                                disk_ids.add(entry["id"])
+                        except json.JSONDecodeError:
+                            pass
+            except (OSError, PermissionError):
+                pass
+
+    log_ids = load_processed_ids(vault_path)
+    missing = log_ids - disk_ids
+    duplicates = disk_entries - len(disk_ids)
+
+    if not missing and duplicates == 0:
+        print(f"  Integrity OK ({len(disk_ids):,} entries, all accounted for)")
+    else:
+        if missing:
+            print(f"  WARNING: {len(missing):,} IDs in log but missing from disk")
+        if duplicates > 0:
+            print(f"  INFO: {duplicates:,} duplicate entries found")
+
+    return {
+        "disk_ids": disk_ids,
+        "log_ids": log_ids,
+        "missing": missing,
+        "duplicates": duplicates,
+    }
+
+
+def load_processed_ids(vault_path):
+    """Load processed_ids.txt into a set."""
+    processed_log = os.path.join(vault_path, "processed_ids.txt")
+    if not os.path.exists(processed_log):
+        return set()
+
+    with open(processed_log, "r") as f:
+        return {line.strip() for line in f if line.strip()}
+
+
+def append_processed_ids(vault_path, ids):
+    """Append IDs to processed_ids.txt."""
+    if not ids:
+        return
+
+    os.makedirs(vault_path, exist_ok=True)
+    processed_log = os.path.join(vault_path, "processed_ids.txt")
+
+    with open(processed_log, "a") as f:
+        for entry_id in ids:
+            f.write(f"{entry_id}\n")

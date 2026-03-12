@@ -14,6 +14,10 @@ _whid() {
 
     sources=(
         'gmail:Google Gmail'
+        'contacts-google:Google Contacts'
+        'contacts-linkedin:LinkedIn connections (CSV import)'
+        'contacts-facebook:Facebook friends (JSON import)'
+        'contacts-instagram:Instagram followers (JSON import)'
     )
 
     case "$CURRENT" in

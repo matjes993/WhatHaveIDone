@@ -1,4 +1,5 @@
 token.json
+token_contacts.json
 credentials.json
 Vaults/
 vaults/
@@ -9,3 +10,4 @@ extraction.log
 missing_ids.txt
 .env
 .env.local
+whid.egg-info/
