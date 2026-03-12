@@ -409,6 +409,26 @@ def _flush_entries_to_vault(entries, vault_root):
                 raise
 
 
+def _is_rate_limit_403(exception):
+    """Return True if an HttpError 403 is actually a rate-limit response.
+
+    Gmail's Batch API sometimes returns 403 with reason
+    'rateLimitExceeded' or 'userRateLimitExceeded' instead of a proper
+    429.  Real permission errors (confidential mode, delegated
+    mailboxes, etc.) use reasons like 'forbidden' or
+    'insufficientPermissions' and should NOT be retried.
+    """
+    details = getattr(exception, "error_details", None)
+    if isinstance(details, list):
+        for detail in details:
+            reason = detail.get("reason", "") if isinstance(detail, dict) else ""
+            if "rateLimitExceeded" in reason or "userRateLimitExceeded" in reason:
+                return True
+    # Also check the string representation as fallback
+    err_str = str(exception)
+    return "rateLimitExceeded" in err_str
+
+
 def _fetch_batch(service, message_ids):
     """
     Fetch a batch of messages using the Gmail Batch API.
@@ -423,12 +443,24 @@ def _fetch_batch(service, message_ids):
         if exception is not None:
             if isinstance(exception, HttpError):
                 status = exception.resp.status
-                if status in (429, 403):
-                    # Gmail Batch API often returns 403 instead of 429
-                    # during rate limiting. Treat both as retryable.
+                if status == 429:
                     with lock:
                         rate_limited.append(request_id)
                     return
+                elif status == 403:
+                    # Gmail Batch API sometimes returns 403 for rate
+                    # limiting (rateLimitExceeded).  Only retry those —
+                    # real permission errors (e.g. confidential-mode
+                    # messages) will never succeed and must be skipped.
+                    if _is_rate_limit_403(exception):
+                        with lock:
+                            rate_limited.append(request_id)
+                        return
+                    else:
+                        logger.debug(
+                            "Permanent 403 for message %s — skipping",
+                            request_id,
+                        )
                 elif status == 404:
                     pass  # silently skip deleted messages
                 else:

@@ -135,6 +135,7 @@ class MockGmailInbox:
         page_size=10,
         include_html=True,
         include_bad_dates=True,
+        forbidden_ids=None,
     ):
         self.messages = {}
         self.rate_limit_after = rate_limit_after
@@ -142,6 +143,8 @@ class MockGmailInbox:
         self.rate_limited_so_far = 0
         self.fetch_count = 0
         self.page_size = page_size
+        self.forbidden_ids = set(forbidden_ids or [])
+        self.rate_limit_403_ids = set()  # IDs that get 403 rate limit (not 429)
 
         # Generate realistic emails spanning multiple years
         base_date = datetime(2020, 1, 1, tzinfo=timezone.utc)
@@ -248,6 +251,29 @@ class MockGmailInbox:
                 resp.status = 429
                 mock_request.execute.side_effect = HttpError(
                     resp, b'{"error": {"message": "Rate limit exceeded"}}'
+                )
+                return mock_request
+
+            if id in self.rate_limit_403_ids:
+                self.rate_limit_403_ids.discard(id)  # only 403 once, then succeed
+                mock_request = MagicMock()
+                resp = MagicMock()
+                resp.status = 403
+                mock_request.execute.side_effect = HttpError(
+                    resp,
+                    b'{"error": {"message": "Rate Limit Exceeded", '
+                    b'"errors": [{"reason": "rateLimitExceeded", "domain": "usageLimits"}]}}',
+                )
+                return mock_request
+
+            if id in self.forbidden_ids:
+                mock_request = MagicMock()
+                resp = MagicMock()
+                resp.status = 403
+                mock_request.execute.side_effect = HttpError(
+                    resp,
+                    b'{"error": {"message": "Insufficient Permission", '
+                    b'"errors": [{"reason": "forbidden", "domain": "global"}]}}',
                 )
                 return mock_request
 

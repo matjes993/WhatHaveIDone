@@ -18,6 +18,7 @@ from collectors.gmail_collector import (
     _flush_entries_to_vault,
     _fetch_batch,
     _handle_api_error,
+    _is_rate_limit_403,
     AdaptiveThrottle,
 )
 
@@ -568,6 +569,105 @@ class TestFetchBatch:
         assert len(entries) == 0
         assert len(failed) == 0
         assert len(rate_limited) == 0
+
+    def test_permanent_403_goes_to_failed_not_rate_limited(self):
+        """Real permission 403s (confidential mode, etc.) should NOT be retried."""
+        from tests.mock_gmail import MockGmailInbox
+        forbidden = {"msg_000001", "msg_000003"}
+        inbox = MockGmailInbox(num_messages=5, forbidden_ids=forbidden)
+        service = inbox.build_service()
+
+        ids = [f"msg_{i:06d}" for i in range(5)]
+        entries, failed, rate_limited = _fetch_batch(service, ids)
+
+        assert len(entries) == 3
+        assert set(failed) == forbidden
+        assert len(rate_limited) == 0  # NOT retried
+
+    def test_rate_limit_403_goes_to_rate_limited(self):
+        """403 with rateLimitExceeded reason SHOULD be retried."""
+        from tests.mock_gmail import MockGmailInbox
+        inbox = MockGmailInbox(num_messages=5)
+        inbox.rate_limit_403_ids = {"msg_000001", "msg_000003"}
+        service = inbox.build_service()
+
+        ids = [f"msg_{i:06d}" for i in range(5)]
+        entries, failed, rate_limited = _fetch_batch(service, ids)
+
+        # The rate_limit_403 IDs succeed on second fetch (mock clears them)
+        # so on first call they go to rate_limited
+        assert len(rate_limited) == 2
+        assert len(entries) == 3
+
+    def test_mixed_403_types(self):
+        """Mix of permanent 403s, rate-limit 403s, and normal messages."""
+        from tests.mock_gmail import MockGmailInbox
+        inbox = MockGmailInbox(num_messages=6, forbidden_ids={"msg_000002"})
+        inbox.rate_limit_403_ids = {"msg_000004"}
+        service = inbox.build_service()
+
+        ids = [f"msg_{i:06d}" for i in range(6)]
+        entries, failed, rate_limited = _fetch_batch(service, ids)
+
+        assert len(entries) == 4  # 0,1,3,5
+        assert "msg_000002" in failed  # permanent 403
+        assert "msg_000004" in rate_limited  # rate-limit 403
+
+
+# ---------------------------------------------------------------------------
+# Is rate limit 403
+# ---------------------------------------------------------------------------
+class TestIsRateLimit403:
+    def test_rate_limit_exceeded_reason(self):
+        from googleapiclient.errors import HttpError
+        resp = MagicMock()
+        resp.status = 403
+        error = HttpError(
+            resp,
+            b'{"error": {"message": "Rate Limit Exceeded", '
+            b'"errors": [{"reason": "rateLimitExceeded", "domain": "usageLimits"}]}}',
+        )
+        assert _is_rate_limit_403(error) is True
+
+    def test_user_rate_limit_exceeded(self):
+        from googleapiclient.errors import HttpError
+        resp = MagicMock()
+        resp.status = 403
+        error = HttpError(
+            resp,
+            b'{"error": {"message": "User Rate Limit Exceeded", '
+            b'"errors": [{"reason": "userRateLimitExceeded", "domain": "usageLimits"}]}}',
+        )
+        assert _is_rate_limit_403(error) is True
+
+    def test_forbidden_is_not_rate_limit(self):
+        from googleapiclient.errors import HttpError
+        resp = MagicMock()
+        resp.status = 403
+        error = HttpError(
+            resp,
+            b'{"error": {"message": "Insufficient Permission", '
+            b'"errors": [{"reason": "forbidden", "domain": "global"}]}}',
+        )
+        assert _is_rate_limit_403(error) is False
+
+    def test_insufficient_permissions_is_not_rate_limit(self):
+        from googleapiclient.errors import HttpError
+        resp = MagicMock()
+        resp.status = 403
+        error = HttpError(
+            resp,
+            b'{"error": {"message": "Insufficient Permission", '
+            b'"errors": [{"reason": "insufficientPermissions", "domain": "global"}]}}',
+        )
+        assert _is_rate_limit_403(error) is False
+
+    def test_no_error_details(self):
+        from googleapiclient.errors import HttpError
+        resp = MagicMock()
+        resp.status = 403
+        error = HttpError(resp, b'{"error": {"message": "Forbidden"}}')
+        assert _is_rate_limit_403(error) is False
 
 
 # ---------------------------------------------------------------------------
