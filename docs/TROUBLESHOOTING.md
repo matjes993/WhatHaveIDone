@@ -15,17 +15,18 @@ pip install -e .
 
 ### "command not found: nomolo"
 
-The `nomolo` command is only available inside the virtual environment:
+Run the installer — it sets up the `nomolo` command globally:
 
 ```bash
-source venv/bin/activate
-nomolo --help
+./install.sh
+source ~/.zshrc   # pick up PATH changes (only needed once)
 ```
 
-If you installed with `pip install -e .` and it still doesn't work, check that the venv's `bin` directory is on your PATH:
+If it still doesn't work, verify the command exists:
 
 ```bash
 which nomolo
+# Should show: ~/.local/bin/nomolo
 ```
 
 ### Python version errors

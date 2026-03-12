@@ -43,20 +43,50 @@ You ──> NOMOLO ──> Your Vault (local JSONL files, organized by date)
 
 ## Current Status
 
-| Collector | Status | Description |
-|-----------|--------|-------------|
-| **Gmail** | **Live** | Full mailbox export with Batch API (~1000 msgs/sec) |
-| **WhatsApp** | **Next up** | Chat history export and structuring |
-| _More planned_ | _Backlog_ | _Google Drive, iCloud Photos, Notion, Telegram, ..._ |
+### Collectors
+
+| Collector | Source | Status |
+|-----------|--------|--------|
+| **Gmail** | Gmail API (Batch) | **Live** — ~1000 msgs/sec |
+| **Google Contacts** | People API | **Live** |
+| **Google Calendar** | Calendar API / ICS | **Live** |
+| **Books** | Goodreads / Audible CSV | **Live** |
+| **YouTube** | Google Takeout JSON | **Live** |
+| **Music** | Spotify JSON export | **Live** |
+| **Finance** | PayPal / bank CSV | **Live** |
+| **Shopping** | Amazon CSV | **Live** |
+| **Notes** | Markdown / text files | **Live** |
+| **Podcasts** | DB / CSV exports | **Live** |
+| **Health** | Apple Health XML | **Live** |
+| **Browser** | Chrome history (local) | **Live** |
+| **Maps** | Google Maps Takeout | **Live** |
+| **LinkedIn** | CSV export | **Live** |
+| **Facebook** | JSON export | **Live** |
+| **Instagram** | JSON export | **Live** |
+| **WhatsApp** | _Next up_ | Planned |
+
+### Features
+
+| Feature | Status |
+|---------|--------|
+| Universal Groomer (dedup, sort, self-heal) | **Live** |
+| Zstandard compression (~5x smaller vaults) | **Live** |
+| Semantic vector search (ChromaDB + local embeddings) | **Live** |
+| Claude Desktop integration (MCP server) | **Live** |
+| Zsh tab completion | **Live** |
 
 ## How It Works
 
 ### 1. Collect
 
-Each collector authenticates with a cloud service and pulls your data into a local vault as `.jsonl` files, organized by year and month.
+Each collector authenticates with a cloud service (or reads a local export) and pulls your data into a local vault as `.jsonl` files, organized by year and month.
 
 ```bash
-python -m collectors.gmail_collector Primary
+nomolo collect gmail               # Gmail via API
+nomolo collect contacts-google     # Google Contacts via API
+nomolo collect calendar            # Google Calendar via API
+nomolo collect books-goodreads export.csv   # Goodreads CSV
+nomolo collect youtube takeout.json         # YouTube Takeout
 ```
 
 ### 2. Groom
@@ -64,35 +94,82 @@ python -m collectors.gmail_collector Primary
 The universal groomer deduplicates entries, sorts them chronologically, and validates structure — for any vault, from any collector.
 
 ```bash
-python -m core.groomer Vaults/Gmail_Primary
+nomolo groom gmail
 ```
 
 ### 3. Self-Heal (The Sniper)
 
-After grooming, NOMOLO compares what's on disk against what was previously collected. If records are missing (corrupted file, interrupted run, disk error), it writes a `missing_ids.txt` file. On the next collection run, the collector automatically enters **Sniper mode** — recovering only those specific records instead of scanning everything again.
+After grooming, Nomolo compares what's on disk against what was previously collected. If records are missing (corrupted file, interrupted run, disk error), it writes a `missing_ids.txt` file. On the next collection run, the collector automatically enters **Sniper mode** — recovering only those specific records instead of scanning everything again.
 
 ```
 Groomer detects gaps ──> missing_ids.txt ──> Collector recovers them ──> Clean vault
 ```
 
+### 4. Vectorize & Search
+
+Nomolo builds a local semantic search index over your vault data using ChromaDB and sentence-transformers. No API keys needed — everything runs on your machine.
+
+```bash
+nomolo vectorize              # index all vaults
+nomolo search "tax documents from 2024"
+nomolo search "meeting with John" -s gmail
+```
+
+### 5. Ask Claude (MCP Integration)
+
+Connect Nomolo to Claude Desktop via the [Model Context Protocol](https://modelcontextprotocol.io). Claude can then search your personal data directly — emails, calendar, contacts, everything — using natural language.
+
+```json
+{
+  "mcpServers": {
+    "nomolo": {
+      "command": "python3",
+      "args": ["/path/to/Nomolo/mcp_server.py"]
+    }
+  }
+}
+```
+
+Once connected, just ask Claude: *"Find emails about the Berlin trip"* or *"Who do I know at Google?"*
+
 ## Architecture
 
 ```
 Nomolo/
-├── collectors/              # One plugin per data source
-│   ├── gmail_collector.py   # Gmail (live)
-│   └── ...                  # Future collectors
+├── nomolo.py               # CLI entry point
+├── mcp_server.py           # MCP server for Claude Desktop
+├── config.yaml             # All settings in one place
+├── install.sh              # One-line installer
+├── collectors/             # One plugin per data source
+│   ├── gmail_collector.py  #   Gmail (API)
+│   ├── google_contacts.py  #   Google Contacts (API)
+│   ├── calendar_collector.py # Google Calendar (API / ICS)
+│   ├── books.py            #   Goodreads / Audible (CSV)
+│   ├── youtube.py          #   YouTube (Takeout JSON)
+│   ├── music.py            #   Spotify (JSON)
+│   ├── finance.py          #   PayPal / bank (CSV)
+│   ├── health.py           #   Apple Health (XML)
+│   └── ...                 #   + browser, maps, notes, podcasts, shopping, socials
 ├── core/
-│   └── groomer.py           # Universal dedup, sort, and Sniper logic
-├── config.yaml              # All settings in one place
-└── vaults/                  # Your data (gitignored, stays local)
-    └── Gmail_Primary/
-        ├── 2024/
-        │   ├── 01_January.jsonl
-        │   └── 02_February.jsonl
-        ├── _unknown/            # Entries with unparseable dates
-        ├── processed_ids.txt
-        └── missing_ids.txt      # Auto-generated by Sniper
+│   ├── groomer.py          # Universal dedup, sort, and Sniper logic
+│   ├── vectordb.py         # ChromaDB semantic search engine
+│   ├── vault.py            # Vault read/write (JSONL + Zstandard)
+│   ├── cleaner.py          # RAG-optimized text cleaning
+│   └── auth.py             # Google OAuth helper
+├── completions/
+│   └── nomolo.zsh          # Zsh tab completion
+└── vaults/                 # Your data (gitignored, stays local)
+    ├── Gmail_Primary/
+    │   ├── 2024/
+    │   │   ├── 01_January.jsonl.zst
+    │   │   └── 02_February.jsonl.zst
+    │   ├── _unknown/
+    │   ├── processed_ids.txt
+    │   └── missing_ids.txt
+    ├── Contacts_Google/
+    ├── Calendar/
+    ├── Books/
+    └── .vectordb/           # ChromaDB index (auto-generated)
 ```
 
 ## Quick Start
@@ -105,7 +182,7 @@ Nomolo/
 ### Install & Setup
 
 ```bash
-git clone https://github.com/matjes993/Nomolo.git
+git clone https://github.com/matjes993/nomolo.git
 ./Nomolo/install.sh
 source ~/.zshrc   # (only needed once, to pick up the new PATH)
 nomolo setup gmail
@@ -122,10 +199,13 @@ The setup wizard:
 ### Run
 
 ```bash
-nomolo collect gmail     # download your inbox
-nomolo groom gmail       # deduplicate and sort
-nomolo status            # see what you've got
-nomolo update            # pull latest version
+nomolo collect gmail        # download your inbox
+nomolo groom gmail          # deduplicate and sort
+nomolo compress gmail       # compress vault files (~5x smaller)
+nomolo vectorize            # build semantic search index
+nomolo search "query"       # search your data
+nomolo status               # see what you've got
+nomolo update               # pull latest version
 ```
 
 Your data is saved to `vaults/` inside the project folder (gitignored — never pushed to GitHub).
@@ -175,13 +255,17 @@ gmail:
 ## Roadmap
 
 - [x] Gmail Collector with Batch API
+- [x] Google Contacts, Calendar, Books, YouTube, Music, Finance, Shopping, Notes, Podcasts, Health, Browser, Maps, LinkedIn, Facebook, Instagram collectors
 - [x] Universal Groomer with Sniper self-healing
+- [x] Zstandard vault compression
+- [x] Semantic vector search (ChromaDB)
+- [x] Claude Desktop MCP integration
+- [x] Zsh tab completion
 - [ ] **WhatsApp Collector** (next)
 - [ ] Google Drive / Docs export
 - [ ] Telegram export
 - [ ] iCloud Photos metadata
 - [ ] Notion export
-- [ ] Unified search across all vaults
 - [ ] Personal AI training pipeline (fine-tune on your own data)
 
 ## Adding a New Collector
@@ -207,6 +291,12 @@ The groomer handles deduplication and sorting automatically for any vault that f
 Contributions are welcome. See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for guidelines.
 
 Whether it's a new collector, a bug fix, or documentation — all help is appreciated.
+
+## About
+
+The idea behind Nomolo was born in 2014 — the conviction that people should own their digital lives, not rent them from cloud platforms. The technology wasn't there yet. A decade later, it is.
+
+<!-- TODO: Write the full origin story, motivation, and moonshot vision. -->
 
 ## License
 
