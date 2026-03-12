@@ -53,9 +53,36 @@ class TestParseDateCollector:
         dt, valid = _parse_message_date("not-a-date")
         assert valid is False
 
+    def test_gmt_timezone(self):
+        dt, valid = _parse_message_date("Sat, 14 Feb 2026 22:18:48 GMT")
+        assert valid is True
+        assert dt.year == 2026
+        assert dt.month == 2
+
+    def test_utc_timezone(self):
+        dt, valid = _parse_message_date("Mon, 01 Jan 2024 12:00:00 UTC")
+        assert valid is True
+
+    def test_without_day_of_week(self):
+        dt, valid = _parse_message_date("01 Jun 2025 13:00:15 -0000")
+        assert valid is True
+        assert dt.month == 6
+
+    def test_without_day_of_week_gmt(self):
+        dt, valid = _parse_message_date("14 Feb 2026 22:18:48 GMT")
+        assert valid is True
+
+    def test_pst_timezone(self):
+        dt, valid = _parse_message_date("Mon, 01 Jan 2024 12:00:00 PST")
+        assert valid is True
+
+    def test_cet_timezone(self):
+        dt, valid = _parse_message_date("Mon, 01 Jan 2024 12:00:00 CET")
+        assert valid is True
+
     def test_unix_timestamp_string(self):
         dt, valid = _parse_message_date("1700000000")
-        assert valid is False  # not a supported format
+        assert valid is False
 
     def test_partial_date(self):
         dt, valid = _parse_message_date("2024-01")

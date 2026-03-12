@@ -198,13 +198,42 @@ def _parse_message_date(date_str):
         return None, False
 
     clean = date_str.split(" (")[0].strip()
+
+    # Replace named timezones with numeric offsets
+    clean = clean.replace(" GMT", " +0000")
+    clean = clean.replace(" UTC", " +0000")
+    clean = clean.replace(" EST", " -0500")
+    clean = clean.replace(" EDT", " -0400")
+    clean = clean.replace(" CST", " -0600")
+    clean = clean.replace(" CDT", " -0500")
+    clean = clean.replace(" MST", " -0700")
+    clean = clean.replace(" MDT", " -0600")
+    clean = clean.replace(" PST", " -0800")
+    clean = clean.replace(" PDT", " -0700")
+    clean = clean.replace(" CET", " +0100")
+    clean = clean.replace(" CEST", " +0200")
+
+    # RFC 2822: "Mon, 01 Jan 2024 12:00:00 +0000"
     try:
         return datetime.strptime(clean, "%a, %d %b %Y %H:%M:%S %z"), True
     except ValueError:
         pass
 
+    # Without day-of-week: "01 Jan 2024 12:00:00 +0000"
+    try:
+        return datetime.strptime(clean, "%d %b %Y %H:%M:%S %z"), True
+    except ValueError:
+        pass
+
+    # ISO format: "2024-01-01T12:00:00+00:00"
     try:
         return datetime.fromisoformat(date_str), True
+    except ValueError:
+        pass
+
+    # ctime format: "Fri Mar  6 09:19:53 2026"
+    try:
+        return datetime.strptime(clean, "%a %b %d %H:%M:%S %Y"), True
     except ValueError:
         pass
 

@@ -45,6 +45,21 @@ class TestParseDate:
     def test_garbage(self):
         assert parse_date("not a date at all") is None
 
+    def test_gmt_timezone(self):
+        dt = parse_date("Sat, 14 Feb 2026 22:18:48 GMT")
+        assert dt is not None
+        assert dt.year == 2026
+        assert dt.month == 2
+
+    def test_without_day_of_week(self):
+        dt = parse_date("01 Jun 2025 13:00:15 -0000")
+        assert dt is not None
+        assert dt.month == 6
+
+    def test_pst_timezone(self):
+        dt = parse_date("Mon, 01 Jan 2024 12:00:00 PST")
+        assert dt is not None
+
     def test_numeric_string(self):
         assert parse_date("12345") is None
 

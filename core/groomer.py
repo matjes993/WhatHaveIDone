@@ -21,16 +21,43 @@ def parse_date(date_str):
     if not date_str:
         return None
 
-    # Try RFC 2822 style: "Mon, 01 Jan 2024 12:00:00 +0000 (UTC)"
     clean = date_str.split(" (")[0].strip()
+
+    # Replace named timezones with numeric offsets
+    clean = clean.replace(" GMT", " +0000")
+    clean = clean.replace(" UTC", " +0000")
+    clean = clean.replace(" EST", " -0500")
+    clean = clean.replace(" EDT", " -0400")
+    clean = clean.replace(" CST", " -0600")
+    clean = clean.replace(" CDT", " -0500")
+    clean = clean.replace(" MST", " -0700")
+    clean = clean.replace(" MDT", " -0600")
+    clean = clean.replace(" PST", " -0800")
+    clean = clean.replace(" PDT", " -0700")
+    clean = clean.replace(" CET", " +0100")
+    clean = clean.replace(" CEST", " +0200")
+
+    # RFC 2822: "Mon, 01 Jan 2024 12:00:00 +0000"
     try:
         return datetime.strptime(clean, "%a, %d %b %Y %H:%M:%S %z")
     except ValueError:
         pass
 
-    # Try ISO format
+    # Without day-of-week: "01 Jan 2024 12:00:00 +0000"
+    try:
+        return datetime.strptime(clean, "%d %b %Y %H:%M:%S %z")
+    except ValueError:
+        pass
+
+    # ISO format
     try:
         return datetime.fromisoformat(date_str)
+    except ValueError:
+        pass
+
+    # ctime format: "Fri Mar  6 09:19:53 2026"
+    try:
+        return datetime.strptime(clean, "%a %b %d %H:%M:%S %Y")
     except ValueError:
         pass
 
