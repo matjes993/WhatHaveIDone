@@ -108,6 +108,7 @@ WhatHaveIDone/
 ```bash
 git clone https://github.com/matjes993/WhatHaveIDone.git
 ./WhatHaveIDone/install.sh
+source ~/.zshrc   # (only needed once, to pick up the new PATH)
 whid setup gmail
 ```
 
@@ -125,6 +126,7 @@ The setup wizard:
 whid collect gmail     # download your inbox
 whid groom gmail       # deduplicate and sort
 whid status            # see what you've got
+whid update            # pull latest version
 ```
 
 Your data is saved to `~/Documents/WHID_Vaults/` — completely separate from the codebase.
@@ -135,6 +137,14 @@ Multiple accounts? Just use different vault names:
 whid collect gmail Work
 whid collect gmail Personal
 ```
+
+### Updating
+
+```bash
+whid update
+```
+
+That's it — works from any directory. Pulls the latest code and reinstalls dependencies if needed.
 
 ### Configuration
 
