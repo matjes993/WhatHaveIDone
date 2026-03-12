@@ -81,7 +81,7 @@ def parse_date(date_str):
     except ValueError:
         pass
 
-    logger.warning("Unparseable date: %s", date_str)
+    logger.debug("Unparseable date: %s", date_str)
     return None
 
 
@@ -147,6 +147,7 @@ def groom_vault(vault_path):
     files_processed = 0
     entries_deduped = 0
     entries_skipped = 0
+    unparseable_dates = 0
     total_entries = 0
 
     for root, _dirs, files in os.walk(vault_path):
@@ -201,8 +202,11 @@ def groom_vault(vault_path):
             entries_deduped += before_count - len(unique)
             total_entries += len(unique)
 
-            # Sort chronologically
+            # Sort chronologically and count unparseable dates
             sorted_entries = sorted(unique.values(), key=_sort_key)
+            for e in sorted_entries:
+                if parse_date(e.get("date", "")) is None and e.get("date", ""):
+                    unparseable_dates += 1
 
             # Atomic write back
             lines = [json.dumps(e) + "\n" for e in sorted_entries]
@@ -264,6 +268,13 @@ def groom_vault(vault_path):
 
     if entries_deduped > 0:
         logger.info("Removed %d duplicate entries.", entries_deduped)
+
+    if unparseable_dates > 0:
+        logger.info(
+            "%d entries have unparseable dates (filed under _unknown/). "
+            "These are malformed date headers from the sender — not recoverable.",
+            unparseable_dates,
+        )
 
 
 if __name__ == "__main__":
