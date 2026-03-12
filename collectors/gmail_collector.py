@@ -10,6 +10,7 @@ Adaptive rate limiting: automatically slows down when hitting API limits.
 import os
 import json
 import base64
+import socket
 import sys
 import logging
 import threading
@@ -24,6 +25,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from bs4 import BeautifulSoup
+from requests.exceptions import ConnectionError as RequestsConnectionError
+from requests.exceptions import Timeout as RequestsTimeout
 
 logger = logging.getLogger("whid.gmail")
 
@@ -33,6 +36,49 @@ _write_lock = threading.Lock()
 # Max retries for rate-limited batches
 MAX_RETRIES = 4
 RETRY_BASE_DELAY = 3  # seconds
+
+# Network recovery settings
+NETWORK_CHECK_INTERVAL = 10  # seconds between connectivity checks
+NETWORK_MAX_WAIT = 600  # max seconds to wait for network (10 min)
+
+# Exception types that indicate a network/timeout issue (not a permanent failure)
+_NETWORK_ERRORS = (
+    OSError,
+    socket.timeout,
+    ConnectionError,
+    RequestsConnectionError,
+    RequestsTimeout,
+)
+
+
+def _is_network_error(exc):
+    """Return True if the exception looks like a transient network/timeout issue."""
+    if isinstance(exc, _NETWORK_ERRORS):
+        return True
+    msg = str(exc).lower()
+    return any(
+        s in msg
+        for s in ("timed out", "timeout", "connection reset", "connection refused",
+                   "network is unreachable", "no route to host", "broken pipe",
+                   "connection aborted", "eof occurred")
+    )
+
+
+def _wait_for_network():
+    """Block until network connectivity is restored. Returns True if restored."""
+    print("\n  Network appears down — waiting for reconnection...", end="", flush=True)
+    waited = 0
+    while waited < NETWORK_MAX_WAIT:
+        try:
+            socket.create_connection(("www.googleapis.com", 443), timeout=5).close()
+            print(f" reconnected after {waited}s")
+            return True
+        except OSError:
+            time.sleep(NETWORK_CHECK_INTERVAL)
+            waited += NETWORK_CHECK_INTERVAL
+            print(".", end="", flush=True)
+    print(f" gave up after {NETWORK_MAX_WAIT}s")
+    return False
 
 
 class AdaptiveThrottle:
@@ -415,10 +461,27 @@ def _handle_api_error(e):
 
 
 def _process_batch_with_retry(batch_ids, service, throttle):
-    """Process a batch with automatic retry on rate limiting."""
-    entries, batch_failed, rate_limited = _fetch_batch(
-        service, batch_ids
-    )
+    """Process a batch with automatic retry on rate limiting and network errors."""
+    try:
+        entries, batch_failed, rate_limited = _fetch_batch(
+            service, batch_ids
+        )
+    except Exception as e:
+        if _is_network_error(e):
+            logger.warning("Network error during batch fetch: %s", e)
+            if _wait_for_network():
+                # Retry the whole batch after reconnection
+                try:
+                    entries, batch_failed, rate_limited = _fetch_batch(
+                        service, batch_ids
+                    )
+                except Exception as retry_e:
+                    logger.error("Batch still failed after reconnect: %s", retry_e)
+                    return [], list(batch_ids), False
+            else:
+                return [], list(batch_ids), False
+        else:
+            raise
 
     remaining = rate_limited
     attempt = 1
@@ -434,9 +497,21 @@ def _process_batch_with_retry(batch_ids, service, throttle):
             MAX_RETRIES,
         )
         time.sleep(delay)
-        retry_entries, retry_failed, remaining = _fetch_batch(
-            service, remaining
-        )
+        try:
+            retry_entries, retry_failed, remaining = _fetch_batch(
+                service, remaining
+            )
+        except Exception as e:
+            if _is_network_error(e):
+                logger.warning("Network error during retry: %s", e)
+                if _wait_for_network():
+                    continue  # retry same attempt after reconnect
+                else:
+                    batch_failed.extend(remaining)
+                    remaining = []
+                    break
+            else:
+                raise
         entries.extend(retry_entries)
         batch_failed.extend(retry_failed)
         attempt += 1
@@ -513,6 +588,9 @@ def run_export(vault_name="Primary", config=None):
     if processed_ids:
         print(f"  + Already vaulted: {len(processed_ids):,} messages")
 
+    # Track last run timestamp for incremental scans
+    last_run_file = os.path.join(vault_root, "last_run.txt")
+
     # Determine which messages to process
     is_sniper_run = False
     if os.path.exists(missing_log):
@@ -534,49 +612,126 @@ def run_export(vault_name="Primary", config=None):
                 flush=True,
             )
 
+        # Gmail returns messages newest-first. Two scan strategies:
+        #
+        # 1. FIRST RUN (no processed_ids): full scan — page through everything.
+        #
+        # 2. UPDATE RUN (have processed_ids): scan newest-first and STOP as
+        #    soon as an entire page of IDs is already processed. This makes
+        #    daily updates near-instant — no need to crawl 130K messages.
+        #
+        # For extra safety on updates, we also use Gmail's `after:` query
+        # when we have a last_run timestamp, so the API itself returns fewer
+        # results.
+
+        query = None
+        is_incremental = bool(processed_ids)
+
+        if is_incremental and os.path.exists(last_run_file):
+            try:
+                with open(last_run_file, "r") as f:
+                    last_run_epoch = int(f.read().strip())
+                # 1-day overlap to catch stragglers
+                safe_epoch = last_run_epoch - 86400
+                query = f"after:{safe_epoch}"
+                from datetime import timezone
+                last_dt = datetime.fromtimestamp(last_run_epoch, tz=timezone.utc)
+                print(f"  + Incremental scan (messages since {last_dt.strftime('%Y-%m-%d %H:%M')} UTC)")
+            except (ValueError, OSError):
+                pass  # fall back to scan without query filter
+
+        if is_incremental:
+            print("  + Scanning newest-first, stopping at known messages...")
+
+        list_kwargs = {"userId": "me", "maxResults": page_size}
+        if query:
+            list_kwargs["q"] = query
+
+        def _fetch_list_page(**kwargs):
+            """Fetch one page of message IDs with network retry."""
+            try:
+                return (
+                    service.users()
+                    .messages()
+                    .list(**kwargs)
+                    .execute()
+                )
+            except HttpError:
+                raise
+            except Exception as e:
+                if _is_network_error(e):
+                    logger.warning("Network error during scan: %s", e)
+                    if _wait_for_network():
+                        return (
+                            service.users()
+                            .messages()
+                            .list(**kwargs)
+                            .execute()
+                        )
+                    else:
+                        raise
+                raise
+
         try:
-            results = (
-                service.users()
-                .messages()
-                .list(userId="me", maxResults=page_size)
-                .execute()
-            )
+            results = _fetch_list_page(**list_kwargs)
         except HttpError as e:
             _handle_api_error(e)
         except Exception as e:
-            print(f"\nError: Failed to fetch message list: {e}")
-            print("Check your internet connection and try again.")
+            if _is_network_error(e):
+                print(f"\nError: Network unavailable. Try again later.")
+            else:
+                print(f"\nError: Failed to fetch message list: {e}")
+                print("Check your internet connection and try again.")
             sys.exit(1)
 
         msgs = results.get("messages", [])
-        to_process_ids.extend(m["id"] for m in msgs)
+        page_ids = [m["id"] for m in msgs]
+        to_process_ids.extend(page_ids)
         _print_scan_progress(len(to_process_ids))
 
-        while "nextPageToken" in results:
+        # Early termination: if every ID on this page is already processed,
+        # we've reached messages we already have — stop scanning.
+        scan_stopped_early = False
+        if is_incremental and page_ids and all(mid in processed_ids for mid in page_ids):
+            scan_stopped_early = True
+
+        while "nextPageToken" in results and not scan_stopped_early:
+            page_kwargs = {
+                "userId": "me",
+                "maxResults": page_size,
+                "pageToken": results["nextPageToken"],
+            }
+            if query:
+                page_kwargs["q"] = query
+
             try:
-                results = (
-                    service.users()
-                    .messages()
-                    .list(
-                        userId="me",
-                        maxResults=page_size,
-                        pageToken=results["nextPageToken"],
-                    )
-                    .execute()
-                )
+                results = _fetch_list_page(**page_kwargs)
             except HttpError as e:
                 print()
                 _handle_api_error(e)
             except Exception as e:
-                logger.error("Error fetching message list page: %s", e)
-                print(f"\n  (stopped early: {e})")
+                if _is_network_error(e):
+                    print(f"\n  (scan paused — network unavailable)")
+                else:
+                    logger.error("Error fetching message list page: %s", e)
+                    print(f"\n  (stopped early: {e})")
                 break
 
             msgs = results.get("messages", [])
-            to_process_ids.extend(m["id"] for m in msgs)
+            page_ids = [m["id"] for m in msgs]
+            to_process_ids.extend(page_ids)
             _print_scan_progress(len(to_process_ids))
 
-        print(f"\r  + Scan complete: {len(to_process_ids):,} messages found        ")
+            # Check early termination after each page
+            if is_incremental and page_ids and all(mid in processed_ids for mid in page_ids):
+                scan_stopped_early = True
+
+        if scan_stopped_early:
+            print(f"\r  + Scan complete (caught up): {len(to_process_ids):,} messages checked        ")
+        elif is_incremental:
+            print(f"\r  + Scan complete (incremental): {len(to_process_ids):,} messages checked        ")
+        else:
+            print(f"\r  + Scan complete (full): {len(to_process_ids):,} messages found        ")
 
         to_process_ids = [
             mid for mid in to_process_ids if mid not in processed_ids
@@ -645,8 +800,21 @@ def run_export(vault_name="Primary", config=None):
                     failed += len(futures[future])
                     continue
                 except Exception as e:
-                    logger.error("Batch failed: %s", e)
-                    failed += len(futures[future])
+                    if _is_network_error(e):
+                        logger.warning("Batch lost to network error: %s", e)
+                        # Don't count as failed — these IDs stay unprocessed
+                        # and will be picked up on next run via Sniper
+                        failed += len(futures[future])
+                        if _wait_for_network():
+                            logger.info("Network restored — continuing remaining batches")
+                        else:
+                            logger.error("Network did not recover — aborting")
+                            print("\n\n  Network unavailable. Progress saved — rerun to continue.")
+                            offset = total_msgs  # break outer loop
+                            break
+                    else:
+                        logger.error("Batch failed: %s", e)
+                        failed += len(futures[future])
                     continue
 
                 if entries:
@@ -700,6 +868,13 @@ def run_export(vault_name="Primary", config=None):
             os.remove(missing_log)
         except OSError as e:
             logger.warning("Could not remove missing_ids.txt: %s", e)
+
+    # Save run timestamp for incremental scan next time
+    try:
+        with open(last_run_file, "w") as f:
+            f.write(str(int(start_time)))
+    except OSError as e:
+        logger.warning("Could not save last_run.txt: %s", e)
 
     elapsed = time.time() - start_time
     rate = vaulted / elapsed if elapsed > 0 else 0

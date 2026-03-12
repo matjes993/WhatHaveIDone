@@ -182,7 +182,7 @@ class MockGmailInbox:
         # Mock messages().list()
         all_ids = list(self.messages.keys())
 
-        def mock_list(userId="me", maxResults=500, pageToken=None):
+        def mock_list(userId="me", maxResults=500, pageToken=None, q=None):
             start = 0
             if pageToken:
                 start = int(pageToken)
