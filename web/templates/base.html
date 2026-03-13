@@ -19,7 +19,7 @@ Want to contribute? github.com/matjes993/nomolo
 <body>
     <!-- Top Bar: Trust Badge + Jargon Toggle -->
     <div class="top-bar">
-        <div class="trust-badge jargon" title="All yer plunder stays aboard this vessel" data-rpg="" data-real="">
+        <div class="trust-badge jargon" title="All yer plunder stays aboard this vessel" data-rpg-title="All yer plunder stays aboard this vessel" data-real-title="All your data stays on this machine" data-rpg="" data-real="">
             <span class="trust-badge__icon">&#x1f512;</span>
             <span class="trust-badge__text jargon" data-rpg="LOCAL ONLY — yer data never leaves this ship" data-real="LOCAL ONLY — your data never leaves this machine">LOCAL ONLY — yer data never leaves this ship</span>
         </div>
@@ -115,6 +115,8 @@ Want to contribute? github.com/matjes993/nomolo
                 "The best time to take back your data was yesterday. The second best is now.",
                 "Behind every organized person is a well-organized archive.",
             ];
+            // Store proverbs globally so jargon toggle can refresh them
+            window.__NOMOLO_PROVERBS__ = { rpg: rpgProverbs, real: realProverbs };
             const proverbEl = document.getElementById('pirate-proverb');
             if (proverbEl) {
                 const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';

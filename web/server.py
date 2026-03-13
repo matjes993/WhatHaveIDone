@@ -1567,6 +1567,22 @@ def _paginate_search_results(results, query, page, per_page):
         if from_val:
             subtitle = "From: " + _extract_sender_name(from_val)
 
+        # Extract full body for detail view
+        body_full = ""
+        for k in ("body_raw", "body", "content", "text", "description"):
+            v = meta.get(k)
+            if v and isinstance(v, str) and len(v) > 10:
+                body_full = v
+                break
+        if not body_full:
+            body_full = r.get("snippet", "")
+        if body_full:
+            body_full = re.sub(r'<[^>]+>', '', body_full)
+            body_full = body_full.replace('\\n', '\n')
+            body_full = re.sub(r'[ \t]+', ' ', body_full)
+            body_full = re.sub(r'\n{4,}', '\n\n\n', body_full)
+            body_full = body_full.strip()[:5000]
+
         # Format date
         date_formatted = ""
         if date_val:
@@ -1586,6 +1602,7 @@ def _paginate_search_results(results, query, page, per_page):
             "title": title[:120],
             "subtitle": subtitle[:120],
             "preview": preview[:200],
+            "body": body_full,
             "date": date_val,
             "date_formatted": date_formatted,
             "villain_id": villain_id,
@@ -2005,6 +2022,31 @@ def _format_record(entry):
         except Exception:
             date_formatted = date[:10] if len(date) >= 10 else date
 
+    # --- Extract full body for detail view ---
+    body_full = ""
+    for k in ("body_raw", "body", "content", "text", "description"):
+        v = entry.get(k)
+        if v and isinstance(v, str) and len(v) > 10:
+            body_full = v
+            break
+
+    # Clean the body: strip HTML, fix literal \n, collapse whitespace runs
+    if body_full:
+        body_full = re.sub(r'<[^>]+>', '', body_full)        # strip HTML tags
+        body_full = body_full.replace('\\n', '\n')            # literal \n → newline
+        body_full = re.sub(r'[ \t]+', ' ', body_full)         # collapse horizontal whitespace
+        body_full = re.sub(r'\n{4,}', '\n\n\n', body_full)   # cap excessive newlines
+        body_full = body_full.strip()
+
+    # Strip internal metadata keys from raw before sending to frontend
+    raw_display = {}
+    _skip_keys = {"body_raw", "body", "content", "text", "_source",
+                  "in_reply_to", "references", "list_unsubscribe",
+                  "message_id", "cc", "bcc", "reply_to", "attachments", "tags"}
+    for k, v in entry.items():
+        if k not in _skip_keys and v not in (None, "", [], {}):
+            raw_display[k] = v
+
     return {
         "id": entry.get("id", ""),
         "source": source,
@@ -2013,6 +2055,7 @@ def _format_record(entry):
         "title": (title or "Untitled")[:120],
         "subtitle": (subtitle or "")[:120],
         "preview": (preview or "")[:200],
+        "body": body_full[:5000],
         "date": date,
         "date_formatted": date_formatted,
         "villain_id": villain_id,
@@ -2020,7 +2063,7 @@ def _format_record(entry):
         "villain_company": villain_info.get("company", ""),
         "villain_icon": villain_info.get("icon", ""),
         "villain_color": villain_info.get("color", "#444"),
-        "raw": entry,
+        "raw": raw_display,
     }
 
 

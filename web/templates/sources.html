@@ -8,9 +8,11 @@
             <h1 class="raid-page__title jargon" data-rpg="The Seven Seas" data-real="Data Sources">The Seven Seas</h1>
             <p class="raid-page__subtitle jargon"
                title="Islands you've successfully raided"
-               data-rpg="{{ collected_count }} of {{ total_sources }} islands plundered"
+               data-rpg-title="Islands ye've successfully raided"
+               data-real-title="Number of data sources connected"
+               data-rpg="&#9876; {{ collected_count }} of {{ total_sources }} islands plundered &mdash; Choose yer next target, Captain"
                data-real="{{ collected_count }} of {{ total_sources }} sources connected">
-                {{ collected_count }} of {{ total_sources }} islands plundered
+                &#9876; {{ collected_count }} of {{ total_sources }} islands plundered &mdash; Choose yer next target, Captain
             </p>
         </div>
         <div class="raid-page__actions">
@@ -25,6 +27,9 @@
 
     <!-- The Raid Map — Ocean Container -->
     <div class="raid-map" id="raid-map">
+        <!-- Parchment texture overlay -->
+        <div class="raid-map__parchment"></div>
+
         <!-- Wave overlay top -->
         <div class="raid-map__wave raid-map__wave--top"></div>
 
@@ -39,8 +44,39 @@
             </div>
         </div>
 
+        <!-- Sea creatures (ambient decoration) -->
+        <div class="raid-map__creature raid-map__creature--1" aria-hidden="true">&#128025;</div>
+        <div class="raid-map__creature raid-map__creature--2" aria-hidden="true">&#129433;</div>
+        <div class="raid-map__creature raid-map__creature--3" aria-hidden="true">&#128032;</div>
+
+        <!-- Dotted route line SVG -->
+        <svg class="raid-map__routes" aria-hidden="true" width="100%" height="100%">
+            <defs>
+                <filter id="route-glow">
+                    <feGaussianBlur stdDeviation="2" result="blur"/>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+            </defs>
+        </svg>
+
         <!-- Your Ship -->
-        <div class="raid-map__ship" title="NOMOLO — Your Ship">&#9875;</div>
+        <div class="raid-map__ship" title="NOMOLO &mdash; Your Ship">&#9875;</div>
+
+        <!-- Map legend -->
+        <div class="raid-map__legend" aria-label="Map Legend">
+            <div class="raid-map__legend-item">
+                <span class="raid-map__legend-dot raid-map__legend-dot--uncharted"></span>
+                <span class="jargon" data-rpg="Uncharted" data-real="Available">Uncharted</span>
+            </div>
+            <div class="raid-map__legend-item">
+                <span class="raid-map__legend-dot raid-map__legend-dot--raided"></span>
+                <span class="jargon" data-rpg="Raided" data-real="Connected">Raided</span>
+            </div>
+            <div class="raid-map__legend-item">
+                <span class="raid-map__legend-dot raid-map__legend-dot--defeated"></span>
+                <span class="jargon" data-rpg="Defeated" data-real="Complete">Defeated</span>
+            </div>
+        </div>
 
         <!-- Island Grid -->
         <div class="raid-map__grid">
@@ -53,6 +89,11 @@
                  tabindex="0"
                  role="button"
                  aria-label="{{ island.name }}">
+
+                <!-- Palm trees / decoration for non-uncharted -->
+                {% if island.status != 'uncharted' %}
+                <div class="raid-island__palms" aria-hidden="true">&#127796;</div>
+                {% endif %}
 
                 <!-- Status badge -->
                 <div class="raid-island__status">
@@ -106,7 +147,7 @@
                 <!-- Raid action -->
                 <div class="raid-island__action">
                     {% if island.status == 'uncharted' %}
-                    <span class="jargon" data-rpg="&#10006; Chart This Island" data-real="Connect">&#10006; Chart This Island</span>
+                    <span class="jargon" data-rpg="&#128506; Chart This Island" data-real="Connect">&#128506; Chart This Island</span>
                     {% elif island.status == 'raided' %}
                     <span class="jargon" data-rpg="&#9876; Raid Again" data-real="Refresh">&#9876; Raid Again</span>
                     {% elif island.status == 'defeated' %}
@@ -125,10 +166,13 @@
     <div class="raid-briefing" id="raid-briefing" style="display: none;">
         <div class="raid-briefing__backdrop" onclick="NomoloBridge.closeRaidBriefing()"></div>
         <div class="raid-briefing__panel">
+            <div class="raid-briefing__pixel-border"></div>
             <button class="raid-briefing__close" onclick="NomoloBridge.closeRaidBriefing()" aria-label="Close">&times;</button>
 
+            <div class="raid-briefing__scroll-top" aria-hidden="true">&#128220; MISSION BRIEFING &#128220;</div>
+
             <div class="raid-briefing__header">
-                <!-- Villain portrait placeholder -->
+                <!-- Villain portrait -->
                 <div class="raid-briefing__portrait" id="briefing-portrait">
                     <span class="raid-briefing__portrait-emoji" id="briefing-emoji"></span>
                 </div>
@@ -143,13 +187,13 @@
 
             <!-- Loot types available -->
             <div class="raid-briefing__section">
-                <h3 class="raid-briefing__section-title jargon" data-rpg="Available Plunder" data-real="Data Types">Available Plunder</h3>
+                <h3 class="raid-briefing__section-title jargon" data-rpg="&#128176; Available Plunder" data-real="Data Types">&#128176; Available Plunder</h3>
                 <div class="raid-briefing__loot-types" id="briefing-loot-types"></div>
             </div>
 
             <!-- Map fragment -->
             <div class="raid-briefing__section">
-                <h3 class="raid-briefing__section-title">Map Fragment</h3>
+                <h3 class="raid-briefing__section-title">&#128506; Map Fragment</h3>
                 <div class="raid-briefing__fragment" id="briefing-fragment">
                     <span class="raid-briefing__fragment-emoji" id="briefing-fragment-emoji"></span>
                     <div class="raid-briefing__fragment-info">
@@ -161,7 +205,7 @@
 
             <!-- Raid stats -->
             <div class="raid-briefing__section">
-                <h3 class="raid-briefing__section-title jargon" data-rpg="Raid Intelligence" data-real="Collection Stats">Raid Intelligence</h3>
+                <h3 class="raid-briefing__section-title jargon" data-rpg="&#128200; Raid Intelligence" data-real="Collection Stats">&#128200; Raid Intelligence</h3>
                 <div class="raid-briefing__stats" id="briefing-stats"></div>
             </div>
 
@@ -215,6 +259,49 @@
                 }
             });
         });
+
+        // Draw dotted route lines between islands
+        drawRouteLines();
+    }
+
+    // ── Draw Route Lines ─────────────────────────────────────────────
+    function drawRouteLines() {
+        const svg = document.querySelector('.raid-map__routes');
+        if (!svg) return;
+        const grid = document.querySelector('.raid-map__grid');
+        if (!grid) return;
+        const islands = grid.querySelectorAll('.raid-island');
+        if (islands.length < 2) return;
+
+        // Get positions relative to the SVG/map container
+        const mapRect = svg.closest('.raid-map').getBoundingClientRect();
+
+        const points = [];
+        islands.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            points.push({
+                x: rect.left - mapRect.left + rect.width / 2,
+                y: rect.top - mapRect.top + rect.height / 2,
+                status: el.dataset.status
+            });
+        });
+
+        // Draw lines between consecutive islands
+        let pathD = '';
+        for (let i = 0; i < points.length - 1; i++) {
+            pathD += `M ${points[i].x} ${points[i].y} L ${points[i+1].x} ${points[i+1].y} `;
+        }
+
+        if (pathD) {
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', pathD);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', 'rgba(255, 215, 0, 0.12)');
+            path.setAttribute('stroke-width', '2');
+            path.setAttribute('stroke-dasharray', '6,8');
+            path.setAttribute('filter', 'url(#route-glow)');
+            svg.appendChild(path);
+        }
     }
 
     // ── Open Raid Briefing ───────────────────────────────────────────

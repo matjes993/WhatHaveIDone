@@ -13,7 +13,7 @@
         </div>
 
         <!-- Score Widget -->
-        <div class="score-widget" title="Your overall data sovereignty progress">
+        <div class="score-widget" title="Your overall data sovereignty progress" data-rpg-title="Yer overall data reclamation voyage" data-real-title="Your overall data sovereignty progress">
             <div class="score-widget__ring">
                 <svg viewBox="0 0 80 80">
                     <circle class="score-widget__track" cx="40" cy="40" r="35" />
@@ -32,7 +32,7 @@
 
     <!-- Category Filters -->
     <div class="achievement-filters">
-        <button class="achievement-filter achievement-filter--active" data-category="all" onclick="filterAchievements('all', this)">All</button>
+        <button class="achievement-filter achievement-filter--active" data-category="all" onclick="filterAchievements('all', this)"><span class="jargon" data-rpg="All" data-real="All">All</span></button>
         <button class="achievement-filter" data-category="collection" onclick="filterAchievements('collection', this)"><span class="jargon" data-rpg="Plundering" data-real="Collection">Plundering</span></button>
         <button class="achievement-filter" data-category="quality" onclick="filterAchievements('quality', this)"><span class="jargon" data-rpg="Treasure Quality" data-real="Quality">Treasure Quality</span></button>
         <button class="achievement-filter" data-category="exploration" onclick="filterAchievements('exploration', this)"><span class="jargon" data-rpg="Charting" data-real="Exploration">Charting</span></button>
@@ -81,7 +81,9 @@
 
             <h4 class="achievement-card__name">{{ ach.name }}</h4>
             <p class="achievement-card__desc">{{ ach.description }}</p>
-            <span class="achievement-card__category">{{ ach.category|title }}</span>
+            <span class="achievement-card__category jargon"
+                  data-rpg="{{ {'collection': 'Plundering', 'quality': 'Treasure Quality', 'exploration': 'Charting', 'dedication': 'Sea Legs'}.get(ach.category, ach.category|title) }}"
+                  data-real="{{ ach.category|title }}">{{ {'collection': 'Plundering', 'quality': 'Treasure Quality', 'exploration': 'Charting', 'dedication': 'Sea Legs'}.get(ach.category, ach.category|title) }}</span>
 
             {% if ach.unlocked %}
             <div class="achievement-card__status achievement-card__status--unlocked jargon" data-rpg="&#9876; Earned!" data-real="Unlocked">&#9876; Earned!</div>

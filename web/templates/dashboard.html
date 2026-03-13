@@ -10,11 +10,11 @@
             <h1 class="rpg__title">{{ rpg.level.title }}</h1>
             <p class="rpg__flavor">{{ rpg.level.flavor_text }}</p>
         </div>
-        <div class="rpg__power" title="Pieces of treasure in your vault">
+        <div class="rpg__power" title="Pieces of treasure in your vault" data-rpg-title="Pieces of treasure in yer vault" data-real-title="Total records in your archive">
             <span class="rpg__power-number">{{ "{:,}".format(rpg.total_records) }}</span>
             <span class="rpg__power-label jargon" data-rpg="items reclaimed" data-real="records collected">items reclaimed</span>
         </div>
-        <button class="rpg__share-btn" onclick="NomoloBridge.generateShareCard()" title="Share Your Journey">
+        <button class="rpg__share-btn" onclick="NomoloBridge.generateShareCard()" title="Share Your Journey" data-rpg-title="Spread the word across the seas" data-real-title="Share your data sovereignty stats">
             <span class="rpg__share-icon">&#x1F4E4;</span>
         </button>
     </header>
@@ -30,7 +30,7 @@
     </div>
 
     <!-- Level Progress Bar -->
-    <div class="rpg__level-bar">
+    <div class="rpg__level-bar" data-rpg-title="Yer progress to the next pirate rank" data-real-title="Your progress to the next data level">
         <div class="rpg__level-bar-fill" style="width: {{ rpg.level.progress_pct }}%"></div>
         <span class="rpg__level-bar-text">
             {% if rpg.level.next_level_at %}
@@ -44,7 +44,7 @@
     <div class="rpg__grid">
         <!-- Character Stats -->
         <div class="rpg__card rpg__card--stats">
-            <h2 class="rpg__card-title jargon" data-rpg="Character Stats" data-real="Data Overview">Character Stats</h2>
+            <h2 class="rpg__card-title jargon" data-rpg="Character Stats" data-real="Data Overview" title="Your data sovereignty breakdown by category" data-rpg-title="Yer pirate stats across the Six Pillars" data-real-title="Your data coverage across six categories">Character Stats</h2>
             <div class="rpg__stats">
                 {% for stat_name in ['STR', 'WIS', 'DEX', 'INT', 'CHA', 'END'] %}
                 <div class="rpg__stat">
@@ -63,7 +63,7 @@
             <!-- Digital Serotonin — The Lobster Principle -->
             <div class="rpg__serotonin">
                 <div class="rpg__serotonin-header">
-                    <span class="rpg__serotonin-label">🦞 Digital Serotonin</span>
+                    <span class="rpg__serotonin-label jargon" data-rpg="🦞 Digital Serotonin" data-real="🦞 Data Engagement Score" data-rpg-title="The Lobster Principle: more data, higher serotonin" data-real-title="Your overall engagement level based on data volume">🦞 Digital Serotonin</span>
                     <span class="rpg__serotonin-value">{{ rpg.serotonin.level }}</span>
                 </div>
                 <div class="rpg__serotonin-bar">

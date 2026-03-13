@@ -167,7 +167,9 @@ const NomoloBridge = (() => {
     }
 
     function onScanStarted(data) {
-        updateScanLabel(data.message || 'Charting the seas for buried treasure...');
+        const jSS = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        const defaultMsg = jSS === 'rpg' ? 'Charting the seas for buried treasure...' : 'Scanning for data sources...';
+        updateScanLabel(data.message || defaultMsg);
     }
 
     function onSourceDiscovered(data) {
@@ -175,7 +177,8 @@ const NomoloBridge = (() => {
 
         // Update progress ring
         updateProgressRing(progress);
-        updateScanLabel(`Scanning... found ${source.name}`);
+        const jSD = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        updateScanLabel(jSD === 'rpg' ? `Scanning the horizon... found ${source.name}` : `Scanning... found ${source.name}`);
 
         // Add result card with flying animation
         addScanResultCard(source, index, total);
@@ -186,7 +189,8 @@ const NomoloBridge = (() => {
 
         // Complete the progress ring
         updateProgressRing(100);
-        updateScanLabel('All waters charted, Captain!');
+        const jSC2 = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        updateScanLabel(jSC2 === 'rpg' ? 'All waters charted, Captain!' : 'Scan complete!');
 
         // Wait a beat, then show results
         setTimeout(() => {
@@ -401,10 +405,12 @@ const NomoloBridge = (() => {
             if (data.questions && data.questions.length > 0) {
                 renderQuiz(container, data.questions[0]);
             } else {
-                container.innerHTML = '<p class="card__empty">No tales to tell yet, Captain. Plunder some data first!</p>';
+                const jQE = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+                container.innerHTML = '<p class="card__empty">' + (jQE === 'rpg' ? 'No tales to tell yet, Captain. Plunder some data first!' : 'No quiz data yet. Import some data first!') + '</p>';
             }
         } catch (e) {
-            container.innerHTML = '<p class="card__empty">Kraken attack! Could not load the quiz.</p>';
+            const jQF = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            container.innerHTML = '<p class="card__empty">' + (jQF === 'rpg' ? 'Kraken attack! Could not load the quiz.' : 'Error: Could not load the quiz.') + '</p>';
         }
     }
 
@@ -471,7 +477,8 @@ const NomoloBridge = (() => {
                 pollCollectionStatus(source, data.task_id);
             }
         } catch (e) {
-            toast(`Kraken attack! Failed to start ${source} raid.`, 'error');
+            const jTC = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            toast(jTC === 'rpg' ? `Kraken attack! Failed to start ${source} raid.` : `Failed to start ${source} collection.`, 'error');
             nerdLog(`Collection start failed: ${e.message}`, 'error');
         }
     }
@@ -516,7 +523,8 @@ const NomoloBridge = (() => {
 
     async function handleNeedsAuth(source, data) {
         // Open Google OAuth in a new window
-        toast(`Boarding the Omniscient Eye for ${source}...`, 'info');
+        const jNA = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        toast(jNA === 'rpg' ? `Boarding the Omniscient Eye for ${source}...` : `Authenticating with Google for ${source}...`, 'info');
         nerdLog(`Redirecting to Google OAuth for ${source}...`, 'info');
 
         try {
@@ -541,7 +549,8 @@ const NomoloBridge = (() => {
     function handleNeedsSetup(source, data) {
         const instructions = data.setup_instructions || {};
         const steps = instructions.steps || [];
-        toast(`${source} needs a letter of marque. Check the Matrix panel for yer orders.`, 'info');
+        const jNS = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        toast(jNS === 'rpg' ? `${source} needs a letter of marque. Check the Matrix panel for yer orders.` : `${source} needs credentials. Check the setup panel for instructions.`, 'info');
         nerdLog('=== SETUP REQUIRED ===', 'warn');
         nerdLog(`To connect ${source}, you need credentials.json:`, 'warn');
         steps.forEach((step, i) => {
@@ -553,7 +562,8 @@ const NomoloBridge = (() => {
     function handleNeedsFile(source, data) {
         const instructions = data.instructions || {};
         const steps = instructions.steps || [];
-        toast(`${source} needs stolen cargo. Check the Matrix panel for yer orders.`, 'info');
+        const jNF = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        toast(jNF === 'rpg' ? `${source} needs stolen cargo. Check the Matrix panel for yer orders.` : `${source} requires a file upload. Check the setup panel for instructions.`, 'info');
         nerdLog(`=== FILE EXPORT NEEDED: ${(instructions.platform || source).toUpperCase()} ===`, 'warn');
         steps.forEach((step, i) => {
             nerdLog(`  ${i + 1}. ${step}`, 'info');
@@ -804,7 +814,8 @@ const NomoloBridge = (() => {
         if (workStep) { workStep.style.display = 'flex'; workStep.classList.add('journey__step--active'); }
 
         const textEl = document.getElementById('work-text');
-        if (textEl) textEl.textContent = 'Scanning newly unlocked harbors...';
+        const jRF = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        if (textEl) textEl.textContent = jRF === 'rpg' ? 'Scanning newly unlocked harbors...' : 'Scanning newly unlocked sources...';
         nerdLog('Resuming after Full Disk Access change...', 'success');
 
         try {
@@ -823,12 +834,12 @@ const NomoloBridge = (() => {
             const total = browserRecords + localRecords;
 
             saveJourneyState('collection_done', { records: total });
-            if (textEl) textEl.textContent = `Plunder secured — ${total.toLocaleString()} pieces stashed`;
+            if (textEl) textEl.textContent = jRF === 'rpg' ? `Plunder secured — ${total.toLocaleString()} pieces stashed` : `Done — ${total.toLocaleString()} records collected`;
             await sleep(1500);
             transitionToDone(total);
         } catch (e) {
             nerdLog('Resume failed: ' + e.message, 'warn');
-            if (textEl) textEl.textContent = 'Man overboard! Something went wrong — try again, Captain.';
+            if (textEl) textEl.textContent = jRF === 'rpg' ? 'Man overboard! Something went wrong — try again, Captain.' : 'Something went wrong. Please refresh and try again.';
         }
     }
 
@@ -882,7 +893,8 @@ const NomoloBridge = (() => {
             // Phase 1: Scan
             nerdLog('GET /api/chrome-analysis', 'info');
             nerdLog('GET /api/local-scan', 'info');
-            updateText('Charting the seas for buried treasure...');
+            const jWF = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            updateText(jWF === 'rpg' ? 'Charting the seas for buried treasure...' : 'Scanning for data sources...');
 
             const [chromeResult, localResult] = await Promise.allSettled([
                 fetch('/api/chrome-analysis').then(r => r.json()),
@@ -898,17 +910,24 @@ const NomoloBridge = (() => {
             const localFound = _localData?.summary?.sources_found || 0;
 
             let found = '';
-            if (platforms > 0 && years > 0) found = `Spotted ${platforms} islands across ${years} years of voyages`;
-            else if (platforms > 0) found = `Spotted ${platforms} islands in yer browser waters`;
-            else if (localFound > 0) found = `Spotted ${localFound} harbors on yer Mac`;
-            else found = 'Horizon scanned, Captain!';
+            if (jWF === 'rpg') {
+                if (platforms > 0 && years > 0) found = `Spotted ${platforms} islands across ${years} years of voyages`;
+                else if (platforms > 0) found = `Spotted ${platforms} islands in yer browser waters`;
+                else if (localFound > 0) found = `Spotted ${localFound} harbors on yer Mac`;
+                else found = 'Horizon scanned, Captain!';
+            } else {
+                if (platforms > 0 && years > 0) found = `Found ${platforms} platforms across ${years} years of history`;
+                else if (platforms > 0) found = `Found ${platforms} platforms in your browser`;
+                else if (localFound > 0) found = `Found ${localFound} sources on your Mac`;
+                else found = 'Scan complete!';
+            }
 
             nerdLog(found, 'success');
             updateText(found);
             await sleep(2000);
 
             // Phase 2: Villain riddle before collection
-            updateText('An Armada captain approaches...');
+            updateText(jWF === 'rpg' ? 'An Armada captain approaches...' : 'A data challenge appears...');
             await sleep(1000);
 
             // Wrap the collection in a riddle callback
@@ -917,7 +936,7 @@ const NomoloBridge = (() => {
             });
 
             // Phase 3: Collect
-            updateText('Plundering yer history...');
+            updateText(jWF === 'rpg' ? 'Plundering yer history...' : 'Collecting your data...');
             nerdLog('Starting collection...', 'info');
             _collectionStartTime = performance.now();
 
@@ -944,7 +963,7 @@ const NomoloBridge = (() => {
 
             nerdLog(`Done: ${total.toLocaleString()} records in ${secs}s`, 'success');
             saveJourneyState('collection_done', { records: total });
-            updateText(`Plunder secured — ${total.toLocaleString()} pieces stashed aboard yer ship`);
+            updateText(jWF === 'rpg' ? `Plunder secured — ${total.toLocaleString()} pieces stashed aboard yer ship` : `Done — ${total.toLocaleString()} records collected and saved`);
 
             await sleep(2000);
 
@@ -953,7 +972,7 @@ const NomoloBridge = (() => {
 
         } catch (e) {
             nerdLog('Error: ' + e.message, 'error');
-            updateText('Man overboard! Something went wrong. Refresh and try again, Captain.');
+            updateText(jWF === 'rpg' ? 'Man overboard! Something went wrong. Refresh and try again, Captain.' : 'Something went wrong. Please refresh and try again.');
         }
     }
 
@@ -998,7 +1017,8 @@ const NomoloBridge = (() => {
         const fdaLink = document.getElementById('done-fda-link');
         if (fdaLink && localLocked > 0) {
             fdaLink.style.display = '';
-            fdaLink.textContent = `Unlock ${localLocked} more hidden harbor${localLocked > 1 ? 's' : ''}`;
+            const jFDA = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            fdaLink.textContent = jFDA === 'rpg' ? `Unlock ${localLocked} more hidden harbor${localLocked > 1 ? 's' : ''}` : `Unlock ${localLocked} more source${localLocked > 1 ? 's' : ''}`;
         }
 
         nerdLog(`Done screen: ${totalRecords.toLocaleString()} records`, 'info');
@@ -1149,7 +1169,8 @@ const NomoloBridge = (() => {
     function markAuthDone(source) {
         const statusEl = document.getElementById(`expert-auth-${source}`);
         const row = statusEl ? statusEl.closest('.expert-source-row') : null;
-        if (statusEl) { statusEl.textContent = 'Boarded!'; statusEl.style.color = 'rgba(0,200,83,0.9)'; }
+        const jAD = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        if (statusEl) { statusEl.textContent = jAD === 'rpg' ? 'Boarded!' : 'Connected'; statusEl.style.color = 'rgba(0,200,83,0.9)'; }
         if (row) {
             row.classList.add('expert-source-row--authed');
             const btn = row.querySelector('.expert-source-row__btn');
@@ -1169,8 +1190,9 @@ const NomoloBridge = (() => {
         const btn = row ? row.querySelector('.expert-source-row__btn') : null;
         const statusEl = document.getElementById(`expert-auth-${source}`);
 
-        if (btn) { btn.textContent = 'Boarding...'; btn.disabled = true; btn.classList.add('expert-source-row__btn--waiting'); }
-        if (statusEl) { statusEl.textContent = 'Check yer spyglass (browser)...'; statusEl.style.color = 'var(--accent-cyan)'; }
+        const jEA = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        if (btn) { btn.textContent = jEA === 'rpg' ? 'Boarding...' : 'Connecting...'; btn.disabled = true; btn.classList.add('expert-source-row__btn--waiting'); }
+        if (statusEl) { statusEl.textContent = jEA === 'rpg' ? 'Check yer spyglass (browser)...' : 'Check your browser for Google login...'; statusEl.style.color = 'var(--accent-cyan)'; }
 
         nerdLog(`Starting OAuth for ${source} — browser will open`, 'info');
 
@@ -1190,14 +1212,15 @@ const NomoloBridge = (() => {
             }
         } catch (e) {
             if (btn) { btn.textContent = 'Retry'; btn.disabled = false; btn.classList.remove('expert-source-row__btn--waiting'); }
-            if (statusEl) { statusEl.textContent = 'Error'; statusEl.style.color = '#ff6b6b'; }
+            if (statusEl) { statusEl.textContent = jEA === 'rpg' ? 'Kraken attack!' : 'Error'; statusEl.style.color = '#ff6b6b'; }
             nerdLog(`${source} auth error: ${e.message}`, 'warn');
         }
     }
 
     async function startExpertCollection() {
         const btn = document.getElementById('expert-collect-btn');
-        if (btn) { btn.textContent = 'Raiding...'; btn.disabled = true; }
+        const jEC = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        if (btn) { btn.textContent = jEC === 'rpg' ? 'Raiding...' : 'Collecting...'; btn.disabled = true; }
 
         nerdLog('Starting Expert Mode collection — Gmail, Contacts, Calendar', 'info');
 
@@ -1334,7 +1357,8 @@ const NomoloBridge = (() => {
                 const totalEl = document.getElementById('expert-collect-total');
                 if (totalEl) {
                     totalEl.style.display = '';
-                    totalEl.innerHTML = `<div style="font-size:28px;font-weight:700;margin-bottom:4px">${finalTotal.toLocaleString()}</div><div style="font-size:13px;color:var(--text-muted)">pieces of loot in yer vault</div>`;
+                    const jET = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+                    totalEl.innerHTML = `<div style="font-size:28px;font-weight:700;margin-bottom:4px">${finalTotal.toLocaleString()}</div><div style="font-size:13px;color:var(--text-muted)">${jET === 'rpg' ? 'pieces of loot in yer vault' : 'records in your archive'}</div>`;
                 }
                 if (btn) btn.style.display = 'none';
                 document.querySelectorAll('.expert-collect-row__bar-fill').forEach(b => { b.style.animation = 'none'; b.style.width = '100%'; });
@@ -1342,9 +1366,11 @@ const NomoloBridge = (() => {
 
                 // Show explore link
                 const totalHtml = totalEl.innerHTML;
+                const jEL = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+                const enterLabel = jEL === 'rpg' ? 'Enter the SCUMM Bar' : 'Go to Dashboard';
                 totalEl.innerHTML = totalHtml + `
                     <a href="/" onclick="NomoloBridge.clearJourneyState()" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:12px 28px;background:linear-gradient(135deg,var(--accent-purple),var(--accent-cyan));border:none;border-radius:10px;color:white;font-family:var(--font-heading);font-size:15px;font-weight:600;text-decoration:none;cursor:pointer">
-                        Enter the SCUMM Bar <span>&rarr;</span>
+                        ${enterLabel} <span>&rarr;</span>
                     </a>
                 `;
             }
@@ -1542,19 +1568,19 @@ const NomoloBridge = (() => {
             let emptyTitle, emptySub, emptyChest;
             if (_recordsQuery) {
                 emptyChest = '\u{1F99C}';
-                emptyTitle = jM === 'rpg' ? 'The parrot came back empty-clawed' : 'No results found';
-                emptySub = jM === 'rpg' ? 'Try different waters, Captain?' : 'Try a different search term';
+                emptyTitle = jM === 'rpg' ? 'The parrot returned empty-clawed!' : 'No results found';
+                emptySub = jM === 'rpg' ? 'Perhaps these waters hold different treasures, Captain.' : 'Try a different search term';
             } else {
                 emptyChest = '\u{1F4E6}';
-                emptyTitle = jM === 'rpg' ? 'The chest is empty, Captain!' : 'No records yet';
-                emptySub = jM === 'rpg' ? 'Time to raid the Armada!' : 'Import some data to get started';
+                emptyTitle = jM === 'rpg' ? 'The chest be empty, Captain!' : 'No records yet';
+                emptySub = jM === 'rpg' ? 'The Armada\'s vaults overflow with yer stolen plunder. Time to take it back.' : 'Import some data to get started';
             }
             let emptyHtml = '<div class="plunder-empty">';
             emptyHtml += '<div class="plunder-empty__chest">' + emptyChest + '</div>';
             emptyHtml += '<p class="plunder-empty__title">' + emptyTitle + '</p>';
             emptyHtml += '<p class="plunder-empty__sub">' + emptySub + '</p>';
             if (!_recordsQuery) {
-                const btnLabel = jM === 'rpg' ? 'Set Sail for Raid Targets \u2192' : 'Import Data \u2192';
+                const btnLabel = jM === 'rpg' ? '\u2693 Raid the Armada' : 'Import Data \u2192';
                 emptyHtml += '<a href="/sources" class="plunder-empty__btn">' + btnLabel + '</a>';
             }
             emptyHtml += '</div>';
@@ -1573,12 +1599,12 @@ const NomoloBridge = (() => {
             const pirateDate = formatPirateDate(record.date);
             const realDate = record.date_formatted || formatRecordDate(record.date);
 
-            // Villain badge
+            // Villain badge — RPG style with conglomerate color
             let villainBadge = '';
             if (record.villain_name) {
                 const vName = jM === 'rpg' ? record.villain_name : (record.villain_company || record.villain_name);
-                const vColor = record.villain_color || '#444';
-                villainBadge = '<span class="plunder-item__villain" style="background:' + vColor + '22;color:' + vColor + ';border:1px solid ' + vColor + '44">'
+                const vColor = record.villain_color || '#888';
+                villainBadge = '<span class="plunder-item__villain" style="background:' + vColor + '18;color:' + vColor + ';border:2px solid ' + vColor + '33">'
                     + (record.villain_icon ? record.villain_icon + ' ' : '') + escapeHtml(vName) + '</span>';
             }
 
@@ -1590,7 +1616,7 @@ const NomoloBridge = (() => {
             html += '<div class="plunder-item__body">';
             html += '<div class="plunder-item__title">' + escapeHtml(record.title || (jM === 'rpg' ? 'Uncharted Scroll' : 'Untitled')) + '</div>';
             if (record.subtitle) html += '<div class="plunder-item__subtitle">' + escapeHtml(record.subtitle) + '</div>';
-            if (record.preview) html += '<p class="plunder-item__preview">"' + escapeHtml(record.preview) + '"</p>';
+            if (record.preview) html += '<p class="plunder-item__preview">\u201C' + escapeHtml(record.preview) + '\u201D</p>';
             html += '</div>';
             html += '<div class="plunder-item__right">';
             if (villainBadge) html += villainBadge;
@@ -1621,7 +1647,7 @@ const NomoloBridge = (() => {
         if (nextBtn) nextBtn.disabled = data.page >= data.pages;
         const jargonMode = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
         if (infoEl) infoEl.textContent = jargonMode === 'rpg'
-            ? 'Chart ' + data.page + ' of ' + data.pages + ' \u2014 steady as she goes'
+            ? 'Chart ' + data.page + ' of ' + data.pages
             : 'Page ' + data.page + ' of ' + data.pages;
     }
 
@@ -1642,7 +1668,7 @@ const NomoloBridge = (() => {
         const pirateDate = formatPirateDate(record.date);
         const realDate = record.date_formatted || formatRecordDate(record.date);
 
-        let html = '<button class="plunder-detail__close" onclick="NomoloBridge.closeRecordDetail()">\u2716</button>';
+        let html = '<button class="plunder-detail__close" onclick="NomoloBridge.closeRecordDetail()">x</button>';
 
         // Header: emoji + title + subtitle
         html += '<div class="plunder-detail__header">';
@@ -1655,14 +1681,14 @@ const NomoloBridge = (() => {
         // "Raided from" villain badge
         if (record.villain_name) {
             const vName = jM === 'rpg' ? record.villain_name : (record.villain_company || record.villain_name);
-            const vColor = record.villain_color || '#444';
-            const raidLabel = jM === 'rpg' ? 'Raided from:' : 'Source:';
-            html += '<div class="plunder-detail__raided" style="background:' + vColor + '15;color:' + vColor + ';border:1px solid ' + vColor + '33">';
+            const vColor = record.villain_color || '#888';
+            const raidLabel = jM === 'rpg' ? '\u2694\uFE0F Raided from' : 'Source:';
+            html += '<div class="plunder-detail__raided" style="background:' + vColor + '12;color:' + vColor + ';border:2px solid ' + vColor + '30">';
             html += (record.villain_icon ? record.villain_icon + ' ' : '') + raidLabel + ' ' + escapeHtml(vName);
             html += '</div>';
         }
 
-        // Metadata
+        // Metadata sidebar
         html += '<div class="plunder-detail__meta">';
         const dateLabel = jM === 'rpg' ? 'Charted' : 'Date';
         const dateVal = jM === 'rpg' ? pirateDate : realDate;
@@ -1670,9 +1696,10 @@ const NomoloBridge = (() => {
             html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">' + dateLabel + ':</span> ' + dateVal + '</span>';
         }
         const sourceLabel = jM === 'rpg' ? (record.source_label || record.source) : record.source.replace(/_/g, ' ');
-        html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">' + (jM === 'rpg' ? 'Type' : 'Source') + ':</span> ' + escapeHtml(sourceLabel) + '</span>';
+        html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">' + (jM === 'rpg' ? 'Loot type' : 'Source') + ':</span> ' + emoji + ' ' + escapeHtml(sourceLabel) + '</span>';
         if (record.id) {
-            html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">ID:</span> ' + escapeHtml(String(record.id).substring(0, 12)) + '</span>';
+            const idLabel = jM === 'rpg' ? 'Artifact' : 'ID';
+            html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">' + idLabel + ':</span> ' + escapeHtml(String(record.id).substring(0, 12)) + '</span>';
         }
         if (record.score) {
             const scoreLabel = jM === 'rpg' ? 'Treasure quality' : 'Relevance';
@@ -1680,21 +1707,33 @@ const NomoloBridge = (() => {
         }
         html += '</div>';
 
-        // Body content
-        if (record.preview) {
-            html += '<div class="plunder-detail__body">' + escapeHtml(record.preview) + '</div>';
+        // Body content — the full inscription
+        const bodyText = record.body || record.preview || '';
+        if (bodyText) {
+            // Convert newlines to <br>, escape HTML first
+            const bodyHtml = escapeHtml(bodyText).replace(/\n/g, '<br>');
+            html += '<div class="plunder-detail__body">' + bodyHtml + '</div>';
         }
 
-        // Raw data toggle
+        // Raw data toggle — inspect the artifact
         if (record.raw && Object.keys(record.raw).length > 0) {
             html += '<div class="plunder-detail__raw">';
-            html += '<button class="plunder-detail__raw-toggle" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">' + (jM === 'rpg' ? 'Inspect the artifact' : 'Show raw data') + '</button>';
+            html += '<button class="plunder-detail__raw-toggle" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">' + (jM === 'rpg' ? '\u{1F50D} Inspect artifact' : 'Show raw data') + '</button>';
             html += '<div class="plunder-detail__raw-content" style="display:none">' + escapeHtml(JSON.stringify(record.raw, null, 2)) + '</div>';
             html += '</div>';
         }
 
         content.innerHTML = html;
         modal.style.display = 'flex';
+
+        // Close on Escape key
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                NomoloBridge.closeRecordDetail();
+                document.removeEventListener('keydown', escHandler);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
     }
 
     function closeRecordDetail() {
@@ -1746,13 +1785,16 @@ const NomoloBridge = (() => {
     }
 
     /**
-     * Pirate-themed relative date formatting.
-     * < 1 hour: "moments ago"
+     * Pirate-themed relative date formatting (Monkey Island style).
+     * < 1 hour: "just now, Cap'n"
      * < 1 day: "earlier today"
+     * 1 day: "1 tide ago"
      * < 7 days: "X tides ago"
+     * 7-13 days: "a fortnight past"
      * < 30 days: "X moons ago"
-     * < 365 days: "X seasons past"
-     * > 1 year: "from the age of [year]"
+     * < 365 days: "X moons ago"
+     * 1-2 years: "a long voyage ago"
+     * > 2 years: "from the age of [year]"
      */
     function formatPirateDate(dateStr) {
         if (!dateStr) return '';
@@ -1765,16 +1807,20 @@ const NomoloBridge = (() => {
             const diffDays = Math.floor(diffHours / 24);
 
             if (diffHours < 0) return 'from the future';
-            if (diffHours < 1) return 'moments ago';
+            if (diffHours < 1) return "just now, Cap'n";
             if (diffDays === 0) return 'earlier today';
             if (diffDays === 1) return '1 tide ago';
             if (diffDays < 7) return diffDays + ' tides ago';
             const diffWeeks = Math.floor(diffDays / 7);
-            if (diffDays < 30) return diffWeeks === 1 ? 'a fortnight past' : diffWeeks + ' moons ago';
+            if (diffDays < 14) return 'a fortnight past';
+            if (diffDays < 30) return diffWeeks + ' fortnights past';
             const diffMonths = Math.floor(diffDays / 30);
-            if (diffDays < 365) return diffMonths + (diffMonths === 1 ? ' moon ago' : ' moons ago');
+            if (diffMonths === 1) return '1 moon ago';
+            if (diffDays < 365) return diffMonths + ' moons ago';
+            const diffYears = Math.floor(diffDays / 365);
+            if (diffYears <= 2) return 'a long voyage ago';
             const year = d.getFullYear();
-            return 'from the age of ' + year;
+            return 'the age of ' + year;
         } catch {
             return dateStr.substring(0, 10);
         }
@@ -1852,7 +1898,7 @@ const NomoloBridge = (() => {
                         toast(jM === 'rpg' ? `${sourceId} requires stolen cargo. Check yer orders, Captain.` : `${sourceId} requires a file upload. Check settings.`, 'info');
                     } else if (status.status === 'needs_setup') {
                         clearInterval(pollInterval);
-                        toast(`${sourceId}: ${status.message}`, 'info');
+                        toast(jM === 'rpg' ? `${sourceId} needs a letter of marque. ${status.message}` : `${sourceId} needs setup: ${status.message}`, 'info');
                     }
                 }, 1000);
             }
@@ -1944,7 +1990,8 @@ const NomoloBridge = (() => {
             }
         } catch {
             const statusEl = document.getElementById('llm-token-status');
-            if (statusEl) statusEl.textContent = 'Error loading status';
+            const jLErr = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            if (statusEl) statusEl.textContent = jLErr === 'rpg' ? 'The oracle is unreachable!' : 'Error loading status';
         }
     }
 
@@ -1985,7 +2032,7 @@ const NomoloBridge = (() => {
                 toggleLLMForm();
                 initLLMSettings();
             } else {
-                toast(data.error || 'Failed to save', 'error');
+                toast(jM === 'rpg' ? (data.error || 'The scroll resisted sealing!') : (data.error || 'Failed to save'), 'error');
             }
         } catch (e) {
             toast(jM === 'rpg' ? 'The scroll crumbled! ' + e.message : 'Failed to save: ' + e.message, 'error');
@@ -2004,7 +2051,7 @@ const NomoloBridge = (() => {
                 toggleLLMForm();
                 initLLMSettings();
             } else {
-                toast(data.error || 'Failed to delete', 'error');
+                toast(jM === 'rpg' ? (data.error || 'The scroll refused to burn!') : (data.error || 'Failed to delete'), 'error');
             }
         } catch (e) {
             toast(jM === 'rpg' ? 'Failed to burn the scroll! ' + e.message : 'Failed to delete: ' + e.message, 'error');
@@ -2162,6 +2209,24 @@ const NomoloBridge = (() => {
                 if (rpgText !== null) {
                     el.textContent = rpgText;
                 }
+            }
+        });
+
+        // Refresh sidebar proverb for new jargon mode
+        const proverbEl = document.getElementById('pirate-proverb');
+        if (proverbEl && window.__NOMOLO_PROVERBS__) {
+            const pool = mode === 'rpg' ? window.__NOMOLO_PROVERBS__.rpg : window.__NOMOLO_PROVERBS__.real;
+            if (pool && pool.length > 0) {
+                proverbEl.textContent = pool[Math.floor(Math.random() * pool.length)];
+            }
+        }
+
+        // Update title attributes (tooltips) for jargon-aware elements
+        document.querySelectorAll('[data-rpg-title]').forEach(el => {
+            if (mode === 'real') {
+                el.title = el.getAttribute('data-real-title') || '';
+            } else {
+                el.title = el.getAttribute('data-rpg-title') || '';
             }
         });
 
@@ -2692,7 +2757,7 @@ const NomoloBridge = (() => {
 
         overlay.innerHTML = `
             <div class="riddle-box">
-                <button class="riddle-box__skip" onclick="this.closest('.riddle-overlay').remove()">Skip to raid &rarr;</button>
+                <button class="riddle-box__skip" onclick="this.closest('.riddle-overlay').remove()">${(localStorage.getItem('nomolo_jargon_mode') || 'rpg') === 'rpg' ? 'Skip to raid' : 'Skip'} &rarr;</button>
                 <div class="riddle-box__header">
                     <div class="riddle-box__portrait">${riddle.portrait}</div>
                     <div class="riddle-box__villain-info">
@@ -2786,12 +2851,13 @@ const NomoloBridge = (() => {
         const resultEl = overlay.querySelector('.riddle-result');
         if (!resultEl) return;
 
+        const jRR = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
         resultEl.innerHTML = `
             <div class="riddle-explanation">${_escapeRiddleHtml(result.explanation)}</div>
             <div class="riddle-villain-reaction">${_escapeRiddleHtml(result.portrait)} ${_escapeRiddleHtml(result.villain_reaction)}</div>
             <div class="riddle-box__actions">
-                <button class="riddle-box__btn" data-action="another">Ask another riddle</button>
-                <button class="riddle-box__btn riddle-box__btn--primary" data-action="proceed">Proceed to raid</button>
+                <button class="riddle-box__btn" data-action="another">${jRR === 'rpg' ? 'Ask another riddle' : 'Another question'}</button>
+                <button class="riddle-box__btn riddle-box__btn--primary" data-action="proceed">${jRR === 'rpg' ? 'Proceed to raid' : 'Continue'}</button>
             </div>
         `;
 
@@ -2859,7 +2925,8 @@ const NomoloBridge = (() => {
                     ta.select();
                     document.execCommand('copy');
                     document.body.removeChild(ta);
-                    toast('Stats copied!', 'success');
+                    const jCF = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+                    toast(jCF === 'rpg' ? 'Voyage stats copied to clipboard!' : 'Stats copied to clipboard!', 'success');
                     claimPowerup('town_crier');
                 }
             }
@@ -2878,7 +2945,8 @@ const NomoloBridge = (() => {
             });
             const data = await resp.json();
             if (data.ok && data.powerup) {
-                toast(`${data.powerup.emoji} Power-Up earned: ${data.powerup.name}!`, 'success');
+                const jPU = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+                toast(jPU === 'rpg' ? `${data.powerup.emoji} Power-Up earned: ${data.powerup.name}!` : `${data.powerup.emoji} Achievement unlocked: ${data.powerup.name}!`, 'success');
             }
         } catch (e) {
             console.warn('[Nomolo] 🏴‍☠️ Arrr! Failed to claim yer power-up:', e);
@@ -2913,8 +2981,8 @@ const NomoloBridge = (() => {
                         <span>END ${card.stats.END}</span>
                     </div>
                     <div class="share-card__footer">
-                        <span>${card.villains_raided} Armada fleets raided</span>
-                        <span>${card.earned_powerups} Power-Ups</span>
+                        <span>${(localStorage.getItem('nomolo_jargon_mode') || 'rpg') === 'rpg' ? card.villains_raided + ' Armada fleets raided' : card.villains_raided + ' sources connected'}</span>
+                        <span>${(localStorage.getItem('nomolo_jargon_mode') || 'rpg') === 'rpg' ? card.earned_powerups + ' Power-Ups' : card.earned_powerups + ' achievements'}</span>
                     </div>
                     <div class="share-card__actions">
                         <button onclick="NomoloBridge.shareToSocial('twitter')" class="share-card__btn">X / Twitter</button>
@@ -2927,7 +2995,8 @@ const NomoloBridge = (() => {
 
             document.body.appendChild(overlay);
         } catch (e) {
-            toast('Could not load share card: ' + e.message, 'error');
+            const jSC = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            toast(jSC === 'rpg' ? 'The carrier pigeon crashed! ' + e.message : 'Could not load share card: ' + e.message, 'error');
         }
     }
 
@@ -2941,13 +3010,15 @@ const NomoloBridge = (() => {
             const data = await resp.json();
 
             if (data.error) {
-                toast(data.message, 'info');
+                const jMGE = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+                toast(jMGE === 'rpg' ? (data.message || 'The bartender has no questions for ye yet, Captain.') : (data.message || 'No quiz questions available yet.'), 'info');
                 return;
             }
 
             showMiniGameQuestion(data);
         } catch (e) {
-            toast('Could not load mini-game: ' + e.message, 'error');
+            const jMGL = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            toast(jMGL === 'rpg' ? 'The bartender spilled the grog! ' + e.message : 'Could not load quiz: ' + e.message, 'error');
         }
     }
 
@@ -2965,11 +3036,12 @@ const NomoloBridge = (() => {
             </button>`;
         }).join('');
 
+        const jMQ = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
         overlay.innerHTML = `
             <div class="mini-game-card">
                 <div class="mini-game__header">
                     <span class="mini-game__icon">\uD83C\uDFB2</span>
-                    <span class="mini-game__title">Memory Tavern</span>
+                    <span class="mini-game__title">${jMQ === 'rpg' ? 'Memory Tavern' : 'Data Quiz'}</span>
                     <span class="mini-game__streak">\uD83D\uDD25 ${miniGameStreak}</span>
                 </div>
                 <p class="mini-game__question">${escapeHtml(question.question)}</p>
@@ -3030,7 +3102,8 @@ const NomoloBridge = (() => {
         // Add "Play Again" button
         const playAgainBtn = document.createElement('button');
         playAgainBtn.className = 'mini-game__play-again';
-        playAgainBtn.textContent = 'Another Round';
+        const jPA = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        playAgainBtn.textContent = jPA === 'rpg' ? 'Another Round' : 'Play Again';
         playAgainBtn.onclick = () => {
             overlay.remove();
             startMiniGame();
