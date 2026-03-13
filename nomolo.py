@@ -11,6 +11,8 @@ Usage:
     nomolo collect contacts-linkedin <file>   Import LinkedIn CSV export
     nomolo collect contacts-facebook <file>   Import Facebook JSON export
     nomolo collect contacts-instagram <dir>   Import Instagram JSON export
+    nomolo collect text-stream start         Start text input capture receiver
+    nomolo collect text-stream stop          Stop text input capture receiver
     nomolo enrich gmail             Backfill metadata from Gmail API
     nomolo clean gmail              RAG-optimized cleaning pass
     nomolo groom gmail              Deduplicate and sort
@@ -18,8 +20,12 @@ Usage:
     nomolo vectorize gmail          Vectorize Gmail only
     nomolo search 'query'           Search your data (no LLM needed)
     nomolo search 'query' -s gmail  Search Gmail only
+    nomolo web                      Launch the visual web interface
+    nomolo scan                     Discover data sources on your machine
     nomolo status                   See your vaults
     nomolo update                   Pull latest version from GitHub
+    nomolo mcp setup                Auto-configure MCP server for Claude
+    nomolo --version                Show version
 """
 
 import argparse
@@ -429,6 +435,182 @@ def _setup_contacts_google(args, config):
     print()
 
 
+def _collect_file_import(args, config, usage_lines, collector_module,
+                         collector_fn, expected_type="file", extra_kwargs=None):
+    """Shared boilerplate for file/directory-based collectors.
+
+    Args:
+        args: Parsed CLI args (needs .vault).
+        config: Loaded config dict.
+        usage_lines: List of strings to print as usage help (after the Usage: line).
+        collector_module: Dotted module path to import from.
+        collector_fn: Function name to call in that module.
+        expected_type: "file" or "path" — controls the "not found" wording.
+        extra_kwargs: Optional dict of extra keyword args to pass to the collector.
+    """
+    if not args.vault or args.vault == "Primary":
+        print(f"\nUsage: nomolo collect {args.source} <{expected_type}>")
+        for line in usage_lines:
+            print(line)
+        sys.exit(1)
+
+    export_path = os.path.expanduser(args.vault)
+    if not os.path.exists(export_path):
+        label = "File" if expected_type == "file" else "Path"
+        print(f"\n{label} not found: {export_path}")
+        sys.exit(1)
+
+    import importlib
+    mod = importlib.import_module(collector_module)
+    fn = getattr(mod, collector_fn)
+
+    kwargs = {"config": config}
+    if extra_kwargs:
+        kwargs.update(extra_kwargs)
+    fn(export_path, **kwargs)
+
+
+# Registry of file-based collectors: source -> kwargs for _collect_file_import
+_FILE_COLLECTORS = {
+    "contacts-linkedin": {
+        "usage_lines": [
+            "\nExport your LinkedIn data:",
+            "  1. Go to linkedin.com > Settings > Data Privacy",
+            "  2. Get a copy of your data (select all or at least Connections)",
+            "  3. Download and unzip the archive",
+            "  4. Run: nomolo collect contacts-linkedin ~/Downloads/linkedin-export/",
+            "     or:  nomolo collect contacts-linkedin ~/Downloads/Connections.csv",
+        ],
+        "collector_module": "collectors.linkedin_contacts",
+        "collector_fn": "run_import",
+        "expected_type": "path",
+    },
+    "contacts-facebook": {
+        "usage_lines": [
+            "\nExport your Facebook data:",
+            "  1. Go to facebook.com > Settings > Your Information",
+            "  2. Download Your Information > select JSON format",
+            "  3. Download and unzip",
+            "  4. Run: nomolo collect contacts-facebook ~/Downloads/facebook-export/",
+        ],
+        "collector_module": "collectors.facebook_contacts",
+        "collector_fn": "run_import",
+        "expected_type": "path",
+    },
+    "contacts-instagram": {
+        "usage_lines": [
+            "\nExport your Instagram data:",
+            "  1. Go to Instagram > Settings > Your Activity",
+            "  2. Download Your Information > select JSON format",
+            "  3. Download and unzip",
+            "  4. Run: nomolo collect contacts-instagram ~/Downloads/instagram-export/",
+        ],
+        "collector_module": "collectors.instagram_contacts",
+        "collector_fn": "run_import",
+        "expected_type": "path",
+    },
+    "books-goodreads": {
+        "usage_lines": [
+            "\nExport from Goodreads: My Books > Import/Export > Export Library",
+        ],
+        "collector_module": "collectors.books",
+        "collector_fn": "run_import_goodreads",
+        "expected_type": "file",
+    },
+    "books-audible": {
+        "usage_lines": [
+            "\nExport your Audible library as CSV.",
+        ],
+        "collector_module": "collectors.books",
+        "collector_fn": "run_import_audible",
+        "expected_type": "file",
+    },
+    "youtube": {
+        "usage_lines": [
+            "\nGoogle Takeout: takeout.google.com > YouTube > watch-history.json",
+            "(YouTube watch history API was deprecated — Takeout is the only option)",
+        ],
+        "collector_module": "collectors.youtube",
+        "collector_fn": "run_import",
+        "expected_type": "path",
+    },
+    "music-spotify": {
+        "usage_lines": [
+            "\nRequest your data: spotify.com > Account > Privacy > Download your data",
+        ],
+        "collector_module": "collectors.music",
+        "collector_fn": "run_import",
+        "expected_type": "path",
+    },
+    "finance-paypal": {
+        "usage_lines": [
+            "\nPayPal: Activity > Download > CSV",
+        ],
+        "collector_module": "collectors.finance",
+        "collector_fn": "run_import_paypal",
+        "expected_type": "file",
+    },
+    "finance-bank": {
+        "usage_lines": [
+            "\nExport your bank transactions as CSV.",
+            "Use --bank-name to tag the source (e.g., --bank-name deutschebank)",
+        ],
+        "collector_module": "collectors.finance",
+        "collector_fn": "run_import_bank",
+        "expected_type": "file",
+    },
+    "shopping-amazon": {
+        "usage_lines": [
+            "\nAmazon: Account > Order History > Download order reports",
+        ],
+        "collector_module": "collectors.shopping",
+        "collector_fn": "run_import_amazon",
+        "expected_type": "file",
+    },
+    "notes": {
+        "usage_lines": [
+            "\nPoint to a directory of .md, .txt, or .markdown files.",
+        ],
+        "collector_module": "collectors.notes",
+        "collector_fn": "run_import",
+        "expected_type": "path",
+    },
+    "podcasts": {
+        "usage_lines": [
+            "\nPodcast Addict: Settings > Backup/Restore > Backup",
+        ],
+        "collector_module": "collectors.podcasts",
+        "collector_fn": "run_import",
+        "expected_type": "file",
+    },
+    "health": {
+        "usage_lines": [
+            "\nApple Health: Health app > Profile > Export All Health Data",
+        ],
+        "collector_module": "collectors.health",
+        "collector_fn": "run_import",
+        "expected_type": "path",
+    },
+    "calendar-ics": {
+        "usage_lines": [
+            "\nExport your calendar as .ics file from any calendar app.",
+        ],
+        "collector_module": "collectors.calendar_collector",
+        "collector_fn": "run_import_ics",
+        "expected_type": "file",
+    },
+    "maps": {
+        "usage_lines": [
+            "\nGoogle Takeout: takeout.google.com > Location History",
+            "(No API available for Maps Timeline — Takeout is the only option)",
+        ],
+        "collector_module": "collectors.maps",
+        "collector_fn": "run_import",
+        "expected_type": "path",
+    },
+}
+
+
 def cmd_collect(args, config):
     """Run a collector."""
     if args.source == "gmail":
@@ -465,184 +647,6 @@ def cmd_collect(args, config):
 
         run_export(config=config)
 
-    elif args.source == "contacts-linkedin":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect contacts-linkedin <path-to-csv-or-export-dir>")
-            print("\nExport your LinkedIn data:")
-            print("  1. Go to linkedin.com > Settings > Data Privacy")
-            print("  2. Get a copy of your data (select all or at least Connections)")
-            print("  3. Download and unzip the archive")
-            print("  4. Run: nomolo collect contacts-linkedin ~/Downloads/linkedin-export/")
-            print("     or:  nomolo collect contacts-linkedin ~/Downloads/Connections.csv")
-            sys.exit(1)
-
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nPath not found: {export_path}")
-            sys.exit(1)
-
-        from collectors.linkedin_contacts import run_import
-        run_import(export_path=export_path, config=config)
-
-    elif args.source == "contacts-facebook":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect contacts-facebook <path-to-json-or-dir>")
-            print("\nExport your Facebook data:")
-            print("  1. Go to facebook.com > Settings > Your Information")
-            print("  2. Download Your Information > select JSON format")
-            print("  3. Download and unzip")
-            print("  4. Run: nomolo collect contacts-facebook ~/Downloads/facebook-export/")
-            sys.exit(1)
-
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nPath not found: {export_path}")
-            sys.exit(1)
-
-        from collectors.facebook_contacts import run_import
-        run_import(export_path=export_path, config=config)
-
-    elif args.source == "contacts-instagram":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect contacts-instagram <path-to-json-or-dir>")
-            print("\nExport your Instagram data:")
-            print("  1. Go to Instagram > Settings > Your Activity")
-            print("  2. Download Your Information > select JSON format")
-            print("  3. Download and unzip")
-            print("  4. Run: nomolo collect contacts-instagram ~/Downloads/instagram-export/")
-            sys.exit(1)
-
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nPath not found: {export_path}")
-            sys.exit(1)
-
-        from collectors.instagram_contacts import run_import
-        run_import(export_path=export_path, config=config)
-
-    elif args.source == "books-goodreads":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect books-goodreads <path-to-csv>")
-            print("\nExport from Goodreads: My Books > Import/Export > Export Library")
-            sys.exit(1)
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nFile not found: {export_path}")
-            sys.exit(1)
-        from collectors.books import run_import_goodreads
-        run_import_goodreads(export_path, config)
-
-    elif args.source == "books-audible":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect books-audible <path-to-csv>")
-            print("\nExport your Audible library as CSV.")
-            sys.exit(1)
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nFile not found: {export_path}")
-            sys.exit(1)
-        from collectors.books import run_import_audible
-        run_import_audible(export_path, config)
-
-    elif args.source == "youtube":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect youtube <path-to-watch-history-json-or-dir>")
-            print("\nGoogle Takeout: takeout.google.com > YouTube > watch-history.json")
-            print("(YouTube watch history API was deprecated — Takeout is the only option)")
-            sys.exit(1)
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nPath not found: {export_path}")
-            sys.exit(1)
-        from collectors.youtube import run_import
-        run_import(export_path, config)
-
-    elif args.source == "music-spotify":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect music-spotify <path-to-json-or-dir>")
-            print("\nRequest your data: spotify.com > Account > Privacy > Download your data")
-            sys.exit(1)
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nPath not found: {export_path}")
-            sys.exit(1)
-        from collectors.music import run_import
-        run_import(export_path, config)
-
-    elif args.source == "finance-paypal":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect finance-paypal <path-to-csv>")
-            print("\nPayPal: Activity > Download > CSV")
-            sys.exit(1)
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nFile not found: {export_path}")
-            sys.exit(1)
-        from collectors.finance import run_import_paypal
-        run_import_paypal(export_path, config)
-
-    elif args.source == "finance-bank":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect finance-bank <path-to-csv>")
-            print("\nExport your bank transactions as CSV.")
-            print("Use --bank-name to tag the source (e.g., --bank-name deutschebank)")
-            sys.exit(1)
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nFile not found: {export_path}")
-            sys.exit(1)
-        from collectors.finance import run_import_bank
-        bank_name = getattr(args, "bank_name", "bank")
-        run_import_bank(export_path, config, bank_name=bank_name)
-
-    elif args.source == "shopping-amazon":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect shopping-amazon <path-to-csv>")
-            print("\nAmazon: Account > Order History > Download order reports")
-            sys.exit(1)
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nFile not found: {export_path}")
-            sys.exit(1)
-        from collectors.shopping import run_import_amazon
-        run_import_amazon(export_path, config)
-
-    elif args.source == "notes":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect notes <path-to-directory>")
-            print("\nPoint to a directory of .md, .txt, or .markdown files.")
-            sys.exit(1)
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nPath not found: {export_path}")
-            sys.exit(1)
-        from collectors.notes import run_import
-        run_import(export_path, config)
-
-    elif args.source == "podcasts":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect podcasts <path-to-backup-db-or-csv>")
-            print("\nPodcast Addict: Settings > Backup/Restore > Backup")
-            sys.exit(1)
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nFile not found: {export_path}")
-            sys.exit(1)
-        from collectors.podcasts import run_import
-        run_import(export_path, config)
-
-    elif args.source == "health":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect health <path-to-export-xml-or-dir>")
-            print("\nApple Health: Health app > Profile > Export All Health Data")
-            sys.exit(1)
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nPath not found: {export_path}")
-            sys.exit(1)
-        from collectors.health import run_import
-        run_import(export_path, config)
-
     elif args.source == "browser-chrome":
         from collectors.browser import run_import
         run_import(config=config)
@@ -657,30 +661,48 @@ def cmd_collect(args, config):
         from collectors.calendar_collector import run_export
         run_export(config=config)
 
-    elif args.source == "calendar-ics":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect calendar-ics <path-to-ics-file>")
-            print("\nExport your calendar as .ics file from any calendar app.")
-            sys.exit(1)
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nFile not found: {export_path}")
-            sys.exit(1)
-        from collectors.calendar_collector import run_import_ics
-        run_import_ics(export_path, config)
+    elif args.source in _FILE_COLLECTORS:
+        entry = _FILE_COLLECTORS[args.source]
+        extra_kwargs = None
+        if args.source == "finance-bank":
+            extra_kwargs = {"bank_name": getattr(args, "bank_name", "bank")}
+        _collect_file_import(
+            args, config,
+            usage_lines=entry["usage_lines"],
+            collector_module=entry["collector_module"],
+            collector_fn=entry["collector_fn"],
+            expected_type=entry["expected_type"],
+            extra_kwargs=extra_kwargs,
+        )
 
-    elif args.source == "maps":
-        if not args.vault or args.vault == "Primary":
-            print("\nUsage: nomolo collect maps <path-to-semantic-location-history-dir>")
-            print("\nGoogle Takeout: takeout.google.com > Location History")
-            print("(No API available for Maps Timeline — Takeout is the only option)")
+    elif args.source == "text-stream":
+        from collectors.text_stream import run_server, stop_server, is_running
+
+        subcommand = args.vault  # reuse vault positional arg for start/stop
+        if subcommand == "start":
+            if is_running():
+                print("\n  Text stream receiver is already running.")
+                print("  Use 'nomolo collect text-stream stop' to stop it first.")
+                sys.exit(1)
+            run_server(config=config)
+        elif subcommand == "stop":
+            stop_server()
+        elif subcommand == "status":
+            if is_running():
+                print("\n  Text stream receiver is running.")
+            else:
+                print("\n  Text stream receiver is not running.")
+                print("  Start it with: nomolo collect text-stream start")
+        else:
+            print("\nUsage: nomolo collect text-stream <start|stop|status>")
+            print()
+            print("  start   Start the local text capture receiver (localhost:19876)")
+            print("  stop    Stop the running receiver")
+            print("  status  Check if the receiver is running")
+            print()
+            print("  Install the Chrome extension from:")
+            print("    chrome://extensions > Load unpacked > collectors/browser_input/")
             sys.exit(1)
-        export_path = os.path.expanduser(args.vault)
-        if not os.path.exists(export_path):
-            print(f"\nPath not found: {export_path}")
-            sys.exit(1)
-        from collectors.maps import run_import
-        run_import(export_path, config)
 
     else:
         print(f"\nError: Unknown source '{args.source}'")
@@ -714,6 +736,10 @@ def cmd_collect(args, config):
         print("    browser-chrome      Chrome browsing history (local)")
         print("    calendar-ics        Calendar events (ICS file)")
         print()
+        print("  Live capture:")
+        print("    text-stream start   Start text input receiver (Chrome extension)")
+        print("    text-stream stop    Stop the receiver")
+        print()
         sys.exit(1)
 
 
@@ -737,6 +763,7 @@ _VAULT_DIR_MAP = {
     "calendar": lambda vault: "Calendar",
     "calendar-ics": lambda vault: "Calendar",
     "maps": lambda vault: "Maps",
+    "text-stream": lambda vault: "TextStream",
 }
 
 
@@ -789,6 +816,88 @@ def cmd_groom(args, config):
         sys.exit(1)
 
     groom_vault(vault_path)
+
+
+def cmd_web(args):
+    """Launch the Nomolo web interface."""
+    try:
+        import uvicorn  # noqa: F401
+    except ImportError:
+        print("\nInstalling web dependencies...")
+        venv_pip = os.path.join(PROJECT_ROOT, "venv", "bin", "pip")
+        pip_cmd = venv_pip if os.path.exists(venv_pip) else "pip"
+        subprocess.run(
+            [pip_cmd, "install", "-q", "fastapi", "uvicorn[standard]", "jinja2", "websockets"],
+            check=True,
+        )
+
+    port = getattr(args, "port", 3000)
+    no_open = getattr(args, "no_open", False)
+
+    print(f"\n🚀 Launching Nomolo Web Interface on http://localhost:{port}")
+    print("   Press Ctrl+C to stop\n")
+
+    if not no_open:
+        import threading
+        threading.Timer(1.5, lambda: webbrowser.open(f"http://localhost:{port}")).start()
+
+    import uvicorn
+    uvicorn.run(
+        "web.server:app",
+        host="127.0.0.1",
+        port=port,
+        log_level="warning",
+        reload=False,
+    )
+
+
+def cmd_scan():
+    """Run the scanner in CLI mode and print results."""
+    import asyncio
+    from web.scanner import scan, get_life_score
+
+    config = load_config()
+    vault_root = get_vault_root(config)
+
+    print("\n🔍 Scanning your machine for data sources...\n")
+
+    results = asyncio.run(scan(vault_root=vault_root, project_root=PROJECT_ROOT))
+
+    sources = results.get("sources", [])
+    if not sources:
+        print("No data sources found. Try running from your home directory.")
+        return
+
+    # Group by category
+    by_category = {}
+    for s in sources:
+        cat = s.get("category", "other")
+        by_category.setdefault(cat, []).append(s)
+
+    total_records = 0
+    for cat, items in sorted(by_category.items()):
+        print(f"  {cat.upper()}")
+        for s in items:
+            grade = s.get("nomolo_grade", "?")
+            icon = s.get("icon", "📁")
+            name = s.get("name", "Unknown")
+            status = s.get("status", "discovered")
+            est = s.get("estimated_records", 0)
+            total_records += est
+            status_icon = "✅" if status == "already_collected" else "🔍" if status == "ready" else "📋"
+            est_str = f" (~{est:,} records)" if est else ""
+            print(f"    {status_icon} {icon} {name} [{grade}]{est_str}")
+            if status != "already_collected":
+                action = s.get("action", "")
+                if action:
+                    print(f"       → {action}")
+        print()
+
+    score_data = get_life_score(results)
+    score = score_data.get("overall_score", 0)
+    print(f"  🏆 Life Archive Score: {score}/100")
+    print(f"  📊 Total records found: {total_records:,}")
+    print(f"  💡 Tip: Run 'nomolo web' for the full visual experience!\n")
 
 
 def cmd_update():
@@ -852,9 +961,10 @@ def _ensure_search_deps():
 
 
 def cmd_vectorize(args, config):
-    """Vectorize vault data into ChromaDB for semantic search."""
+    """Vectorize vault data into ChromaDB for semantic search and build FTS index."""
     _ensure_search_deps()
     from core.vectordb import get_client, vectorize_all, get_status
+    from core.search_engine import index_all as fts_index_all, get_fts_entry_count, _get_fts_db_path
 
     vault_root = config.get("vault_root", os.path.join(PROJECT_ROOT, "vaults"))
     vault_root = os.path.expanduser(vault_root)
@@ -882,6 +992,11 @@ def cmd_vectorize(args, config):
             if s["vault_entries"] > 0:
                 pct = f" ({s['vectorized'] / s['vault_entries'] * 100:.0f}%)"
             print(f"  {s['collection']}: {s['vectorized']:,} / {s['vault_entries']:,}{pct}")
+
+        # Show FTS index status
+        db_path = _get_fts_db_path(vault_root, config)
+        fts_count = get_fts_entry_count(db_path)
+        print(f"\n  FTS index: {fts_count:,} entries")
         print()
         return
 
@@ -901,6 +1016,14 @@ def cmd_vectorize(args, config):
                         from core.vectordb import vectorize_vault
                         vault_path = os.path.join(vault_root, gd)
                         new, skipped, total = vectorize_vault(vault_path, gd, client, config, force)
+
+                    # Also build FTS index for Gmail vaults
+                    print(f"\n  Building FTS keyword index...")
+                    from core.search_engine import index_vault as fts_index_vault
+                    for gd in gmail_dirs:
+                        vault_path = os.path.join(vault_root, gd)
+                        fts_index_vault(vault_path, gd, config)
+
                     print(f"\n  {'=' * 45}")
                     print(f"  Vectorization complete!")
                     print()
@@ -936,13 +1059,25 @@ def cmd_vectorize(args, config):
         print(f"  Vectorization complete! {total_new:,} new entries ({total_db:,} total in DB)")
     else:
         print(f"  No vaults to vectorize.")
+
+    # Build FTS keyword index alongside vector index
+    print(f"\n  Building FTS keyword index...")
+    fts_results = fts_index_all(vault_root, config, source_filter)
+    if fts_results:
+        fts_new = sum(r["new"] for r in fts_results.values())
+        db_path = _get_fts_db_path(vault_root, config)
+        fts_total = get_fts_entry_count(db_path)
+        print(f"  FTS index: {fts_new:,} new entries ({fts_total:,} total)")
+    else:
+        print(f"  FTS index: up to date")
     print()
 
 
 def cmd_search(args, config):
-    """Search the vector database using semantic similarity (no LLM needed)."""
+    """Hybrid search across your vault data (BM25 + semantic + metadata boosting)."""
     _ensure_search_deps()
-    from core.vectordb import get_client, search, get_full_entry
+    from core.vectordb import get_client, get_full_entry
+    from core.search_engine import hybrid_search
 
     vault_root = config.get("vault_root", os.path.join(PROJECT_ROOT, "vaults"))
     vault_root = os.path.expanduser(vault_root)
@@ -987,12 +1122,10 @@ def cmd_search(args, config):
             print(f"  No vectorized data for '{source}'. Run 'nomolo vectorize {source}' first.")
             return
 
-    where_filter = None
-    if year:
-        where_filter = {"year": year}
-
-    results = search(client, query, collections=collections,
-                     n_results=n_results, where_filter=where_filter, config=config)
+    results = hybrid_search(
+        query, vault_root, client, config=config,
+        n_results=n_results, collections=collections, year_filter=year,
+    )
 
     if not results:
         print(f"\n  No results for: {query}")
@@ -1001,17 +1134,16 @@ def cmd_search(args, config):
         print()
         return
 
-    print(f"\n  {len(results)} results for: \"{query}\"\n")
+    print(f"\n  {len(results)} results for: \"{query}\" (hybrid search)\n")
 
     for i, r in enumerate(results, 1):
         meta = r.get("metadata", {})
-        distance = r.get("distance", 0)
-        relevance = max(0, round((1 - distance) * 100))
+        score = r.get("combined_score", 0)
         collection = r.get("collection", "?")
 
         # Header line
         title = meta.get("subject") or meta.get("title") or "(untitled)"
-        print(f"  {i}. [{relevance}%] {title}")
+        print(f"  {i}. [{score:.4f}] {title}")
 
         # Metadata line
         parts = []
@@ -1027,10 +1159,9 @@ def cmd_search(args, config):
         if show_full:
             # Show full entry from vault
             vault_dir = meta.get("source", "")
-            entry_id = meta.get("entry_id", r.get("id", ""))
+            entry_id = r.get("entry_id", meta.get("entry_id", ""))
             full = get_full_entry(vault_root, vault_dir, entry_id)
             if full:
-                import json
                 print(f"     ---")
                 for k, v in full.items():
                     if k.endswith("_for_embedding"):
@@ -1041,11 +1172,12 @@ def cmd_search(args, config):
                     print(f"     {k}: {val_str}")
         else:
             # Show snippet
-            doc = r.get("document", "")
-            snippet = doc[:200].replace("\n", " ")
-            if len(doc) > 200:
-                snippet += "..."
-            print(f"     {snippet}")
+            snippet = r.get("snippet", "")
+            if snippet:
+                snippet_display = snippet[:200].replace("\n", " ")
+                if len(snippet) > 200:
+                    snippet_display += "..."
+                print(f"     {snippet_display}")
 
         print()
 
@@ -1190,10 +1322,132 @@ def cmd_status(args, config):
         print("  Get started: nomolo setup gmail")
 
 
+def get_version():
+    """Read version from pyproject.toml."""
+    pyproject = os.path.join(PROJECT_ROOT, "pyproject.toml")
+    try:
+        with open(pyproject, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("version"):
+                    # Parse: version = "0.1.0"
+                    return line.split("=", 1)[1].strip().strip('"').strip("'")
+    except (OSError, IndexError):
+        pass
+    return "unknown"
+
+
+def cmd_mcp_setup():
+    """Auto-configure MCP server for Claude Desktop and/or Claude Code CLI."""
+    mcp_server_path = os.path.join(PROJECT_ROOT, "mcp_server.py")
+    venv_python = os.path.join(PROJECT_ROOT, ".venv", "bin", "python")
+
+    if not os.path.exists(mcp_server_path):
+        print(f"Error: MCP server not found at {mcp_server_path}")
+        sys.exit(1)
+
+    if not os.path.exists(venv_python):
+        print(f"Error: Virtual environment not found at {venv_python}")
+        print("Run: python3 -m venv .venv && .venv/bin/pip install -e '.[mcp]'")
+        sys.exit(1)
+
+    # --- Verify MCP server can start ---
+    print("Verifying MCP server dependencies...")
+    check = subprocess.run(
+        [venv_python, "-c", "from mcp.server import Server; from core.vectordb import get_client; print('ok')"],
+        capture_output=True, text=True, cwd=PROJECT_ROOT,
+    )
+    if check.returncode != 0:
+        print("Error: MCP server imports failed.")
+        print(check.stderr.strip())
+        print("\nInstall MCP dependencies: .venv/bin/pip install -e '.[mcp]'")
+        sys.exit(1)
+    print("  MCP server dependencies OK.")
+
+    configured_any = False
+
+    # --- Claude Desktop ---
+    desktop_config_path = os.path.expanduser(
+        "~/Library/Application Support/Claude/claude_desktop_config.json"
+    )
+    desktop_dir = os.path.dirname(desktop_config_path)
+
+    if os.path.isdir(desktop_dir):
+        print("\nClaude Desktop detected.")
+        # Read existing config
+        if os.path.exists(desktop_config_path):
+            try:
+                with open(desktop_config_path, "r") as f:
+                    desktop_config = json.load(f)
+            except (json.JSONDecodeError, OSError):
+                desktop_config = {}
+        else:
+            desktop_config = {}
+
+        mcp_servers = desktop_config.setdefault("mcpServers", {})
+        new_entry = {
+            "command": venv_python,
+            "args": [mcp_server_path],
+        }
+
+        if "nomolo" in mcp_servers and mcp_servers["nomolo"] == new_entry:
+            print("  Already configured in Claude Desktop.")
+        else:
+            mcp_servers["nomolo"] = new_entry
+            with open(desktop_config_path, "w") as f:
+                json.dump(desktop_config, f, indent=2)
+            print("  Added Nomolo MCP server to Claude Desktop config.")
+            print(f"  Config: {desktop_config_path}")
+        configured_any = True
+    else:
+        print("\nClaude Desktop not detected (no config directory found).")
+
+    # --- Claude Code CLI ---
+    claude_bin = shutil.which("claude")
+    if claude_bin:
+        print("\nClaude Code CLI detected.")
+        # Check if already configured
+        list_result = subprocess.run(
+            ["claude", "mcp", "list", "-s", "user"],
+            capture_output=True, text=True,
+        )
+        if "nomolo" in list_result.stdout:
+            print("  Already configured in Claude Code CLI.")
+        else:
+            add_result = subprocess.run(
+                ["claude", "mcp", "add", "nomolo", "-s", "user", "--", venv_python, mcp_server_path],
+                capture_output=True, text=True,
+            )
+            if add_result.returncode == 0:
+                print("  Added Nomolo MCP server to Claude Code CLI (user scope).")
+            else:
+                print("  Warning: Failed to add MCP server to Claude Code CLI.")
+                print(f"  {add_result.stderr.strip()}")
+        configured_any = True
+    else:
+        print("\nClaude Code CLI not detected (claude command not found).")
+
+    # --- Summary ---
+    if configured_any:
+        print("\nDone! To activate:")
+        if os.path.isdir(desktop_dir):
+            print("  - Claude Desktop: restart the app")
+        if claude_bin:
+            print("  - Claude Code: start a new session")
+    else:
+        print("\nNo Claude installations detected.")
+        print("Install Claude Desktop or Claude Code CLI first.")
+        sys.exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="nomolo",
         description="Nomolo — No More Loss. Your life. Your data. Your hard drive.",
+    )
+    parser.add_argument(
+        "--version", action="version",
+        version=f"Nomolo v{get_version()}",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
@@ -1300,6 +1554,27 @@ def main():
     # nomolo update
     subparsers.add_parser("update", help="Pull the latest version from GitHub")
 
+    # nomolo web
+    web_parser = subparsers.add_parser(
+        "web", help="Launch the Nomolo web interface (local)"
+    )
+    web_parser.add_argument(
+        "--port", "-p", type=int, default=3000,
+        help="Port to run on (default: 3000)",
+    )
+    web_parser.add_argument(
+        "--no-open", action="store_true",
+        help="Don't auto-open browser",
+    )
+
+    # nomolo scan
+    subparsers.add_parser("scan", help="Scan your machine for data sources (CLI mode)")
+
+    # nomolo mcp
+    mcp_parser = subparsers.add_parser("mcp", help="MCP server management")
+    mcp_subparsers = mcp_parser.add_subparsers(dest="mcp_command", help="MCP commands")
+    mcp_subparsers.add_parser("setup", help="Auto-configure MCP server for Claude Desktop / Claude Code")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -1320,8 +1595,11 @@ def main():
         print("  nomolo vectorize gmail           Vectorize Gmail only")
         print("  nomolo search 'your query'       Search across all your data")
         print("  nomolo search 'query' -s gmail   Search Gmail only")
+        print("  nomolo web                       Launch the visual web interface")
+        print("  nomolo scan                      Discover data sources on your machine")
         print("  nomolo status                    See your vaults")
         print("  nomolo update                    Pull latest version")
+        print("  nomolo mcp setup                 Configure MCP for Claude")
         sys.exit(0)
 
     # Setup logging
@@ -1333,6 +1611,21 @@ def main():
 
     if args.command == "update":
         cmd_update()
+        return
+
+    if args.command == "web":
+        cmd_web(args)
+        return
+
+    if args.command == "scan":
+        cmd_scan()
+        return
+
+    if args.command == "mcp":
+        if getattr(args, "mcp_command", None) == "setup":
+            cmd_mcp_setup()
+        else:
+            print("Usage: nomolo mcp setup")
         return
 
     config = load_config()

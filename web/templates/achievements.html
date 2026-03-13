@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Achievements{% endblock %}
+
+{% block content %}
+<div class="achievements-page">
+    <header class="dashboard__header">
+        <div class="dashboard__greeting">
+            <h1 class="dashboard__title">Achievement Showcase</h1>
+            <p class="dashboard__subtitle">
+                {{ achievements|selectattr('unlocked')|list|length }} of {{ achievements|length }} unlocked
+            </p>
+        </div>
+
+        <!-- Score Widget -->
+        <div class="score-widget">
+            <div class="score-widget__ring">
+                <svg viewBox="0 0 80 80">
+                    <circle class="score-widget__track" cx="40" cy="40" r="35" />
+                    <circle class="score-widget__fill" cx="40" cy="40" r="35"
+                            stroke-dasharray="219.911"
+                            stroke-dashoffset="{{ 219.911 - (219.911 * score.percentage / 100) }}" />
+                </svg>
+                <span class="score-widget__value">{{ score.percentage }}%</span>
+            </div>
+            <div class="score-widget__info">
+                <div class="score-widget__title">{{ score.level.title }}</div>
+                <div class="score-widget__detail">{{ score.sources_collected }}/{{ score.sources_total }} sources</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Filters -->
+    <div class="achievement-filters">
+        <button class="achievement-filter achievement-filter--active" data-category="all" onclick="filterAchievements('all', this)">All</button>
+        <button class="achievement-filter" data-category="collection" onclick="filterAchievements('collection', this)">Collection</button>
+        <button class="achievement-filter" data-category="quality" onclick="filterAchievements('quality', this)">Quality</button>
+        <button class="achievement-filter" data-category="exploration" onclick="filterAchievements('exploration', this)">Exploration</button>
+        <button class="achievement-filter" data-category="dedication" onclick="filterAchievements('dedication', this)">Dedication</button>
+    </div>
+
+    <!-- Achievement Grid -->
+    <div class="achievement-grid" id="achievement-grid">
+        {% for ach in achievements %}
+        <div class="achievement-card {% if ach.unlocked %}achievement-card--unlocked{% else %}achievement-card--locked{% endif %}"
+             data-category="{{ ach.category }}"
+             onclick="showAchievementDetail(this)">
+
+            <div class="achievement-card__badge">
+                <div class="achievement-card__badge-inner">
+                    <svg class="achievement-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        {% if ach.icon == 'zap' %}
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        {% elif ach.icon == 'flag' %}
+                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>
+                        {% elif ach.icon == 'star' %}
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        {% elif ach.icon == 'award' %}
+                            <circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+                        {% elif ach.icon == 'database' %}
+                            <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                        {% elif ach.icon == 'hard-drive' %}
+                            <line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/>
+                        {% elif ach.icon == 'check-circle' %}
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                        {% elif ach.icon == 'help-circle' %}
+                            <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                        {% elif ach.icon == 'trending-up' %}
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+                        {% elif ach.icon == 'moon' %}
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        {% else %}
+                            <circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+                        {% endif %}
+                    </svg>
+                </div>
+                {% if ach.unlocked %}
+                <div class="achievement-card__glow"></div>
+                {% endif %}
+            </div>
+
+            <h4 class="achievement-card__name">{{ ach.name }}</h4>
+            <p class="achievement-card__desc">{{ ach.description }}</p>
+            <span class="achievement-card__category">{{ ach.category|title }}</span>
+
+            {% if ach.unlocked %}
+            <div class="achievement-card__status achievement-card__status--unlocked">Unlocked</div>
+            {% else %}
+            <div class="achievement-card__status achievement-card__status--locked">Locked</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function filterAchievements(category, btn) {
+        // Update active filter button
+        document.querySelectorAll('.achievement-filter').forEach(f => {
+            f.classList.remove('achievement-filter--active');
+        });
+        btn.classList.add('achievement-filter--active');
+
+        // Show/hide cards
+        document.querySelectorAll('.achievement-card').forEach(card => {
+            if (category === 'all' || card.dataset.category === category) {
+                card.style.display = '';
+                card.style.animation = 'fadeIn 0.3s ease-out';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function showAchievementDetail(card) {
+        // Toggle expanded state
+        const wasExpanded = card.classList.contains('achievement-card--expanded');
+        document.querySelectorAll('.achievement-card--expanded').forEach(c => {
+            c.classList.remove('achievement-card--expanded');
+        });
+        if (!wasExpanded) {
+            card.classList.add('achievement-card--expanded');
+        }
+    }
+</script>
+{% endblock %}

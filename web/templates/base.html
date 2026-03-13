@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Nomolo{% endblock %} — Personal Data Archeology</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Trust Badge -->
+    <div class="trust-badge" title="All data is processed locally on your machine">
+        <span class="trust-badge__icon">&#x1f512;</span>
+        <span class="trust-badge__text">LOCAL ONLY — your data never leaves this machine</span>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar__logo">
+            <span class="sidebar__logo-icon">N</span>
+            <span class="sidebar__logo-text">NOMOLO</span>
+        </div>
+
+        <ul class="sidebar__nav">
+            <li>
+                <a href="/" class="sidebar__link {% if page == 'dashboard' or not page %}sidebar__link--active{% endif %}">
+                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="/scan" class="sidebar__link {% if page == 'scanner' %}sidebar__link--active{% endif %}">
+                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <span>Scanner</span>
+                </a>
+            </li>
+            <li>
+                <a href="/quest" class="sidebar__link {% if page == 'quests' %}sidebar__link--active{% endif %}">
+                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <span>Quests</span>
+                </a>
+            </li>
+            <li>
+                <a href="/achievements" class="sidebar__link {% if page == 'achievements' %}sidebar__link--active{% endif %}">
+                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                    <span>Achievements</span>
+                </a>
+            </li>
+            <li>
+                <a href="/timeline" class="sidebar__link {% if page == 'timeline' %}sidebar__link--active{% endif %}">
+                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="4"/><polyline points="6 10 12 4 18 10"/><line x1="4" y1="20" x2="20" y2="20"/></svg>
+                    <span>Timeline</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar__footer">
+            <div class="sidebar__version">v0.1.0</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Toast container for notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="/static/js/app.js"></script>
+    <script>
+        // Initialize WebSocket connection
+        document.addEventListener('DOMContentLoaded', () => {
+            NomoloBridge.init();
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

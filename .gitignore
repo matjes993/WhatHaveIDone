@@ -12,3 +12,5 @@ missing_ids.txt
 .env.local
 nomolo.egg-info/
 whid.egg-info/
+web/journey_state.json
+nomolo-business-analysis.docx

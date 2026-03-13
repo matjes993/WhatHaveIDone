@@ -13,6 +13,8 @@ _nomolo() {
         'vectorize:Vectorize vault data for semantic search'
         'search:Semantic search across your data'
         'compress:Compress vault files (~5x smaller)'
+        'web:Launch the visual web interface'
+        'scan:Discover data sources on your machine'
         'status:Show vault status overview'
         'update:Pull latest version from GitHub'
     )
@@ -37,6 +39,7 @@ _nomolo() {
         'calendar:Google Calendar (API)'
         'calendar-ics:Calendar events (ICS file)'
         'maps:Google Maps timeline (Takeout JSON)'
+        'text-stream:Text input capture (Chrome extension)'
     )
 
     case "$CURRENT" in
@@ -64,6 +67,7 @@ _nomolo() {
                         'browser:Vectorize Browser'
                         'calendar:Vectorize Calendar'
                         'maps:Vectorize Maps'
+                        'text-stream:Vectorize TextStream'
                     )
                     _describe 'source' vsources
                     ;;

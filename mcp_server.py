@@ -29,7 +29,8 @@ from mcp.types import Tool, TextContent
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from core.vectordb import get_client, search, get_full_entry, get_status, _get_embedding_fn
+from core.vectordb import get_client, get_full_entry, get_status, _get_embedding_fn
+from core.search_engine import hybrid_search, get_fts_entry_count, index_all, _get_fts_db_path
 
 logger = logging.getLogger("nomolo.mcp")
 
@@ -120,7 +121,7 @@ TOOLS = [
     ),
     Tool(
         name="search_all",
-        description="Search across ALL your personal data — emails, contacts, notes, calendar, browsing history, music, YouTube, books, health, finance, shopping, podcasts, maps. Use this for broad searches.",
+        description="Search across ALL your personal data — emails, contacts, notes, calendar, browsing history, music, YouTube, books, health, finance, shopping, podcasts, maps. Use this for broad searches. Uses hybrid search (keyword + semantic + metadata boosting).",
         inputSchema={
             "type": "object",
             "properties": {
@@ -136,6 +137,12 @@ TOOLS = [
                 "source_filter": {
                     "type": "string",
                     "description": "Comma-separated source names to limit search (e.g. 'gmail_primary,contacts'). Leave empty to search all.",
+                },
+                "sort_by": {
+                    "type": "string",
+                    "enum": ["relevance", "date_asc", "date_desc"],
+                    "description": "Sort order: 'relevance' (default), 'date_asc' (oldest first), 'date_desc' (newest first)",
+                    "default": "relevance",
                 },
             },
             "required": ["query"],
@@ -210,14 +217,12 @@ async def _handle_search_emails(args):
     if not gmail_cols:
         return [TextContent(type="text", text="No email data found. Run 'nomolo vectorize' first.")]
 
-    where_filter = None
-    if year:
-        where_filter = {"year": year}
+    results = hybrid_search(
+        query, _vault_root, _client, config=_config,
+        n_results=n_results, collections=gmail_cols, year_filter=year,
+    )
 
-    results = search(_client, query, collections=gmail_cols, n_results=n_results,
-                     where_filter=where_filter, config=_config)
-
-    return [TextContent(type="text", text=_format_results(results, "email"))]
+    return [TextContent(type="text", text=_format_hybrid_results_json(results, query))]
 
 
 async def _handle_search_contacts(args):
@@ -233,15 +238,19 @@ async def _handle_search_contacts(args):
     if not contact_cols:
         return [TextContent(type="text", text="No contacts data found. Run 'nomolo vectorize' first.")]
 
-    results = search(_client, query, collections=contact_cols, n_results=n_results, config=_config)
+    results = hybrid_search(
+        query, _vault_root, _client, config=_config,
+        n_results=n_results, collections=contact_cols,
+    )
 
-    return [TextContent(type="text", text=_format_results(results, "contact"))]
+    return [TextContent(type="text", text=_format_hybrid_results_json(results, query))]
 
 
 async def _handle_search_all(args):
     query = args.get("query", "")
     n_results = min(args.get("n_results", 10), 50)
     source_filter = args.get("source_filter", "")
+    sort_by = args.get("sort_by", "relevance")
 
     if not query:
         return [TextContent(type="text", text="Please provide a search query.")]
@@ -252,9 +261,13 @@ async def _handle_search_all(args):
         all_cols = _client.list_collections()
         collections = [c.name for c in all_cols if c.name in filter_names]
 
-    results = search(_client, query, collections=collections, n_results=n_results, config=_config)
+    results = hybrid_search(
+        query, _vault_root, _client, config=_config,
+        n_results=n_results, collections=collections,
+        sort_by=sort_by,
+    )
 
-    return [TextContent(type="text", text=_format_results(results, "all"))]
+    return [TextContent(type="text", text=_format_hybrid_results_json(results, query))]
 
 
 async def _handle_get_entry(args):
@@ -278,58 +291,115 @@ async def _handle_list_sources(args):
     status = get_status(_client, _vault_root)
 
     if not status:
-        return [TextContent(type="text", text="No data sources found. Run 'nomolo vectorize' first.")]
+        return [TextContent(type="text", text=json.dumps({"sources": []}, ensure_ascii=False))]
 
-    lines = ["Available data sources:\n"]
+    sources = []
     for s in sorted(status, key=lambda x: x["collection"]):
-        lines.append(
-            f"  {s['collection']}: {s['vectorized']:,} vectorized / {s['vault_entries']:,} in vault"
-        )
+        sources.append({
+            "collection": s["collection"],
+            "vectorized": s["vectorized"],
+            "vault_entries": s["vault_entries"],
+        })
 
-    return [TextContent(type="text", text="\n".join(lines))]
+    return [TextContent(type="text", text=json.dumps({"sources": sources}, ensure_ascii=False))]
 
 
 # ---------------------------------------------------------------------------
 # Result formatting
 # ---------------------------------------------------------------------------
 
-def _format_results(results, result_type):
-    """Format search results into readable text."""
+def _deduplicate_results(results):
+    """Group results by entry_id and keep only the best (lowest distance) chunk per entry."""
     if not results:
-        return "No results found."
+        return results
 
-    lines = [f"Found {len(results)} result(s):\n"]
-
-    for i, r in enumerate(results, 1):
+    best_by_id = {}
+    for r in results:
         meta = r.get("metadata", {})
-        lines.append(f"--- Result {i} ---")
-        lines.append(f"Source: {meta.get('source', r.get('collection', 'unknown'))}")
+        entry_id = meta.get("entry_id", r.get("id", ""))
+        if entry_id not in best_by_id or r["distance"] < best_by_id[entry_id]["distance"]:
+            best_by_id[entry_id] = r
 
-        if meta.get("subject"):
-            lines.append(f"Subject: {meta['subject']}")
-        if meta.get("from"):
-            lines.append(f"From: {meta['from']}")
-        if meta.get("to"):
-            lines.append(f"To: {meta['to']}")
-        if meta.get("date"):
-            lines.append(f"Date: {meta['date']}")
-        if meta.get("title"):
-            lines.append(f"Title: {meta['title']}")
-        if meta.get("tags"):
-            lines.append(f"Tags: {meta['tags']}")
+    # Return sorted by distance (best first)
+    return sorted(best_by_id.values(), key=lambda r: r["distance"])
 
-        lines.append(f"ID: {meta.get('entry_id', r['id'])}")
-        lines.append(f"Relevance: {1 - r['distance']:.2%}")
-        lines.append("")
 
-        # Include the document text (truncated for readability)
+def _format_hybrid_results_json(results, query):
+    """Format hybrid search results as a structured JSON string."""
+    if not results:
+        return json.dumps({"results": [], "total": 0, "query": query}, ensure_ascii=False)
+
+    formatted = []
+    metadata_fields = ["subject", "from", "to", "date", "title", "tags"]
+
+    for r in results:
+        meta = r.get("metadata", {})
+        entry = {
+            "entry_id": r.get("entry_id", meta.get("entry_id", "")),
+            "source": r.get("source", meta.get("source", "unknown")),
+            "collection": r.get("collection", ""),
+            "relevance": round(r.get("combined_score", 0.0), 4),
+        }
+
+        # Only include metadata fields that exist and are non-empty
+        for field in metadata_fields:
+            value = meta.get(field)
+            if value:
+                entry[field] = value
+
+        # Include snippet
+        snippet = r.get("snippet", "")
+        if snippet:
+            entry["snippet"] = snippet[:800]
+
+        formatted.append(entry)
+
+    output = {
+        "results": formatted,
+        "total": len(formatted),
+        "query": query,
+    }
+    return json.dumps(output, ensure_ascii=False)
+
+
+def _format_results_json(results, query):
+    """Format search results as a structured JSON string."""
+    deduped = _deduplicate_results(results)
+
+    if not deduped:
+        return json.dumps({"results": [], "total": 0, "query": query}, ensure_ascii=False)
+
+    formatted = []
+    metadata_fields = ["subject", "from", "to", "date", "title", "tags"]
+
+    for r in deduped:
+        meta = r.get("metadata", {})
+        entry = {
+            "entry_id": meta.get("entry_id", r.get("id", "")),
+            "source": meta.get("source", r.get("collection", "unknown")),
+            "collection": r.get("collection", ""),
+            "relevance": round(max(0.0, min(1.0, 1 - r["distance"])), 4),
+        }
+
+        # Only include metadata fields that exist and are non-empty
+        for field in metadata_fields:
+            value = meta.get(field)
+            if value:
+                entry[field] = value
+
+        # Include snippet (first 800 chars of document)
         doc = r.get("document", "")
-        if len(doc) > 1000:
-            doc = doc[:1000] + "..."
-        lines.append(doc)
-        lines.append("")
+        if doc:
+            entry["snippet"] = doc[:800]
 
-    return "\n".join(lines)
+        formatted.append(entry)
+
+    output = {
+        "results": formatted,
+        "total": len(formatted),
+        "query": query,
+    }
+    return json.dumps(output, ensure_ascii=False)
 
 
 # ---------------------------------------------------------------------------
@@ -345,6 +415,10 @@ async def main():
     _config = _load_config()
     _vault_root = _get_vault_root(_config)
     _client = get_client(_vault_root)
+
+    # Ensure FTS database directory exists (hybrid search will use it)
+    fts_path = _get_fts_db_path(_vault_root, _config)
+    os.makedirs(os.path.dirname(fts_path), exist_ok=True)
 
     async with stdio_server() as (read, write):
         await app.run(read, write, app.create_initialization_options())

@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Page Header -->
+    <header class="dashboard__header">
+        <div class="dashboard__greeting">
+            <h1 class="dashboard__title">
+                {% if page == 'quests' %}
+                    Quest Board
+                {% elif page == 'timeline' %}
+                    Timeline
+                {% else %}
+                    Your Life Archive
+                {% endif %}
+            </h1>
+            <p class="dashboard__subtitle">
+                {% if page == 'quests' %}
+                    Complete quests to level up your archive
+                {% elif page == 'timeline' %}
+                    Visual map of your data coverage
+                {% else %}
+                    {{ score.level.description }}
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Score Widget (always visible) -->
+        <div class="score-widget">
+            <div class="score-widget__ring">
+                <svg viewBox="0 0 80 80">
+                    <circle class="score-widget__track" cx="40" cy="40" r="35" />
+                    <circle class="score-widget__fill" cx="40" cy="40" r="35"
+                            stroke-dasharray="219.911"
+                            stroke-dashoffset="{{ 219.911 - (219.911 * score.percentage / 100) }}" />
+                </svg>
+                <span class="score-widget__value">{{ score.percentage }}%</span>
+            </div>
+            <div class="score-widget__info">
+                <div class="score-widget__title">{{ score.level.title }}</div>
+                <div class="score-widget__detail">{{ score.sources_collected }}/{{ score.sources_total }} sources</div>
+            </div>
+        </div>
+    </header>
+
+    {% if page == 'quests' %}
+    <!-- ═══════════════ QUEST BOARD ═══════════════ -->
+    <div class="quest-board">
+        {% for quest in quests %}
+        <div class="quest-card {% if quest.completed %}quest-card--completed{% endif %}">
+            <div class="quest-card__header">
+                <h3 class="quest-card__name">{{ quest.name }}</h3>
+                <span class="quest-card__xp">+{{ quest.reward_xp }} XP</span>
+            </div>
+            <p class="quest-card__desc">{{ quest.description }}</p>
+            <div class="quest-card__steps">
+                {% for step in quest.steps %}
+                <div class="quest-step {% if step.completed %}quest-step--done{% endif %}">
+                    <span class="quest-step__check">
+                        {% if step.completed %}&#x2714;{% else %}&#x25CB;{% endif %}
+                    </span>
+                    <span class="quest-step__text">{{ step.text }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="quest-card__progress">
+                <div class="quest-card__progress-bar">
+                    <div class="quest-card__progress-fill" style="width: {{ (quest.progress * 100)|int }}%"></div>
+                </div>
+                <span class="quest-card__progress-text">{{ (quest.progress * 100)|int }}%</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% elif page == 'timeline' %}
+    <!-- ═══════════════ TIMELINE ═══════════════ -->
+    <div class="timeline">
+        <div class="timeline__track">
+            {% for source in sources %}
+            {% if source.collected %}
+            <div class="timeline__entry">
+                <div class="timeline__dot"></div>
+                <div class="timeline__card">
+                    <div class="timeline__source-name">{{ source.name }}</div>
+                    <div class="timeline__source-count">{{ source.record_count }} records</div>
+                    {% if source.earliest %}
+                    <div class="timeline__source-range">
+                        Since {{ source.earliest[:10] }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if not sources|selectattr('collected')|list %}
+        <div class="timeline__empty">
+            <p>No data collected yet. <a href="/scan">Run a scan</a> to get started.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    {% else %}
+    <!-- ═══════════════ DASHBOARD ═══════════════ -->
+    <div class="dashboard__grid">
+        <!-- Score Card -->
+        <div class="card card--score">
+            <h3 class="card__title">Life Archive Score</h3>
+            <div class="card__score-display">
+                <span class="card__score-number" data-target="{{ score.percentage }}">0</span>
+                <span class="card__score-unit">%</span>
+            </div>
+            <div class="card__score-level">{{ score.level.title }}</div>
+            <div class="card__score-bar">
+                <div class="card__score-bar-fill" style="width: 0%" data-width="{{ score.percentage }}%"></div>
+            </div>
+            <div class="card__score-detail">
+                {{ score.sources_collected }} of {{ score.sources_total }} sources collected
+                &middot; {{ score.score }} / {{ score.max_score }} points
+            </div>
+        </div>
+
+        <!-- Recent Achievements -->
+        <div class="card card--achievements">
+            <h3 class="card__title">Recent Achievements</h3>
+            <div class="card__achievement-list">
+                {% set unlocked = achievements|selectattr('unlocked')|list %}
+                {% if unlocked %}
+                    {% for ach in unlocked[:4] %}
+                    <div class="achievement-mini">
+                        <div class="achievement-mini__badge achievement-mini__badge--unlocked">
+                            <svg class="achievement-mini__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+                            </svg>
+                        </div>
+                        <div class="achievement-mini__info">
+                            <span class="achievement-mini__name">{{ ach.name }}</span>
+                            <span class="achievement-mini__desc">{{ ach.description }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="card__empty">No achievements unlocked yet. Start scanning!</p>
+                {% endif %}
+            </div>
+            <a href="/achievements" class="card__link">View all achievements &rarr;</a>
+        </div>
+
+        <!-- Active Quests -->
+        <div class="card card--quests">
+            <h3 class="card__title">Active Quests</h3>
+            <div class="card__quest-list">
+                {% set active = quests|rejectattr('completed')|list %}
+                {% if active %}
+                    {% for quest in active[:3] %}
+                    <div class="quest-mini">
+                        <div class="quest-mini__header">
+                            <span class="quest-mini__name">{{ quest.name }}</span>
+                            <span class="quest-mini__xp">+{{ quest.reward_xp }} XP</span>
+                        </div>
+                        <div class="quest-mini__bar">
+                            <div class="quest-mini__bar-fill" style="width: {{ (quest.progress * 100)|int }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="card__empty">All quests completed!</p>
+                {% endif %}
+            </div>
+            <a href="/quest" class="card__link">View quest board &rarr;</a>
+        </div>
+
+        <!-- Fun Fact Quiz -->
+        <div class="card card--quiz" id="quiz-card">
+            <h3 class="card__title">Fun Fact of the Day</h3>
+            <div class="quiz" id="quiz-container">
+                <p class="quiz__loading">Loading quiz...</p>
+            </div>
+        </div>
+
+        <!-- Data Sources Overview -->
+        <div class="card card--sources">
+            <h3 class="card__title">Data Sources</h3>
+            <div class="source-grid">
+                {% for source in sources %}
+                <div class="source-mini {% if source.collected %}source-mini--collected{% endif %}">
+                    <div class="source-mini__icon-wrap">
+                        <svg class="source-mini__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            {% if source.icon == 'mail' %}
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                            {% elif source.icon == 'users' %}
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            {% elif source.icon == 'play-circle' %}
+                                <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
+                            {% elif source.icon == 'music' %}
+                                <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+                            {% elif source.icon == 'book-open' %}
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                            {% elif source.icon == 'dollar-sign' %}
+                                <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            {% elif source.icon == 'shopping-cart' %}
+                                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                            {% elif source.icon == 'heart' %}
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            {% elif source.icon == 'globe' %}
+                                <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                            {% elif source.icon == 'calendar' %}
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                            {% elif source.icon == 'map-pin' %}
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                            {% elif source.icon == 'headphones' %}
+                                <path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+                            {% elif source.icon == 'edit-3' %}
+                                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                            {% elif source.icon == 'briefcase' %}
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                            {% else %}
+                                <circle cx="12" cy="12" r="10"/>
+                            {% endif %}
+                        </svg>
+                    </div>
+                    <span class="source-mini__name">{{ source.name }}</span>
+                    {% if source.collected %}
+                    <span class="source-mini__count">{{ source.record_count }}</span>
+                    <span class="source-mini__grade grade--{{ source.grade|lower }}">{{ source.grade }}</span>
+                    {% else %}
+                    <span class="source-mini__status">Not collected</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card card--actions">
+            <h3 class="card__title">Quick Actions</h3>
+            <div class="action-list">
+                <a href="/scan" class="action-btn">
+                    <svg class="action-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <span>Scan for new sources</span>
+                </a>
+                <button class="action-btn" onclick="NomoloBridge.triggerSync()">
+                    <svg class="action-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                    <span>Sync existing</span>
+                </button>
+                <button class="action-btn" onclick="NomoloBridge.toast('Search coming soon!', 'info')">
+                    <svg class="action-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                    <span>Search your data</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Animate score number on dashboard
+        const scoreEl = document.querySelector('.card__score-number');
+        if (scoreEl) {
+            const target = parseInt(scoreEl.dataset.target) || 0;
+            NomoloBridge.animateNumber(scoreEl, 0, target, 1500);
+        }
+
+        // Animate score bar
+        const barFill = document.querySelector('.card__score-bar-fill');
+        if (barFill) {
+            setTimeout(() => {
+                barFill.style.width = barFill.dataset.width;
+            }, 300);
+        }
+
+        // Load quiz
+        NomoloBridge.loadQuiz();
+    });
+</script>
+{% endblock %}

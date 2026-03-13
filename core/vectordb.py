@@ -30,6 +30,7 @@ EMBEDDING_FIELDS = {
     "Browser": "browse_for_embedding",
     "Calendar": "event_for_embedding",
     "Maps": "location_for_embedding",
+    "TextStream": "text_for_embedding",
 }
 
 # Default embedding model (local, no API key needed)

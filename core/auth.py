@@ -90,7 +90,8 @@ def get_google_credentials(credentials_file, token_file, scopes):
                 print("Close other running NOMOLO instances and try again.")
                 sys.exit(1)
 
-        with open(token_file, "w") as f:
+        fd = os.open(token_file, os.O_CREAT | os.O_WRONLY | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
             f.write(creds.to_json())
 
     return creds

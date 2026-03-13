@@ -161,7 +161,7 @@ def detect_automated(entry):
 # Entity extraction
 # ---------------------------------------------------------------------------
 
-_RE_URL = re.compile(r"https?://[^\s<>\"'\])+]+")
+_RE_URL = re.compile(r"https?://[^\s<>\"']+(?<![.,;:!?\)\]\}])")
 _RE_EMAIL = re.compile(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}")
 _RE_AMOUNT = re.compile(
     r"[$€£]\s?\d[\d,]*\.?\d*|\d[\d,]*\.?\d*\s?(?:USD|EUR|GBP|CHF)"

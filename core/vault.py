@@ -246,16 +246,17 @@ def load_processed_ids(vault_path):
 
 
 def append_processed_ids(vault_path, ids):
-    """Append IDs to processed_ids.txt."""
+    """Append IDs to processed_ids.txt. Thread-safe."""
     if not ids:
         return
 
     os.makedirs(vault_path, exist_ok=True)
     processed_log = os.path.join(vault_path, "processed_ids.txt")
 
-    with open(processed_log, "a") as f:
-        for entry_id in ids:
-            f.write(f"{entry_id}\n")
+    with _write_lock:
+        with open(processed_log, "a") as f:
+            for entry_id in ids:
+                f.write(f"{entry_id}\n")
 
 
 def atomic_write(file_path, lines):
