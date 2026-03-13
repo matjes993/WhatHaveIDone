@@ -63,7 +63,9 @@ You ──> NOMOLO ──> Your Vault (local JSONL files, organized by date)
 | **LinkedIn** | CSV export | **Live** |
 | **Facebook** | JSON export | **Live** |
 | **Instagram** | JSON export | **Live** |
-| **WhatsApp** | _Next up_ | Planned |
+| **WhatsApp** | Chat text export | **Live** |
+| **Telegram** | Desktop JSON export | **Live** |
+| **Slack** | Workspace export | **Live** |
 
 ### Features
 
@@ -72,6 +74,7 @@ You ──> NOMOLO ──> Your Vault (local JSONL files, organized by date)
 | Universal Groomer (dedup, sort, self-heal) | **Live** |
 | Zstandard compression (~5x smaller vaults) | **Live** |
 | Semantic vector search (ChromaDB + local embeddings) | **Live** |
+| Web UI with records browser, sources, search | **Live** |
 | Claude Desktop integration (MCP server) | **Live** |
 | Zsh tab completion | **Live** |
 
@@ -115,7 +118,21 @@ nomolo search "tax documents from 2024"
 nomolo search "meeting with John" -s gmail
 ```
 
-### 5. Ask Claude (MCP Integration)
+### 5. Web UI
+
+Nomolo includes a local web interface at `localhost:3000`. No account needed — just start the server.
+
+```bash
+python3 -m web.server
+```
+
+**Pages:**
+- **Dashboard** (`/`) — overview of your archive with stats
+- **Records** (`/records`) — browse and search all 40k+ records with source filtering
+- **Sources** (`/sources`) — see connected vs available data sources, click to collect
+- **Welcome** (`/welcome`) — onboarding journey for first-time users
+
+### 6. Ask Claude (MCP Integration)
 
 Connect Nomolo to Claude Desktop via the [Model Context Protocol](https://modelcontextprotocol.io). Claude can then search your personal data directly — emails, calendar, contacts, everything — using natural language.
 
@@ -149,7 +166,23 @@ Nomolo/
 │   ├── music.py            #   Spotify (JSON)
 │   ├── finance.py          #   PayPal / bank (CSV)
 │   ├── health.py           #   Apple Health (XML)
+│   ├── whatsapp.py         #   WhatsApp (chat text export)
+│   ├── telegram.py         #   Telegram (Desktop JSON export)
+│   ├── slack.py            #   Slack (workspace export)
+│   ├── local_mac.py        #   macOS local sources (Contacts, Calendar, iMessage, etc.)
 │   └── ...                 #   + browser, maps, notes, podcasts, shopping, socials
+├── web/
+│   ├── server.py           # FastAPI web server (localhost:3000)
+│   ├── game.py             # Achievements & progress tracking
+│   ├── scanner.py          # Data source discovery
+│   ├── local_scanner.py    # macOS database preview scanner
+│   ├── templates/          # Jinja2 HTML templates
+│   │   ├── base.html       #   Layout with sidebar nav
+│   │   ├── dashboard.html  #   Dashboard overview
+│   │   ├── records.html    #   Records browser (search, filter, browse)
+│   │   ├── sources.html    #   Source management (connected vs available)
+│   │   └── welcome.html    #   Onboarding journey
+│   └── static/             # CSS + JS (no build step)
 ├── core/
 │   ├── groomer.py          # Universal dedup, sort, and Sniper logic
 │   ├── vectordb.py         # ChromaDB semantic search engine
@@ -261,11 +294,13 @@ gmail:
 - [x] Semantic vector search (ChromaDB)
 - [x] Claude Desktop MCP integration
 - [x] Zsh tab completion
-- [ ] **WhatsApp Collector** (next)
+- [x] WhatsApp, Telegram, Slack collectors
+- [x] Web UI with records browser + source management
+- [ ] File upload UI for import-based collectors
 - [ ] Google Drive / Docs export
-- [ ] Telegram export
 - [ ] iCloud Photos metadata
 - [ ] Notion export
+- [ ] AI insights layer (RAG chat over your vault data)
 - [ ] Personal AI training pipeline (fine-tune on your own data)
 
 ## Adding a New Collector
@@ -295,6 +330,8 @@ Whether it's a new collector, a bug fix, or documentation — all help is apprec
 ## About
 
 The idea behind Nomolo was born in 2014 — the conviction that people should own their digital lives, not rent them from cloud platforms. The technology wasn't there yet. A decade later, it is.
+
+> **New:** Read [The Flatcloud — A Field Guide to Digital Sovereignty](docs/THE_FLATCLOUD.md) to learn about the world of Nomolo.
 
 <!-- TODO: Write the full origin story, motivation, and moonshot vision. -->
 

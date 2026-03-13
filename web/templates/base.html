@@ -1,58 +1,70 @@
+<!--
+🏴‍☠️ Ahoy, source code explorer!
+You've found the secret message.
+The Flatcloud remembers those who look beneath the surface.
+Want to contribute? github.com/matjes993/nomolo
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Nomolo{% endblock %} — Personal Data Archeology</title>
+    <title>{% block title %}Nomolo{% endblock %} — Nomolo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
     {% block head %}{% endblock %}
 </head>
 <body>
-    <!-- Trust Badge -->
-    <div class="trust-badge" title="All data is processed locally on your machine">
-        <span class="trust-badge__icon">&#x1f512;</span>
-        <span class="trust-badge__text">LOCAL ONLY — your data never leaves this machine</span>
+    <!-- Top Bar: Trust Badge + Jargon Toggle -->
+    <div class="top-bar">
+        <div class="trust-badge" title="All yer plunder stays aboard this vessel">
+            <span class="trust-badge__icon">&#x1f512;</span>
+            <span class="trust-badge__text">LOCAL ONLY — yer data never leaves this ship</span>
+        </div>
+
+        <!-- Jargon Mode Toggle -->
+        <button class="jargon-toggle" id="jargon-toggle" onclick="NomoloBridge.toggleJargon()" title="Switch between Flatcloud Mode and Real World Mode">
+            <span class="jargon-toggle__icon jargon-toggle__icon--rpg">&#x2694;&#xFE0F;</span>
+            <span class="jargon-toggle__track">
+                <span class="jargon-toggle__thumb"></span>
+            </span>
+            <span class="jargon-toggle__icon jargon-toggle__icon--real">&#x1F4C1;</span>
+            <span class="jargon-toggle__label" id="jargon-label">Flatcloud</span>
+        </button>
     </div>
 
     <!-- Sidebar Navigation -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar__logo">
             <span class="sidebar__logo-icon">N</span>
-            <span class="sidebar__logo-text">NOMOLO</span>
+            <span class="sidebar__logo-text">NOMOLO &#9875;</span>
         </div>
 
         <ul class="sidebar__nav">
             <li>
                 <a href="/" class="sidebar__link {% if page == 'dashboard' or not page %}sidebar__link--active{% endif %}">
                     <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    <span>Dashboard</span>
+                    <span class="jargon" data-rpg="SCUMM Bar" data-real="Dashboard">SCUMM Bar</span>
                 </a>
             </li>
             <li>
-                <a href="/scan" class="sidebar__link {% if page == 'scanner' %}sidebar__link--active{% endif %}">
-                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    <span>Scanner</span>
+                <a href="/records" class="sidebar__link {% if page == 'records' %}sidebar__link--active{% endif %}">
+                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <span class="jargon" data-rpg="Loot Log" data-real="Records">Loot Log</span>
                 </a>
             </li>
             <li>
-                <a href="/quest" class="sidebar__link {% if page == 'quests' %}sidebar__link--active{% endif %}">
-                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    <span>Quests</span>
+                <a href="/sources" class="sidebar__link {% if page == 'sources' %}sidebar__link--active{% endif %}">
+                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                    <span class="jargon" data-rpg="Raid Targets" data-real="Sources">Raid Targets</span>
                 </a>
             </li>
             <li>
-                <a href="/achievements" class="sidebar__link {% if page == 'achievements' %}sidebar__link--active{% endif %}">
-                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
-                    <span>Achievements</span>
-                </a>
-            </li>
-            <li>
-                <a href="/timeline" class="sidebar__link {% if page == 'timeline' %}sidebar__link--active{% endif %}">
-                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="4"/><polyline points="6 10 12 4 18 10"/><line x1="4" y1="20" x2="20" y2="20"/></svg>
-                    <span>Timeline</span>
+                <a href="/settings" class="sidebar__link {% if page == 'settings' %}sidebar__link--active{% endif %}">
+                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <span class="jargon" data-rpg="Ship's Helm" data-real="Settings">Ship's Helm</span>
                 </a>
             </li>
         </ul>
@@ -72,9 +84,10 @@
 
     <script src="/static/js/app.js"></script>
     <script>
-        // Initialize WebSocket connection
+        // Initialize WebSocket connection and jargon toggle
         document.addEventListener('DOMContentLoaded', () => {
             NomoloBridge.init();
+            NomoloBridge.initJargonToggle();
         });
     </script>
     {% block scripts %}{% endblock %}

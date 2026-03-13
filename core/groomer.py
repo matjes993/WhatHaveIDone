@@ -102,9 +102,9 @@ def groom_vault(vault_path):
     3. Detect ghost IDs and write missing_ids.txt (Sniper Mechanism)
     """
     if not os.path.exists(vault_path):
-        logger.error("Vault path does not exist: %s", vault_path)
-        print(f"\nError: Vault not found: {vault_path}")
-        print("Run 'nomolo collect gmail' first to create your vault.")
+        logger.error("🏴‍☠️ Blimey! No treasure chest found at: %s", vault_path)
+        print(f"\n🏴‍☠️ Arrr! No vault found at: {vault_path}")
+        print("Run 'nomolo collect gmail' first to fill yer treasure chest.")
         return
 
     processed_log = os.path.join(vault_path, "processed_ids.txt")
@@ -140,7 +140,7 @@ def groom_vault(vault_path):
                         entry = json.loads(line)
                     except json.JSONDecodeError as e:
                         logger.warning(
-                            "Skipping malformed JSON in %s line %d: %s",
+                            "🏴‍☠️ Blimey! Barnacle-encrusted JSON in %s line %d: %s — tossin' it overboard",
                             file_path,
                             line_num,
                             e,
@@ -150,7 +150,7 @@ def groom_vault(vault_path):
 
                     if "id" not in entry:
                         logger.warning(
-                            "Skipping entry without 'id' in %s line %d",
+                            "🏴‍☠️ Found an unmarked treasure in %s line %d — no 'id' tag, tossin' it overboard",
                             file_path,
                             line_num,
                         )
@@ -159,10 +159,10 @@ def groom_vault(vault_path):
 
                     entries.append(entry)
         except PermissionError:
-            logger.error("Permission denied reading %s — skipping.", file_path)
+            logger.error("🏴‍☠️ Blimey! The lock on %s won't budge — skipping", file_path)
             continue
         except OSError as e:
-            logger.error("Cannot read %s: %s — skipping.", file_path, e)
+            logger.error("🏴‍☠️ Blimey! Can't read the scroll %s: %s — skipping", file_path, e)
             continue
 
         if not entries:
@@ -191,7 +191,7 @@ def groom_vault(vault_path):
                 os.remove(file_path)
         except (PermissionError, OSError) as e:
             logger.error(
-                "Failed to write groomed file %s: %s — original file unchanged.",
+                "🏴‍☠️ Blimey! Failed to stash the groomed scroll %s: %s — original treasure untouched",
                 write_path,
                 e,
             )
@@ -206,28 +206,29 @@ def groom_vault(vault_path):
     ghost_ids = old_log_ids - all_found_ids
     if ghost_ids:
         logger.info(
-            "Sniper: found %d ghost IDs — writing missing_ids.txt", len(ghost_ids)
+            "🎯 The Sniper spotted %d missing treasures — writing missing_ids.txt", len(ghost_ids)
         )
         logger.info(
-            "Run 'nomolo collect gmail' to recover these missing records."
+            "⚔️ Run 'nomolo collect gmail' to hunt 'em down and recover the loot!"
         )
         try:
             _atomic_write(missing_log, [f"{gid}\n" for gid in sorted(ghost_ids)])
         except (PermissionError, OSError) as e:
-            logger.error("Failed to write missing_ids.txt: %s", e)
+            logger.error("🏴‍☠️ Blimey! Failed to write the missing treasure map: %s", e)
     elif os.path.exists(missing_log):
         try:
             os.remove(missing_log)
         except OSError as e:
-            logger.warning("Could not remove missing_ids.txt: %s", e)
+            logger.warning("🏴‍☠️ Could not scuttle the old missing_ids.txt: %s", e)
 
     # Update processed log
     try:
         _atomic_write(processed_log, [f"{mid}\n" for mid in sorted(all_found_ids)])
     except (PermissionError, OSError) as e:
-        logger.error("Failed to update processed_ids.txt: %s", e)
+        logger.error("🏴‍☠️ Blimey! Failed to update the ship's log: %s", e)
 
     logger.info(
+        "📜 Scrolls sorted by stardate. The archive is shipshape! "
         "Groomed %s: %d files, %d unique entries, %d duplicates removed, %d ghosts",
         vault_path,
         files_processed,
@@ -238,18 +239,18 @@ def groom_vault(vault_path):
 
     if entries_skipped > 0:
         logger.warning(
-            "%d entries were skipped (malformed JSON or missing ID). "
-            "Check the logs above for details.",
+            "🏴‍☠️ %d barnacle-encrusted entries were tossed overboard (malformed JSON or missing ID). "
+            "Check the captain's log above for details.",
             entries_skipped,
         )
 
     if entries_deduped > 0:
-        logger.info("Removed %d duplicate entries.", entries_deduped)
+        logger.info("🧹 The Groomer found %d duplicate doubloons. Tossed 'em overboard.", entries_deduped)
 
     if unparseable_dates > 0:
         logger.info(
-            "%d entries have unparseable dates (filed under _unknown/). "
-            "These are malformed date headers from the sender — not recoverable.",
+            "🗺️ %d entries have dates even a cartographer couldn't read (filed under _unknown/). "
+            "These are barnacle-covered date headers from the sender — not recoverable.",
             unparseable_dates,
         )
 

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Welcome{% endblock %}
+{% block title %}Ahoy, Captain{% endblock %}
 
 {% block head %}
 <style>
@@ -65,74 +65,47 @@
             </div>
 
             <h1 class="journey__headline">
-                Your entire digital life.<br>
-                <span class="journey__headline-accent">One click away.</span>
+                Yer entire digital treasure hoard.<br>
+                <span class="journey__headline-accent">One click to plunder it all.</span>
             </h1>
 
             <button class="journey__begin-btn" id="begin-btn" onclick="NomoloBridge.beginJourney()">
-                Begin
+                Set Sail
                 <span class="journey__begin-glow"></span>
             </button>
 
             <p class="journey__trust-text">
-                Local only. Open source. Your data never leaves this machine.
+                Local only. Open source. Yer plunder never leaves this ship.
             </p>
         </div>
     </section>
 
-    <!-- STEP 2: Chrome Discovery -->
-    <section class="journey__step" id="step-discover">
-        <div class="journey__discover-content">
-            <p class="journey__discover-label" id="discover-label">Let's see where your digital life lives...</p>
-
-            <div class="journey__graph-container" id="graph-container">
-                <svg class="journey__graph" id="knowledge-graph" viewBox="0 0 800 500"></svg>
-            </div>
-
-            <div class="journey__counter" id="platform-counter" style="opacity: 0;">
-                <span class="journey__counter-number" id="counter-number">0</span>
-                <span class="journey__counter-label" id="counter-label">platforms detected</span>
-            </div>
-
-            <p class="journey__summary" id="discover-summary" style="opacity: 0;"></p>
-        </div>
-
-        <!-- STEP 3: The Invitation (slides up below the graph) -->
-        <div class="journey__invitation" id="step-invite" style="display: none;">
-            <div class="journey__invitation-card">
-                <p class="journey__invitation-text" id="invite-text"></p>
-                <button class="journey__connect-btn" id="connect-btn" onclick="NomoloBridge.startCollection()">
-                    <span id="connect-btn-text">Connect</span>
-                    <span class="journey__connect-arrow">&rarr;</span>
-                </button>
-                <p class="journey__invitation-subtext" id="invite-subtext">Read-only access. Takes 2 minutes.</p>
-            </div>
+    <!-- STEP 2: Working -->
+    <section class="journey__step" id="step-work">
+        <div class="journey__work-content">
+            <div class="journey__work-breath"></div>
+            <p class="journey__work-text" id="work-text">Charting course through uncharted waters...</p>
         </div>
     </section>
 
-    <!-- STEP 4: Collecting -->
-    <section class="journey__step" id="step-collect">
-        <div class="journey__collect-content">
-            <div class="journey__graph-container" id="collect-graph-container">
-                <svg class="journey__graph" id="collect-graph" viewBox="0 0 800 500"></svg>
-            </div>
+    <!-- STEP 3: Done -->
+    <section class="journey__step" id="step-done">
+        <div class="journey__done-content">
+            <p class="journey__done-above">Yer treasure vault is ready, Captain</p>
+            <div class="journey__done-number" id="done-number">0</div>
+            <p class="journey__done-label">pieces of loot stashed aboard yer ship</p>
+            <p class="journey__done-context" id="done-context"></p>
 
-            <div class="journey__collect-progress">
-                <p class="journey__collect-label" id="collect-label">Building your life graph...</p>
-                <span class="journey__collect-count" id="collect-count">0 connections found</span>
-            </div>
+            <a href="/" class="journey__done-btn" onclick="NomoloBridge.clearJourneyState()">
+                Enter the SCUMM Bar <span>&rarr;</span>
+            </a>
 
-            <!-- FDA hint (shown if local sources are locked) -->
-            <div id="fda-hint" style="display: none;"></div>
-
-            <!-- Continue button (hidden until animation completes) -->
-            <div class="journey__collect-cta" id="collect-cta" style="display: none;">
-                <a href="/" class="journey__dashboard-btn" onclick="NomoloBridge.clearJourneyState()">
-                    Explore Your Archive
-                    <span class="journey__connect-arrow">&rarr;</span>
-                    <span class="journey__begin-glow"></span>
-                </a>
+            <div class="journey__done-links">
+                <a href="#" onclick="NomoloBridge.openFdaGuide(); return false;" id="done-fda-link" style="display:none">Unlock more hidden harbors</a>
+                <a href="#" onclick="NomoloBridge.openExpertModal(); return false;">Board the Omniscient Eye</a>
             </div>
+        </div>
+    </section>
 
     <!-- FDA Permission Guide Modal -->
     <div class="fda-modal" id="fda-modal" style="display:none">
@@ -140,8 +113,8 @@
         <div class="fda-modal__content">
             <button class="fda-modal__close" onclick="NomoloBridge.closeFdaGuide()">&times;</button>
 
-            <h2 class="fda-modal__title">Unlock Your Full History</h2>
-            <p class="fda-modal__subtitle">One toggle gives Nomolo read access to your Messages, Calendar, Notes, Mail, Photos, and Safari data. Nothing leaves your machine.</p>
+            <h2 class="fda-modal__title">Unlock the Hidden Harbors</h2>
+            <p class="fda-modal__subtitle">One toggle gives Nomolo read access to yer Messages, Calendar, Notes, Mail, Photos, and Safari data. Nothing leaves yer ship.</p>
 
             <div class="fda-steps">
                 <div class="fda-step" data-step="1">
@@ -185,11 +158,96 @@
 
             <div class="fda-modal__sources" id="fda-locked-sources"></div>
 
-            <p class="fda-modal__trust">Nomolo only reads your data. It never modifies, deletes, or uploads anything. <a href="https://github.com/nomolo" target="_blank">View source code</a></p>
+            <p class="fda-modal__trust">Nomolo only reads yer data. It never modifies, scuttles, or ships anything off. <a href="https://github.com/nomolo" target="_blank">Inspect the ship's blueprints</a></p>
         </div>
     </div>
+
+    <!-- Expert Mode Modal -->
+    <div class="expert-modal" id="expert-modal" style="display:none">
+        <div class="expert-modal__backdrop" onclick="NomoloBridge.closeExpertModal()"></div>
+        <div class="expert-modal__content">
+            <button class="expert-modal__close" onclick="NomoloBridge.closeExpertModal()">&times;</button>
+
+            <h2 class="expert-modal__title">Board the Omniscient Eye's Fleet</h2>
+            <p class="expert-modal__subtitle">Raid yer Gmail, Contacts, and Calendar. Everything stays aboard yer ship.</p>
+
+            <!-- Phase 1: Upload Credentials -->
+            <div class="expert-phase" id="expert-phase-upload">
+                <div class="expert-phase__header">
+                    <div class="expert-phase__number">1</div>
+                    <div class="expert-phase__label">Load the Letter of Marque</div>
+                    <div class="expert-phase__status" id="expert-upload-status"></div>
+                </div>
+                <div class="expert-upload-zone" id="expert-upload-zone">
+                    <p class="expert-upload-zone__text">
+                        Drag & drop your <code>credentials.json</code> here<br>
+                        <span>(or click to browse)</span>
+                    </p>
+                    <p class="expert-upload-zone__help">
+                        Get it from <a href="https://console.developers.google.com" target="_blank">Google Cloud Console</a>
+                    </p>
+                    <input type="file" id="expert-file-input" accept=".json" style="display:none">
+                </div>
+            </div>
+
+            <!-- Phase 2: Authenticate -->
+            <div class="expert-phase expert-phase--locked" id="expert-phase-auth">
+                <div class="expert-phase__header">
+                    <div class="expert-phase__number">2</div>
+                    <div class="expert-phase__label">Board Their Ships</div>
+                </div>
+                <div class="expert-source-rows">
+                    <div class="expert-source-row" data-source="gmail">
+                        <div class="expert-source-row__icon">&#9993;</div>
+                        <div class="expert-source-row__name">Gmail</div>
+                        <div class="expert-source-row__status" id="expert-auth-gmail">Not boarded</div>
+                        <button class="expert-source-row__btn" onclick="NomoloBridge.triggerExpertAuth('gmail')">Board</button>
+                    </div>
+                    <div class="expert-source-row" data-source="contacts-google">
+                        <div class="expert-source-row__icon">&#128101;</div>
+                        <div class="expert-source-row__name">Contacts</div>
+                        <div class="expert-source-row__status" id="expert-auth-contacts-google">Not boarded</div>
+                        <button class="expert-source-row__btn" onclick="NomoloBridge.triggerExpertAuth('contacts-google')">Board</button>
+                    </div>
+                    <div class="expert-source-row" data-source="calendar">
+                        <div class="expert-source-row__icon">&#128197;</div>
+                        <div class="expert-source-row__name">Calendar</div>
+                        <div class="expert-source-row__status" id="expert-auth-calendar">Not boarded</div>
+                        <button class="expert-source-row__btn" onclick="NomoloBridge.triggerExpertAuth('calendar')">Board</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3: Collect -->
+            <div class="expert-phase expert-phase--locked" id="expert-phase-collect">
+                <div class="expert-phase__header">
+                    <div class="expert-phase__number">3</div>
+                    <div class="expert-phase__label">Plunder the Loot</div>
+                </div>
+                <div class="expert-collect-rows">
+                    <div class="expert-collect-row">
+                        <div class="expert-collect-row__name">Gmail</div>
+                        <div class="expert-collect-row__bar"><div class="expert-collect-row__bar-fill" id="expert-bar-gmail"></div></div>
+                        <div class="expert-collect-row__status" id="expert-collect-gmail">Awaiting orders</div>
+                    </div>
+                    <div class="expert-collect-row">
+                        <div class="expert-collect-row__name">Contacts</div>
+                        <div class="expert-collect-row__bar"><div class="expert-collect-row__bar-fill" id="expert-bar-contacts-google"></div></div>
+                        <div class="expert-collect-row__status" id="expert-collect-contacts-google">Awaiting orders</div>
+                    </div>
+                    <div class="expert-collect-row">
+                        <div class="expert-collect-row__name">Calendar</div>
+                        <div class="expert-collect-row__bar"><div class="expert-collect-row__bar-fill" id="expert-bar-calendar"></div></div>
+                        <div class="expert-collect-row__status" id="expert-collect-calendar">Awaiting orders</div>
+                    </div>
+                </div>
+                <button class="expert-collect-btn" id="expert-collect-btn" onclick="NomoloBridge.startExpertCollection()">Begin the Raid</button>
+                <div class="expert-collect-total" id="expert-collect-total" style="display:none;"></div>
+            </div>
+
+            <p class="expert-modal__trust">Nomolo only reads yer data. It never modifies, scuttles, or ships anything off.</p>
         </div>
-    </section>
+    </div>
 
     <!-- Nerd Mode Toggle -->
     <button class="nerd-toggle" id="nerd-toggle" onclick="NomoloBridge.toggleNerdMode()" title="Show Me The Matrix">

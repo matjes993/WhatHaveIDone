@@ -79,17 +79,17 @@ _vault_root = None
 TOOLS = [
     Tool(
         name="search_emails",
-        description="Search through your email archive using semantic search. Returns relevant emails matching your query.",
+        description="Search the Captain's scroll vault (email archive) using semantic search. Returns the most relevant scrolls matching yer query.",
         inputSchema={
             "type": "object",
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "What to search for in emails (natural language)",
+                    "description": "What to search for in the scrolls (natural language)",
                 },
                 "n_results": {
                     "type": "integer",
-                    "description": "Number of results to return (default: 10, max: 50)",
+                    "description": "Number of scrolls to return (default: 10, max: 50)",
                     "default": 10,
                 },
                 "year": {
@@ -102,13 +102,13 @@ TOOLS = [
     ),
     Tool(
         name="search_contacts",
-        description="Search through your contacts using semantic search.",
+        description="Search the Captain's soul bonds (contacts) using semantic search. Find any crewmate or acquaintance.",
         inputSchema={
             "type": "object",
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "What to search for in contacts (name, company, email, etc.)",
+                    "description": "What to search for in soul bonds (name, company, email, etc.)",
                 },
                 "n_results": {
                     "type": "integer",
@@ -121,13 +121,13 @@ TOOLS = [
     ),
     Tool(
         name="search_all",
-        description="Search across ALL your personal data — emails, contacts, notes, calendar, browsing history, music, YouTube, books, health, finance, shopping, podcasts, maps. Use this for broad searches. Uses hybrid search (keyword + semantic + metadata boosting).",
+        description="Search across ALL the Captain's plunder — scrolls, soul bonds, manuscripts, time crystals, footprints, echoes, visions, tomes, life force, coins, marketplace receipts, whispers, waypoints. The ultimate treasure hunt. Uses hybrid search (keyword + semantic + metadata boosting).",
         inputSchema={
             "type": "object",
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "What to search for (natural language)",
+                    "description": "What treasure to search for (natural language)",
                 },
                 "n_results": {
                     "type": "integer",
@@ -136,12 +136,12 @@ TOOLS = [
                 },
                 "source_filter": {
                     "type": "string",
-                    "description": "Comma-separated source names to limit search (e.g. 'gmail_primary,contacts'). Leave empty to search all.",
+                    "description": "Comma-separated vault names to limit the search (e.g. 'gmail_primary,contacts'). Leave empty to search all waters.",
                 },
                 "sort_by": {
                     "type": "string",
                     "enum": ["relevance", "date_asc", "date_desc"],
-                    "description": "Sort order: 'relevance' (default), 'date_asc' (oldest first), 'date_desc' (newest first)",
+                    "description": "Sort the plunder: 'relevance' (default), 'date_asc' (oldest first), 'date_desc' (newest first)",
                     "default": "relevance",
                 },
             },
@@ -150,7 +150,7 @@ TOOLS = [
     ),
     Tool(
         name="get_entry",
-        description="Retrieve the full, detailed record for a specific entry by its ID. Use this after a search to get complete details.",
+        description="Retrieve the full, detailed loot for a specific entry by its ID. Use this after a search to inspect the complete treasure.",
         inputSchema={
             "type": "object",
             "properties": {
@@ -168,7 +168,7 @@ TOOLS = [
     ),
     Tool(
         name="list_sources",
-        description="List all available data sources and how many entries are vectorized in each. Use this to understand what personal data is available.",
+        description="Survey all the Captain's plundered islands and count the loot in each vault. Use this to understand what treasures have been collected.",
         inputSchema={
             "type": "object",
             "properties": {},
@@ -195,7 +195,7 @@ async def call_tool(name: str, arguments: dict):
     elif name == "list_sources":
         return await _handle_list_sources(arguments)
     else:
-        return [TextContent(type="text", text=f"Unknown tool: {name}")]
+        return [TextContent(type="text", text=f"Arrr! Unknown order: {name}. That's not in the Captain's handbook.")]
 
 
 # ---------------------------------------------------------------------------
@@ -208,14 +208,14 @@ async def _handle_search_emails(args):
     year = args.get("year")
 
     if not query:
-        return [TextContent(type="text", text="Please provide a search query.")]
+        return [TextContent(type="text", text="Arrr! Ye need to tell me what treasure to search for, Captain.")]
 
     # Find Gmail collections
     all_cols = _client.list_collections()
     gmail_cols = [c.name for c in all_cols if c.name.startswith("gmail")]
 
     if not gmail_cols:
-        return [TextContent(type="text", text="No email data found. Run 'nomolo vectorize' first.")]
+        return [TextContent(type="text", text="No scrolls in the vault! Chart the treasure maps first with 'nomolo vectorize'.")]
 
     results = hybrid_search(
         query, _vault_root, _client, config=_config,
@@ -230,13 +230,13 @@ async def _handle_search_contacts(args):
     n_results = min(args.get("n_results", 10), 50)
 
     if not query:
-        return [TextContent(type="text", text="Please provide a search query.")]
+        return [TextContent(type="text", text="Arrr! Ye need to tell me what treasure to search for, Captain.")]
 
     all_cols = _client.list_collections()
     contact_cols = [c.name for c in all_cols if "contact" in c.name]
 
     if not contact_cols:
-        return [TextContent(type="text", text="No contacts data found. Run 'nomolo vectorize' first.")]
+        return [TextContent(type="text", text="No soul bonds in the vault! Chart the treasure maps first with 'nomolo vectorize'.")]
 
     results = hybrid_search(
         query, _vault_root, _client, config=_config,
@@ -253,7 +253,7 @@ async def _handle_search_all(args):
     sort_by = args.get("sort_by", "relevance")
 
     if not query:
-        return [TextContent(type="text", text="Please provide a search query.")]
+        return [TextContent(type="text", text="Arrr! Ye need to tell me what treasure to search for, Captain.")]
 
     collections = None
     if source_filter:
@@ -275,12 +275,12 @@ async def _handle_get_entry(args):
     vault_dir = args.get("vault_dir", "")
 
     if not entry_id or not vault_dir:
-        return [TextContent(type="text", text="Please provide both entry_id and vault_dir.")]
+        return [TextContent(type="text", text="Arrr! Ye need to provide both the entry_id and the vault_dir to find that treasure.")]
 
     entry = get_full_entry(_vault_root, vault_dir, entry_id)
 
     if entry is None:
-        return [TextContent(type="text", text=f"Entry not found: {entry_id} in {vault_dir}")]
+        return [TextContent(type="text", text=f"That treasure seems to have sunk, Captain! Entry not found: {entry_id} in {vault_dir}")]
 
     # Format the full entry nicely
     formatted = json.dumps(entry, indent=2, ensure_ascii=False, default=str)

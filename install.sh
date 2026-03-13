@@ -17,7 +17,7 @@ NOMOLO_BIN="$BIN_DIR/nomolo"
 
 echo ""
 echo "=================================="
-echo "  Installing Nomolo (NOMOLO)"
+echo "  Ahoy! Building the Ship (NOMOLO)"
 echo "=================================="
 echo ""
 
@@ -27,9 +27,9 @@ if command -v python3 &>/dev/null; then
 elif command -v python &>/dev/null; then
     PYTHON=python
 else
-    echo "Error: Python 3.9+ is required but not found."
+    echo "Man overboard! Python 3.9+ is required but not found."
     echo ""
-    echo "Install Python:"
+    echo "Recruit Python to the crew:"
     case "$(uname -s)" in
         Darwin) echo "  brew install python3" ;;
         Linux)  echo "  sudo apt install python3 python3-venv" ;;
@@ -44,20 +44,20 @@ PY_MAJOR=$($PYTHON -c "import sys; print(sys.version_info.major)")
 PY_MINOR=$($PYTHON -c "import sys; print(sys.version_info.minor)")
 
 if [ "$PY_MAJOR" -lt 3 ] || { [ "$PY_MAJOR" -eq 3 ] && [ "$PY_MINOR" -lt 9 ]; }; then
-    echo "Error: Python 3.9+ required, found $PY_VERSION"
+    echo "Man overboard! Python 3.9+ required, found $PY_VERSION"
     exit 1
 fi
 
-echo "Using Python $PY_VERSION"
+echo "Shipwright found Python $PY_VERSION — good enough for pirating!"
 
 # Create virtual environment
 if [ ! -d "$VENV_DIR" ]; then
-    echo "Creating virtual environment..."
+    echo "Building the ship's hull (virtual environment)..."
     $PYTHON -m venv "$VENV_DIR"
 fi
 
 # Install dependencies
-echo "Installing dependencies..."
+echo "Loading the cannons (dependencies)..."
 "$VENV_DIR/bin/pip" install -q -e "$SCRIPT_DIR"
 
 # Create bin directory
@@ -77,7 +77,7 @@ if [ -f "$COMPLETION_FILE" ]; then
     ZSH_COMP_DIR="$HOME/.zsh/completions"
     mkdir -p "$ZSH_COMP_DIR"
     cp "$COMPLETION_FILE" "$ZSH_COMP_DIR/_nomolo"
-    echo "Installed tab completion for zsh"
+    echo "Installed tab completion for zsh — the parrot on yer shoulder now knows the commands!"
 fi
 
 echo ""
@@ -104,19 +104,19 @@ if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     echo "Added $BIN_DIR to PATH in $RC_FILE"
     echo ""
     echo "=================================="
-    echo "  Install complete!"
+    echo "  Ship is ready to sail!"
     echo "=================================="
     echo ""
-    echo "  Run this to start using nomolo now:"
+    echo "  Set sail with these orders, Captain:"
     echo ""
     echo "    source $RC_FILE"
     echo "    nomolo setup gmail"
     echo ""
 else
     echo "=================================="
-    echo "  Install complete!"
+    echo "  Ship is ready to sail!"
     echo "=================================="
     echo ""
-    echo "  Run:  nomolo setup gmail"
+    echo "  Set sail:  nomolo setup gmail"
     echo ""
 fi

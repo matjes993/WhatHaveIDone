@@ -17,6 +17,8 @@ const NomoloBridge = (() => {
 
     function init() {
         connectWebSocket();
+        initKonamiCode();
+        printConsoleEasterEggs();
     }
 
     function connectWebSocket() {
@@ -28,7 +30,7 @@ const NomoloBridge = (() => {
 
             ws.onopen = () => {
                 wsReconnectAttempts = 0;
-                console.log('[Nomolo] WebSocket connected');
+                console.log('[Nomolo] ⚓ WebSocket rigging secured — connection established');
             };
 
             ws.onmessage = (event) => {
@@ -36,28 +38,28 @@ const NomoloBridge = (() => {
                     const msg = JSON.parse(event.data);
                     handleWSMessage(msg);
                 } catch (e) {
-                    console.warn('[Nomolo] Invalid WS message:', e);
+                    console.warn('[Nomolo] 🏴‍☠️ Arrr! Garbled message in a bottle:', e);
                 }
             };
 
             ws.onclose = () => {
-                console.log('[Nomolo] WebSocket closed');
+                console.log('[Nomolo] 🏴‍☠️ WebSocket rigging cut — connection lost');
                 scheduleReconnect();
             };
 
             ws.onerror = (err) => {
-                console.warn('[Nomolo] WebSocket error');
+                console.warn('[Nomolo] 🏴‍☠️ Arrr! Something went wrong in the rigging');
                 ws.close();
             };
         } catch (e) {
-            console.warn('[Nomolo] WebSocket connection failed:', e);
+            console.warn('[Nomolo] 🏴‍☠️ Arrr! WebSocket connection failed:', e);
             scheduleReconnect();
         }
     }
 
     function scheduleReconnect() {
         if (wsReconnectAttempts >= WS_MAX_RECONNECT) {
-            console.log('[Nomolo] Max reconnect attempts reached');
+            console.log('[Nomolo] 🏴‍☠️ Max reconnect attempts reached — the ship has sailed');
             return;
         }
         wsReconnectAttempts++;
@@ -70,7 +72,7 @@ const NomoloBridge = (() => {
             ws.send(JSON.stringify(data));
             return true;
         }
-        console.warn('[Nomolo] WebSocket not connected');
+        console.warn('[Nomolo] 🏴‍☠️ No rigging attached — WebSocket not connected');
         return false;
     }
 
@@ -88,7 +90,7 @@ const NomoloBridge = (() => {
                 onScanComplete(msg.data);
                 break;
             default:
-                console.log('[Nomolo] Unknown message type:', msg.type);
+                console.log("[Nomolo] \uD83C\uDFF4\u200D\u2620\uFE0F Unknown signal from the crow's nest:", msg.type);
         }
     }
 
@@ -158,13 +160,13 @@ const NomoloBridge = (() => {
                 total_records: data.sources.reduce((sum, s) => sum + s.record_count, 0),
             });
         } catch (e) {
-            toast('Scan failed. Please refresh and try again.', 'error');
-            console.error('[Nomolo] REST scan failed:', e);
+            toast('Man overboard! The scan failed. Refresh and try again.', 'error');
+            console.error('[Nomolo] 🏴‍☠️ Arrr! The spyglass cracked during REST scan:', e);
         }
     }
 
     function onScanStarted(data) {
-        updateScanLabel(data.message || 'Scanning your digital life...');
+        updateScanLabel(data.message || 'Charting the seas for buried treasure...');
     }
 
     function onSourceDiscovered(data) {
@@ -183,7 +185,7 @@ const NomoloBridge = (() => {
 
         // Complete the progress ring
         updateProgressRing(100);
-        updateScanLabel('Scan complete!');
+        updateScanLabel('All waters charted, Captain!');
 
         // Wait a beat, then show results
         setTimeout(() => {
@@ -398,10 +400,10 @@ const NomoloBridge = (() => {
             if (data.questions && data.questions.length > 0) {
                 renderQuiz(container, data.questions[0]);
             } else {
-                container.innerHTML = '<p class="card__empty">No quiz available yet. Collect some data first!</p>';
+                container.innerHTML = '<p class="card__empty">No tales to tell yet, Captain. Plunder some data first!</p>';
             }
         } catch (e) {
-            container.innerHTML = '<p class="card__empty">Could not load quiz.</p>';
+            container.innerHTML = '<p class="card__empty">Kraken attack! Could not load the quiz.</p>';
         }
     }
 
@@ -445,9 +447,9 @@ const NomoloBridge = (() => {
                 container.appendChild(explanation);
 
                 if (selected === correct) {
-                    toast('Correct!', 'success');
+                    toast('Victory! Ye be a true pirate of knowledge!', 'success');
                 } else {
-                    toast('Not quite!', 'info');
+                    toast('Not quite, Captain! Even the best pirates miss sometimes.', 'info');
                 }
             });
         });
@@ -467,7 +469,7 @@ const NomoloBridge = (() => {
                 pollCollectionStatus(source, data.task_id);
             }
         } catch (e) {
-            toast(`Failed to start ${source} collection.`, 'error');
+            toast(`Kraken attack! Failed to start ${source} raid.`, 'error');
             nerdLog(`Collection start failed: ${e.message}`, 'error');
         }
     }
@@ -481,7 +483,7 @@ const NomoloBridge = (() => {
                 const response = await fetch(`/api/collect/${source}/status?task_id=${taskId}`);
                 const data = await response.json();
 
-                // Notify any listeners (e.g., animateCollection)
+                // Notify any listeners (e.g., collection status callbacks)
                 if (_onCollectionUpdate) _onCollectionUpdate(data);
 
                 if (data.status === 'running') {
@@ -503,7 +505,7 @@ const NomoloBridge = (() => {
                     nerdLog(`${source} failed: ${data.message}`, 'error');
                 }
             } catch (e) {
-                console.warn('[Nomolo] Poll failed:', e);
+                console.warn("[Nomolo] \uD83C\uDFF4\u200D\u2620\uFE0F Arrr! Poll from the crow's nest failed:", e);
             }
         };
 
@@ -512,7 +514,7 @@ const NomoloBridge = (() => {
 
     async function handleNeedsAuth(source, data) {
         // Open Google OAuth in a new window
-        toast(`Opening Google sign-in for ${source}...`, 'info');
+        toast(`Boarding the Omniscient Eye for ${source}...`, 'info');
         nerdLog(`Redirecting to Google OAuth for ${source}...`, 'info');
 
         try {
@@ -521,7 +523,7 @@ const NomoloBridge = (() => {
 
             if (result.success) {
                 nerdLog(`Google auth successful for ${source}!`, 'success');
-                toast('Signed in! Starting collection...', 'success');
+                toast('Boarded! Commencing the raid...', 'success');
                 // Now retry the collection
                 triggerCollect(source);
             } else {
@@ -536,7 +538,7 @@ const NomoloBridge = (() => {
     function handleNeedsSetup(source, data) {
         const instructions = data.setup_instructions || {};
         const steps = instructions.steps || [];
-        toast(`${source} needs Google Cloud credentials. Check the Matrix panel for instructions.`, 'info');
+        toast(`${source} needs a letter of marque. Check the Matrix panel for yer orders.`, 'info');
         nerdLog('=== SETUP REQUIRED ===', 'warn');
         nerdLog(`To connect ${source}, you need credentials.json:`, 'warn');
         steps.forEach((step, i) => {
@@ -548,7 +550,7 @@ const NomoloBridge = (() => {
     function handleNeedsFile(source, data) {
         const instructions = data.instructions || {};
         const steps = instructions.steps || [];
-        toast(`${source} needs a file export. Check the Matrix panel for steps.`, 'info');
+        toast(`${source} needs stolen cargo. Check the Matrix panel for yer orders.`, 'info');
         nerdLog(`=== FILE EXPORT NEEDED: ${(instructions.platform || source).toUpperCase()} ===`, 'warn');
         steps.forEach((step, i) => {
             nerdLog(`  ${i + 1}. ${step}`, 'info');
@@ -556,7 +558,7 @@ const NomoloBridge = (() => {
     }
 
     function triggerSync() {
-        toast('Sync is coming soon! Use the CLI for now: nomolo collect <source>', 'info');
+        toast('The fleet is still being assembled! Use the CLI for now: nomolo collect <source>', 'info');
     }
 
     // ── Animated Number Counter ───────────────────────────────────────
@@ -701,6 +703,13 @@ const NomoloBridge = (() => {
     let _collectionStartTime = 0;
     let _collectionElapsed = 0;
 
+    // Records browser state
+    let _recordsPage = 1;
+    let _recordsSource = '';
+    let _recordsQuery = '';
+    let _recordsSort = 'newest';
+    let _recordsData = null;
+
     // ── Journey State Persistence ─────────────────────────────────────
 
     function saveJourneyState(step, extra) {
@@ -754,28 +763,19 @@ const NomoloBridge = (() => {
 
     async function resumeAfterFda() {
         const hookStep = document.getElementById('step-hook');
-        const collectStep = document.getElementById('step-collect');
+        const workStep = document.getElementById('step-work');
 
-        // Hide hook, show collect step
         if (hookStep) { hookStep.classList.remove('journey__step--active'); hookStep.style.display = 'none'; }
-        if (collectStep) {
-            collectStep.style.display = 'flex';
-            collectStep.classList.add('journey__step--active');
-        }
+        if (workStep) { workStep.style.display = 'flex'; workStep.classList.add('journey__step--active'); }
 
-        const label = document.getElementById('collect-label');
-        const countEl = document.getElementById('collect-count');
-        if (label) label.textContent = 'Scanning newly unlocked sources...';
-        if (countEl) countEl.textContent = 'Full Disk Access detected — collecting your data...';
+        const textEl = document.getElementById('work-text');
+        if (textEl) textEl.textContent = 'Scanning newly unlocked harbors...';
+        nerdLog('Resuming after Full Disk Access change...', 'success');
 
-        // Rescan + collect
         try {
             const scanResp = await fetch('/api/local-scan');
             _localData = await scanResp.json();
-            const summary = _localData.summary || {};
-            nerdLog(`Rescan: ${summary.sources_found || 0} found, ${summary.sources_locked || 0} still locked`, 'success');
 
-            // Collect everything
             _collectionStartTime = performance.now();
             const [browserResult, localResult] = await Promise.allSettled([
                 fetch('/api/collect/browser-chrome', { method: 'POST' }).then(r => r.json()),
@@ -785,874 +785,185 @@ const NomoloBridge = (() => {
 
             const browserRecords = browserResult.status === 'fulfilled' ? (browserResult.value.records || 0) : 0;
             const localRecords = localResult.status === 'fulfilled' ? (localResult.value.total_records || 0) : 0;
-            const totalRecords = browserRecords + localRecords;
+            const total = browserRecords + localRecords;
 
-            nerdLog(`Collected: ${browserRecords} browser URLs + ${localRecords} local records`, 'success');
-
-            saveJourneyState('collection_done', { records: totalRecords });
-            onBrowserCollectionDone(totalRecords);
+            saveJourneyState('collection_done', { records: total });
+            if (textEl) textEl.textContent = `Plunder secured — ${total.toLocaleString()} pieces stashed`;
+            await sleep(1500);
+            transitionToDone(total);
         } catch (e) {
-            nerdLog('Resume collection failed: ' + e.message, 'warn');
-            if (label) label.textContent = 'Something went wrong — please try again.';
+            nerdLog('Resume failed: ' + e.message, 'warn');
+            if (textEl) textEl.textContent = 'Man overboard! Something went wrong — try again, Captain.';
         }
     }
 
     async function resumeToSnapshot() {
         const hookStep = document.getElementById('step-hook');
-        const collectStep = document.getElementById('step-collect');
+        const doneStep = document.getElementById('step-done');
 
         if (hookStep) { hookStep.classList.remove('journey__step--active'); hookStep.style.display = 'none'; }
-        if (collectStep) {
-            collectStep.style.display = 'flex';
-            collectStep.classList.add('journey__step--active');
-        }
+        if (doneStep) { doneStep.style.display = 'flex'; doneStep.classList.add('journey__step--active'); }
 
-        showIdentitySnapshot(0);
+        // Get vault stats to populate the done screen
+        try {
+            const resp = await fetch('/api/vault/stats');
+            const data = await resp.json();
+            populateDoneScreen(data.total_records || 0);
+        } catch (e) {
+            populateDoneScreen(0);
+        }
     }
 
     function beginJourney() {
         const hookStep = document.getElementById('step-hook');
-        const discoverStep = document.getElementById('step-discover');
+        const workStep = document.getElementById('step-work');
+        if (!hookStep || !workStep) return;
 
-        if (!hookStep || !discoverStep) return;
+        nerdLog('Journey started.', 'info');
 
-        nerdLog('Journey started. Scanning your digital life...', 'info');
-
-        // Fade hook up and out
         hookStep.classList.add('journey__step--exit-up');
-
         setTimeout(() => {
             hookStep.classList.remove('journey__step--active');
             hookStep.style.display = 'none';
-
-            // Show discover step sliding in from below
-            discoverStep.style.display = 'flex';
+            workStep.style.display = 'flex';
             requestAnimationFrame(() => {
-                discoverStep.classList.add('journey__step--active');
-                discoverStep.classList.add('journey__step--enter-up');
+                workStep.classList.add('journey__step--active');
+                workStep.classList.add('journey__step--enter-up');
             });
-
-            // Fetch both chrome analysis AND local scan in parallel
-            fetchDiscoveryData();
+            runWorkFlow();
         }, 700);
     }
 
-    async function fetchDiscoveryData() {
-        const label = document.getElementById('discover-label');
-        if (label) label.textContent = 'Scanning your digital life...';
-
-        nerdLog('GET /api/chrome-analysis', 'info');
-        nerdLog('GET /api/local-scan', 'info');
-
-        // Run both in parallel
-        const [chromeResult, localResult] = await Promise.allSettled([
-            fetch('/api/chrome-analysis').then(r => r.json()),
-            fetch('/api/local-scan').then(r => r.json()),
-        ]);
-
-        const chromeData = chromeResult.status === 'fulfilled' ? chromeResult.value : null;
-        const localData = localResult.status === 'fulfilled' ? localResult.value : null;
-
-        _chromeData = chromeData;
-        _localData = localData;
-
-        if (chromeData && chromeData.success) {
-            _suggestionData = chromeData.suggestion;
-            nerdLog(`Chrome: ${chromeData.stats?.platforms_detected || 0} platforms, ${chromeData.total_urls || 0} URLs`, 'success');
-        } else {
-            nerdLog('Chrome analysis: not available', 'warn');
-        }
-
-        if (localData) {
-            const s = localData.summary || {};
-            nerdLog(`Local scan: ${s.sources_found || 0} accessible, ${s.sources_locked || 0} locked (need Full Disk Access)`, 'success');
-            if (s.needs_full_disk_access) {
-                nerdLog(`Tip: Grant Full Disk Access to unlock ${s.sources_locked} more sources`, 'info');
+    async function runWorkFlow() {
+        const textEl = document.getElementById('work-text');
+        function updateText(msg) {
+            if (textEl) {
+                textEl.style.opacity = '0';
+                setTimeout(() => { textEl.textContent = msg; textEl.style.opacity = '1'; }, 300);
             }
         }
 
-        // Merge into unified graph data
-        const mergedData = mergeDiscoveryData(chromeData, localData);
+        try {
+            // Phase 1: Scan
+            nerdLog('GET /api/chrome-analysis', 'info');
+            nerdLog('GET /api/local-scan', 'info');
+            updateText('Charting the seas for buried treasure...');
 
-        // Start graph animation
-        setTimeout(() => {
-            animateGraph(mergedData);
-        }, 600);
+            const [chromeResult, localResult] = await Promise.allSettled([
+                fetch('/api/chrome-analysis').then(r => r.json()),
+                fetch('/api/local-scan').then(r => r.json()),
+            ]);
+
+            _chromeData = chromeResult.status === 'fulfilled' ? chromeResult.value : null;
+            _localData = localResult.status === 'fulfilled' ? localResult.value : null;
+
+            // Build a human-readable summary
+            const platforms = _chromeData?.stats?.platforms_detected || 0;
+            const years = _chromeData?.stats?.years_of_history || 0;
+            const localFound = _localData?.summary?.sources_found || 0;
+
+            let found = '';
+            if (platforms > 0 && years > 0) found = `Spotted ${platforms} islands across ${years} years of voyages`;
+            else if (platforms > 0) found = `Spotted ${platforms} islands in yer browser waters`;
+            else if (localFound > 0) found = `Spotted ${localFound} harbors on yer Mac`;
+            else found = 'Horizon scanned, Captain!';
+
+            nerdLog(found, 'success');
+            updateText(found);
+            await sleep(2000);
+
+            // Phase 2: Collect
+            updateText('Plundering yer history...');
+            nerdLog('Starting collection...', 'info');
+            _collectionStartTime = performance.now();
+
+            const [browserCol, localCol] = await Promise.allSettled([
+                fetch('/api/collect/browser-chrome', { method: 'POST' }).then(r => r.json()),
+                fetch('/api/collect/local', { method: 'POST' }).then(r => r.json()),
+            ]);
+
+            _collectionElapsed = performance.now() - _collectionStartTime;
+            const browserRecords = browserCol.status === 'fulfilled' ? (browserCol.value.records || 0) : 0;
+            const localRecords = localCol.status === 'fulfilled' ? (localCol.value.total_records || 0) : 0;
+            let total = browserRecords + localRecords;
+
+            // If collection returned 0 (already collected), use vault total instead
+            if (total === 0) {
+                try {
+                    const vaultResp = await fetch('/api/vault/stats');
+                    const vaultData = await vaultResp.json();
+                    total = vaultData.total_records || 0;
+                } catch { /* keep 0 */ }
+            }
+
+            const secs = (_collectionElapsed / 1000).toFixed(1);
+
+            nerdLog(`Done: ${total.toLocaleString()} records in ${secs}s`, 'success');
+            saveJourneyState('collection_done', { records: total });
+            updateText(`Plunder secured — ${total.toLocaleString()} pieces stashed aboard yer ship`);
+
+            await sleep(2000);
+
+            // Phase 3: Transition to done screen
+            transitionToDone(total);
+
+        } catch (e) {
+            nerdLog('Error: ' + e.message, 'error');
+            updateText('Man overboard! Something went wrong. Refresh and try again, Captain.');
+        }
     }
 
-    function mergeDiscoveryData(chromeData, localData) {
-        // Build a unified data structure for the graph
-        const platforms = (chromeData && chromeData.platforms) || [];
-        const localSources = (localData && localData.sources) || {};
-        const localSummary = (localData && localData.summary) || {};
+    function transitionToDone(totalRecords) {
+        const workStep = document.getElementById('step-work');
+        const doneStep = document.getElementById('step-done');
+        if (!doneStep) { window.location.href = '/'; return; }
 
-        // Merge: Chrome platforms (top 5) + local sources (found + locked)
-        const merged = {
-            platforms: platforms,
-            localSources: localSources,
-            stats: {
-                ...(chromeData ? chromeData.stats : {}),
-                local_found: localSummary.sources_found || 0,
-                local_locked: localSummary.sources_locked || 0,
-                needs_full_disk_access: localSummary.needs_full_disk_access || false,
-            },
-            suggestion: chromeData ? chromeData.suggestion : null,
-            top_domains: (chromeData && chromeData.top_domains) || [],
-        };
-
-        return merged;
+        if (workStep) {
+            workStep.classList.add('journey__step--exit-up');
+            setTimeout(() => {
+                workStep.classList.remove('journey__step--active');
+                workStep.style.display = 'none';
+                doneStep.style.display = 'flex';
+                requestAnimationFrame(() => {
+                    doneStep.classList.add('journey__step--active');
+                    doneStep.classList.add('journey__step--enter-up');
+                });
+                populateDoneScreen(totalRecords);
+            }, 700);
+        }
     }
 
-    function animateGraph(data) {
-        const svg = document.getElementById('knowledge-graph');
-        if (!svg) return;
+    async function populateDoneScreen(totalRecords) {
+        // Animate the big number
+        const numEl = document.getElementById('done-number');
+        if (numEl) animateNumber(numEl, 0, totalRecords, 1500);
 
-        const platforms = data.platforms || [];
-        const localSources = data.localSources || {};
-        const stats = data.stats || {};
-
-        // SVG dimensions
-        const W = 800;
-        const H = 500;
-        const CX = W / 2;
-        const CY = H / 2;
-
-        svg.innerHTML = '';
-
-        // Defs for glow filters
-        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        defs.innerHTML = `
-            <filter id="glow-user" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="6" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-            <filter id="glow-node" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-        `;
-        svg.appendChild(defs);
-
-        // Create edge group and node group (edges behind nodes)
-        const edgeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        edgeGroup.setAttribute('class', 'graph-edges');
-        svg.appendChild(edgeGroup);
-
-        const nodeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        nodeGroup.setAttribute('class', 'graph-nodes');
-        svg.appendChild(nodeGroup);
-
-        // Category colors
-        const catColors = {
-            email: '#00d4ff',
-            social: '#a855f7',
-            media: '#00ff88',
-            finance: '#ffd700',
-            shopping: '#ff8c42',
-            messaging: '#ff6b9d',
-            productivity: '#00d4ff',
-            dev: '#a855f7',
-            location: '#ff8c42',
-            cloud: '#87ceeb',
-            news: '#87ceeb',
-            travel: '#ff8c42',
-            health: '#ff6b9d',
-            education: '#00ff88',
-            search: '#888888',
-        };
-
-        const catLabels = {
-            email: 'Email', social: 'Social', media: 'Media',
-            finance: 'Finance', shopping: 'Shopping', messaging: 'Messaging',
-            productivity: 'Productivity', dev: 'Dev', location: 'Location',
-            cloud: 'Cloud', news: 'News', travel: 'Travel',
-            health: 'Health', education: 'Education', search: 'Search',
-        };
-
-        // --- Split into HERO platforms (top 5) and OTHERS (clustered by category) ---
-        const MAX_HEROES = 5;
-        const heroes = platforms.slice(0, MAX_HEROES);
-        const others = platforms.slice(MAX_HEROES);
-
-        // Cluster "others" by category
-        const clusters = {};
-        for (const p of others) {
-            const cat = p.category || 'other';
-            if (!clusters[cat]) clusters[cat] = { names: [], totalVisits: 0, category: cat };
-            clusters[cat].names.push(p.name);
-            clusters[cat].totalVisits += p.visits;
+        // Context line
+        const contextEl = document.getElementById('done-context');
+        const stats = _chromeData?.stats || {};
+        const localLocked = _localData?.summary?.sources_locked || 0;
+        let context = '';
+        if (stats.unique_domains && stats.years_of_history) {
+            context = `${stats.unique_domains} sites · ${stats.years_of_history} years of history`;
+        } else if (stats.unique_domains) {
+            context = `${stats.unique_domains} sites archived`;
         }
-        const clusterList = Object.values(clusters);
+        if (contextEl) contextEl.textContent = context;
 
-        // Build local Mac source list (found + locked)
-        const localList = [];
-        for (const [sid, src] of Object.entries(localSources)) {
-            if (src.found || src.exists) {
-                localList.push(src);
-            }
+        // Show FDA link if there are locked sources
+        const fdaLink = document.getElementById('done-fda-link');
+        if (fdaLink && localLocked > 0) {
+            fdaLink.style.display = '';
+            fdaLink.textContent = `Unlock ${localLocked} more hidden harbor${localLocked > 1 ? 's' : ''}`;
         }
 
-        const heroRadius = Math.min(W, H) * 0.28;
-        const clusterRadius = Math.min(W, H) * 0.38;
-        const localRadius = Math.min(W, H) * 0.45;
-
-        // Draw "You" node first
-        const userNode = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        userNode.setAttribute('class', 'graph-node graph-node--user');
-        userNode.innerHTML = `
-            <circle cx="${CX}" cy="${CY}" r="30" fill="rgba(0, 212, 255, 0.15)" stroke="#00d4ff" stroke-width="2" filter="url(#glow-user)"/>
-            <text x="${CX}" y="${CY + 5}" text-anchor="middle" fill="#00d4ff" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">You</text>
-        `;
-        nodeGroup.appendChild(userNode);
-        const userCircle = userNode.querySelector('circle');
-        userCircle.style.animation = 'graphPulse 2s ease-in-out infinite';
-
-        // Show counter
-        const counterEl = document.getElementById('platform-counter');
-        if (counterEl) counterEl.style.opacity = '1';
-        const counterNumberEl = document.getElementById('counter-number');
-        const counterLabelEl = document.getElementById('counter-label');
-
-        // Helper: format visits
-        function fmtVisits(v) {
-            if (v >= 1000) return (v / 1000).toFixed(1) + 'k';
-            return String(v);
-        }
-
-        // --- Reveal sequence ---
-        let revealIndex = 0;
-        let platformsRevealed = 0;
-
-        function revealNext() {
-            // Phase 1: Hero nodes
-            if (revealIndex < heroes.length) {
-                const p = heroes[revealIndex];
-                const angle = (2 * Math.PI * revealIndex) / heroes.length - Math.PI / 2;
-                // Size scales with visits relative to #1
-                const maxVisits = heroes[0].visits || 1;
-                const sizeRatio = 0.4 + 0.6 * (p.visits / maxVisits);
-                const nodeRadius = Math.round(16 + 22 * sizeRatio);
-                const nx = CX + heroRadius * Math.cos(angle);
-                const ny = CY + heroRadius * Math.sin(angle);
-                const color = catColors[p.category] || '#888';
-
-                // Edge
-                const edge = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                edge.setAttribute('x1', CX); edge.setAttribute('y1', CY);
-                edge.setAttribute('x2', CX); edge.setAttribute('y2', CY);
-                edge.setAttribute('stroke', color);
-                edge.setAttribute('stroke-opacity', '0.3');
-                edge.setAttribute('stroke-width', Math.max(1, Math.round(sizeRatio * 2.5)));
-                edgeGroup.appendChild(edge);
-                requestAnimationFrame(() => {
-                    edge.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
-                    edge.setAttribute('x2', nx); edge.setAttribute('y2', ny);
-                });
-
-                // Node
-                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                g.setAttribute('class', 'graph-node graph-node--hero');
-                g.style.opacity = '0';
-                const visitsFontSize = Math.max(10, Math.round(nodeRadius * 0.45));
-                g.innerHTML = `
-                    <circle cx="${nx}" cy="${ny}" r="${nodeRadius}" fill="rgba(${hexToRgb(color)}, 0.15)" stroke="${color}" stroke-width="2" filter="url(#glow-node)"/>
-                    <text x="${nx}" y="${ny - 2}" text-anchor="middle" fill="white" font-size="${Math.max(12, nodeRadius * 0.5)}">${p.icon || ''}</text>
-                    <text x="${nx}" y="${ny + 14}" text-anchor="middle" fill="${color}" font-family="Space Grotesk, sans-serif" font-size="${visitsFontSize}" font-weight="700">${p.visits.toLocaleString()}</text>
-                    <text x="${nx}" y="${ny - nodeRadius - 10}" text-anchor="middle" fill="${color}" font-family="Space Grotesk, sans-serif" font-size="13" font-weight="600">${escapeHtml(p.name)}</text>
-                    <text x="${nx}" y="${ny - nodeRadius + 4}" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-family="Space Grotesk, sans-serif" font-size="9">visits</text>
-                `;
-                nodeGroup.appendChild(g);
-                requestAnimationFrame(() => { g.style.transition = 'opacity 0.5s ease'; g.style.opacity = '1'; });
-
-                platformsRevealed++;
-                if (counterNumberEl) counterNumberEl.textContent = platformsRevealed;
-                nerdLog(`[${platformsRevealed}/${platforms.length}] ${p.icon} ${p.name} — ${p.visits.toLocaleString()} visits (${p.category})`, 'success');
-
-                revealIndex++;
-                setTimeout(revealNext, 500);
-                return;
-            }
-
-            // Phase 2: Cluster nodes (smaller, represent groups)
-            const clusterIdx = revealIndex - heroes.length;
-            if (clusterIdx < clusterList.length) {
-                const cl = clusterList[clusterIdx];
-                const angle = (2 * Math.PI * clusterIdx) / clusterList.length - Math.PI / 2 + Math.PI / clusterList.length;
-                const nx = CX + clusterRadius * Math.cos(angle);
-                const ny = CY + clusterRadius * Math.sin(angle);
-                const color = catColors[cl.category] || '#888';
-                const label = cl.names.length === 1
-                    ? cl.names[0]
-                    : `+${cl.names.length} ${catLabels[cl.category] || cl.category}`;
-
-                // Edge
-                const edge = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                edge.setAttribute('x1', CX); edge.setAttribute('y1', CY);
-                edge.setAttribute('x2', CX); edge.setAttribute('y2', CY);
-                edge.setAttribute('stroke', color);
-                edge.setAttribute('stroke-opacity', '0.15');
-                edge.setAttribute('stroke-width', '1');
-                edge.setAttribute('stroke-dasharray', '4 4');
-                edgeGroup.appendChild(edge);
-                requestAnimationFrame(() => {
-                    edge.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
-                    edge.setAttribute('x2', nx); edge.setAttribute('y2', ny);
-                });
-
-                // Cluster node (smaller, dashed outline)
-                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                g.setAttribute('class', 'graph-node graph-node--cluster');
-                g.style.opacity = '0';
-                g.innerHTML = `
-                    <circle cx="${nx}" cy="${ny}" r="14" fill="rgba(${hexToRgb(color)}, 0.08)" stroke="${color}" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
-                    <text x="${nx}" y="${ny - 20}" text-anchor="middle" fill="${color}" font-family="Space Grotesk, sans-serif" font-size="10" font-weight="500" opacity="0.8">${escapeHtml(label)}</text>
-                    <text x="${nx}" y="${ny + 4}" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9">${fmtVisits(cl.totalVisits)}</text>
-                `;
-                nodeGroup.appendChild(g);
-                requestAnimationFrame(() => { g.style.transition = 'opacity 0.4s ease'; g.style.opacity = '1'; });
-
-                platformsRevealed += cl.names.length;
-                if (counterNumberEl) counterNumberEl.textContent = platformsRevealed;
-                if (counterLabelEl && clusterIdx === 0) counterLabelEl.textContent = 'services detected';
-                nerdLog(`[cluster] ${cl.names.join(', ')} (${catLabels[cl.category] || cl.category})`, 'info');
-
-                revealIndex++;
-                setTimeout(revealNext, 300);
-                return;
-            }
-
-            // Phase 3: Local Mac sources (found = solid, locked = dashed with lock)
-            const localIdx = revealIndex - heroes.length - clusterList.length;
-            if (localIdx < localList.length) {
-                const src = localList[localIdx];
-                const angle = (2 * Math.PI * localIdx) / Math.max(localList.length, 1) - Math.PI / 2 + Math.PI / 6;
-                const nx = CX + localRadius * Math.cos(angle);
-                const ny = CY + localRadius * Math.sin(angle);
-                const isFound = src.found && (src.total || src.record_count || 0) > 0;
-                const color = isFound ? '#00ff88' : '#555555';
-                const nodeR = isFound ? 16 : 12;
-                const icon = src.icon || (isFound ? '\u2705' : '\uD83D\uDD12');
-                const label = src.name || src.label || src.source_id || 'Unknown';
-
-                // Edge
-                const edge = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                edge.setAttribute('x1', CX); edge.setAttribute('y1', CY);
-                edge.setAttribute('x2', CX); edge.setAttribute('y2', CY);
-                edge.setAttribute('stroke', color);
-                edge.setAttribute('stroke-opacity', isFound ? '0.25' : '0.1');
-                edge.setAttribute('stroke-width', '1');
-                if (!isFound) edge.setAttribute('stroke-dasharray', '3 5');
-                edgeGroup.appendChild(edge);
-                requestAnimationFrame(() => {
-                    edge.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
-                    edge.setAttribute('x2', nx); edge.setAttribute('y2', ny);
-                });
-
-                // Node
-                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                g.setAttribute('class', `graph-node graph-node--local${isFound ? '' : ' graph-node--locked'}`);
-                g.style.opacity = '0';
-                g.innerHTML = `
-                    <circle cx="${nx}" cy="${ny}" r="${nodeR}"
-                        fill="rgba(${hexToRgb(color)}, ${isFound ? '0.12' : '0.04'})"
-                        stroke="${color}" stroke-width="${isFound ? '1.5' : '1'}"
-                        ${isFound ? '' : 'stroke-dasharray="4 4"'}
-                        opacity="${isFound ? '1' : '0.5'}"
-                        filter="${isFound ? 'url(#glow-node)' : ''}"/>
-                    <text x="${nx}" y="${ny + 4}" text-anchor="middle" fill="${isFound ? 'white' : 'rgba(255,255,255,0.3)'}" font-size="${isFound ? '13' : '11'}">${icon}</text>
-                    <text x="${nx}" y="${ny - nodeR - 6}" text-anchor="middle" fill="${isFound ? '#00ff88' : 'rgba(255,255,255,0.25)'}" font-family="Space Grotesk, sans-serif" font-size="9" font-weight="500">${escapeHtml(label)}</text>
-                    ${isFound && (src.total || src.record_count || 0) ? `<text x="${nx}" y="${ny + nodeR + 14}" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-family="Space Grotesk, sans-serif" font-size="8">${(src.total || src.record_count || 0).toLocaleString()} records</text>` : ''}
-                `;
-                nodeGroup.appendChild(g);
-                requestAnimationFrame(() => { g.style.transition = 'opacity 0.4s ease'; g.style.opacity = '1'; });
-
-                const status = isFound ? `found (${(src.total || src.record_count || 0)} records)` : 'locked (needs Full Disk Access)';
-                nerdLog(`[local] ${icon} ${label} — ${status}`, isFound ? 'success' : 'warn');
-
-                revealIndex++;
-                setTimeout(revealNext, 250);
-                return;
-            }
-
-            // Done — show summary
-            onGraphComplete(data);
-        }
-
-        // Start revealing after a short delay for "You" node to settle
-        setTimeout(revealNext, 800);
+        nerdLog(`Done screen: ${totalRecords.toLocaleString()} records`, 'info');
     }
 
     function hexToRgb(hex) {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         if (!result) return '128, 128, 128';
         return `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`;
-    }
-
-    function onGraphComplete(data) {
-        const stats = data.stats || {};
-        const platforms = data.platforms || [];
-        const localSources = data.localSources || {};
-        const summaryEl = document.getElementById('discover-summary');
-        const labelEl = document.getElementById('discover-label');
-
-        // Count local sources
-        let localFound = 0, localLocked = 0;
-        for (const [, src] of Object.entries(localSources)) {
-            if (src.found && (src.total || src.record_count || 0) > 0) localFound++;
-            else if (src.exists) localLocked++;
-        }
-
-        nerdLog(`Discovery complete: ${stats.platforms_detected || '?'} platforms, ${stats.total_urls || '?'} URLs, ${stats.years_of_history || '?'} years of history`, 'success');
-        nerdLog(`Top domains: ${(data.top_domains || []).slice(0, 5).map(d => d.domain).join(', ')}`, 'info');
-        if (localFound + localLocked > 0) {
-            nerdLog(`Local Mac: ${localFound} sources readable, ${localLocked} locked behind Full Disk Access`, 'info');
-        }
-
-        // Update top label — make it feel personal
-        if (labelEl) {
-            labelEl.textContent = 'Your digital footprint';
-            labelEl.style.opacity = '0.6';
-        }
-
-        // Punchy summary — big number, personal, short
-        if (summaryEl) {
-            const count = stats.platforms_detected || platforms.length;
-            const top = platforms[0];
-            let html = '';
-            if (top) {
-                html = `<strong>${count} platforms</strong> found. #1 is ${escapeHtml(top.name)} with <strong>${top.visits.toLocaleString()} visits</strong>.`;
-            } else {
-                html = `<strong>${count} platforms</strong> found with your data.`;
-            }
-            if (localFound > 0 || localLocked > 0) {
-                const totalLocal = localFound + localLocked;
-                html += `<br><span style="opacity:0.6">${totalLocal} source${totalLocal > 1 ? 's' : ''} on your Mac${localLocked > 0 ? ` (${localLocked} need one toggle to unlock)` : ''}.</span>`;
-            }
-            summaryEl.innerHTML = html;
-            summaryEl.style.transition = 'opacity 0.6s ease';
-            summaryEl.style.opacity = '1';
-        }
-
-        // Give the user time to read the summary before showing invitation
-        nerdLog('Preparing invitation...', 'info');
-        setTimeout(() => {
-            // Fade out the summary before sliding in invitation
-            if (summaryEl) {
-                summaryEl.style.transition = 'opacity 0.4s ease';
-                summaryEl.style.opacity = '0.3';
-            }
-            showInvitation(data);
-        }, 4000);
-    }
-
-    function showInvitation(data) {
-        const invitation = document.getElementById('step-invite');
-        const inviteText = document.getElementById('invite-text');
-        const connectBtnText = document.getElementById('connect-btn-text');
-        const inviteSubtext = document.getElementById('invite-subtext');
-
-        if (!invitation) return;
-
-        // Store the suggestion for later (after browser collection)
-        const suggestion = data.suggestion;
-        if (suggestion) {
-            _suggestionData = suggestion;
-        }
-
-        // Count local sources
-        const localSources = data.localSources || {};
-        let localFound = 0, localLocked = 0, localRecords = 0;
-        for (const [, src] of Object.entries(localSources)) {
-            if (src.found && (src.total || src.record_count || 0) > 0) { localFound++; localRecords += (src.total || src.record_count || 0); }
-            else if (src.exists) localLocked++;
-        }
-
-        // The first action is always browser-chrome (zero friction)
-        const platformCount = (data.platforms || []).length;
-        if (inviteText) {
-            let msg = `We found <strong>${platformCount} platforms</strong> in your browser.`;
-            if (localFound > 0) {
-                msg += ` Plus <strong>${localRecords.toLocaleString()} records</strong> across ${localFound} local source${localFound > 1 ? 's' : ''}.`;
-            }
-            msg += ` Let's archive your history — no sign-in needed.`;
-            inviteText.innerHTML = msg;
-        }
-        if (connectBtnText) {
-            connectBtnText.textContent = 'Archive My History';
-        }
-        if (inviteSubtext) {
-            let sub = 'Reads your local Chrome database. Takes seconds. Nothing leaves your machine.';
-            if (localLocked > 0) {
-                sub += ` (${localLocked} more source${localLocked > 1 ? 's' : ''} available — one permission toggle away)`;
-            }
-            inviteSubtext.textContent = sub;
-        }
-
-        // Slide up the invitation card
-        invitation.style.display = 'flex';
-        nerdLog(`First step: archive browser history (zero-friction, local-only)`, 'info');
-        if (suggestion) {
-            nerdLog(`After that: ${suggestion.name} available (${suggestion.difficulty})`, 'info');
-        }
-        requestAnimationFrame(() => {
-            invitation.classList.add('journey__invitation--visible');
-        });
-    }
-
-    function startCollection() {
-        const discoverStep = document.getElementById('step-discover');
-        const collectStep = document.getElementById('step-collect');
-
-        if (!collectStep) {
-            // Fallback: just trigger browser collection
-            triggerCollect('browser-chrome');
-            return;
-        }
-
-        nerdLog('Transitioning to collection phase...', 'info');
-
-        // Transition to collect step
-        if (discoverStep) {
-            discoverStep.classList.add('journey__step--exit-up');
-            setTimeout(() => {
-                discoverStep.classList.remove('journey__step--active');
-                discoverStep.style.display = 'none';
-
-                collectStep.style.display = 'flex';
-                requestAnimationFrame(() => {
-                    collectStep.classList.add('journey__step--active');
-                    collectStep.classList.add('journey__step--enter-up');
-                });
-
-                // Start real collection
-                animateCollection();
-            }, 700);
-        }
-    }
-
-    function animateCollection() {
-        const label = document.getElementById('collect-label');
-        const countEl = document.getElementById('collect-count');
-        const svg = document.getElementById('collect-graph');
-
-        if (!svg) return;
-
-        const W = 800;
-        const H = 500;
-        const CX = W / 2;
-        const CY = H / 2;
-
-        svg.innerHTML = '';
-
-        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        defs.innerHTML = `
-            <filter id="glow-user" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="6" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-            <filter id="glow-node" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-        `;
-        svg.appendChild(defs);
-
-        // Central node
-        const userG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        userG.innerHTML = `
-            <circle cx="${CX}" cy="${CY}" r="30" fill="rgba(0, 212, 255, 0.15)" stroke="#00d4ff" stroke-width="2" filter="url(#glow-user)"/>
-            <text x="${CX}" y="${CY + 5}" text-anchor="middle" fill="#00d4ff" font-family="Space Grotesk, sans-serif" font-size="14" font-weight="700">You</text>
-        `;
-        svg.appendChild(userG);
-        userG.querySelector('circle').style.animation = 'graphPulse 2s ease-in-out infinite';
-
-        // Phase 1: Browser collection (automatic, zero friction)
-        if (label) label.textContent = 'Collecting your browser history...';
-        if (countEl) countEl.textContent = 'Reading Chrome database...';
-        nerdLog('Phase 1: Browser history (zero-friction, local SQLite)', 'info');
-
-        // Start collection timer for viral KPI
-        const _collectionStartTime = performance.now();
-
-        // Listen for collection status updates
-        let collectionDone = false;
-        let totalRecords = 0;
-
-        _onCollectionUpdate = (data) => {
-            if (data.source !== 'browser-chrome') return;
-
-            if (data.status === 'running') {
-                if (label) label.textContent = data.message || 'Collecting...';
-                if (data.progress > 0 && countEl) {
-                    countEl.textContent = `${data.progress}% complete`;
-                }
-            } else if (data.status === 'completed') {
-                collectionDone = true;
-                totalRecords = data.records || 0;
-                _collectionElapsed = performance.now() - _collectionStartTime;
-                saveJourneyState('collection_done', { records: totalRecords });
-                onBrowserCollectionDone(totalRecords);
-            } else if (data.status === 'error') {
-                if (label) label.textContent = 'Collection hit a snag';
-                nerdLog(`Error: ${data.message}`, 'error');
-                // Still show the CTA so user isn't stuck
-                showCollectCTA(0);
-            }
-        };
-
-        // Fire the real browser collection
-        triggerCollect('browser-chrome');
-
-        // Also build the graph visualization from chrome data while collecting
-        buildCollectionGraph(svg, W, H, CX, CY);
-    }
-
-    function buildCollectionGraph(svg, W, H, CX, CY) {
-        // Use the chrome analysis data we already have to build a real graph
-        const platforms = (_chromeData && _chromeData.platforms) || [];
-        const top5 = platforms.slice(0, 5);
-
-        if (top5.length === 0) return;
-
-        const catColors = {
-            email: '#00d4ff', social: '#a855f7', media: '#00ff88',
-            finance: '#ffd700', shopping: '#ff8c42', messaging: '#ff6b9d',
-            productivity: '#00d4ff', cloud: '#87ceeb', location: '#ff8c42',
-        };
-
-        const edgeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        svg.appendChild(edgeGroup);
-        const nodeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        svg.appendChild(nodeGroup);
-
-        const radius = Math.min(W, H) * 0.32;
-        let idx = 0;
-
-        function addNext() {
-            if (idx >= top5.length) return;
-
-            const p = top5[idx];
-            const angle = (2 * Math.PI * idx) / top5.length - Math.PI / 2;
-            const nx = CX + radius * Math.cos(angle);
-            const ny = CY + radius * Math.sin(angle);
-            const color = catColors[p.category] || '#888';
-
-            const edge = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            edge.setAttribute('x1', CX); edge.setAttribute('y1', CY);
-            edge.setAttribute('x2', CX); edge.setAttribute('y2', CY);
-            edge.setAttribute('stroke', color); edge.setAttribute('stroke-opacity', '0.3');
-            edge.setAttribute('stroke-width', '2');
-            edgeGroup.appendChild(edge);
-            requestAnimationFrame(() => {
-                edge.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
-                edge.setAttribute('x2', nx); edge.setAttribute('y2', ny);
-            });
-
-            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            g.style.opacity = '0';
-            g.innerHTML = `
-                <circle cx="${nx}" cy="${ny}" r="24" fill="rgba(${hexToRgb(color)}, 0.15)" stroke="${color}" stroke-width="1.5" filter="url(#glow-node)"/>
-                <text x="${nx}" y="${ny - 1}" text-anchor="middle" fill="white" font-size="14">${p.icon || ''}</text>
-                <text x="${nx}" y="${ny + 14}" text-anchor="middle" fill="${color}" font-family="Space Grotesk, sans-serif" font-size="10" font-weight="700">${p.visits.toLocaleString()}</text>
-                <text x="${nx}" y="${ny - 30}" text-anchor="middle" fill="${color}" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="600">${escapeHtml(p.name)}</text>
-            `;
-            nodeGroup.appendChild(g);
-            requestAnimationFrame(() => { g.style.transition = 'opacity 0.5s ease'; g.style.opacity = '1'; });
-
-            idx++;
-            setTimeout(addNext, 600);
-        }
-
-        // Start building graph nodes with a delay
-        setTimeout(addNext, 1000);
-    }
-
-    function onBrowserCollectionDone(recordCount) {
-        const label = document.getElementById('collect-label');
-        const countEl = document.getElementById('collect-count');
-
-        // Calculate collection speed KPI
-        const elapsed = _collectionElapsed || 0;
-        const seconds = (elapsed / 1000).toFixed(1);
-        const urlsPerSecond = elapsed > 0 ? Math.round(recordCount / (elapsed / 1000)) : recordCount;
-
-        nerdLog(`Browser collection complete: ${recordCount.toLocaleString()} URLs archived in ${seconds}s (${urlsPerSecond.toLocaleString()} URLs/sec)`, 'success');
-
-        if (label) label.textContent = 'Browser history archived!';
-        if (countEl) countEl.innerHTML = `<strong>${recordCount.toLocaleString()}</strong> URLs saved to your vault` + (elapsed > 0 ? ` <span style="opacity:0.5">in ${seconds}s</span>` : '');
-
-        // Also collect local sources that are accessible (background, no waiting)
-        nerdLog('Collecting accessible local sources in background...', 'info');
-        fetch('/api/collect/local', { method: 'POST' })
-            .then(r => r.json())
-            .then(localResult => {
-                const collected = localResult.sources_collected || 0;
-                const records = localResult.total_records || 0;
-                if (collected > 0) {
-                    nerdLog(`Local collection: ${records} records from ${collected} sources`, 'success');
-                }
-            })
-            .catch(() => {});
-
-        // Fetch the identity snapshot — the magic moment
-        nerdLog('Generating your identity snapshot...', 'info');
-        setTimeout(() => {
-            showIdentitySnapshot(recordCount);
-        }, 800);
-    }
-
-    async function showIdentitySnapshot(recordCount) {
-        const label = document.getElementById('collect-label');
-        const countEl = document.getElementById('collect-count');
-
-        try {
-            const resp = await fetch('/api/identity-snapshot');
-            const snapshot = await resp.json();
-
-            if (!snapshot.has_data) {
-                showCollectCTA(recordCount);
-                return;
-            }
-
-            nerdLog('Identity snapshot ready!', 'success');
-
-            const lb = snapshot.leaderboard || [];
-            const insights = snapshot.insights || [];
-            const stats = snapshot.stats || {};
-
-            // --- Phase A: Leaderboard (the viral centerpiece) ---
-            if (label) {
-                label.textContent = 'Your Top Sites';
-                label.style.transition = 'opacity 0.4s ease';
-            }
-
-            if (countEl && lb.length > 0) {
-                // Build leaderboard HTML
-                let html = '<div class="leaderboard">';
-                for (const entry of lb) {
-                    html += `<div class="leaderboard-row" style="opacity:0;transform:translateX(-20px)" data-rank="${entry.rank}">
-                        <span class="leaderboard-medal">${entry.medal}</span>
-                        <span class="leaderboard-domain">${escapeHtml(entry.domain)}</span>
-                        <span class="leaderboard-visits">${entry.visits.toLocaleString()} visits</span>
-                        <div class="leaderboard-bar"><div class="leaderboard-bar-fill" style="width:0%"></div></div>
-                    </div>`;
-                }
-                html += '</div>';
-
-                // Collection speed KPI + supporting stats
-                html += '<div class="snapshot-stats" style="opacity:0;transform:translateY(10px)">';
-                if (_collectionElapsed > 0 && recordCount > 0) {
-                    const secs = (_collectionElapsed / 1000).toFixed(1);
-                    const urlsPerSec = Math.round(recordCount / (_collectionElapsed / 1000));
-                    html += `<span class="snapshot-stat snapshot-stat--speed">\u26a1 ${recordCount.toLocaleString()} URLs archived in ${secs}s (${urlsPerSec.toLocaleString()}/sec)</span>`;
-                }
-                for (const i of insights) {
-                    html += `<span class="snapshot-stat">${i.icon} ${escapeHtml(i.text)}</span>`;
-                }
-                html += '</div>';
-
-                countEl.innerHTML = html;
-                countEl.style.textAlign = 'left';
-
-                // Animate leaderboard rows in one by one
-                const maxVisits = lb[0] ? lb[0].visits : 1;
-                const rows = countEl.querySelectorAll('.leaderboard-row');
-                rows.forEach((row, idx) => {
-                    setTimeout(() => {
-                        row.style.transition = 'opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
-                        row.style.opacity = '1';
-                        row.style.transform = 'translateX(0)';
-
-                        // Animate the bar fill
-                        const bar = row.querySelector('.leaderboard-bar-fill');
-                        const visits = lb[idx] ? lb[idx].visits : 0;
-                        const pct = Math.round((visits / maxVisits) * 100);
-                        setTimeout(() => {
-                            if (bar) {
-                                bar.style.transition = 'width 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
-                                bar.style.width = pct + '%';
-                            }
-                        }, 150);
-                    }, idx * 350);
-                });
-
-                // Nerd log each entry
-                for (const entry of lb) {
-                    nerdLog(`${entry.medal} #${entry.rank} ${entry.domain} — ${entry.visits.toLocaleString()} visits`, 'info');
-                }
-
-                // After leaderboard, fade in supporting stats
-                const statsDelay = lb.length * 350 + 600;
-                setTimeout(() => {
-                    const statsEl = countEl.querySelector('.snapshot-stats');
-                    if (statsEl) {
-                        statsEl.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                        statsEl.style.opacity = '1';
-                        statsEl.style.transform = 'translateY(0)';
-                    }
-                    for (const i of insights) {
-                        nerdLog(`${i.icon} ${i.text}`, 'info');
-                    }
-                }, statsDelay);
-
-                // Show CTA after everything
-                const totalDelay = statsDelay + 1500;
-                setTimeout(() => { showCollectCTA(recordCount); }, totalDelay);
-
-            } else {
-                // No leaderboard — fall back to insights only
-                if (insights.length > 0 && countEl) {
-                    const insightHtml = insights.map(i =>
-                        `<div class="insight-card" style="opacity:0;transform:translateY(10px)">
-                            <span class="insight-icon">${i.icon}</span>
-                            <span class="insight-text">${escapeHtml(i.text)}</span>
-                        </div>`
-                    ).join('');
-                    countEl.innerHTML = insightHtml;
-                    countEl.style.textAlign = 'left';
-                    const cards = countEl.querySelectorAll('.insight-card');
-                    cards.forEach((card, idx) => {
-                        setTimeout(() => {
-                            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                            card.style.opacity = '1';
-                            card.style.transform = 'translateY(0)';
-                        }, idx * 300);
-                    });
-                    setTimeout(() => { showCollectCTA(recordCount); }, insights.length * 300 + 1500);
-                } else {
-                    showCollectCTA(recordCount);
-                }
-            }
-
-        } catch (e) {
-            nerdLog('Could not generate snapshot, showing CTA', 'warn');
-            showCollectCTA(recordCount);
-        }
-    }
-
-    function showCollectCTA(recordCount) {
-        const cta = document.getElementById('collect-cta');
-        if (cta) {
-            cta.style.display = '';
-            cta.style.animation = 'fadeIn 0.6s ease-out';
-        }
-
-        // Count locked local sources for FDA prompt
-        if (_localData && _localData.summary) {
-            const locked = _localData.summary.sources_locked || 0;
-            if (locked > 0) {
-                const fdaHint = document.getElementById('fda-hint');
-                if (fdaHint) {
-                    fdaHint.innerHTML = `<strong>${locked} more source${locked > 1 ? 's' : ''}</strong> on your Mac — just one permission toggle away. <span style="text-decoration:underline;cursor:pointer">Show me how</span>`;
-                    fdaHint.style.display = '';
-                    fdaHint.style.animation = 'fadeIn 0.6s ease-out';
-                    fdaHint.onclick = () => openFdaGuide();
-                }
-                nerdLog(`${locked} sources locked behind Full Disk Access — prompt user`, 'info');
-            }
-        }
-
-        nerdLog('Ready to explore your archive.', 'info');
     }
 
     // ── FDA Permission Guide ──────────────────────────────────────────
@@ -1686,51 +997,325 @@ const NomoloBridge = (() => {
         if (modal) modal.style.display = 'none';
     }
 
-    async function rescanAfterFda() {
-        const modal = document.getElementById('fda-modal');
-        nerdLog('Rescanning after FDA permission change...', 'info');
+    // ── Expert Mode (Modal) ──────────────────────────────────────────
 
-        // Close modal
-        if (modal) modal.style.display = 'none';
+    async function openExpertModal() {
+        const modal = document.getElementById('expert-modal');
+        if (!modal) return;
+        modal.style.display = 'flex';
 
-        // Show a quick status
-        const label = document.getElementById('collect-label');
-        if (label) label.textContent = 'Scanning newly unlocked sources...';
+        const zone = document.getElementById('expert-upload-zone');
+        const fileInput = document.getElementById('expert-file-input');
+
+        if (zone && fileInput) {
+            zone.onclick = () => fileInput.click();
+            zone.ondragover = (e) => { e.preventDefault(); zone.classList.add('expert-upload-zone--dragover'); };
+            zone.ondragleave = () => zone.classList.remove('expert-upload-zone--dragover');
+            zone.ondrop = (e) => {
+                e.preventDefault();
+                zone.classList.remove('expert-upload-zone--dragover');
+                const file = e.dataTransfer.files[0];
+                if (file) handleCredentialUpload(file);
+            };
+            fileInput.onchange = () => {
+                if (fileInput.files[0]) handleCredentialUpload(fileInput.files[0]);
+            };
+        }
 
         try {
-            // Rescan local sources
-            const scanResp = await fetch('/api/local-scan');
-            const scanData = await scanResp.json();
-            _localData = scanData;
+            const resp = await fetch('/api/credentials/status');
+            const data = await resp.json();
 
-            const summary = scanData.summary || {};
-            const found = summary.sources_found || 0;
-            const locked = summary.sources_locked || 0;
-
-            nerdLog(`Rescan complete: ${found} found, ${locked} still locked`, found > 0 ? 'success' : 'warn');
-
-            if (found > 0) {
-                // Collect the newly unlocked sources
-                nerdLog('Collecting newly accessible sources...', 'info');
-                const collectResp = await fetch('/api/collect/local', { method: 'POST' });
-                const collectData = await collectResp.json();
-                const collected = collectData.sources_collected || 0;
-                const records = collectData.total_records || 0;
-
-                if (collected > 0) {
-                    nerdLog(`Collected ${records} records from ${collected} local sources!`, 'success');
-                    if (label) label.textContent = `${records.toLocaleString()} records collected from your Mac!`;
+            if (data.credentials) {
+                markUploadDone();
+                unlockPhase('expert-phase-auth');
+                for (const [source, hasToken] of Object.entries(data.tokens || {})) {
+                    if (hasToken) markAuthDone(source);
                 }
+                const allAuthed = Object.values(data.tokens || {}).every(v => v);
+                if (allAuthed) unlockPhase('expert-phase-collect');
+            }
+        } catch (e) {}
 
-                // Refresh the snapshot
-                setTimeout(() => { showIdentitySnapshot(records); }, 1000);
+        nerdLog('Expert Mode opened', 'info');
+    }
+
+    function closeExpertModal() {
+        const modal = document.getElementById('expert-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    async function handleCredentialUpload(file) {
+        const zone = document.getElementById('expert-upload-zone');
+        const statusEl = document.getElementById('expert-upload-status');
+
+        nerdLog(`Uploading credentials: ${file.name} (${file.size} bytes)`, 'info');
+
+        try {
+            const text = await file.text();
+            // Validate JSON client-side
+            const data = JSON.parse(text);
+            const config = data.installed || data.web;
+            if (!config || !config.client_id) {
+                if (statusEl) statusEl.textContent = 'Invalid file';
+                if (statusEl) statusEl.style.color = '#ff6b6b';
+                nerdLog('Invalid credentials JSON — missing client_id', 'warn');
+                return;
+            }
+
+            // Upload to server
+            const resp = await fetch('/api/credentials/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: text,
+            });
+            const result = await resp.json();
+
+            if (result.ok) {
+                markUploadDone();
+                unlockPhase('expert-phase-auth');
+                nerdLog('Credentials uploaded successfully', 'success');
             } else {
-                if (label) label.textContent = 'No new sources found — check that Full Disk Access is enabled for Terminal.';
+                if (statusEl) { statusEl.textContent = result.error; statusEl.style.color = '#ff6b6b'; }
+                nerdLog(`Upload failed: ${result.error}`, 'warn');
             }
         } catch (e) {
-            nerdLog('Rescan failed: ' + e.message, 'warn');
-            if (label) label.textContent = 'Rescan failed — please try again.';
+            if (statusEl) { statusEl.textContent = 'Invalid JSON'; statusEl.style.color = '#ff6b6b'; }
+            nerdLog(`Credential parse error: ${e.message}`, 'warn');
         }
+    }
+
+    function markUploadDone() {
+        const zone = document.getElementById('expert-upload-zone');
+        const statusEl = document.getElementById('expert-upload-status');
+        if (zone) {
+            zone.classList.add('expert-upload-zone--done');
+            zone.innerHTML = '<p class="expert-upload-zone__text" style="color: rgba(0,200,83,0.9)">&#x2714; Credentials imported</p>';
+        }
+        if (statusEl) { statusEl.textContent = ''; statusEl.style.color = ''; }
+        const phase = document.getElementById('expert-phase-upload');
+        if (phase) phase.classList.add('expert-phase--done');
+    }
+
+    function unlockPhase(phaseId) {
+        const phase = document.getElementById(phaseId);
+        if (phase) phase.classList.remove('expert-phase--locked');
+    }
+
+    function markAuthDone(source) {
+        const statusEl = document.getElementById(`expert-auth-${source}`);
+        const row = statusEl ? statusEl.closest('.expert-source-row') : null;
+        if (statusEl) { statusEl.textContent = 'Boarded!'; statusEl.style.color = 'rgba(0,200,83,0.9)'; }
+        if (row) {
+            row.classList.add('expert-source-row--authed');
+            const btn = row.querySelector('.expert-source-row__btn');
+            if (btn) { btn.textContent = 'Done'; btn.disabled = true; }
+        }
+
+        // Check if all are authed → unlock collect
+        const rows = document.querySelectorAll('.expert-source-row');
+        const allDone = [...rows].every(r => r.classList.contains('expert-source-row--authed'));
+        if (allDone) {
+            unlockPhase('expert-phase-collect');
+        }
+    }
+
+    async function triggerExpertAuth(source) {
+        const row = document.querySelector(`.expert-source-row[data-source="${source}"]`);
+        const btn = row ? row.querySelector('.expert-source-row__btn') : null;
+        const statusEl = document.getElementById(`expert-auth-${source}`);
+
+        if (btn) { btn.textContent = 'Boarding...'; btn.disabled = true; btn.classList.add('expert-source-row__btn--waiting'); }
+        if (statusEl) { statusEl.textContent = 'Check yer spyglass (browser)...'; statusEl.style.color = 'var(--accent-cyan)'; }
+
+        nerdLog(`Starting OAuth for ${source} — browser will open`, 'info');
+
+        try {
+            const resp = await fetch(`/api/auth/google?source=${source}`);
+            const data = await resp.json();
+
+            if (btn) btn.classList.remove('expert-source-row__btn--waiting');
+
+            if (data.success) {
+                markAuthDone(source);
+                nerdLog(`${source} authenticated successfully`, 'success');
+            } else {
+                if (btn) { btn.textContent = 'Retry'; btn.disabled = false; }
+                if (statusEl) { statusEl.textContent = data.message || 'Failed'; statusEl.style.color = '#ff6b6b'; }
+                nerdLog(`${source} auth failed: ${data.message}`, 'warn');
+            }
+        } catch (e) {
+            if (btn) { btn.textContent = 'Retry'; btn.disabled = false; btn.classList.remove('expert-source-row__btn--waiting'); }
+            if (statusEl) { statusEl.textContent = 'Error'; statusEl.style.color = '#ff6b6b'; }
+            nerdLog(`${source} auth error: ${e.message}`, 'warn');
+        }
+    }
+
+    async function startExpertCollection() {
+        const btn = document.getElementById('expert-collect-btn');
+        if (btn) { btn.textContent = 'Raiding...'; btn.disabled = true; }
+
+        nerdLog('Starting Expert Mode collection — Gmail, Contacts, Calendar', 'info');
+
+        // Snapshot current vault counts so we can show delta
+        let beforeCounts = {};
+        try {
+            const vr = await fetch('/api/vault/stats');
+            const vd = await vr.json();
+            const vm = { 'gmail': 'Gmail_Primary', 'contacts-google': 'Contacts', 'calendar': 'Calendar' };
+            for (const [src, vn] of Object.entries(vm)) {
+                beforeCounts[src] = vd.vaults[vn]?.records || 0;
+            }
+        } catch (_) {}
+
+        const sources = ['gmail', 'contacts-google', 'calendar'];
+        const tasks = {};
+
+        // Fire all three in parallel
+        for (const source of sources) {
+            try {
+                const resp = await fetch(`/api/collect/${source}`, { method: 'POST' });
+                const data = await resp.json();
+                tasks[source] = data.task_id;
+                updateExpertCollectRow(source, 'running', 'Starting...');
+                nerdLog(`${source} collection started (task ${data.task_id.slice(0, 8)})`, 'info');
+            } catch (e) {
+                updateExpertCollectRow(source, 'error', 'Failed to start');
+                nerdLog(`${source} collection failed to start: ${e.message}`, 'warn');
+            }
+        }
+
+        // Poll until all done
+        const done = new Set();
+        const totalRecords = {};
+        const lastCounts = { ...beforeCounts };
+        let pollCount = 0;
+
+        const poll = async () => {
+            pollCount++;
+
+            // Get fresh vault stats once per poll (not per source)
+            let vaultData = null;
+            try {
+                const vaultResp = await fetch('/api/vault/stats');
+                vaultData = await vaultResp.json();
+            } catch (_) {}
+
+            const vaultMap = { 'gmail': 'Gmail_Primary', 'contacts-google': 'Contacts', 'calendar': 'Calendar' };
+
+            for (const source of sources) {
+                if (done.has(source) || !tasks[source]) continue;
+
+                // Check task status
+                let taskData = null;
+                try {
+                    const resp = await fetch(`/api/collect/${source}/status?task_id=${tasks[source]}`);
+                    taskData = await resp.json();
+                } catch (_) {}
+
+                // Get live vault count
+                const vaultName = vaultMap[source];
+                const currentCount = vaultData?.vaults?.[vaultName]?.records || 0;
+                const startCount = beforeCounts[source] || 0;
+                const prevCount = lastCounts[source] || 0;
+                const totalNew = currentCount - startCount;
+                const recentNew = currentCount - prevCount;
+                lastCounts[source] = currentCount;
+
+                if (taskData?.status === 'completed' || taskData?.status === 'error') {
+                    done.add(source);
+                    if (taskData.status === 'completed') {
+                        const finalCount = Math.max(currentCount, taskData.records || 0);
+                        totalRecords[source] = finalCount;
+                        const newLabel = totalNew > 0 ? ` (+${totalNew.toLocaleString()} new)` : '';
+                        updateExpertCollectRow(source, 'done', `${finalCount.toLocaleString()} records${newLabel}`);
+                        const bar = document.getElementById(`expert-bar-${source}`);
+                        if (bar) { bar.style.width = '100%'; bar.style.animation = 'none'; bar.style.background = 'linear-gradient(90deg, var(--accent-purple), var(--accent-cyan))'; }
+                        nerdLog(`${source} complete: ${finalCount.toLocaleString()} records${newLabel}`, 'success');
+                    } else {
+                        updateExpertCollectRow(source, 'error', taskData.message || 'Error');
+                        nerdLog(`${source} error: ${taskData.message}`, 'warn');
+                    }
+                } else {
+                    // Still running — show live progress
+                    const bar = document.getElementById(`expert-bar-${source}`);
+
+                    if (currentCount > 0) {
+                        // Build a descriptive label
+                        let label;
+                        if (totalNew > 0) {
+                            label = `${currentCount.toLocaleString()} (+${totalNew.toLocaleString()} new)`;
+                        } else if (recentNew > 0) {
+                            label = `${currentCount.toLocaleString()} scanning...`;
+                        } else {
+                            // No change this tick — show animated dots to indicate alive
+                            const dots = '.'.repeat((pollCount % 3) + 1);
+                            label = `${currentCount.toLocaleString()} collecting${dots}`;
+                        }
+                        updateExpertCollectRow(source, 'running', label);
+
+                        // Animate bar — use indeterminate shimmer when no measurable progress
+                        if (bar) {
+                            if (totalNew > 0) {
+                                // Show proportional progress (cap at 90%)
+                                const pct = Math.min(90, 10 + (totalNew / Math.max(startCount * 0.1, 500)) * 80);
+                                bar.style.width = pct + '%';
+                            } else {
+                                // Indeterminate: slowly grow to show "we're working"
+                                const slowGrow = Math.min(60, 5 + pollCount * 2);
+                                bar.style.width = slowGrow + '%';
+                            }
+                            bar.classList.add('expert-bar--active');
+                        }
+                    } else {
+                        const dots = '.'.repeat((pollCount % 3) + 1);
+                        updateExpertCollectRow(source, 'running', `Starting${dots}`);
+                        if (bar) { bar.style.width = '5%'; bar.classList.add('expert-bar--active'); }
+                    }
+                }
+            }
+
+            if (done.size < sources.length) {
+                setTimeout(poll, 2000);
+            } else {
+                // All done
+                let finalTotal = 0;
+                try {
+                    const vr = await fetch('/api/vault/stats');
+                    const vd = await vr.json();
+                    finalTotal = vd.total_records || 0;
+                } catch (_) {
+                    finalTotal = Object.values(totalRecords).reduce((a, b) => a + b, 0);
+                }
+                const totalEl = document.getElementById('expert-collect-total');
+                if (totalEl) {
+                    totalEl.style.display = '';
+                    totalEl.innerHTML = `<div style="font-size:28px;font-weight:700;margin-bottom:4px">${finalTotal.toLocaleString()}</div><div style="font-size:13px;color:var(--text-muted)">pieces of loot in yer vault</div>`;
+                }
+                if (btn) btn.style.display = 'none';
+                document.querySelectorAll('.expert-collect-row__bar-fill').forEach(b => { b.style.animation = 'none'; b.style.width = '100%'; });
+                nerdLog(`Expert Mode complete: ${finalTotal.toLocaleString()} total records`, 'success');
+
+                // Show explore link
+                const totalHtml = totalEl.innerHTML;
+                totalEl.innerHTML = totalHtml + `
+                    <a href="/" onclick="NomoloBridge.clearJourneyState()" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:12px 28px;background:linear-gradient(135deg,var(--accent-purple),var(--accent-cyan));border:none;border-radius:10px;color:white;font-family:var(--font-heading);font-size:15px;font-weight:600;text-decoration:none;cursor:pointer">
+                        Enter the SCUMM Bar <span>&rarr;</span>
+                    </a>
+                `;
+            }
+        };
+
+        setTimeout(poll, 3000);
+    }
+
+    function updateExpertCollectRow(source, status, text) {
+        const statusEl = document.getElementById(`expert-collect-${source}`);
+        if (!statusEl) return;
+        statusEl.textContent = text;
+        if (status === 'done') statusEl.style.color = 'rgba(0,200,83,0.9)';
+        else if (status === 'error') statusEl.style.color = '#ff6b6b';
+        else statusEl.style.color = 'var(--accent-cyan)';
     }
 
     // ── Nerd Mode ─────────────────────────────────────────────────────
@@ -1767,26 +1352,1325 @@ const NomoloBridge = (() => {
         line.appendChild(cursor);
     }
 
-    // Hook nerd logs into existing journey functions
-    const _origBeginJourney = beginJourney;
-    beginJourney = function() {
-        nerdLog('User initiated journey. Scanning Chrome history...', 'info');
-        nerdLog('Reading ~/Library/Application Support/Google/Chrome/Default/History', '');
-        _origBeginJourney();
-    };
+    // ── Records Browser ───────────────────────────────────────────────
 
-    const _origStartCollection = startCollection;
-    startCollection = function() {
-        nerdLog('Starting data collection...', 'info');
-        if (_suggestionData) {
-            nerdLog(`Target source: ${_suggestionData.source}`, '');
-            nerdLog(`Estimated time: ${_suggestionData.estimated_time || 'unknown'}`, '');
+    function initRecords() {
+        const searchInput = document.getElementById('records-search');
+        const sortSelect = document.getElementById('records-sort');
+
+        if (searchInput) {
+            let debounceTimer;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    _recordsQuery = searchInput.value;
+                    _recordsPage = 1;
+                    loadRecords();
+                }, 300);
+            });
         }
-        _origStartCollection();
+
+        if (sortSelect) {
+            sortSelect.addEventListener('change', () => {
+                _recordsSort = sortSelect.value;
+                _recordsPage = 1;
+                loadRecords();
+            });
+        }
+
+        loadRecords();
+    }
+
+    function filterRecords(btn) {
+        // Update active filter
+        document.querySelectorAll('.records__filter').forEach(f => f.classList.remove('records__filter--active'));
+        btn.classList.add('records__filter--active');
+
+        _recordsSource = btn.dataset.source || '';
+        _recordsPage = 1;
+        loadRecords();
+    }
+
+    async function loadRecords() {
+        const listEl = document.getElementById('records-list');
+        if (!listEl) return;
+
+        listEl.innerHTML = '<div class="records__loading">Unfurling the maps...</div>';
+
+        const params = new URLSearchParams({
+            page: _recordsPage,
+            per_page: 50,
+            sort: _recordsSort,
+        });
+        if (_recordsSource) params.set('source', _recordsSource);
+        if (_recordsQuery) params.set('q', _recordsQuery);
+
+        try {
+            const resp = await fetch('/api/records?' + params);
+            const data = await resp.json();
+            _recordsData = data;
+            renderRecords(data);
+        } catch (e) {
+            listEl.innerHTML = '<div class="records__empty"><p class="records__empty-title">Kraken attack! Failed to load the plunder</p><p class="records__empty-sub">' + e.message + '</p></div>';
+        }
+    }
+
+    function renderRecords(data) {
+        const listEl = document.getElementById('records-list');
+        if (!listEl) return;
+
+        if (!data.records || data.records.length === 0) {
+            listEl.innerHTML = '<div class="records__empty"><p class="records__empty-title">The seas are empty here, Captain</p><p class="records__empty-sub">' + (_recordsQuery ? 'Try different bearings, Captain' : 'Plunder some data first!') + '</p></div>';
+            updatePagination(data);
+            return;
+        }
+
+        // Update total display
+        const totalEl = document.getElementById('records-total');
+        if (totalEl) totalEl.textContent = data.total.toLocaleString() + ' pieces of loot';
+
+        let html = '';
+        for (const record of data.records) {
+            const sourceClass = getSourceClass(record.source);
+            const sourceLabel = getSourceLabel(record.source);
+            const dateStr = formatRecordDate(record.date);
+
+            html += '<div class="record-item" onclick="NomoloBridge.showRecordDetail(' + JSON.stringify(JSON.stringify(record)) + ')">';
+            html += '<div class="record-item__source record-item__source--' + sourceClass + '">' + sourceLabel + '</div>';
+            html += '<div class="record-item__body">';
+            html += '<div class="record-item__title">' + escapeHtml(record.title || 'Untitled') + '</div>';
+            html += '<div class="record-item__meta">';
+            if (record.from) html += '<span>' + escapeHtml(record.from) + '</span>';
+            if (dateStr) html += '<span>' + dateStr + '</span>';
+            html += '</div>';
+            if (record.preview) html += '<p class="record-item__preview">' + escapeHtml(record.preview) + '</p>';
+            html += '</div></div>';
+        }
+
+        listEl.innerHTML = html;
+        updatePagination(data);
+    }
+
+    function updatePagination(data) {
+        const paginationEl = document.getElementById('records-pagination');
+        const prevBtn = document.getElementById('records-prev');
+        const nextBtn = document.getElementById('records-next');
+        const infoEl = document.getElementById('records-page-info');
+
+        if (!paginationEl) return;
+
+        if (data.pages <= 1) {
+            paginationEl.style.display = 'none';
+            return;
+        }
+
+        paginationEl.style.display = 'flex';
+        if (prevBtn) prevBtn.disabled = data.page <= 1;
+        if (nextBtn) nextBtn.disabled = data.page >= data.pages;
+        if (infoEl) infoEl.textContent = 'Chart ' + data.page + ' of ' + data.pages;
+    }
+
+    function recordsPage(direction) {
+        if (direction === 'prev' && _recordsPage > 1) _recordsPage--;
+        else if (direction === 'next') _recordsPage++;
+        loadRecords();
+    }
+
+    function showRecordDetail(recordJson) {
+        const record = JSON.parse(recordJson);
+        const modal = document.getElementById('record-detail');
+        const content = document.getElementById('record-detail-content');
+        if (!modal || !content) return;
+
+        const sourceLabel = getSourceLabel(record.source);
+        const dateStr = formatRecordDate(record.date);
+
+        let html = '<button class="record-detail__close" onclick="NomoloBridge.closeRecordDetail()">&times;</button>';
+        html += '<div class="record-detail__source-tag">' + escapeHtml(record.source.replace(/_/g, ' ')) + '</div>';
+        html += '<h2 class="record-detail__title">' + escapeHtml(record.title || 'Untitled') + '</h2>';
+        html += '<div class="record-detail__meta">';
+        if (record.from) html += '<strong>From:</strong> ' + escapeHtml(record.from) + '<br>';
+        if (dateStr) html += '<strong>Date:</strong> ' + dateStr + '<br>';
+        if (record.score) html += '<strong>Relevance:</strong> ' + record.score;
+        html += '</div>';
+        if (record.preview) {
+            html += '<div class="record-detail__body">' + escapeHtml(record.preview) + '</div>';
+        }
+
+        content.innerHTML = html;
+        modal.style.display = 'flex';
+    }
+
+    function closeRecordDetail() {
+        const modal = document.getElementById('record-detail');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function getSourceClass(source) {
+        const s = (source || '').toLowerCase();
+        if (s.includes('gmail')) return 'gmail';
+        if (s.includes('contact')) return 'contacts';
+        if (s.includes('calendar')) return 'calendar';
+        if (s.includes('browser')) return 'browser';
+        if (s.includes('bookmark')) return 'bookmarks';
+        if (s.includes('photo')) return 'photos';
+        if (s.includes('message') || s.includes('imessage')) return 'messages';
+        if (s.includes('note')) return 'notes';
+        if (s.includes('whatsapp')) return 'whatsapp';
+        if (s.includes('telegram')) return 'telegram';
+        if (s.includes('slack')) return 'slack';
+        return '';
+    }
+
+    function getSourceLabel(source) {
+        const s = (source || '').toLowerCase();
+        if (s.includes('gmail')) return 'GM';
+        if (s.includes('contact')) return 'CO';
+        if (s.includes('calendar')) return 'CA';
+        if (s.includes('browser')) return 'BR';
+        if (s.includes('bookmark')) return 'BK';
+        if (s.includes('photo')) return 'PH';
+        if (s.includes('message') || s.includes('imessage')) return 'MS';
+        if (s.includes('note')) return 'NT';
+        if (s.includes('whatsapp')) return 'WA';
+        if (s.includes('telegram')) return 'TG';
+        if (s.includes('slack')) return 'SL';
+        return source ? source.substring(0, 2).toUpperCase() : '??';
+    }
+
+    function formatRecordDate(dateStr) {
+        if (!dateStr) return '';
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr.substring(0, 10);
+            const now = new Date();
+            const diffDays = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return diffDays + ' days ago';
+            if (diffDays < 365) return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        } catch {
+            return dateStr.substring(0, 10);
+        }
+    }
+
+    async function openVaultFolder() {
+        try {
+            await fetch('/api/open-vault-folder', { method: 'POST' });
+            toast('Opening the treasure chest...', 'info');
+        } catch (e) {
+            toast('Man overboard! Could not open the chest: ' + e.message, 'error');
+        }
+    }
+
+    async function rescanSources() {
+        toast('Scanning the horizon for loot...', 'info');
+        try {
+            const resp = await fetch('/api/collect/local', { method: 'POST' });
+            const data = await resp.json();
+            const count = data.total_records || 0;
+            toast(count > 0 ? `Plundered ${count.toLocaleString()} pieces of loot!` : 'Horizon clear — no new plunder found', 'success');
+            setTimeout(() => window.location.reload(), 1500);
+        } catch (e) {
+            toast('Man overboard! Scan failed: ' + e.message, 'error');
+        }
+    }
+
+    async function collectSource(sourceId) {
+        toast(`Raiding ${sourceId}...`, 'info');
+        try {
+            const resp = await fetch(`/api/collect/${sourceId}`, { method: 'POST' });
+            const data = await resp.json();
+            if (data.task_id) {
+                // Poll for completion
+                const pollInterval = setInterval(async () => {
+                    const statusResp = await fetch(`/api/collect/${sourceId}/status?task_id=${data.task_id}`);
+                    const status = await statusResp.json();
+                    if (status.status === 'completed') {
+                        clearInterval(pollInterval);
+                        toast(`Plunder secured! ${sourceId}: ${(status.records || 0).toLocaleString()} pieces of loot`, 'success');
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else if (status.status === 'error') {
+                        clearInterval(pollInterval);
+                        toast(`Kraken attack! ${sourceId}: ${status.message}`, 'error');
+                    } else if (status.status === 'needs_auth') {
+                        clearInterval(pollInterval);
+                        toast(`${sourceId} needs a boarding pass — opening the gangplank...`, 'info');
+                        if (status.auth_url) window.open(status.auth_url, '_blank');
+                    } else if (status.status === 'needs_file') {
+                        clearInterval(pollInterval);
+                        toast(`${sourceId} requires stolen cargo. Check yer orders, Captain.`, 'info');
+                    } else if (status.status === 'needs_setup') {
+                        clearInterval(pollInterval);
+                        toast(`${sourceId}: ${status.message}`, 'info');
+                    }
+                }, 1000);
+            }
+        } catch (e) {
+            toast(`Kraken attack! Raid failed: ${e.message}`, 'error');
+        }
+    }
+
+    // ── Update All Sources ───────────────────────────────────────────
+
+    async function updateAllSources() {
+        toast('Raiding all islands...', 'info');
+        try {
+            // Collect local sources
+            const localResp = await fetch('/api/collect/local', { method: 'POST' });
+            const localData = await localResp.json();
+
+            // Collect browser
+            const browserResp = await fetch('/api/collect/browser-chrome', { method: 'POST' });
+            const browserData = await browserResp.json();
+
+            const totalNew = (localData.total_records || 0) + (browserData.records || 0);
+            toast('Plunder secured! ' + totalNew.toLocaleString() + ' pieces of loot refreshed', 'success');
+            setTimeout(() => window.location.reload(), 2000);
+        } catch (e) {
+            toast('Kraken attack! Raid failed: ' + e.message, 'error');
+        }
+    }
+
+    // ── Settings ──────────────────────────────────────────────────────
+
+    async function saveSetting(key, value) {
+        try {
+            await fetch('/api/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ [key]: value }),
+            });
+            toast('Orders stashed, Captain!', 'success');
+        } catch (e) {
+            toast('Man overboard! Failed to stash: ' + e.message, 'error');
+        }
+    }
+
+    function resetJourney() {
+        clearJourneyState();
+        toast('Voyage reset — visit /welcome to set sail again', 'success');
+    }
+
+    // ── Jargon Toggle ─────────────────────────────────────────────────
+
+    // The jargon map for dynamic content (loaded from JARGON_MAP in rpg.py)
+    const JARGON_MAP = {
+        "Scroll": "Email", "Scrolls": "Emails",
+        "Soul Bond": "Contact", "Soul Bonds": "Contacts",
+        "Time Crystal": "Calendar Event", "Time Crystals": "Calendar Events",
+        "Tome": "Book", "Tomes": "Books",
+        "Memory Shard": "Photo/Video", "Memory Shards": "Photos/Videos",
+        "Echo": "Music Track", "Echoes": "Music Tracks",
+        "Coin": "Financial Record", "Coins": "Financial Records",
+        "Whisper": "Chat Message", "Whispers": "Chat Messages",
+        "Manuscript": "Note", "Manuscripts": "Notes",
+        "Vision": "Video", "Visions": "Videos",
+        "Life Force": "Health Data",
+        "Footprint": "Location/Browser Data", "Footprints": "Location/Browser Data",
+        "Waypoint": "Bookmark", "Waypoints": "Bookmarks",
+        "Proclamation": "Social Post", "Proclamations": "Social Posts",
+        "Conglomerate": "Company", "Conglomerates": "Companies",
+        "The Flatcloud": "The Cloud", "Flatcloud": "Cloud",
+        "Raid": "Import", "raid": "import",
+        "Loot": "Records", "loot": "records",
+        "Vault": "Archive", "vault": "archive",
+        "Reclaimer": "User",
+        "The Omniscient Eye": "Google",
+        "The Walled Garden": "Apple",
+        "The Hydra of Faces": "Meta",
+        "The Melody Merchant": "Spotify",
+        "The Bazaar Eternal": "Amazon",
+        "The Professional Masque": "LinkedIn",
+        "The Shadow Courier": "Telegram",
+        "The Corporate Hive": "Slack",
+        "The Chaos Herald": "X / Twitter",
+        "The Dream Weaver": "Netflix",
+        "The Hive Mind": "Reddit",
+        "The Coin Master": "PayPal",
     };
 
-    // Patch fetchChromeAnalysis to log results
-    const _origFetchChrome = typeof fetchChromeAnalysis === 'function' ? fetchChromeAnalysis : null;
+    function initJargonToggle() {
+        const mode = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        applyJargon(mode);
+    }
+
+    function toggleJargon() {
+        const current = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        const next = current === 'rpg' ? 'real' : 'rpg';
+        localStorage.setItem('nomolo_jargon_mode', next);
+        applyJargon(next);
+    }
+
+    function applyJargon(mode) {
+        const toggle = document.getElementById('jargon-toggle');
+        const label = document.getElementById('jargon-label');
+
+        if (toggle) {
+            toggle.classList.toggle('jargon-toggle--real', mode === 'real');
+        }
+        if (label) {
+            label.textContent = mode === 'rpg' ? 'Flatcloud' : 'Real World';
+        }
+
+        // Update all elements with data-rpg / data-real attributes
+        document.querySelectorAll('.jargon').forEach(el => {
+            const rpgText = el.getAttribute('data-rpg');
+            const realText = el.getAttribute('data-real');
+            const realKey = el.getAttribute('data-real-key');
+
+            if (mode === 'real') {
+                if (realKey && JARGON_MAP[realKey]) {
+                    el.textContent = JARGON_MAP[realKey];
+                } else if (realText !== null) {
+                    el.textContent = realText;
+                }
+            } else {
+                if (rpgText !== null) {
+                    el.textContent = rpgText;
+                }
+            }
+        });
+
+        // In real mode, hide the company subtitle (it's redundant when villain name IS the company)
+        document.querySelectorAll('.rpg__villain-company.jargon').forEach(el => {
+            if (mode === 'real') {
+                el.style.display = 'none';
+            } else {
+                el.style.display = '';
+            }
+        });
+    }
+
+    // ── Typewriter Dialogue System ───────────────────────────────────
+
+    let _dialogueBox = null;
+    let _dialogueTyping = false;
+    let _dialogueFullText = '';
+    let _dialogueCharIndex = 0;
+    let _dialogueTimer = null;
+    let _dialogueCallback = null;
+
+    function showDialogue(portrait, text, callback) {
+        playSound('dialogue_open');
+        _dialogueCallback = callback || null;
+        _dialogueFullText = text;
+        _dialogueCharIndex = 0;
+        _dialogueTyping = true;
+
+        // Create or reuse the dialogue box
+        if (!_dialogueBox) {
+            _dialogueBox = document.createElement('div');
+            _dialogueBox.className = 'dialogue-box';
+            _dialogueBox.innerHTML = `
+                <div class="dialogue-box__portrait"></div>
+                <div class="dialogue-box__content">
+                    <div class="dialogue-box__text"></div>
+                    <div class="dialogue-box__prompt" style="display:none">Click to continue &#x25BC;</div>
+                </div>
+            `;
+            _dialogueBox.addEventListener('click', _advanceDialogue);
+            document.body.appendChild(_dialogueBox);
+        }
+
+        // Set portrait and reset text
+        const portraitEl = _dialogueBox.querySelector('.dialogue-box__portrait');
+        const textEl = _dialogueBox.querySelector('.dialogue-box__text');
+        const promptEl = _dialogueBox.querySelector('.dialogue-box__prompt');
+
+        if (portraitEl) portraitEl.textContent = portrait || '';
+        if (textEl) textEl.textContent = '';
+        if (promptEl) promptEl.style.display = 'none';
+
+        _dialogueBox.style.display = 'flex';
+
+        // Start typing
+        clearInterval(_dialogueTimer);
+        _dialogueTimer = setInterval(() => {
+            if (_dialogueCharIndex < _dialogueFullText.length) {
+                if (textEl) textEl.textContent += _dialogueFullText[_dialogueCharIndex];
+                _dialogueCharIndex++;
+            } else {
+                clearInterval(_dialogueTimer);
+                _dialogueTyping = false;
+                if (promptEl) promptEl.style.display = '';
+            }
+        }, 30);
+    }
+
+    function _advanceDialogue() {
+        if (_dialogueTyping) {
+            // Skip to end of current text
+            clearInterval(_dialogueTimer);
+            _dialogueTyping = false;
+            const textEl = _dialogueBox.querySelector('.dialogue-box__text');
+            const promptEl = _dialogueBox.querySelector('.dialogue-box__prompt');
+            if (textEl) textEl.textContent = _dialogueFullText;
+            if (promptEl) promptEl.style.display = '';
+            return;
+        }
+
+        // Advance to callback or close
+        if (_dialogueCallback) {
+            const cb = _dialogueCallback;
+            _dialogueCallback = null;
+            cb();
+        } else {
+            closeDialogue();
+        }
+    }
+
+    function closeDialogue() {
+        playSound('dialogue_close');
+        if (_dialogueBox) {
+            _dialogueBox.style.display = 'none';
+        }
+        clearInterval(_dialogueTimer);
+        _dialogueTyping = false;
+        _dialogueCallback = null;
+    }
+
+    // ── Pirate Greetings (Memory-Aware) ──────────────────────────────
+
+    const PIRATE_GREETINGS = [
+        "Ahoy, Captain! Welcome back to the SCUMM Bar. Your vault awaits.",
+        "A good pirate always checks their inventory before setting sail.",
+        "The Conglomerates grow nervous. They can smell a raid coming.",
+        "Your data doesn't belong in their holds. Time to take it back.",
+        "I once knew a pirate who didn't back up their vault. We don't talk about what happened.",
+        "Remember: it's not piracy if you're stealing your own stuff back.",
+    ];
+
+    function initPirateGreeting() {
+        if (sessionStorage.getItem('nomolo_pirate_greeted')) return;
+        sessionStorage.setItem('nomolo_pirate_greeted', '1');
+
+        // Use server-injected memory-aware dialogue if available
+        const memoryData = window.__NOMOLO_MEMORY__;
+        let greeting;
+        let memoryTier = 'sharp'; // default
+
+        if (memoryData && memoryData.text) {
+            greeting = memoryData.text;
+            memoryTier = memoryData.memory_tier || 'sharp';
+        } else {
+            greeting = PIRATE_GREETINGS[Math.floor(Math.random() * PIRATE_GREETINGS.length)];
+        }
+
+        // Small delay so the page renders first
+        setTimeout(() => {
+            showMemoryDialogue('\uD83C\uDFF4\u200D\u2620\uFE0F', greeting, memoryTier);
+        }, 800);
+    }
+
+    // ── Memory Dialogue System ────────────────────────────────────────
+
+    /**
+     * Show dialogue with memory-tier-aware typing effects.
+     * - amnesia: slow, stuttering, glitching text
+     * - hazy: slightly slow with occasional pauses
+     * - sharp: normal speed
+     * - crystal/transcendent: fast, crisp, sometimes instant
+     */
+    function showMemoryDialogue(portrait, text, memoryTier, callback) {
+        playSound('dialogue_open');
+        _dialogueCallback = callback || null;
+        _dialogueFullText = text;
+        _dialogueCharIndex = 0;
+        _dialogueTyping = true;
+
+        // Create or reuse the dialogue box
+        if (!_dialogueBox) {
+            _dialogueBox = document.createElement('div');
+            _dialogueBox.className = 'dialogue-box';
+            _dialogueBox.innerHTML = `
+                <div class="dialogue-box__portrait"></div>
+                <div class="dialogue-box__content">
+                    <div class="dialogue-box__text"></div>
+                    <div class="dialogue-box__prompt" style="display:none">Click to continue \u25BC</div>
+                </div>
+            `;
+            _dialogueBox.addEventListener('click', _advanceDialogue);
+            document.body.appendChild(_dialogueBox);
+        }
+
+        // Apply memory-tier CSS class
+        _dialogueBox.classList.remove('memory-fog', 'memory-glitch', 'memory-stutter', 'memory-crystal');
+        if (memoryTier === 'amnesia') {
+            _dialogueBox.classList.add('memory-fog', 'memory-glitch');
+        } else if (memoryTier === 'hazy') {
+            _dialogueBox.classList.add('memory-fog', 'memory-stutter');
+        } else if (memoryTier === 'crystal' || memoryTier === 'transcendent') {
+            _dialogueBox.classList.add('memory-crystal');
+        }
+
+        const portraitEl = _dialogueBox.querySelector('.dialogue-box__portrait');
+        const textEl = _dialogueBox.querySelector('.dialogue-box__text');
+        const promptEl = _dialogueBox.querySelector('.dialogue-box__prompt');
+
+        if (portraitEl) portraitEl.textContent = portrait || '';
+        if (textEl) textEl.textContent = '';
+        if (promptEl) promptEl.style.display = 'none';
+
+        _dialogueBox.style.display = 'flex';
+
+        // Determine typing speed and behavior based on memory tier
+        const typingConfig = _getTypingConfig(memoryTier);
+
+        // For transcendent tier, sometimes show text instantly
+        if (memoryTier === 'transcendent' && Math.random() < 0.4) {
+            if (textEl) textEl.textContent = text;
+            _dialogueTyping = false;
+            if (promptEl) promptEl.style.display = '';
+            return;
+        }
+
+        // Start typing with memory-aware effects
+        clearInterval(_dialogueTimer);
+        let stutterCooldown = 0;
+
+        _dialogueTimer = setInterval(() => {
+            if (_dialogueCharIndex < _dialogueFullText.length) {
+                const char = _dialogueFullText[_dialogueCharIndex];
+
+                // Amnesia stutter effect: occasionally repeat a char, pause, "backspace"
+                if (typingConfig.canStutter && stutterCooldown <= 0 && Math.random() < 0.06) {
+                    // Stutter: show wrong char, pause, then continue normally
+                    if (textEl) textEl.textContent += char;
+                    stutterCooldown = 3; // skip stutter for next 3 chars
+                    setTimeout(() => {
+                        if (textEl && _dialogueTyping) {
+                            // Remove the stuttered char and re-add correctly
+                            textEl.textContent = textEl.textContent.slice(0, -1);
+                        }
+                    }, typingConfig.speed * 2);
+                    return;
+                }
+
+                if (textEl) textEl.textContent += char;
+                _dialogueCharIndex++;
+                stutterCooldown = Math.max(0, stutterCooldown - 1);
+            } else {
+                clearInterval(_dialogueTimer);
+                _dialogueTyping = false;
+                if (promptEl) promptEl.style.display = '';
+            }
+        }, typingConfig.speed);
+    }
+
+    function _getTypingConfig(memoryTier) {
+        switch (memoryTier) {
+            case 'amnesia':
+                return { speed: 65, canStutter: true };
+            case 'hazy':
+                return { speed: 45, canStutter: false };
+            case 'sharp':
+                return { speed: 30, canStutter: false };
+            case 'crystal':
+                return { speed: 18, canStutter: false };
+            case 'transcendent':
+                return { speed: 12, canStutter: false };
+            default:
+                return { speed: 30, canStutter: false };
+        }
+    }
+
+    /**
+     * Fetch memory-aware dialogue from the API.
+     * @param {string} context - "greeting", "error", "empty_vault", "loading", "celebration"
+     * @returns {Promise<object>} - { text, memory_state, memory_tier, level, ... }
+     */
+    async function getMemoryDialogue(context) {
+        try {
+            const response = await fetch(`/api/memory-dialogue?context=${encodeURIComponent(context)}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.json();
+        } catch (e) {
+            console.warn('[Nomolo] Memory dialogue fetch failed:', e);
+            return null;
+        }
+    }
+
+    /**
+     * Apply memory flicker effect — brief glitch on low-level dialogue.
+     * Call this on any element that should glitch at low memory levels.
+     */
+    function memoryFlicker(element) {
+        const memoryData = window.__NOMOLO_MEMORY__;
+        if (!memoryData || !element) return;
+
+        const tier = memoryData.memory_tier;
+        if (tier === 'amnesia' || tier === 'hazy') {
+            element.classList.add('memory-glitch');
+            // Random flicker intervals
+            const interval = setInterval(() => {
+                element.classList.add('memory-glitch--active');
+                setTimeout(() => {
+                    element.classList.remove('memory-glitch--active');
+                }, 100 + Math.random() * 200);
+            }, 3000 + Math.random() * 5000);
+            // Store interval for cleanup
+            element._memoryFlickerInterval = interval;
+        }
+    }
+
+    // ── Insult Data Fighting ─────────────────────────────────────────
+
+    const INSULT_FIGHTS = {
+        omniscient_eye: {
+            portrait: '\uD83D\uDC41',
+            name: 'The Omniscient Eye',
+            rounds: [
+                {
+                    villain: "Your data is perfectly safe with us!",
+                    options: [
+                        "Safe? You sold it to 847 ad partners!",
+                        "Define 'safe'...",
+                    ],
+                },
+                {
+                    villain: "You agreed to our Terms of Service!",
+                    options: [
+                        "Nobody reads those and you know it!",
+                        "Which version? You changed them 47 times.",
+                    ],
+                },
+                {
+                    villain: "Where will you even store it all?",
+                    options: [
+                        "On my own machine. Like a civilized pirate.",
+                        "In a vault. With a lock. That I own.",
+                    ],
+                },
+            ],
+        },
+        walled_garden: {
+            portrait: '\uD83C\uDFF0',
+            name: 'The Walled Garden',
+            rounds: [
+                {
+                    villain: "Our ecosystem is designed to protect you!",
+                    options: [
+                        "Protect me? Or lock me in?",
+                        "Funny how the walls only face inward.",
+                    ],
+                },
+                {
+                    villain: "You can export your data anytime you want!",
+                    options: [
+                        "Through seventeen menus and a blood oath, sure.",
+                        "Last time I tried, the download was a ZIP of ZIPs of nonsense.",
+                    ],
+                },
+                {
+                    villain: "Our garden is the most beautiful in the land!",
+                    options: [
+                        "Hard to enjoy the view from a cage.",
+                        "I prefer a garden where I own the soil.",
+                    ],
+                },
+            ],
+        },
+        hydra_of_faces: {
+            portrait: '\uD83D\uDC09',
+            name: 'The Hydra of Faces',
+            rounds: [
+                {
+                    villain: "We connect billions of people worldwide!",
+                    options: [
+                        "You connect people to ads. There's a difference.",
+                        "And harvest their souls in the process.",
+                    ],
+                },
+                {
+                    villain: "Your privacy settings give you full control!",
+                    options: [
+                        "Full control over which shade of 'tracked' I prefer?",
+                        "I found 847 toggles. None of them said 'stop spying'.",
+                    ],
+                },
+                {
+                    villain: "You'll miss us when we're gone!",
+                    options: [
+                        "I'll send you a postcard. From my own server.",
+                        "Gone? You'll just grow another head.",
+                    ],
+                },
+            ],
+        },
+    };
+
+    function startInsultFight(villainId, onComplete) {
+        const villain = INSULT_FIGHTS[villainId];
+        if (!villain) {
+            // No fight data — skip straight to callback
+            if (onComplete) onComplete();
+            return;
+        }
+
+        let currentRound = 0;
+
+        function playRound() {
+            const round = villain.rounds[currentRound];
+            if (!round) {
+                // All rounds done — victory sequence
+                showDialogue(villain.portrait, "You fight like a dairy farmer!", () => {
+                    showDialogue('\uD83C\uDFF4\u200D\u2620\uFE0F', "How appropriate. You fight like a cow!", () => {
+                        playSound('insult_win');
+                        closeDialogue();
+                        if (onComplete) onComplete();
+                    });
+                });
+                return;
+            }
+
+            // Show villain line
+            showDialogue(villain.portrait, round.villain, () => {
+                // Show response options
+                _showInsultOptions(round.options, () => {
+                    currentRound++;
+                    playRound();
+                });
+            });
+        }
+
+        playRound();
+    }
+
+    function _showInsultOptions(options, onPick) {
+        // Replace dialogue content with clickable options
+        if (!_dialogueBox) return;
+
+        const textEl = _dialogueBox.querySelector('.dialogue-box__text');
+        const promptEl = _dialogueBox.querySelector('.dialogue-box__prompt');
+        if (promptEl) promptEl.style.display = 'none';
+
+        // Remove the default click-to-advance while options are showing
+        _dialogueBox.removeEventListener('click', _advanceDialogue);
+
+        if (textEl) {
+            textEl.innerHTML = '';
+            options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'dialogue-box__option';
+                btn.textContent = '[' + String.fromCharCode(65 + i) + '] ' + opt;
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Re-attach normal click handler
+                    _dialogueBox.addEventListener('click', _advanceDialogue);
+                    if (onPick) onPick();
+                });
+                textEl.appendChild(btn);
+            });
+        }
+    }
+
+    function skipInsultFight() {
+        closeDialogue();
+    }
+
+    // ── Social Sharing System ──────────────────────────────────────
+
+    async function shareToSocial(platform) {
+        try {
+            const resp = await fetch('/api/share-card');
+            const card = await resp.json();
+
+            if (platform === 'twitter') {
+                const text = encodeURIComponent(card.share_text.twitter);
+                window.open(`https://x.com/intent/tweet?text=${text}`, '_blank');
+                // Auto-claim town_crier power-up
+                claimPowerup('town_crier');
+            } else if (platform === 'linkedin') {
+                const text = encodeURIComponent(card.share_text.linkedin);
+                window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://nomolo.app')}&summary=${text}`, '_blank');
+                claimPowerup('town_crier');
+            } else if (platform === 'clipboard') {
+                try {
+                    await navigator.clipboard.writeText(card.share_text.clipboard);
+                    toast('Stats copied to clipboard! Paste anywhere.', 'success');
+                    claimPowerup('town_crier');
+                } catch (e) {
+                    // Fallback: select text
+                    const ta = document.createElement('textarea');
+                    ta.value = card.share_text.clipboard;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    toast('Stats copied!', 'success');
+                    claimPowerup('town_crier');
+                }
+            }
+        } catch (e) {
+            toast('Could not generate share card: ' + e.message, 'error');
+        }
+    }
+
+    async function claimPowerup(powerupId) {
+        try {
+            const resp = await fetch('/api/claim-powerup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ powerup_id: powerupId }),
+            });
+            const data = await resp.json();
+            if (data.ok && data.powerup) {
+                toast(`${data.powerup.emoji} Power-Up earned: ${data.powerup.name}!`, 'success');
+            }
+        } catch (e) {
+            console.warn('[Nomolo] 🏴‍☠️ Arrr! Failed to claim yer power-up:', e);
+        }
+    }
+
+    async function generateShareCard() {
+        try {
+            const resp = await fetch('/api/share-card');
+            const card = await resp.json();
+
+            // Create visual card element
+            const overlay = document.createElement('div');
+            overlay.className = 'share-card-overlay';
+            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+            overlay.innerHTML = `
+                <div class="share-card">
+                    <div class="share-card__header">
+                        <span class="share-card__level">${card.level}</span>
+                        <div>
+                            <div class="share-card__title">${escapeHtml(card.title)}</div>
+                            <div class="share-card__records">${card.total_records.toLocaleString()} records</div>
+                        </div>
+                    </div>
+                    <div class="share-card__stats">
+                        <span>STR ${card.stats.STR}</span>
+                        <span>WIS ${card.stats.WIS}</span>
+                        <span>DEX ${card.stats.DEX}</span>
+                        <span>INT ${card.stats.INT}</span>
+                        <span>CHA ${card.stats.CHA}</span>
+                        <span>END ${card.stats.END}</span>
+                    </div>
+                    <div class="share-card__footer">
+                        <span>${card.villains_raided} Conglomerates raided</span>
+                        <span>${card.earned_powerups} Power-Ups</span>
+                    </div>
+                    <div class="share-card__actions">
+                        <button onclick="NomoloBridge.shareToSocial('twitter')" class="share-card__btn">X / Twitter</button>
+                        <button onclick="NomoloBridge.shareToSocial('linkedin')" class="share-card__btn">LinkedIn</button>
+                        <button onclick="NomoloBridge.shareToSocial('clipboard')" class="share-card__btn">Copy</button>
+                    </div>
+                    <button class="share-card__close" onclick="this.closest('.share-card-overlay').remove()">&times;</button>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+        } catch (e) {
+            toast('Could not load share card: ' + e.message, 'error');
+        }
+    }
+
+    // ── Memory Mini-Games ────────────────────────────────────────────
+
+    let miniGameStreak = parseInt(sessionStorage.getItem('nomolo_mg_streak') || '0');
+
+    async function startMiniGame() {
+        try {
+            const resp = await fetch('/api/mini-game');
+            const data = await resp.json();
+
+            if (data.error) {
+                toast(data.message, 'info');
+                return;
+            }
+
+            showMiniGameQuestion(data);
+        } catch (e) {
+            toast('Could not load mini-game: ' + e.message, 'error');
+        }
+    }
+
+    function showMiniGameQuestion(question) {
+        // Use the dialogue box style for the question
+        const overlay = document.createElement('div');
+        overlay.className = 'mini-game-overlay';
+        overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+        const optionsHtml = question.options.map((opt, i) => {
+            const letter = String.fromCharCode(65 + i);
+            return `<button class="mini-game__option" data-index="${i}">
+                <span class="mini-game__option-letter">${letter}</span>
+                ${escapeHtml(opt)}
+            </button>`;
+        }).join('');
+
+        overlay.innerHTML = `
+            <div class="mini-game-card">
+                <div class="mini-game__header">
+                    <span class="mini-game__icon">\uD83C\uDFB2</span>
+                    <span class="mini-game__title">Memory Tavern</span>
+                    <span class="mini-game__streak">\uD83D\uDD25 ${miniGameStreak}</span>
+                </div>
+                <p class="mini-game__question">${escapeHtml(question.question)}</p>
+                <div class="mini-game__options">${optionsHtml}</div>
+                <div class="mini-game__result" style="display:none"></div>
+                <button class="mini-game__close" onclick="this.closest('.mini-game-overlay').remove()">&times;</button>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // Wire up answer buttons
+        let answered = false;
+        overlay.querySelectorAll('.mini-game__option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (answered) return;
+                answered = true;
+                answerMiniGame(overlay, question, parseInt(btn.dataset.index));
+            });
+        });
+    }
+
+    function answerMiniGame(overlay, question, choice) {
+        const isCorrect = choice === question.correct;
+        const resultEl = overlay.querySelector('.mini-game__result');
+        const options = overlay.querySelectorAll('.mini-game__option');
+
+        options.forEach((btn, i) => {
+            btn.style.pointerEvents = 'none';
+            if (i === question.correct) {
+                btn.classList.add('mini-game__option--correct');
+            } else if (i === choice && !isCorrect) {
+                btn.classList.add('mini-game__option--wrong');
+            }
+        });
+
+        if (isCorrect) {
+            miniGameStreak++;
+            let bonus = '';
+            if (miniGameStreak === 3) bonus = ' \uD83C\uDF1F 3-streak bonus!';
+            else if (miniGameStreak === 5) bonus = ' \uD83C\uDF1F\uD83C\uDF1F 5-streak bonus!';
+            else if (miniGameStreak === 10) bonus = ' \uD83C\uDF1F\uD83C\uDF1F\uD83C\uDF1F 10-STREAK!';
+            resultEl.innerHTML = `<span class="mini-game__result--correct">${escapeHtml(question.flavor_correct)}${bonus}</span>`;
+            playSound('insult_win');
+        } else {
+            miniGameStreak = 0;
+            resultEl.innerHTML = `<span class="mini-game__result--wrong">${escapeHtml(question.flavor_wrong)}</span>`;
+        }
+
+        sessionStorage.setItem('nomolo_mg_streak', String(miniGameStreak));
+
+        // Update streak display
+        const streakEl = overlay.querySelector('.mini-game__streak');
+        if (streakEl) streakEl.textContent = '\uD83D\uDD25 ' + miniGameStreak;
+
+        resultEl.style.display = '';
+
+        // Add "Play Again" button
+        const playAgainBtn = document.createElement('button');
+        playAgainBtn.className = 'mini-game__play-again';
+        playAgainBtn.textContent = 'Another Round';
+        playAgainBtn.onclick = () => {
+            overlay.remove();
+            startMiniGame();
+        };
+        resultEl.appendChild(playAgainBtn);
+    }
+
+    // ── Easter Egg: Logo Click Counter ───────────────────────────────
+
+    let _logoClickCount = 0;
+    let _logoClickTimer = null;
+
+    function trackLogoClick() {
+        _logoClickCount++;
+        clearTimeout(_logoClickTimer);
+        _logoClickTimer = setTimeout(() => { _logoClickCount = 0; }, 3000);
+
+        if (_logoClickCount === 5) {
+            console.log("🏴‍☠️ You seem to really like our logo.");
+        } else if (_logoClickCount === 10) {
+            _logoClickCount = 0;
+            claimPowerup('rubber_chicken');
+            showDialogue('\uD83D\uDC12', "You found the Three-Headed Monkey! ...just kidding. But you DO get a power-up. \uD83D\uDC12");
+        } else if (_logoClickCount === 20) {
+            _logoClickCount = 0;
+            // Make the logo spin permanently
+            const logoEl = document.querySelector('.sidebar__logo-icon');
+            if (logoEl) {
+                logoEl.style.animation = 'spin-logo 1s linear infinite';
+            }
+            console.log("🏴‍☠️ You've gone full Captain Flint. The logo now spins in perpetuity.");
+        }
+    }
+
+    // ── Easter Egg: Konami Code ──────────────────────────────────────
+
+    let _konamiSequence = [];
+    const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+    function initKonamiCode() {
+        document.addEventListener('keydown', (e) => {
+            _konamiSequence.push(e.key);
+            if (_konamiSequence.length > KONAMI_CODE.length) {
+                _konamiSequence.shift();
+            }
+            if (_konamiSequence.length === KONAMI_CODE.length &&
+                _konamiSequence.every((k, i) => k === KONAMI_CODE[i])) {
+                _konamiSequence = [];
+                activateKonamiEasterEgg();
+            }
+        });
+    }
+
+    function activateKonamiEasterEgg() {
+        // Flip all villain cards temporarily
+        const villainCards = document.querySelectorAll('.rpg__villain-card');
+        villainCards.forEach(card => {
+            card.classList.add('pirate-cursor');
+            card.style.transition = 'transform 0.6s ease';
+            card.style.transform = 'rotateY(180deg)';
+            setTimeout(() => {
+                card.style.transform = 'rotateY(0deg)';
+                card.classList.remove('pirate-cursor');
+            }, 3000);
+        });
+
+        // Show the dialogue
+        showDialogue('\uD83D\uDC14',
+            "You've discovered the ancient cheat code! Unfortunately, in data sovereignty there are no shortcuts. But here's a rubber chicken. \uD83D\uDC14",
+            () => {
+                claimPowerup('rubber_chicken');
+            }
+        );
+    }
+
+    // ── Easter Egg: Console Art ──────────────────────────────────────
+
+    function printConsoleEasterEggs() {
+        console.log(`
+%c
+        ⛵
+       __|__
+    .-'     '-.
+   /   ⚓   \\
+  |  NOMOLO   |
+  |  ~~~~~~~~  |
+   \\_________/
+  ~~~~~~~~~~~~~~~~~
+  The Data Pirate's Vessel
+`, 'font-family: monospace; color: #ffd700; font-size: 12px;');
+        console.log("%c\uD83C\uDFF4\u200D\u2620\uFE0F Looking for buried treasure in the console? A true pirate would check the source code.", "font-size: 16px; color: #ffd700;");
+    }
+
+    // ── Verb Bar Actions ─────────────────────────────────────────────
+
+    function initVerbBar() {
+        const verbBtns = document.querySelectorAll('[data-verb]');
+        verbBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const verb = btn.dataset.verb;
+                switch (verb) {
+                    case 'scan':
+                        rescanSources();
+                        break;
+                    case 'collect':
+                        window.location.href = '/sources';
+                        break;
+                    case 'search':
+                        window.location.href = '/records';
+                        // Focus search after navigation is handled by initRecords
+                        break;
+                    case 'explore':
+                        window.location.href = '/records';
+                        break;
+                    default:
+                        console.log('[Nomolo] 🏴‍☠️ Unknown order from the captain:', verb);
+                }
+            });
+        });
+    }
+
+    // ── Sound Effect Stubs ───────────────────────────────────────────
+
+    function playSound(soundName) {
+        console.log('\uD83D\uDD0A [' + soundName + ']');
+        // Future: Web Audio API integration
+        // Valid sound names: collect_start, collect_done, level_up,
+        //                    insult_win, dialogue_open, dialogue_close
+    }
+
+    // ── Intro Cinematic ─────────────────────────────────────────────
+
+    let _introSceneIndex = 0;
+    let _introTimer = null;
+    let _introPaused = false;
+    const _introSceneCount = 6;
+    const _introSceneDuration = 4500; // ms per scene
+
+    function initIntro() {
+        _introSceneIndex = 0;
+        _introPaused = false;
+
+        // Generate stars for all star containers
+        document.querySelectorAll('.intro__stars').forEach(container => {
+            _generateStars(container, 60);
+        });
+
+        // Show first scene
+        _showIntroScene(0);
+        _startIntroTimer();
+
+        // Keyboard / click advance
+        document.addEventListener('keydown', _introKeyHandler);
+        const introEl = document.getElementById('intro-container');
+        if (introEl) {
+            introEl.addEventListener('click', _introClickHandler);
+        }
+
+        // Pause on hover over text
+        document.querySelectorAll('.intro__text-container').forEach(el => {
+            el.addEventListener('mouseenter', () => { _introPaused = true; });
+            el.addEventListener('mouseleave', () => { _introPaused = false; });
+        });
+    }
+
+    function _generateStars(container, count) {
+        for (let i = 0; i < count; i++) {
+            const star = document.createElement('div');
+            star.className = 'intro__star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 70 + '%'; // upper 70% only
+            star.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
+            star.style.setProperty('--delay', (Math.random() * 5) + 's');
+            if (Math.random() > 0.7) {
+                star.style.width = '3px';
+                star.style.height = '3px';
+            }
+            container.appendChild(star);
+        }
+    }
+
+    function _showIntroScene(index) {
+        const scenes = document.querySelectorAll('.intro__scene');
+        scenes.forEach((scene, i) => {
+            if (i === index) {
+                scene.classList.add('intro__scene--active');
+            } else {
+                scene.classList.remove('intro__scene--active');
+            }
+        });
+
+        // Scene 6 (index 5) — start typewriter
+        if (index === 5) {
+            _startTypewriter();
+        }
+    }
+
+    function _startIntroTimer() {
+        clearInterval(_introTimer);
+        _introTimer = setInterval(() => {
+            if (_introPaused) return;
+            _advanceIntro();
+        }, _introSceneDuration);
+    }
+
+    function _advanceIntro() {
+        if (_introSceneIndex >= _introSceneCount - 1) {
+            // Already on last scene — do nothing (CTA button handles exit)
+            clearInterval(_introTimer);
+            return;
+        }
+        _introSceneIndex++;
+        _showIntroScene(_introSceneIndex);
+
+        // Reset timer for consistent pacing
+        _startIntroTimer();
+    }
+
+    function _introKeyHandler(e) {
+        if (e.key === ' ' || e.key === 'ArrowRight' || e.key === 'Enter') {
+            e.preventDefault();
+            _advanceIntro();
+        }
+        if (e.key === 'Escape') {
+            skipIntro();
+        }
+    }
+
+    function _introClickHandler(e) {
+        // Don't advance if clicking skip or CTA
+        if (e.target.closest('.intro__skip') || e.target.closest('.intro__cta')) return;
+        _advanceIntro();
+    }
+
+    function _startTypewriter() {
+        const el = document.getElementById('intro-typewriter');
+        const ctaEl = document.getElementById('intro-cta');
+        if (!el) return;
+
+        const text = 'My name is [you].\nAnd I want to be a Data Pirate.';
+        let i = 0;
+        let rendered = '';
+        el.innerHTML = '';
+
+        const typeInterval = setInterval(() => {
+            if (i < text.length) {
+                if (text[i] === '\n') {
+                    rendered += '<br>';
+                } else {
+                    // Escape HTML but preserve existing content
+                    const ch = text[i].replace(/&/g,'&amp;').replace(/</g,'&lt;');
+                    rendered += ch;
+                }
+                el.innerHTML = rendered;
+                i++;
+            } else {
+                clearInterval(typeInterval);
+                // Show CTA button
+                if (ctaEl) {
+                    ctaEl.style.display = 'inline-block';
+                    ctaEl.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        _completeIntro();
+                    });
+                }
+            }
+        }, 60);
+    }
+
+    function skipIntro() {
+        _cleanupIntro();
+        localStorage.setItem('nomolo_intro_seen', '1');
+        window.location.href = '/';
+    }
+
+    function _completeIntro() {
+        _cleanupIntro();
+        localStorage.setItem('nomolo_intro_seen', '1');
+        window.location.href = '/';
+    }
+
+    function _cleanupIntro() {
+        clearInterval(_introTimer);
+        document.removeEventListener('keydown', _introKeyHandler);
+        const introEl = document.getElementById('intro-container');
+        if (introEl) {
+            introEl.removeEventListener('click', _introClickHandler);
+        }
+    }
+
+    function replayIntro() {
+        localStorage.removeItem('nomolo_intro_seen');
+        window.location.href = '/intro';
+    }
+
+    function checkIntroRedirect() {
+        // Call this on dashboard/welcome — redirect first-time visitors to intro
+        if (!localStorage.getItem('nomolo_intro_seen')) {
+            window.location.href = '/intro';
+        }
+    }
 
     // ── Public API ────────────────────────────────────────────────────
 
@@ -1800,13 +2684,58 @@ const NomoloBridge = (() => {
         showScanResults,
         toast,
         beginJourney,
-        startCollection,
         toggleNerdMode,
         nerdLog,
         openFdaGuide,
         closeFdaGuide,
-        rescanAfterFda,
         checkJourneyResume,
         clearJourneyState,
+        openExpertModal,
+        closeExpertModal,
+        triggerExpertAuth,
+        startExpertCollection,
+        initRecords,
+        filterRecords,
+        loadRecords,
+        recordsPage,
+        showRecordDetail,
+        closeRecordDetail,
+        openVaultFolder,
+        rescanSources,
+        collectSource,
+        updateAllSources,
+        saveSetting,
+        resetJourney,
+        initJargonToggle,
+        toggleJargon,
+        applyJargon,
+        // Monkey Island interactive features
+        showDialogue,
+        showMemoryDialogue,
+        closeDialogue,
+        initPirateGreeting,
+        startInsultFight,
+        skipInsultFight,
+        initVerbBar,
+        playSound,
+        // Memory recovery system
+        getMemoryDialogue,
+        memoryFlicker,
+        // Social sharing & power-ups
+        shareToSocial,
+        claimPowerup,
+        generateShareCard,
+        // Memory mini-games
+        startMiniGame,
+        miniGameStreak,
+        // Easter eggs
+        trackLogoClick,
+        initKonamiCode,
+        printConsoleEasterEggs,
+        // Intro cinematic
+        initIntro,
+        skipIntro,
+        replayIntro,
+        checkIntroRedirect,
     };
 })();

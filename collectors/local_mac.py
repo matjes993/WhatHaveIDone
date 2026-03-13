@@ -851,11 +851,11 @@ def generate_identity_snapshot(vault_root: str, scan_data: dict | None = None) -
             except OSError:
                 pass
 
-        # Build the top 5 leaderboard — the viral centerpiece
+        # Build the top 3 leaderboard — the viral centerpiece
         if top_domains:
             sorted_domains = sorted(top_domains.items(), key=lambda x: x[1], reverse=True)
-            _MEDALS = ["\U0001f947", "\U0001f948", "\U0001f949", "4\ufe0f\u20e3", "5\ufe0f\u20e3"]
-            for i, (domain, visits) in enumerate(sorted_domains[:5]):
+            _MEDALS = ["\U0001f947", "\U0001f948", "\U0001f949"]
+            for i, (domain, visits) in enumerate(sorted_domains[:3]):
                 leaderboard.append({
                     "rank": i + 1,
                     "medal": _MEDALS[i],
@@ -863,9 +863,9 @@ def generate_identity_snapshot(vault_root: str, scan_data: dict | None = None) -
                     "visits": visits,
                 })
 
-            # Total visits for the top 5 combined
-            top5_total = sum(d["visits"] for d in leaderboard)
-            stats["top5_visits"] = top5_total
+            # Total visits for the top 3 combined
+            top3_total = sum(d["visits"] for d in leaderboard)
+            stats["top3_visits"] = top3_total
 
         if urls > 0:
             stats["browser_urls"] = urls
@@ -903,7 +903,7 @@ def generate_identity_snapshot(vault_root: str, scan_data: dict | None = None) -
     insights.sort(key=lambda x: priority.get(x.get("category", ""), 99))
 
     return {
-        "leaderboard": leaderboard,  # Top 5 sites — the viral hook
+        "leaderboard": leaderboard,  # Top 3 sites — the viral hook
         "insights": insights[:4],     # Supporting stats (keep it tight)
         "stats": stats,
         "has_data": len(leaderboard) > 0 or len(insights) > 0,

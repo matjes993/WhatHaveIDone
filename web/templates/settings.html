@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Ship's Helm{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    <header class="settings-page__header">
+        <h1 class="settings-page__title jargon" data-rpg="Ship's Helm" data-real="Settings">Ship's Helm</h1>
+    </header>
+
+    <!-- Data Storage -->
+    <section class="settings-section">
+        <h2 class="settings-section__title jargon" data-rpg="Treasure Hold" data-real="Data Storage">Treasure Hold</h2>
+
+        <div class="setting-row">
+            <div class="setting-row__info">
+                <span class="setting-row__label jargon" data-rpg="Vault Location" data-real="Vault Location">Vault Location</span>
+                <span class="setting-row__value">{{ vault_root }}</span>
+            </div>
+            <button class="setting-row__action" onclick="NomoloBridge.openVaultFolder()">Open in Finder</button>
+        </div>
+
+        <div class="setting-row">
+            <div class="setting-row__info">
+                <span class="setting-row__label jargon" data-rpg="Total Booty" data-real="Total Records">Total Booty</span>
+                <span class="setting-row__value">{{ "{:,}".format(total_records) }}</span>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="setting-row__info">
+                <span class="setting-row__label jargon" data-rpg="Islands Plundered" data-real="Connected Sources">Islands Plundered</span>
+                <span class="setting-row__value">{{ source_count }}</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Collection -->
+    <section class="settings-section">
+        <h2 class="settings-section__title jargon" data-rpg="Raiding Orders" data-real="Collection">Raiding Orders</h2>
+
+        <div class="setting-row">
+            <div class="setting-row__info">
+                <span class="setting-row__label jargon" data-rpg="Auto-scan on startup" data-real="Auto-scan on startup">Auto-scan on startup</span>
+                <span class="setting-row__desc jargon" data-rpg="Automatically scan the horizon for loot when ye open Nomolo" data-real="Automatically re-scan local sources when you open Nomolo">Automatically scan the horizon for loot when ye open Nomolo</span>
+            </div>
+            <label class="setting-toggle">
+                <input type="checkbox" id="setting-auto-scan" {{ 'checked' if auto_scan else '' }} onchange="NomoloBridge.saveSetting('auto_scan', this.checked)">
+                <span class="setting-toggle__slider"></span>
+            </label>
+        </div>
+
+        <div class="setting-row">
+            <div class="setting-row__info">
+                <span class="setting-row__label jargon" data-rpg="Re-raid all local harbors" data-real="Re-scan all local sources">Re-raid all local harbors</span>
+                <span class="setting-row__desc jargon" data-rpg="Plunder all Mac harbors again (Contacts, Calendar, Messages, etc.)" data-real="Re-collect data from all Mac sources (Contacts, Calendar, Messages, etc.)">Plunder all Mac harbors again (Contacts, Calendar, Messages, etc.)</span>
+            </div>
+            <button class="setting-row__action" onclick="NomoloBridge.rescanSources()">Scan the Horizon</button>
+        </div>
+
+        <div class="setting-row">
+            <div class="setting-row__info">
+                <span class="setting-row__label jargon" data-rpg="Restart the voyage" data-real="Reset welcome journey">Restart the voyage</span>
+                <span class="setting-row__desc jargon" data-rpg="Show the onboarding tale again next time ye visit" data-real="Show the onboarding flow again next time you visit">Show the onboarding tale again next time ye visit</span>
+            </div>
+            <button class="setting-row__action setting-row__action--subtle" onclick="NomoloBridge.resetJourney()">Reset</button>
+        </div>
+    </section>
+
+    <!-- Google Integration -->
+    <section class="settings-section">
+        <h2 class="settings-section__title jargon" data-rpg="The Omniscient Eye" data-real="Google Integration">The Omniscient Eye</h2>
+
+        <div class="setting-row">
+            <div class="setting-row__info">
+                <span class="setting-row__label jargon" data-rpg="Letter of Marque" data-real="Google Credentials">Letter of Marque</span>
+                <span class="setting-row__value" id="google-creds-status">Charting course...</span>
+            </div>
+            <button class="setting-row__action" id="google-creds-btn" onclick="NomoloBridge.openExpertModal()">Setup</button>
+        </div>
+    </section>
+
+    <!-- Danger Zone -->
+    <section class="settings-section settings-section--danger">
+        <h2 class="settings-section__title jargon" data-rpg="Here Be Dragons" data-real="Danger Zone">Here Be Dragons</h2>
+
+        <div class="setting-row">
+            <div class="setting-row__info">
+                <span class="setting-row__label jargon" data-rpg="Scuttle the voyage log" data-real="Clear journey state">Scuttle the voyage log</span>
+                <span class="setting-row__desc jargon" data-rpg="Removes saved voyage progress (does not scuttle any plunder)" data-real="Removes saved journey progress (does not delete any data)">Removes saved voyage progress (does not scuttle any plunder)</span>
+            </div>
+            <button class="setting-row__action setting-row__action--danger" onclick="NomoloBridge.clearJourneyState(); NomoloBridge.toast('Voyage log scuttled!', 'success')">Scuttle</button>
+        </div>
+    </section>
+
+    <p class="settings-page__version">Nomolo v0.1.0 — Sails locally. Open to all pirates.</p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    // Check Google credentials status
+    try {
+        const resp = await fetch('/api/credentials/status');
+        const data = await resp.json();
+        const statusEl = document.getElementById('google-creds-status');
+        const btnEl = document.getElementById('google-creds-btn');
+        if (data.credentials) {
+            statusEl.textContent = 'Boarded!';
+            statusEl.style.color = 'var(--accent-green)';
+            btnEl.textContent = 'Manage';
+        } else {
+            statusEl.textContent = 'No letter of marque found';
+            btnEl.textContent = 'Setup';
+        }
+    } catch {}
+});
+</script>
+{% endblock %}

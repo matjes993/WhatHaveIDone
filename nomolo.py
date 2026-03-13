@@ -834,8 +834,8 @@ def cmd_web(args):
     port = getattr(args, "port", 3000)
     no_open = getattr(args, "no_open", False)
 
-    print(f"\n🚀 Launching Nomolo Web Interface on http://localhost:{port}")
-    print("   Press Ctrl+C to stop\n")
+    print(f"\n⚓ Hoisting the SCUMM Bar flag on http://localhost:{port}")
+    print("   Press Ctrl+C to abandon ship\n")
 
     if not no_open:
         import threading
@@ -859,13 +859,13 @@ def cmd_scan():
     config = load_config()
     vault_root = get_vault_root(config)
 
-    print("\n🔍 Scanning your machine for data sources...\n")
+    print("\n🔍 Scanning the seven seas for buried treasure...\n")
 
     results = asyncio.run(scan(vault_root=vault_root, project_root=PROJECT_ROOT))
 
     sources = results.get("sources", [])
     if not sources:
-        print("No data sources found. Try running from your home directory.")
+        print("No islands on the horizon, Captain. Try running from yer home port.")
         return
 
     # Group by category
@@ -895,14 +895,14 @@ def cmd_scan():
 
     score_data = get_life_score(results)
     score = score_data.get("overall_score", 0)
-    print(f"  🏆 Life Archive Score: {score}/100")
-    print(f"  📊 Total records found: {total_records:,}")
-    print(f"  💡 Tip: Run 'nomolo web' for the full visual experience!\n")
+    print(f"  🏆 Pirate Plunder Score: {score}/100")
+    print(f"  💰 Total loot discovered: {total_records:,} pieces of plunder")
+    print(f"  🍺 Tip: Run 'nomolo web' to visit the SCUMM Bar!\n")
 
 
 def cmd_update():
     """Pull the latest version from GitHub and reinstall."""
-    print("\nUpdating NOMOLO...")
+    print("\n⚓ Patching the ship's hull...")
 
     # git pull from the project root
     result = subprocess.run(
@@ -927,7 +927,7 @@ def cmd_update():
     # Reinstall in case dependencies changed
     venv_pip = os.path.join(PROJECT_ROOT, "venv", "bin", "pip")
     if os.path.exists(venv_pip):
-        print("Reinstalling dependencies...")
+        print("Reloading the cannons...")
         subprocess.run(
             [venv_pip, "install", "-q", "-e", PROJECT_ROOT],
             check=False,
@@ -941,7 +941,7 @@ def cmd_update():
         shutil.copy2(comp_src, comp_dst)
         print("Updated zsh completions. Run 'exec zsh' to reload.")
 
-    print("\nUpdated successfully!")
+    print("\n🎉 Ship's hull patched and polished! Ready to sail, Captain.")
 
 
 def _ensure_search_deps():
@@ -950,14 +950,14 @@ def _ensure_search_deps():
         import chromadb  # noqa: F401
         import sentence_transformers  # noqa: F401
     except ImportError:
-        print("\n  Search dependencies not installed (chromadb, sentence-transformers).")
-        print("  Installing now — this is a one-time setup...\n")
+        print("\n  Missing navigation instruments (chromadb, sentence-transformers).")
+        print("  Forging them now — this is a one-time outfitting...\n")
         import subprocess
         subprocess.check_call(
             [sys.executable, "-m", "pip", "install",
              "chromadb>=1.0.0", "sentence-transformers>=3.0.0"],
         )
-        print("\n  Done! Continuing...\n")
+        print("\n  Instruments ready! Continuing...\n")
 
 
 def cmd_vectorize(args, config):
@@ -975,7 +975,7 @@ def cmd_vectorize(args, config):
     force = getattr(args, "force", False)
     show_status = getattr(args, "status", False)
 
-    print(f"\n  NOMOLO Vectorizer")
+    print(f"\n  🏴‍☠️ NOMOLO Cartographer — Charting the Treasure Maps")
     print(f"  {'=' * 45}")
     print(f"  Vault root: {vault_root}")
 
@@ -984,7 +984,7 @@ def cmd_vectorize(args, config):
     if show_status:
         status = get_status(client, vault_root)
         if not status:
-            print("  No vectorized data yet. Run 'nomolo vectorize' first.")
+            print("  No treasure maps charted yet. Run 'nomolo vectorize' first, Captain.")
             return
         print()
         for s in sorted(status, key=lambda x: x["collection"]):
@@ -1056,9 +1056,9 @@ def cmd_vectorize(args, config):
     if results:
         total_new = sum(r["new"] for r in results.values())
         total_db = sum(r["total"] for r in results.values())
-        print(f"  Vectorization complete! {total_new:,} new entries ({total_db:,} total in DB)")
+        print(f"  Treasure maps charted! {total_new:,} new entries ({total_db:,} total in the atlas)")
     else:
-        print(f"  No vaults to vectorize.")
+        print(f"  No vaults to chart. Plunder some data first, Captain!")
 
     # Build FTS keyword index alongside vector index
     print(f"\n  Building FTS keyword index...")
@@ -1128,13 +1128,13 @@ def cmd_search(args, config):
     )
 
     if not results:
-        print(f"\n  No results for: {query}")
+        print(f"\n  The seas are empty here, Captain. No results for: {query}")
         if source:
-            print(f"  (filtered to source: {source})")
+            print(f"  (searched only the {source} waters)")
         print()
         return
 
-    print(f"\n  {len(results)} results for: \"{query}\" (hybrid search)\n")
+    print(f"\n  {len(results)} treasures found for: \"{query}\" (hybrid search)\n")
 
     for i, r in enumerate(results, 1):
         meta = r.get("metadata", {})
@@ -1193,7 +1193,7 @@ def cmd_compress(args, config):
 
     source = getattr(args, "source", None)
 
-    print(f"\n  NOMOLO Vault Compressor (Zstandard)")
+    print(f"\n  🗜️ NOMOLO Hold Compressor — More Room for Grog!")
     print(f"  {'=' * 45}")
     print(f"  Vault root: {vault_root}")
 
@@ -1266,11 +1266,11 @@ def cmd_status(args, config):
     vault_root = get_vault_root(config)
 
     if not os.path.exists(vault_root):
-        print(f"No vaults found at {vault_root}")
+        print(f"No treasure vaults found at {vault_root}")
         print()
-        print("Get started:")
-        print("  nomolo setup gmail      Set up Gmail export")
-        print("  nomolo collect gmail    Export your Gmail inbox")
+        print("Time to start plundering, Captain:")
+        print("  nomolo setup gmail      Prepare to raid Gmail")
+        print("  nomolo collect gmail    Plunder yer Gmail inbox")
         return
 
     entries_found = False
@@ -1317,9 +1317,9 @@ def cmd_status(args, config):
         print()
 
     if not entries_found:
-        print("  (no vaults yet)")
+        print("  (no treasure vaults yet, Captain)")
         print()
-        print("  Get started: nomolo setup gmail")
+        print("  Set sail: nomolo setup gmail")
 
 
 def get_version():
@@ -1352,7 +1352,7 @@ def cmd_mcp_setup():
         sys.exit(1)
 
     # --- Verify MCP server can start ---
-    print("Verifying MCP server dependencies...")
+    print("Checking the signal flags...")
     check = subprocess.run(
         [venv_python, "-c", "from mcp.server import Server; from core.vectordb import get_client; print('ok')"],
         capture_output=True, text=True, cwd=PROJECT_ROOT,
@@ -1362,7 +1362,7 @@ def cmd_mcp_setup():
         print(check.stderr.strip())
         print("\nInstall MCP dependencies: .venv/bin/pip install -e '.[mcp]'")
         sys.exit(1)
-    print("  MCP server dependencies OK.")
+    print("  Signal flags rigged and ready!")
 
     configured_any = False
 
@@ -1429,37 +1429,37 @@ def cmd_mcp_setup():
 
     # --- Summary ---
     if configured_any:
-        print("\nDone! To activate:")
+        print("\nSignal flags hoisted! To activate:")
         if os.path.isdir(desktop_dir):
             print("  - Claude Desktop: restart the app")
         if claude_bin:
             print("  - Claude Code: start a new session")
     else:
-        print("\nNo Claude installations detected.")
-        print("Install Claude Desktop or Claude Code CLI first.")
+        print("\nNo Claude vessels spotted on the horizon.")
+        print("Install Claude Desktop or Claude Code CLI first, Captain.")
         sys.exit(1)
 
 
 def main():
     parser = argparse.ArgumentParser(
         prog="nomolo",
-        description="Nomolo — No More Loss. Your life. Your data. Your hard drive.",
+        description="🏴‍☠️ Nomolo — The Data Pirate's Vessel. Your life. Your data. Your hard drive.",
     )
     parser.add_argument(
         "--version", action="version",
         version=f"Nomolo v{get_version()}",
     )
-    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+    subparsers = parser.add_subparsers(dest="command", help="Available orders, Captain")
 
     # nomolo setup
-    setup_parser = subparsers.add_parser("setup", help="Guided setup for a data source")
-    setup_parser.add_argument("source", help="Data source to set up (e.g., gmail)")
+    setup_parser = subparsers.add_parser("setup", help="Prepare the gangplank for a raid target")
+    setup_parser.add_argument("source", help="Raid target to set up (e.g., gmail)")
 
     # nomolo collect
-    collect_parser = subparsers.add_parser("collect", help="Collect data from a source")
+    collect_parser = subparsers.add_parser("collect", help="Plunder data from a raid target")
     collect_parser.add_argument(
         "source",
-        help="Data source (gmail, contacts-google, contacts-linkedin, contacts-facebook, contacts-instagram)",
+        help="Raid target (gmail, contacts-google, contacts-linkedin, contacts-facebook, contacts-instagram)",
     )
     collect_parser.add_argument(
         "vault",
@@ -1475,34 +1475,34 @@ def main():
 
     # nomolo enrich
     enrich_parser = subparsers.add_parser(
-        "enrich", help="Backfill metadata from the API (Gmail only)"
+        "enrich", help="Polish the plunder with extra metadata from the API"
     )
-    enrich_parser.add_argument("source", help="Data source (e.g., gmail)")
+    enrich_parser.add_argument("source", help="Raid target (e.g., gmail)")
     enrich_parser.add_argument(
         "vault", nargs="?", default="Primary", help="Vault name (default: Primary)"
     )
 
     # nomolo clean
     clean_parser = subparsers.add_parser(
-        "clean", help="RAG-optimized cleaning pass (local processing)"
+        "clean", help="Scrub the deck — RAG-optimized cleaning pass"
     )
-    clean_parser.add_argument("source", help="Data source (e.g., gmail)")
+    clean_parser.add_argument("source", help="Raid target (e.g., gmail)")
     clean_parser.add_argument(
         "vault", nargs="?", default="Primary", help="Vault name (default: Primary)"
     )
 
     # nomolo groom
     groom_parser = subparsers.add_parser(
-        "groom", help="Groom a vault (deduplicate, sort, detect ghosts)"
+        "groom", help="Sort the plunder (deduplicate, organize, detect ghost entries)"
     )
-    groom_parser.add_argument("source", help="Data source (e.g., gmail)")
+    groom_parser.add_argument("source", help="Raid target (e.g., gmail)")
     groom_parser.add_argument(
         "vault", nargs="?", default="Primary", help="Vault name (default: Primary)"
     )
 
     # nomolo vectorize
     vectorize_parser = subparsers.add_parser(
-        "vectorize", help="Vectorize vault data for semantic search"
+        "vectorize", help="Chart the treasure maps for semantic search"
     )
     vectorize_parser.add_argument(
         "source", nargs="?", default=None,
@@ -1519,9 +1519,9 @@ def main():
 
     # nomolo search
     search_parser = subparsers.add_parser(
-        "search", help="Semantic search across your vault data"
+        "search", help="Search the seas — find treasures in yer vault"
     )
-    search_parser.add_argument("query", help="Search query (natural language)")
+    search_parser.add_argument("query", help="What treasure to search for (natural language)")
     search_parser.add_argument(
         "--source", "-s", default=None,
         help="Limit to a source (gmail, contacts, notes, etc.)",
@@ -1541,7 +1541,7 @@ def main():
 
     # nomolo compress
     compress_parser = subparsers.add_parser(
-        "compress", help="Compress vault files with Zstandard (~5x smaller)"
+        "compress", help="Pack the hold tighter — compress vault files (~5x smaller)"
     )
     compress_parser.add_argument(
         "source", nargs="?", default=None,
@@ -1549,14 +1549,14 @@ def main():
     )
 
     # nomolo status
-    subparsers.add_parser("status", help="Show vault status overview")
+    subparsers.add_parser("status", help="Check the ship's log — vault status overview")
 
     # nomolo update
-    subparsers.add_parser("update", help="Pull the latest version from GitHub")
+    subparsers.add_parser("update", help="Patch the hull — pull the latest version from GitHub")
 
     # nomolo web
     web_parser = subparsers.add_parser(
-        "web", help="Launch the Nomolo web interface (local)"
+        "web", help="Hoist the colors — launch the SCUMM Bar (web interface)"
     )
     web_parser.add_argument(
         "--port", "-p", type=int, default=3000,
@@ -1568,38 +1568,38 @@ def main():
     )
 
     # nomolo scan
-    subparsers.add_parser("scan", help="Scan your machine for data sources (CLI mode)")
+    subparsers.add_parser("scan", help="Scan the horizon for raid targets (CLI mode)")
 
     # nomolo mcp
-    mcp_parser = subparsers.add_parser("mcp", help="MCP server management")
-    mcp_subparsers = mcp_parser.add_subparsers(dest="mcp_command", help="MCP commands")
-    mcp_subparsers.add_parser("setup", help="Auto-configure MCP server for Claude Desktop / Claude Code")
+    mcp_parser = subparsers.add_parser("mcp", help="MCP server — rig the signal flags for Claude")
+    mcp_subparsers = mcp_parser.add_subparsers(dest="mcp_command", help="MCP orders")
+    mcp_subparsers.add_parser("setup", help="Rig the signal flags for Claude Desktop / Claude Code")
 
     args = parser.parse_args()
 
     if not args.command:
         parser.print_help()
         print()
-        print("Quick start:")
-        print("  nomolo setup gmail               Guided Gmail setup")
-        print("  nomolo collect gmail             Export your Gmail inbox")
-        print("  nomolo setup contacts-google     Guided Google Contacts setup")
-        print("  nomolo collect contacts-google   Export your Google Contacts")
+        print("Set sail, Captain:")
+        print("  nomolo setup gmail               Prepare to raid Gmail")
+        print("  nomolo collect gmail             Plunder yer Gmail inbox")
+        print("  nomolo setup contacts-google     Prepare to raid Google Contacts")
+        print("  nomolo collect contacts-google   Plunder yer Google Contacts")
         print("  nomolo collect contacts-linkedin ~/Downloads/Connections.csv")
         print("  nomolo collect contacts-facebook ~/Downloads/facebook-export/")
         print("  nomolo collect contacts-instagram ~/Downloads/instagram-export/")
-        print("  nomolo enrich gmail              Backfill metadata from Gmail API")
-        print("  nomolo clean gmail               RAG-optimized cleaning pass")
-        print("  nomolo groom gmail               Deduplicate and sort")
-        print("  nomolo vectorize                 Vectorize all vaults for search")
-        print("  nomolo vectorize gmail           Vectorize Gmail only")
-        print("  nomolo search 'your query'       Search across all your data")
-        print("  nomolo search 'query' -s gmail   Search Gmail only")
-        print("  nomolo web                       Launch the visual web interface")
-        print("  nomolo scan                      Discover data sources on your machine")
-        print("  nomolo status                    See your vaults")
-        print("  nomolo update                    Pull latest version")
-        print("  nomolo mcp setup                 Configure MCP for Claude")
+        print("  nomolo enrich gmail              Polish the plunder with extra metadata")
+        print("  nomolo clean gmail               Scrub the deck (RAG cleaning)")
+        print("  nomolo groom gmail               Sort the plunder")
+        print("  nomolo vectorize                 Chart the treasure maps for search")
+        print("  nomolo vectorize gmail           Chart Gmail's map only")
+        print("  nomolo search 'your query'       Search the seas for treasure")
+        print("  nomolo search 'query' -s gmail   Search Gmail waters only")
+        print("  nomolo web                       Hoist the colors (SCUMM Bar)")
+        print("  nomolo scan                      Scan the horizon for raid targets")
+        print("  nomolo status                    Check the ship's log")
+        print("  nomolo update                    Patch the hull")
+        print("  nomolo mcp setup                 Rig the signal flags for Claude")
         sys.exit(0)
 
     # Setup logging

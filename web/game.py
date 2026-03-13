@@ -390,7 +390,12 @@ def _sample_entries(vault_path: str, max_samples: int = 500) -> list[dict]:
 
 
 def _extract_date(entry: dict) -> Optional[datetime]:
-    """Try to pull a datetime from common entry fields."""
+    """Try to pull a datetime from common entry fields.
+
+    Always returns a timezone-aware datetime (UTC) so callers can safely
+    compare dates from different sources without hitting
+    "can't compare offset-naive and offset-aware datetimes".
+    """
     for key in ("date", "timestamp", "created_at", "sent_at", "time", "datetime"):
         val = entry.get(key)
         if not val:
@@ -401,23 +406,31 @@ def _extract_date(entry: dict) -> Optional[datetime]:
             except (ValueError, OSError):
                 continue
         if isinstance(val, str):
+            dt: Optional[datetime] = None
             # Try ISO first
             try:
-                return datetime.fromisoformat(val)
+                dt = datetime.fromisoformat(val)
             except ValueError:
                 pass
-            # RFC-2822 style
-            for fmt in (
-                "%a, %d %b %Y %H:%M:%S %z",
-                "%d %b %Y %H:%M:%S %z",
-                "%Y-%m-%dT%H:%M:%S",
-                "%Y-%m-%d %H:%M:%S",
-                "%Y-%m-%d",
-            ):
-                try:
-                    return datetime.strptime(val, fmt)
-                except ValueError:
-                    continue
+            # RFC-2822 style fallbacks
+            if dt is None:
+                for fmt in (
+                    "%a, %d %b %Y %H:%M:%S %z",
+                    "%d %b %Y %H:%M:%S %z",
+                    "%Y-%m-%dT%H:%M:%S",
+                    "%Y-%m-%d %H:%M:%S",
+                    "%Y-%m-%d",
+                ):
+                    try:
+                        dt = datetime.strptime(val, fmt)
+                        break
+                    except ValueError:
+                        continue
+            if dt is not None:
+                # Normalize naive datetimes to UTC
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                return dt
     return None
 
 

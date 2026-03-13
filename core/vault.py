@@ -34,7 +34,7 @@ def _open_jsonl(file_path):
     """Open a .jsonl or .jsonl.zst file for reading. Returns a context manager yielding text lines."""
     if file_path.endswith(".zst"):
         if not HAS_ZSTD:
-            logger.warning("Cannot read %s — install zstandard: pip install zstandard", file_path)
+            logger.warning("📖 Can't open this compressed treasure chest %s — install zstandard: pip install zstandard", file_path)
             return None
         import io
         dctx = zstd.ZstdDecompressor()
@@ -67,18 +67,18 @@ def flush_entries(entries, vault_path, file_name):
                     f.write(json.dumps(entry) + "\n")
         except PermissionError:
             logger.error(
-                "Permission denied writing to %s — check folder permissions.",
+                "🏴‍☠️ Blimey! The lock on %s won't budge — check folder permissions",
                 file_path,
             )
             raise
         except OSError as e:
             if "No space left" in str(e) or e.errno == 28:
                 logger.error(
-                    "Disk full — cannot write to %s. Free up space and re-run.",
+                    "🏴‍☠️ The hold is full! No room for more loot in %s. Make space and re-run.",
                     file_path,
                 )
             else:
-                logger.error("Failed to write %s: %s", file_path, e)
+                logger.error("🏴‍☠️ Blimey! Failed to stash loot in %s: %s", file_path, e)
             raise
 
 
@@ -117,18 +117,18 @@ def flush_entries_by_date(entries, vault_path, parse_date_fn):
                         f.write(json.dumps(entry) + "\n")
             except PermissionError:
                 logger.error(
-                    "Permission denied writing to %s — check folder permissions.",
+                    "🏴‍☠️ Blimey! The lock on %s won't budge — check folder permissions",
                     file_path,
                 )
                 raise
             except OSError as e:
                 if "No space left" in str(e) or e.errno == 28:
                     logger.error(
-                        "Disk full — cannot write to %s. Free up space and re-run.",
+                        "🏴‍☠️ The hold is full! No room for more loot in %s. Make space and re-run.",
                         file_path,
                     )
                 else:
-                    logger.error("Failed to write %s: %s", file_path, e)
+                    logger.error("🏴‍☠️ Blimey! Failed to stash loot in %s: %s", file_path, e)
                 raise
 
 
@@ -148,7 +148,7 @@ def count_entries(vault_path):
                     if line.strip():
                         total += 1
         except (OSError, PermissionError) as e:
-            logger.warning("Cannot read %s: %s", file_path, e)
+            logger.warning("📖 Can't open treasure chest %s: %s", file_path, e)
 
     return total, num_files
 
@@ -169,12 +169,12 @@ def read_all_entries(vault_path):
                         yield json.loads(line)
                     except json.JSONDecodeError:
                         logger.warning(
-                            "Skipping malformed JSON in %s line %d",
+                            "🏴‍☠️ Barnacle-encrusted JSON in %s line %d — tossin' it overboard",
                             file_path,
                             line_num,
                         )
         except (OSError, PermissionError) as e:
-            logger.warning("Cannot read %s: %s", file_path, e)
+            logger.warning("📖 Can't open treasure chest %s: %s", file_path, e)
 
 
 def read_entry_ids(vault_path):
@@ -220,12 +220,12 @@ def verify_integrity(vault_path):
     duplicates = disk_entries - len(disk_ids)
 
     if not missing and duplicates == 0:
-        print(f"  Integrity OK ({len(disk_ids):,} entries, all accounted for)")
+        print(f"  ⚓ All hands accounted for! ({len(disk_ids):,} entries, shipshape)")
     else:
         if missing:
-            print(f"  WARNING: {len(missing):,} IDs in log but missing from disk")
+            print(f"  🎯 The Sniper spotted {len(missing):,} ghost IDs — logged but missing from the hold")
         if duplicates > 0:
-            print(f"  INFO: {duplicates:,} duplicate entries found")
+            print(f"  🧹 {duplicates:,} duplicate doubloons rattling around in the hold")
 
     return {
         "disk_ids": disk_ids,
@@ -265,13 +265,13 @@ def atomic_write(file_path, lines):
     try:
         fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".tmp")
     except PermissionError:
-        logger.error("Permission denied creating temp file in %s", dir_name)
+        logger.error("🏴‍☠️ Blimey! The lock on %s won't budge — can't create temp scroll", dir_name)
         raise
     except OSError as e:
         if e.errno == 28:
-            logger.error("Disk full — cannot write to %s.", dir_name)
+            logger.error("🏴‍☠️ The hold is full! No room in %s.", dir_name)
         else:
-            logger.error("Cannot create temp file in %s: %s", dir_name, e)
+            logger.error("🏴‍☠️ Can't create temp scroll in %s: %s", dir_name, e)
         raise
 
     try:
@@ -307,11 +307,11 @@ def read_entries_by_file(vault_path):
                         entries.append(json.loads(line))
                     except json.JSONDecodeError:
                         logger.warning(
-                            "Skipping malformed JSON in %s line %d",
+                            "🏴‍☠️ Barnacle-encrusted JSON in %s line %d — tossin' it overboard",
                             file_path, line_num,
                         )
         except (OSError, PermissionError) as e:
-            logger.warning("Cannot read %s: %s", file_path, e)
+            logger.warning("📖 Can't open treasure chest %s: %s", file_path, e)
             continue
         if entries:
             result[file_path] = entries
@@ -376,7 +376,7 @@ def compress_vault(vault_path, level=9, progress_fn=None):
 
         if comp_lines != orig_lines:
             logger.error(
-                "Verification failed for %s: %d vs %d lines. Keeping original.",
+                "🏴‍☠️ Blimey! Compression verification failed for %s: %d vs %d lines. Keepin' the original.",
                 file_path, orig_lines, comp_lines,
             )
             os.remove(zst_path)

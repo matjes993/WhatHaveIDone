@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Raid Targets{% endblock %}
+
+{% block content %}
+<div class="sources-page">
+    <header class="sources-page__header">
+        <div>
+            <h1 class="sources-page__title jargon" data-rpg="Raid Targets" data-real="Data Sources">Raid Targets</h1>
+            <p class="sources-page__subtitle jargon" data-rpg="{{ collected_count }} of {{ total_sources }} islands plundered" data-real="{{ collected_count }} of {{ total_sources }} sources connected">{{ collected_count }} of {{ total_sources }} islands plundered</p>
+        </div>
+        <div class="sources-page__actions">
+            <button class="sources-page__update-all" onclick="NomoloBridge.updateAllSources()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                Raid All
+            </button>
+            <button class="sources-page__rescan" onclick="NomoloBridge.rescanSources()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m0 0a9 9 0 0 1 9-9m-9 9a9 9 0 0 0 9 9"/></svg>
+                Scan the Horizon
+            </button>
+        </div>
+    </header>
+
+    <!-- Connected Sources -->
+    {% set connected = sources|selectattr('collected')|list %}
+    {% if connected %}
+    <section class="sources-section">
+        <h2 class="sources-section__title jargon" data-rpg="Plundered Islands" data-real="Connected">Plundered Islands</h2>
+        <div class="sources-grid">
+            {% for source in connected %}
+            <div class="source-card source-card--connected">
+                <div class="source-card__icon">
+                    {% if source.icon == 'globe' %}&#127760;{% elif source.icon == 'mail' %}&#9993;{% elif source.icon == 'users' %}&#128101;{% elif source.icon == 'calendar' %}&#128197;{% elif source.icon == 'message-circle' %}&#128172;{% elif source.icon == 'edit-3' %}&#128221;{% elif source.icon == 'image' %}&#128247;{% elif source.icon == 'bookmark' %}&#128278;{% elif source.icon == 'compass' %}&#129517;{% elif source.icon == 'music' %}&#127925;{% elif source.icon == 'play-circle' %}&#9654;{% elif source.icon == 'briefcase' %}&#128188;{% elif source.icon == 'hash' %}#{% elif source.icon == 'send' %}&#9992;{% elif source.icon == 'at-sign' %}@{% elif source.icon == 'message-square' %}&#128488;{% elif source.icon == 'film' %}&#127916;{% elif source.icon == 'dollar-sign' %}${% elif source.icon == 'shopping-cart' %}&#128722;{% elif source.icon == 'heart' %}&#10084;{% else %}&#128196;{% endif %}
+                </div>
+                <div class="source-card__info">
+                    <span class="source-card__name">{{ source.name }}</span>
+                    <span class="source-card__count">{{ "{:,}".format(source.records) }} <span class="jargon" data-rpg="pieces of loot" data-real="records">pieces of loot</span></span>
+                    {% if source.last_updated %}
+                    <span class="source-card__updated" data-iso="{{ source.last_updated }}"></span>
+                    {% endif %}
+                </div>
+                <button class="source-card__refresh" onclick="event.stopPropagation(); NomoloBridge.collectSource('{{ source.id }}')" title="Raid this island again">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                </button>
+                <div class="source-card__status source-card__status--ok">&#10003;</div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Available Sources by Category -->
+    {% set available = sources|rejectattr('collected')|list %}
+    {% if available %}
+    <section class="sources-section">
+        <h2 class="sources-section__title jargon" data-rpg="Uncharted Waters" data-real="Available">Uncharted Waters</h2>
+
+        {% set local = available|selectattr('category', 'equalto', 'local')|list %}
+        {% if local %}
+        <h3 class="sources-subsection__title jargon" data-rpg="Local Harbors (automatic)" data-real="Mac (automatic)">Local Harbors (automatic)</h3>
+        <p class="sources-subsection__desc jargon" data-rpg="These treasures can be plundered automatically from yer Mac." data-real="These sources can be collected automatically from your Mac.">These treasures can be plundered automatically from yer Mac.</p>
+        <div class="sources-grid">
+            {% for source in local %}
+            <div class="source-card source-card--available" onclick="NomoloBridge.collectSource('{{ source.id }}')">
+                <div class="source-card__icon">
+                    {% if source.icon == 'globe' %}&#127760;{% elif source.icon == 'mail' %}&#9993;{% elif source.icon == 'users' %}&#128101;{% elif source.icon == 'calendar' %}&#128197;{% elif source.icon == 'message-circle' %}&#128172;{% elif source.icon == 'edit-3' %}&#128221;{% elif source.icon == 'image' %}&#128247;{% elif source.icon == 'bookmark' %}&#128278;{% elif source.icon == 'compass' %}&#129517;{% else %}&#128196;{% endif %}
+                </div>
+                <div class="source-card__info">
+                    <span class="source-card__name">{{ source.name }}</span>
+                    <span class="source-card__action jargon" data-rpg="Click to plunder" data-real="Click to collect">Click to plunder</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% set google = available|selectattr('category', 'equalto', 'google')|list %}
+        {% if google %}
+        <h3 class="sources-subsection__title jargon" data-rpg="The Omniscient Eye's Domain" data-real="Google">The Omniscient Eye's Domain</h3>
+        <p class="sources-subsection__desc jargon" data-rpg="Requires a letter of marque (credentials.json) from the Eye's Console." data-real="Requires a credentials.json from Google Cloud Console.">Requires a letter of marque (credentials.json) from the Eye's Console.</p>
+        <div class="sources-grid">
+            {% for source in google %}
+            <div class="source-card source-card--available" onclick="NomoloBridge.collectSource('{{ source.id }}')">
+                <div class="source-card__icon">
+                    {% if source.icon == 'mail' %}&#9993;{% elif source.icon == 'users' %}&#128101;{% elif source.icon == 'calendar' %}&#128197;{% else %}&#128196;{% endif %}
+                </div>
+                <div class="source-card__info">
+                    <span class="source-card__name">{{ source.name }}</span>
+                    <span class="source-card__action jargon" data-rpg="Board their ship" data-real="Connect">Board their ship</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% set imports = available|selectattr('category', 'equalto', 'import')|list %}
+        {% if imports %}
+        <h3 class="sources-subsection__title jargon" data-rpg="Captured Cargo" data-real="Import">Captured Cargo</h3>
+        <p class="sources-subsection__desc jargon" data-rpg="Steal yer data back from these platforms and load the cannons." data-real="Export your data from these platforms and upload the file.">Steal yer data back from these platforms and load the cannons.</p>
+        <div class="sources-grid">
+            {% for source in imports %}
+            <div class="source-card source-card--available" onclick="NomoloBridge.collectSource('{{ source.id }}')">
+                <div class="source-card__icon">
+                    {% if source.icon == 'message-circle' %}&#128172;{% elif source.icon == 'send' %}&#9992;{% elif source.icon == 'hash' %}#{% elif source.icon == 'play-circle' %}&#9654;{% elif source.icon == 'music' %}&#127925;{% elif source.icon == 'briefcase' %}&#128188;{% elif source.icon == 'at-sign' %}@{% elif source.icon == 'message-square' %}&#128488;{% elif source.icon == 'film' %}&#127916;{% elif source.icon == 'dollar-sign' %}${% elif source.icon == 'shopping-cart' %}&#128722;{% elif source.icon == 'heart' %}&#10084;{% else %}&#128196;{% endif %}
+                </div>
+                <div class="source-card__info">
+                    <span class="source-card__name">{{ source.name }}</span>
+                    <span class="source-card__action jargon" data-rpg="Load the cannons" data-real="Import">Load the cannons</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    <div class="sources-page__footer">
+        <button class="records__open-folder" onclick="NomoloBridge.openVaultFolder()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Open the treasure chest
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    function relativeTime(isoStr) {
+        if (!isoStr) return '';
+        const date = new Date(isoStr);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffSec = Math.floor(diffMs / 1000);
+        const diffMin = Math.floor(diffSec / 60);
+        const diffHr = Math.floor(diffMin / 60);
+        const diffDay = Math.floor(diffHr / 24);
+
+        if (diffSec < 60) return 'Last raided just now';
+        if (diffMin < 60) return 'Last raided ' + diffMin + 'm ago';
+        if (diffHr < 24) return 'Last raided ' + diffHr + 'h ago';
+        if (diffDay < 7) return 'Last raided ' + diffDay + 'd ago';
+
+        // Show month + day for older dates
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return 'Last raided ' + months[date.getMonth()] + ' ' + date.getDate();
+    }
+
+    document.querySelectorAll('.source-card__updated[data-iso]').forEach(el => {
+        el.textContent = relativeTime(el.dataset.iso);
+    });
+})();
+</script>
+{% endblock %}

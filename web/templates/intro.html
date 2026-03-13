@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}The Story Begins{% endblock %}
+
+{% block head %}
+<style>
+    /* Hide sidebar and top-bar during intro */
+    .top-bar, .sidebar, .main-content { display: none !important; }
+</style>
+{% endblock %}
+
+{% block content %}{% endblock %}
+
+{% block scripts %}
+<div class="intro" id="intro-container">
+    <!-- Skip button — always visible -->
+    <button class="intro__skip" id="intro-skip" onclick="NomoloBridge.skipIntro()">Skip &raquo;</button>
+
+    <!-- Scene 1: The Flatcloud -->
+    <div class="intro__scene intro__scene--active" data-scene="0">
+        <div class="intro__ocean"></div>
+        <div class="intro__stars" id="intro-stars-1"></div>
+        <div class="intro__waves"></div>
+        <div class="intro__waves intro__waves--2"></div>
+        <div class="intro__text-container">
+            <p class="intro__text intro__text--fade">In a world where data flows like water...</p>
+        </div>
+    </div>
+
+    <!-- Scene 2: The Conglomerates -->
+    <div class="intro__scene" data-scene="1">
+        <div class="intro__ocean intro__ocean--dark"></div>
+        <div class="intro__stars" id="intro-stars-2"></div>
+        <div class="intro__fortress-row">
+            <div class="intro__fortress intro__fortress--1">
+                <div class="intro__fortress-light"></div>
+            </div>
+            <div class="intro__fortress intro__fortress--2">
+                <div class="intro__fortress-light"></div>
+            </div>
+            <div class="intro__fortress intro__fortress--3">
+                <div class="intro__fortress-light"></div>
+            </div>
+        </div>
+        <div class="intro__waves"></div>
+        <div class="intro__text-container">
+            <p class="intro__text intro__text--fade">...mighty Conglomerates built empires on other people&rsquo;s treasure.</p>
+        </div>
+    </div>
+
+    <!-- Scene 3: Your Data -->
+    <div class="intro__scene" data-scene="2">
+        <div class="intro__ocean intro__ocean--dark"></div>
+        <div class="intro__fortress-row intro__fortress-row--bg">
+            <div class="intro__fortress intro__fortress--1"></div>
+            <div class="intro__fortress intro__fortress--2"></div>
+            <div class="intro__fortress intro__fortress--3"></div>
+        </div>
+        <div class="intro__floating-items">
+            <span class="intro__float-item" style="--delay: 0s; --x: 20%;">&#x1F4DC;</span>
+            <span class="intro__float-item" style="--delay: 0.5s; --x: 35%;">&#x1FA99;</span>
+            <span class="intro__float-item" style="--delay: 1s; --x: 50%;">&#x1F48E;</span>
+            <span class="intro__float-item" style="--delay: 1.5s; --x: 65%;">&#x1F4F7;</span>
+            <span class="intro__float-item" style="--delay: 2s; --x: 80%;">&#x1F4E7;</span>
+        </div>
+        <div class="intro__text-container">
+            <p class="intro__text intro__text--fade">Your emails. Your photos. Your memories. All locked away.</p>
+        </div>
+    </div>
+
+    <!-- Scene 4: The Awakening -->
+    <div class="intro__scene" data-scene="3">
+        <div class="intro__ocean"></div>
+        <div class="intro__stars" id="intro-stars-3"></div>
+        <div class="intro__waves"></div>
+        <div class="intro__waves intro__waves--2"></div>
+        <div class="intro__ship intro__ship--small">
+            <div class="intro__ship-hull"></div>
+            <div class="intro__ship-mast">
+                <div class="intro__ship-sail"></div>
+                <div class="intro__ship-flag">&#x1F3F4;&#x200D;&#x2620;&#xFE0F;</div>
+            </div>
+        </div>
+        <div class="intro__text-container">
+            <p class="intro__text intro__text--fade">Until one day, a small ship set sail...</p>
+        </div>
+    </div>
+
+    <!-- Scene 5: NOMOLO -->
+    <div class="intro__scene" data-scene="4">
+        <div class="intro__ocean intro__ocean--dawn"></div>
+        <div class="intro__stars" id="intro-stars-4"></div>
+        <div class="intro__waves"></div>
+        <div class="intro__waves intro__waves--2"></div>
+        <div class="intro__ship intro__ship--large">
+            <div class="intro__ship-hull"></div>
+            <div class="intro__ship-mast">
+                <div class="intro__ship-sail"></div>
+                <div class="intro__ship-sail intro__ship-sail--2"></div>
+                <div class="intro__ship-flag">&#x1F3F4;&#x200D;&#x2620;&#xFE0F;</div>
+            </div>
+        </div>
+        <div class="intro__text-container">
+            <h1 class="intro__title">NOMOLO</h1>
+            <p class="intro__subtitle">The Data Pirate&rsquo;s Vessel</p>
+            <p class="intro__tagline intro__text--fade">Your data. Your ship. Your rules.</p>
+        </div>
+    </div>
+
+    <!-- Scene 6: The Call -->
+    <div class="intro__scene" data-scene="5">
+        <div class="intro__ocean intro__ocean--dawn"></div>
+        <div class="intro__stars" id="intro-stars-5"></div>
+        <div class="intro__waves"></div>
+        <div class="intro__text-container intro__text-container--call">
+            <p class="intro__typewriter" id="intro-typewriter"></p>
+            <a href="/" class="intro__cta" id="intro-cta" style="display:none;">Begin Your Journey &rarr;</a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    NomoloBridge.initIntro();
+});
+</script>
+{% endblock %}
