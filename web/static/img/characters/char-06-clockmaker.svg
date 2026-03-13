@@ -1,0 +1,101 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="300" fill="#f5f5f5"/>
+
+  <!-- Floating screens background -->
+  <rect x="20" y="40" width="30" height="40" fill="#25F4EE" stroke="#000000" stroke-width="2" rx="2"/>
+  <rect x="150" y="60" width="30" height="40" fill="#25F4EE" stroke="#000000" stroke-width="2" rx="2"/>
+  <rect x="30" y="220" width="30" height="40" fill="#25F4EE" stroke="#000000" stroke-width="2" rx="2"/>
+  <rect x="140" y="240" width="30" height="40" fill="#25F4EE" stroke="#000000" stroke-width="2" rx="2"/>
+
+  <!-- Clock motifs on screens -->
+  <circle cx="35" cy="60" r="8" fill="none" stroke="#000000" stroke-width="1.5"/>
+  <line x1="35" y1="52" x2="35" y2="48" stroke="#000000" stroke-width="1"/>
+  <line x1="41" y1="60" x2="45" y2="60" stroke="#000000" stroke-width="1"/>
+
+  <circle cx="165" cy="80" r="8" fill="none" stroke="#000000" stroke-width="1.5"/>
+  <line x1="165" y1="72" x2="165" y2="68" stroke="#000000" stroke-width="1"/>
+  <line x1="171" y1="80" x2="175" y2="80" stroke="#000000" stroke-width="1"/>
+
+  <!-- Robe of clock faces -->
+  <!-- Main robe body -->
+  <ellipse cx="100" cy="180" rx="55" ry="70" fill="#FE2C55" stroke="#000000" stroke-width="3"/>
+
+  <!-- Large clock faces on robe -->
+  <circle cx="75" cy="150" r="20" fill="#25F4EE" stroke="#000000" stroke-width="2"/>
+  <circle cx="75" cy="150" r="18" fill="#25F4EE" stroke="#000000" stroke-width="1.5"/>
+  <line x1="75" y1="135" x2="75" y2="130" stroke="#000000" stroke-width="2"/>
+  <line x1="85" y1="150" x2="91" y2="150" stroke="#000000" stroke-width="2"/>
+  <line x1="79" y1="146" x2="83" y2="142" stroke="#000000" stroke-width="1.5"/>
+
+  <circle cx="125" cy="170" r="20" fill="#25F4EE" stroke="#000000" stroke-width="2"/>
+  <circle cx="125" cy="170" r="18" fill="#25F4EE" stroke="#000000" stroke-width="1.5"/>
+  <line x1="125" y1="155" x2="125" y2="150" stroke="#000000" stroke-width="2"/>
+  <line x1="135" y1="170" x2="141" y2="170" stroke="#000000" stroke-width="2"/>
+
+  <circle cx="100" cy="210" r="18" fill="#25F4EE" stroke="#000000" stroke-width="2"/>
+  <circle cx="100" cy="210" r="16" fill="#25F4EE" stroke="#000000" stroke-width="1.5"/>
+  <line x1="100" y1="197" x2="100" y2="192" stroke="#000000" stroke-width="2"/>
+  <line x1="109" y1="210" x2="114" y2="210" stroke="#000000" stroke-width="2"/>
+
+  <!-- Robes with clock face patterns -->
+  <path d="M 50 150 Q 40 180 50 240" fill="none" stroke="#000000" stroke-width="2.5"/>
+  <path d="M 150 150 Q 160 180 150 240" fill="none" stroke="#000000" stroke-width="2.5"/>
+
+  <!-- Arms flowing out -->
+  <ellipse cx="40" cy="160" rx="15" ry="35" fill="#FE2C55" stroke="#000000" stroke-width="2.5" transform="rotate(-30 40 160)"/>
+  <ellipse cx="160" cy="165" rx="15" ry="35" fill="#FE2C55" stroke="#000000" stroke-width="2.5" transform="rotate(30 160 165)"/>
+
+  <!-- Hands -->
+  <circle cx="25" cy="145" r="12" fill="#FE2C55" stroke="#000000" stroke-width="2"/>
+  <circle cx="175" cy="150" r="12" fill="#FE2C55" stroke="#000000" stroke-width="2"/>
+
+  <!-- Legs peeking out -->
+  <rect x="80" y="240" width="12" height="50" fill="#000000" stroke="#000000" stroke-width="2"/>
+  <rect x="108" y="240" width="12" height="50" fill="#000000" stroke="#000000" stroke-width="2"/>
+
+  <!-- Shoes -->
+  <ellipse cx="86" cy="295" rx="10" ry="8" fill="#FE2C55" stroke="#000000" stroke-width="2"/>
+  <ellipse cx="114" cy="295" rx="10" ry="8" fill="#FE2C55" stroke="#000000" stroke-width="2"/>
+
+  <!-- Head -->
+  <circle cx="100" cy="100" r="35" fill="#FE2C55" stroke="#000000" stroke-width="3"/>
+
+  <!-- Theatrical mask face -->
+  <!-- Mask base -->
+  <rect x="70" y="80" width="60" height="45" fill="#000000" stroke="#000000" stroke-width="2" rx="5"/>
+
+  <!-- Left side - happy expression -->
+  <circle cx="85" cy="90" r="6" fill="#25F4EE" stroke="#000000" stroke-width="1.5"/>
+  <path d="M 75 110 Q 85 120 95 110" fill="none" stroke="#25F4EE" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Right side - surprised expression -->
+  <circle cx="115" cy="92" r="7" fill="#FE2C55" stroke="#000000" stroke-width="1.5"/>
+  <ellipse cx="115" cy="115" rx="6" ry="10" fill="none" stroke="#FE2C55" stroke-width="2.5"/>
+
+  <!-- Mask design lines -->
+  <line x1="100" y1="80" x2="100" y2="125" stroke="#25F4EE" stroke-width="2"/>
+  <line x1="70" y1="102" x2="130" y2="102" stroke="#000000" stroke-width="1.5"/>
+
+  <!-- Ticking clock symbols floating -->
+  <g transform="translate(50, 50)">
+    <circle cx="0" cy="0" r="8" fill="none" stroke="#FE2C55" stroke-width="1.5"/>
+    <line x1="0" y1="-4" x2="0" y2="-7" stroke="#FE2C55" stroke-width="1"/>
+    <line x1="3" y1="0" x2="6" y2="0" stroke="#FE2C55" stroke-width="1"/>
+  </g>
+
+  <g transform="translate(150, 280)">
+    <circle cx="0" cy="0" r="8" fill="none" stroke="#25F4EE" stroke-width="1.5"/>
+    <line x1="0" y1="-4" x2="0" y2="-7" stroke="#25F4EE" stroke-width="1"/>
+    <line x1="4" y1="0" x2="7" y2="0" stroke="#25F4EE" stroke-width="1"/>
+  </g>
+
+  <!-- Decorative gears -->
+  <g transform="translate(20, 260)">
+    <circle cx="0" cy="0" r="7" fill="none" stroke="#000000" stroke-width="1.5"/>
+    <rect x="-2" y="-10" width="4" height="4" fill="#000000"/>
+    <rect x="-2" y="6" width="4" height="4" fill="#000000"/>
+    <rect x="-10" y="-2" width="4" height="4" fill="#000000"/>
+    <rect x="6" y="-2" width="4" height="4" fill="#000000"/>
+  </g>
+</svg>

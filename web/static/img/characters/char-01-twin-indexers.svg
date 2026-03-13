@@ -1,0 +1,102 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="300" fill="#E8F4F8"/>
+
+  <!-- Shadow -->
+  <ellipse cx="100" cy="280" rx="60" ry="12" fill="#00000020"/>
+
+  <!-- SURJAY (LEFT) -->
+  <g id="surjay">
+    <!-- Lab coat -->
+    <ellipse cx="55" cy="180" rx="35" ry="50" fill="#FFFFFF" stroke="#333333" stroke-width="2"/>
+
+    <!-- Hawaiian shirt visible under coat -->
+    <rect x="35" y="140" width="40" height="50" fill="#EA4335" stroke="#333333" stroke-width="1.5"/>
+    <circle cx="45" cy="155" r="3" fill="#34A853"/>
+    <circle cx="50" cy="150" r="2" fill="#FBBC05"/>
+    <circle cx="55" cy="158" r="3" fill="#4285F4"/>
+
+    <!-- Head -->
+    <circle cx="55" cy="110" r="22" fill="#F4B183" stroke="#333333" stroke-width="2"/>
+
+    <!-- Hair -->
+    <circle cx="55" cy="95" r="20" fill="#8B4513" stroke="#333333" stroke-width="1.5"/>
+
+    <!-- Goggles -->
+    <circle cx="48" cy="108" r="10" fill="#4285F4" stroke="#333333" stroke-width="2"/>
+    <circle cx="62" cy="108" r="10" fill="#4285F4" stroke="#333333" stroke-width="2"/>
+    <rect x="58" y="104" width="4" height="8" fill="#333333"/>
+    <circle cx="48" cy="108" r="6" fill="#E8F4F8" opacity="0.6"/>
+    <circle cx="62" cy="108" r="6" fill="#E8F4F8" opacity="0.6"/>
+
+    <!-- Beanie: striped -->
+    <path d="M 40 85 Q 55 70 70 85 Q 68 78 55 75 Q 42 78 40 85" fill="#EA4335" stroke="#333333" stroke-width="2"/>
+    <path d="M 42 82 Q 55 72 68 82" fill="#FBBC05" stroke="none"/>
+    <path d="M 40 85 Q 55 75 70 85" fill="#34A853" stroke="none"/>
+    <path d="M 42 87 Q 55 77 68 87" fill="#4285F4" stroke="none"/>
+
+    <!-- Beanie pom-pom -->
+    <circle cx="55" cy="68" r="7" fill="#FF6B6B" stroke="#333333" stroke-width="1.5"/>
+
+    <!-- Face -->
+    <circle cx="50" cy="115" r="2.5" fill="#333333"/>
+    <circle cx="60" cy="115" r="2.5" fill="#333333"/>
+    <path d="M 52 120 Q 55 122 58 120" stroke="#333333" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+    <!-- Legs -->
+    <rect x="48" y="225" width="8" height="35" fill="#4D4D4D" stroke="#333333" stroke-width="1.5"/>
+    <rect x="64" y="225" width="8" height="35" fill="#4D4D4D" stroke="#333333" stroke-width="1.5"/>
+
+    <!-- Shoes -->
+    <ellipse cx="52" cy="262" rx="6" ry="5" fill="#8B0000" stroke="#333333" stroke-width="1.5"/>
+    <ellipse cx="68" cy="262" rx="6" ry="5" fill="#8B0000" stroke="#333333" stroke-width="1.5"/>
+  </g>
+
+  <!-- LORRY (RIGHT) -->
+  <g id="lorry">
+    <!-- Lab coat -->
+    <ellipse cx="145" cy="180" rx="35" ry="50" fill="#FFFFFF" stroke="#333333" stroke-width="2"/>
+
+    <!-- Hawaiian shirt visible -->
+    <rect x="125" y="140" width="40" height="50" fill="#FBBC05" stroke="#333333" stroke-width="1.5"/>
+    <circle cx="135" cy="155" r="3" fill="#EA4335"/>
+    <circle cx="140" cy="150" r="2" fill="#4285F4"/>
+    <circle cx="145" cy="158" r="3" fill="#34A853"/>
+
+    <!-- Head -->
+    <circle cx="145" cy="110" r="22" fill="#F4B183" stroke="#333333" stroke-width="2"/>
+
+    <!-- Hair -->
+    <circle cx="145" cy="95" r="20" fill="#8B4513" stroke="#333333" stroke-width="1.5"/>
+
+    <!-- Propeller hat -->
+    <circle cx="145" cy="75" r="12" fill="#34A853" stroke="#333333" stroke-width="2"/>
+    <!-- Propeller blades -->
+    <rect x="130" y="72" width="30" height="6" rx="3" fill="#EA4335" stroke="#333333" stroke-width="1.5" transform="rotate(45 145 75)"/>
+    <rect x="130" y="72" width="30" height="6" rx="3" fill="#4285F4" stroke="#333333" stroke-width="1.5" transform="rotate(-45 145 75)"/>
+
+    <!-- Face -->
+    <circle cx="140" cy="115" r="2.5" fill="#333333"/>
+    <circle cx="150" cy="115" r="2.5" fill="#333333"/>
+    <path d="M 142 120 Q 145 122 148 120" stroke="#333333" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+    <!-- Book in hand -->
+    <rect x="160" y="160" width="20" height="40" rx="2" fill="#8B4513" stroke="#333333" stroke-width="2"/>
+    <rect x="162" y="162" width="16" height="36" fill="#D2691E" stroke="#333333" stroke-width="1"/>
+    <line x1="162" y1="170" x2="178" y2="170" stroke="#FFD700" stroke-width="1.5"/>
+    <line x1="162" y1="178" x2="178" y2="178" stroke="#FFD700" stroke-width="1.5"/>
+    <line x1="162" y1="186" x2="178" y2="186" stroke="#FFD700" stroke-width="1.5"/>
+    <line x1="162" y1="194" x2="178" y2="194" stroke="#FFD700" stroke-width="1.5"/>
+
+    <!-- Legs -->
+    <rect x="138" y="225" width="8" height="35" fill="#4D4D4D" stroke="#333333" stroke-width="1.5"/>
+    <rect x="154" y="225" width="8" height="35" fill="#4D4D4D" stroke="#333333" stroke-width="1.5"/>
+
+    <!-- Shoes -->
+    <ellipse cx="142" cy="262" rx="6" ry="5" fill="#8B0000" stroke="#333333" stroke-width="1.5"/>
+    <ellipse cx="158" cy="262" rx="6" ry="5" fill="#8B0000" stroke="#333333" stroke-width="1.5"/>
+  </g>
+
+  <!-- Connection line showing they're brothers -->
+  <line x1="90" y1="110" x2="110" y2="110" stroke="#4285F4" stroke-width="2" opacity="0.5" stroke-dasharray="4,4"/>
+</svg>

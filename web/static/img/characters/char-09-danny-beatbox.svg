@@ -1,0 +1,109 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with faint green aura -->
+  <defs>
+    <radialGradient id="aura" cx="50%" cy="40%">
+      <stop offset="0%" style="stop-color:#1DB954;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#1DB954;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="200" height="300" fill="#f5f5f5"/>
+
+  <!-- Green aura -->
+  <ellipse cx="100" cy="120" rx="90" ry="100" fill="url(#aura)"/>
+
+  <!-- ENORMOUS oversized headphones -->
+  <!-- Left ear cup (HUGE) -->
+  <circle cx="35" cy="60" r="45" fill="#1DB954" stroke="#000000" stroke-width="3"/>
+  <circle cx="35" cy="60" r="40" fill="#1DB954" stroke="#000000" stroke-width="2"/>
+
+  <!-- Headphone speaker detail on left -->
+  <circle cx="35" cy="60" r="28" fill="none" stroke="#000000" stroke-width="2"/>
+  <circle cx="35" cy="60" r="22" fill="none" stroke="#000000" stroke-width="1.5"/>
+  <circle cx="35" cy="60" r="16" fill="none" stroke="#000000" stroke-width="1"/>
+
+  <!-- Right ear cup (HUGE) -->
+  <circle cx="165" cy="60" r="45" fill="#1DB954" stroke="#000000" stroke-width="3"/>
+  <circle cx="165" cy="60" r="40" fill="#1DB954" stroke="#000000" stroke-width="2"/>
+
+  <!-- Headphone speaker detail on right -->
+  <circle cx="165" cy="60" r="28" fill="none" stroke="#000000" stroke-width="2"/>
+  <circle cx="165" cy="60" r="22" fill="none" stroke="#000000" stroke-width="1.5"/>
+  <circle cx="165" cy="60" r="16" fill="none" stroke="#000000" stroke-width="1"/>
+
+  <!-- Headphone headband -->
+  <path d="M 50 25 Q 100 -5 150 25" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 50 25 Q 100 0 150 25" fill="none" stroke="#1DB954" stroke-width="2.5"/>
+
+  <!-- Head (tiny compared to headphones) -->
+  <circle cx="100" cy="130" r="28" fill="#f4a460" stroke="#000000" stroke-width="3"/>
+
+  <!-- Minimalist Scandinavian style face -->
+  <!-- Eyes -->
+  <circle cx="90" cy="120" r="3.5" fill="#000000"/>
+  <circle cx="110" cy="120" r="3.5" fill="#000000"/>
+
+  <!-- Simple line mouth -->
+  <line x1="92" y1="140" x2="108" y2="140" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Black turtleneck (slim Scandinavian) -->
+  <path d="M 70 155 L 65 240 Q 65 255 80 260 L 120 260 Q 135 255 135 240 L 130 155 Z" fill="#000000" stroke="#000000" stroke-width="2.5"/>
+
+  <!-- Turtleneck collar -->
+  <path d="M 75 155 Q 100 165 125 155" fill="#1a1a1a" stroke="#000000" stroke-width="2"/>
+
+  <!-- Slim body under turtleneck -->
+  <rect x="70" y="155" width="60" height="70" fill="#1a1a1a" stroke="none"/>
+
+  <!-- Arms in tapping/dancing pose -->
+  <!-- Left arm up and bent -->
+  <ellipse cx="55" cy="140" rx="10" ry="35" fill="#f4a460" stroke="#000000" stroke-width="2.5" transform="rotate(-45 55 140)"/>
+
+  <!-- Left hand -->
+  <circle cx="38" cy="110" r="9" fill="#f4a460" stroke="#000000" stroke-width="2"/>
+
+  <!-- Right arm up and bent -->
+  <ellipse cx="145" cy="135" rx="10" ry="35" fill="#f4a460" stroke="#000000" stroke-width="2.5" transform="rotate(45 145 135)"/>
+
+  <!-- Right hand -->
+  <circle cx="162" cy="105" r="9" fill="#f4a460" stroke="#000000" stroke-width="2"/>
+
+  <!-- Legs in dynamic stance -->
+  <rect x="80" y="225" width="12" height="55" fill="#1a1a1a" stroke="#000000" stroke-width="2" transform="rotate(-15 86 225)"/>
+  <rect x="108" y="230" width="12" height="55" fill="#1a1a1a" stroke="#000000" stroke-width="2" transform="rotate(15 114 230)"/>
+
+  <!-- Minimalist shoes -->
+  <ellipse cx="82" cy="280" rx="11" ry="9" fill="#000000" stroke="#000000" stroke-width="2"/>
+  <ellipse cx="118" cy="285" rx="11" ry="9" fill="#000000" stroke="#000000" stroke-width="2"/>
+
+  <!-- Green musical notes floating around him -->
+  <g transform="translate(25, 100)">
+    <!-- Double eighth note -->
+    <circle cx="0" cy="10" r="2.5" fill="#1DB954" stroke="#000000" stroke-width="1"/>
+    <circle cx="6" cy="8" r="2.5" fill="#1DB954" stroke="#000000" stroke-width="1"/>
+    <path d="M 2.5 10 Q 4 4 6.5 8" fill="none" stroke="#1DB954" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="2.5" y1="10" x2="2.5" y2="0" stroke="#1DB954" stroke-width="1"/>
+    <line x1="6.5" y1="8" x2="6.5" y2="0" stroke="#1DB954" stroke-width="1"/>
+  </g>
+
+  <g transform="translate(175, 120)">
+    <!-- Single note -->
+    <circle cx="0" cy="10" r="2.5" fill="#1DB954" stroke="#000000" stroke-width="1"/>
+    <line x1="0" y1="10" x2="0" y2="0" stroke="#1DB954" stroke-width="1.5"/>
+    <path d="M 0 0 Q 2 -2 4 -1" fill="none" stroke="#1DB954" stroke-width="1.5"/>
+  </g>
+
+  <g transform="translate(40, 200)">
+    <!-- Double note flowing -->
+    <circle cx="0" cy="0" r="2.5" fill="#1DB954" stroke="#000000" stroke-width="1"/>
+    <circle cx="7" cy="-3" r="2.5" fill="#1DB954" stroke="#000000" stroke-width="1"/>
+    <path d="M 3.5 0 Q 5 -5 7 -3" fill="none" stroke="#1DB954" stroke-width="1.5"/>
+    <line x1="0" y1="0" x2="0" y2="-10" stroke="#1DB954" stroke-width="1"/>
+    <line x1="7" y1="-3" x2="7" y2="-13" stroke="#1DB954" stroke-width="1"/>
+  </g>
+
+  <!-- Sound wave emanations (green arcs) -->
+  <circle cx="100" cy="130" r="45" fill="none" stroke="#1DB954" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="100" cy="130" r="60" fill="none" stroke="#1DB954" stroke-width="1" opacity="0.4"/>
+  <circle cx="100" cy="130" r="75" fill="none" stroke="#1DB954" stroke-width="0.8" opacity="0.2"/>
+</svg>

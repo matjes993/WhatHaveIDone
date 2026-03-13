@@ -1,0 +1,81 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="300" fill="#F5F5F5"/>
+
+  <!-- Subtle white glow -->
+  <circle cx="100" cy="140" r="75" fill="#FFFFFF" opacity="0.3"/>
+  <circle cx="100" cy="140" r="65" fill="#FFFFFF" opacity="0.15"/>
+
+  <!-- Shadow (rounded) -->
+  <ellipse cx="100" cy="280" rx="45" ry="10" fill="#00000015"/>
+
+  <!-- Slacks (grey, rounded) -->
+  <path d="M 82 210 Q 80 225 82 245 L 82 270 Q 82 275 87 275 L 90 275 Q 95 275 95 270 L 95 210 Z" fill="#CCCCCC" stroke="#999999" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M 118 210 Q 120 225 118 245 L 118 270 Q 118 275 113 275 L 110 275 Q 105 275 105 270 L 105 210 Z" fill="#CCCCCC" stroke="#999999" stroke-width="2" stroke-linejoin="round"/>
+
+  <!-- Shoes (white, rounded) -->
+  <ellipse cx="87" cy="275" rx="8" ry="7" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="1.5"/>
+  <ellipse cx="113" cy="275" rx="8" ry="7" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="1.5"/>
+
+  <!-- White turtleneck (rounded silhouette) -->
+  <path d="M 70 160 Q 68 175 70 195 L 130 195 Q 132 175 130 160 Z" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- Turtleneck neck roll (rounded) -->
+  <path d="M 80 155 Q 75 158 75 165 Q 75 172 80 175 L 120 175 Q 125 172 125 165 Q 125 158 120 155 Z" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="2" stroke-linejoin="round"/>
+
+  <!-- Arms (white long sleeves, very rounded) -->
+  <path d="M 68 170 Q 55 170 50 185 L 50 215 Q 52 220 58 220 L 68 210 Z" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M 132 170 Q 145 170 150 185 L 150 215 Q 148 220 142 220 L 132 210 Z" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="2" stroke-linejoin="round"/>
+
+  <!-- Hands (pale, rounded) -->
+  <circle cx="48" cy="220" r="7" fill="#F0E8D8" stroke="#CCCCCC" stroke-width="1.5"/>
+  <circle cx="152" cy="220" r="7" fill="#F0E8D8" stroke="#CCCCCC" stroke-width="1.5"/>
+
+  <!-- Proprietary white cable (holding in hand) -->
+  <g id="cable">
+    <!-- Cable path -->
+    <path d="M 150 225 Q 165 240 170 260" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+    <!-- Connector: unique/proprietary shape (rounded square) -->
+    <rect x="167" y="260" width="10" height="10" rx="3" fill="#E0E0E0" stroke="#999999" stroke-width="1.5"/>
+    <!-- Connector detail -->
+    <circle cx="172" cy="265" r="1.5" fill="#999999"/>
+  </g>
+
+  <!-- Head (slim, rounded) -->
+  <ellipse cx="100" cy="105" r="25" ry="30" fill="#F0E8D8" stroke="#CCCCCC" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- Hair (minimal, grey, very rounded) -->
+  <path d="M 70 85 Q 70 70 100 68 Q 130 70 130 85 Z" fill="#C0C0C0" stroke="#999999" stroke-width="2"/>
+
+  <!-- Gentle kind eyes -->
+  <circle cx="87" cy="100" r="4" fill="#E8F4F8" stroke="#999999" stroke-width="1.5"/>
+  <circle cx="113" cy="100" r="4" fill="#E8F4F8" stroke="#999999" stroke-width="1.5"/>
+  <circle cx="87" cy="100" r="2.5" fill="#4A9FFF"/>
+  <circle cx="113" cy="100" r="2.5" fill="#4A9FFF"/>
+  <circle cx="88" cy="99" r="1" fill="#FFFFFF"/>
+  <circle cx="114" cy="99" r="1" fill="#FFFFFF"/>
+
+  <!-- Secretive half-smile -->
+  <path d="M 90 115 Q 100 120 110 115" fill="none" stroke="#999999" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Silver-rimmed round glasses -->
+  <circle cx="84" cy="96" r="9" fill="#E8F4F8" stroke="#C0C0C0" stroke-width="2.5"/>
+  <circle cx="116" cy="96" r="9" fill="#E8F4F8" stroke="#C0C0C0" stroke-width="2.5"/>
+
+  <!-- Glasses bridge (rounded) -->
+  <path d="M 93 96 Q 100 95 107 96" fill="none" stroke="#C0C0C0" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Glasses nose pieces -->
+  <circle cx="93" cy="96" r="2" fill="#C0C0C0"/>
+  <circle cx="107" cy="96" r="2" fill="#C0C0C0"/>
+
+  <!-- Inner lens reflections (rounded) -->
+  <ellipse cx="78" cy="92" rx="3" ry="2.5" fill="#FFFFFF" opacity="0.6"/>
+  <ellipse cx="122" cy="92" rx="3" ry="2.5" fill="#FFFFFF" opacity="0.6"/>
+
+  <!-- Minimal nose (very subtle) -->
+  <path d="M 100 105 L 100 112" stroke="#D0C8B8" stroke-width="1" opacity="0.5"/>
+
+  <!-- Rounded posture line (elegant curve) -->
+  <path d="M 100 175 Q 98 200 100 250" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.3" stroke-dasharray="4,4"/>
+</svg>

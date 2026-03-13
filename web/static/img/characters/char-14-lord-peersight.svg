@@ -1,0 +1,109 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background - dark, minimal -->
+  <rect width="200" height="300" fill="#1A1A1A"/>
+
+  <!-- Obsidian tower silhouette behind -->
+  <g id="tower" opacity="0.15">
+    <polygon points="140,180 145,120 150,180" fill="#000000" stroke="#7C3AED" stroke-width="1"/>
+    <polygon points="145,140 148,100 151,140" fill="#000000" stroke="#7C3AED" stroke-width="0.5"/>
+    <polygon points="148,110 150,80 152,110" fill="#000000" stroke="#7C3AED" stroke-width="0.5"/>
+  </g>
+
+  <!-- Shadow -->
+  <ellipse cx="100" cy="270" rx="45" ry="10" fill="#7C3AED" opacity="0.1"/>
+
+  <!-- Dark cloak -->
+  <path d="M 65 130 Q 60 170 65 220 Q 85 250 100 260 Q 115 250 135 220 Q 140 170 135 130 Z" fill="#101820" stroke="#2A2A3A" stroke-width="1"/>
+
+  <!-- Cloak folds -->
+  <path d="M 75 150 Q 72 190 75 230" stroke="#2A2A3A" stroke-width="1.5" fill="none" opacity="0.6"/>
+  <path d="M 125 150 Q 128 190 125 230" stroke="#2A2A3A" stroke-width="1.5" fill="none" opacity="0.6"/>
+
+  <!-- Cloak interior shadow -->
+  <ellipse cx="100" cy="180" rx="25" ry="45" fill="#000000" opacity="0.3"/>
+
+  <!-- Neck -->
+  <rect x="92" y="120" width="16" height="12" fill="#E8E8E8" opacity="0.9"/>
+
+  <!-- Head - pale, intense -->
+  <circle cx="100" cy="105" r="22" fill="#F5F5F5" stroke="#CCCCCC" stroke-width="1"/>
+
+  <!-- Pale skin shading -->
+  <circle cx="100" cy="105" r="21" fill="none" stroke="#D0D0D0" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- Long dark hair -->
+  <path d="M 78 93 Q 78 70 100 65 Q 122 70 122 93" fill="#0F0F0F" stroke="#1A1A1A" stroke-width="1"/>
+
+  <!-- Hair detail - sleek -->
+  <path d="M 80 80 Q 100 72 120 80" stroke="#1A1A1A" stroke-width="1" fill="none" opacity="0.5"/>
+
+  <!-- Eyes - one with glowing purple monocle -->
+  <!-- Left eye normal -->
+  <circle cx="88" cy="105" r="3" fill="#000000"/>
+  <circle cx="88" cy="105" r="1.5" fill="#F5F5F5" opacity="0.6"/>
+
+  <!-- Right eye with glowing monocle -->
+  <!-- Monocle lens -->
+  <circle cx="112" cy="105" r="8" fill="none" stroke="#7C3AED" stroke-width="2"/>
+  <circle cx="112" cy="105" r="7.5" fill="#7C3AED" opacity="0.2"/>
+  <!-- Monocle eye behind -->
+  <circle cx="112" cy="105" r="3" fill="#000000"/>
+  <circle cx="112" cy="105" r="1.5" fill="#F5F5F5" opacity="0.6"/>
+  <!-- Monocle chain -->
+  <line x1="120" y1="105" x2="128" y2="125" stroke="#7C3AED" stroke-width="1" opacity="0.7"/>
+
+  <!-- Data streams in monocle lens -->
+  <circle cx="110" cy="102" r="0.5" fill="#7C3AED" opacity="0.8"/>
+  <circle cx="114" cy="104" r="0.5" fill="#7C3AED" opacity="0.8"/>
+  <circle cx="112" cy="108" r="0.5" fill="#7C3AED" opacity="0.8"/>
+  <line x1="110" y1="102" x2="114" y2="104" stroke="#7C3AED" stroke-width="0.5" opacity="0.6"/>
+  <line x1="114" y1="104" x2="112" y2="108" stroke="#7C3AED" stroke-width="0.5" opacity="0.6"/>
+
+  <!-- Eyebrows - intense -->
+  <path d="M 83 99 Q 88 97 93 99" stroke="#1A1A1A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M 107 99 Q 112 97 117 99" stroke="#1A1A1A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Nose - sharp -->
+  <polygon points="100,108 98,115 102,115" fill="#E8E8E8"/>
+
+  <!-- Mouth - thin, expressionless -->
+  <path d="M 94 120 Q 100 121 106 120" stroke="#A0A0A0" stroke-width="1" fill="none" stroke-linecap="round"/>
+
+  <!-- Long, steepled fingers -->
+  <!-- Left hand -->
+  <g id="left-hand">
+    <rect x="60" y="155" width="4" height="30" fill="#F5F5F5" rx="2"/>
+    <rect x="66" y="155" width="4" height="30" fill="#F5F5F5" rx="2"/>
+    <rect x="72" y="160" width="4" height="25" fill="#F5F5F5" rx="2"/>
+    <!-- Finger tips steepled -->
+    <polygon points="64,155 66,145 68,155" fill="#F5F5F5"/>
+    <polygon points="70,160 72,150 74,160" fill="#F5F5F5"/>
+  </g>
+
+  <!-- Right hand -->
+  <g id="right-hand">
+    <rect x="130" y="155" width="4" height="30" fill="#F5F5F5" rx="2"/>
+    <rect x="136" y="155" width="4" height="30" fill="#F5F5F5" rx="2"/>
+    <rect x="124" y="160" width="4" height="25" fill="#F5F5F5" rx="2"/>
+    <!-- Finger tips steepled -->
+    <polygon points="132,155" points="132,155 134,145 136,155" fill="#F5F5F5"/>
+    <polygon points="126,160 128,150 130,160" fill="#F5F5F5"/>
+  </g>
+
+  <!-- Crystal ball (palantír) floating/orbiting around head -->
+  <g id="crystal-ball" transform="translate(140, 95)">
+    <circle cx="0" cy="0" r="10" fill="#7C3AED" opacity="0.3" stroke="#7C3AED" stroke-width="2"/>
+    <circle cx="0" cy="0" r="9" fill="none" stroke="#7C3AED" stroke-width="1" opacity="0.6"/>
+    <!-- Eye symbol inside -->
+    <circle cx="0" cy="0" r="3" fill="#7C3AED" opacity="0.5"/>
+    <circle cx="-1" cy="-1" r="1" fill="#FFFFFF" opacity="0.7"/>
+    <!-- Orbit path -->
+    <ellipse cx="0" cy="0" rx="12" ry="8" fill="none" stroke="#7C3AED" stroke-width="0.5" opacity="0.3" stroke-dasharray="2,1"/>
+  </g>
+
+  <!-- All-seeing eye motif - subtle glow around whole figure -->
+  <circle cx="100" cy="110" r="35" fill="none" stroke="#7C3AED" stroke-width="0.5" opacity="0.2" stroke-dasharray="3,2"/>
+
+  <!-- Character name -->
+  <text x="100" y="290" font-size="13" font-family="Arial, sans-serif" font-weight="bold" text-anchor="middle" fill="#7C3AED">LORD PEERSIGHT</text>
+</svg>

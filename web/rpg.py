@@ -352,70 +352,71 @@ VILLAIN_REGISTRY = {
 }
 
 # ---------------------------------------------------------------------------
-# CHARACTER PORTRAITS — Placeholder SVG mappings from Cowork's assets
+# CHARACTER PORTRAITS — Villain-specific SVG mappings
 # ---------------------------------------------------------------------------
-# These are GENERIC Monkey Island-style SVGs used as temporary placeholders.
-# Cowork will create actual villain-specific art later.
-# Each entry maps a villain_id to its placeholder SVG path and richer
-# character data from Cowork's nomolo-characters.json.
+# Character-specific SVGs from nomolo-characters.json (v0.3.0).
+# Generic pirate SVGs (01-mighty-pirate.svg through 10-island-parrot.svg)
+# remain in the directory as fallbacks for villains without specific art.
+#
+# Villains with character-specific art that don't have VILLAIN_REGISTRY
+# entries yet (will be added later):
+#   - The Clockmaker (TikTok)       → char-06-clockmaker.svg,             cowork_id=6
+#   - Travis the Rater (Uber)       → char-08-travis-rater.svg,           cowork_id=8
+#   - Subscription Sorcerer (Adobe) → char-13-subscription-sorcerer.svg,  cowork_id=13
+#   - Lord Peersight (Palantir)     → char-14-lord-peersight.svg,         cowork_id=14
+#   - Sham the Confabulator (OpenAI) → char-20-sham-confabulator.svg,     cowork_id=20
 
 CHARACTER_PORTRAITS = {
     "omniscient_eye": {
-        "svg": "/static/img/characters/06-island-governor.svg",
+        "svg": "/static/img/characters/char-01-twin-indexers.svg",
         "cowork_name": "The Twin Indexers: Surjay & Lorry",
         "island_name": "Joogle Archipelago",
         "cowork_id": 1,
     },
-    "walled_garden": {
-        "svg": "/static/img/characters/08-island-merchant.svg",
-        "cowork_name": "Sir Timothee of Cupertino",
-        "island_name": "Apple Atoll",
-        "cowork_id": 4,
-    },
     "hydra_of_faces": {
-        "svg": "/static/img/characters/02-ghost-pirate.svg",
+        "svg": "/static/img/characters/char-02-sugarmountain.svg",
         "cowork_name": "Lord Sugarmountain",
         "island_name": "Metarock Island",
         "cowork_id": 2,
     },
-    "melody_merchant": {
-        "svg": "/static/img/characters/10-island-parrot.svg",
-        "cowork_name": "Danny Beatbox",
-        "island_name": "Spotifyre Cove",
-        "cowork_id": 9,
-    },
     "bazaar_eternal": {
-        "svg": "/static/img/characters/09-cannoneer.svg",
+        "svg": "/static/img/characters/char-03-captain-bazoom.svg",
         "cowork_name": "Captain Bazoom",
         "island_name": "Amazonia",
         "cowork_id": 3,
     },
+    "walled_garden": {
+        "svg": "/static/img/characters/char-04-sir-timothee.svg",
+        "cowork_name": "Sir Timothee of Cupertino",
+        "island_name": "Apple Atoll",
+        "cowork_id": 4,
+    },
     "professional_masque": {
-        "svg": "/static/img/characters/04-tavern-keeper.svg",
+        "svg": "/static/img/characters/char-05-gill-of-gates.svg",
         "cowork_name": "Gill of the Gates",
         "island_name": "Windowslandia",
         "cowork_id": 5,
     },
-    "shadow_courier": {
-        "svg": "/static/img/characters/07-skeleton-pirate.svg",
-        "cowork_name": "Evan the Ephemeral",
-        "island_name": "Snapshire",
-        "cowork_id": 17,
+    "melody_merchant": {
+        "svg": "/static/img/characters/char-09-danny-beatbox.svg",
+        "cowork_name": "Danny Beatbox",
+        "island_name": "Spotifyre Cove",
+        "cowork_id": 9,
     },
     "chaos_herald": {
-        "svg": "/static/img/characters/01-mighty-pirate.svg",
+        "svg": "/static/img/characters/char-07-melon-tusk.svg",
         "cowork_name": "Melon Tusk",
         "island_name": "Xitter Reef",
         "cowork_id": 7,
     },
     "dream_weaver": {
-        "svg": "/static/img/characters/03-voodoo-priestess.svg",
+        "svg": "/static/img/characters/char-10-reed-canceller.svg",
         "cowork_name": "Reed the Canceller",
         "island_name": "Netflixia",
         "cowork_id": 10,
     },
     "coin_master": {
-        "svg": "/static/img/characters/05-three-headed-monkey.svg",
+        "svg": "/static/img/characters/char-16-freezemaster.svg",
         "cowork_name": "The Freezemaster",
         "island_name": "PayPalace",
         "cowork_id": 16,
@@ -464,7 +465,12 @@ def get_character_portrait(villain_id):
         result["colors"] = cowork.get("colors", {})
         result["catchphrase"] = cowork.get("catchphrase", "")
         result["appearance"] = cowork.get("appearance", "")
-        result["riddle"] = cowork.get("sampleRiddle")
+        # v0.3.0 uses "riddles" (array) instead of "sampleRiddle" (object)
+        riddles = cowork.get("riddles")
+        if riddles and isinstance(riddles, list):
+            result["riddle"] = riddles[0]  # first riddle as the sample
+        else:
+            result["riddle"] = cowork.get("sampleRiddle")
     return result
 
 
@@ -499,9 +505,12 @@ def get_full_character_registry():
                     "personality": cowork.get("personality", ""),
                     "catchphrase": cowork.get("catchphrase", ""),
                     "strength": cowork.get("strength", ""),
-                    "weakness": cowork.get("weakness", ""),
-                    "riddle_theme": cowork.get("riddleTheme", ""),
-                    "sample_riddle": cowork.get("sampleRiddle"),
+                    "backstory": cowork.get("backstory", ""),
+                    # v0.3.0 uses "riddles" array; fall back to legacy fields
+                    "riddles": cowork.get("riddles", []),
+                    "sample_riddle": (cowork.get("riddles", [None])[0]
+                                      if cowork.get("riddles")
+                                      else cowork.get("sampleRiddle")),
                     "data_type": cowork.get("dataType", ""),
                     "colors": cowork.get("colors", {}),
                 }

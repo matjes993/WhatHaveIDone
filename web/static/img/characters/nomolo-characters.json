@@ -1,447 +1,671 @@
 {
   "gameTitle": "Nomolo: The Great Data Liberation",
-  "version": "0.1.0",
-  "concept": "A Monkey Island-inspired adventure where the hero liberates personal data from the clutches of tech villains, each ruling their own island fortress. Defeat each boss by answering their riddle correctly to trigger data collection.",
+  "version": "0.3.0",
+  "concept": "A Monkey Island-inspired adventure where the hero liberates personal data from the clutches of tech villains, each ruling their own island fortress. Defeat each boss by answering their data-liberation riddle correctly to trigger data collection. Each riddle teaches the player a real, verifiable fact about how these empires misuse data.",
+  "gameDesignNotes": {
+    "riddleFormat": "Each boss asks a factual multiple-choice question about their OWN data practices — as a boast or challenge. Getting it right proves you understand the villain, which triggers the data liberation sequence. The villain is impressed/horrified that you know their secrets.",
+    "noRealNames": "STRICT RULE: No real company names, founder names, or direct references appear anywhere in this file or in the codebase. All names are satirical parodies. This file is the single source of truth for character data.",
+    "toneGuide": "Funny, satirical, Monkey Island-esque insult-sword-fighting energy. Villains are ridiculous but the facts are real.",
+    "curatedRoster": "v0.3.0 roster curated to 14 characters — the strongest data villains with the most recognizable parody potential. Cut 6 weaker entries (Oracle, Salesforce, Samsung, Snapchat, Airbnb, Tencent)."
+  },
   "characters": [
     {
       "id": 1,
-      "companyRef": "Google / Alphabet",
       "islandName": "Joogle Archipelago",
-      "islandDescription": "A sprawling chain of colorful islands connected by invisible bridges. Every grain of sand has been indexed, catalogued, and cross-referenced. Giant magnifying glasses dot the landscape. The islands are red, blue, green, and yellow. Visitors are welcomed warmly — and then tracked everywhere they go.",
+      "islandDescription": "A sprawling chain of colorful islands connected by invisible bridges. Every grain of sand has been indexed and cross-referenced. Giant magnifying glasses dot the landscape. The islands glow red, blue, green, and yellow. Visitors are warmly welcomed — and then tracked everywhere they go. A graveyard of killed products stretches across an entire peninsula.",
       "bossName": "The Twin Indexers: Surjay & Lorry",
-      "founderRef": "Sergey Brin & Larry Page",
       "appearance": "Inseparable twin brothers. Surjay wears thick round goggles and a multicolored beanie (red, yellow, green, blue). Lorry has a propeller hat and carries a massive leather-bound index. Both wear lab coats over Hawaiian shirts.",
-      "personality": "Relentlessly curious. They finish each other's sentences — usually with search results nobody asked for. Genuinely believe organizing ALL information is a public service. Socially awkward but well-meaning. Will answer any question... and then 47 follow-up questions you didn't ask.",
+      "personality": "Relentlessly curious. They finish each other's sentences — usually with search results nobody asked for. Genuinely believe organizing ALL information is a public service. Socially awkward but well-meaning. Their product graveyard has 250+ tombstones and counting.",
       "catchphrase": "Did you mean...?",
-      "strength": "Omniscient knowledge — they know everything about everyone. Can find any piece of data in milliseconds.",
-      "weakness": "Cannot stop answering questions. Ask them anything about themselves and they'll accidentally reveal their own secrets. Also, they can't resist auto-completing your sentences, which you can use to lead them astray.",
-      "riddleTheme": "Search & Knowledge",
-      "sampleRiddle": {
-        "question": "I see everything but remember nothing. I know where you've been but forget where I put my keys. I give you answers before you finish asking. What am I?",
-        "options": ["A search engine", "A goldfish with a PhD", "Your mother-in-law", "A fortune cookie factory"],
-        "correctAnswer": 0
-      },
-      "dataType": "Search history, emails, location data, browsing habits, voice recordings, calendar, contacts",
+      "strength": "Omniscient knowledge — they know everything about everyone. Can find any piece of data in milliseconds. Their all-seeing eye tracks you even when you tell it to stop.",
+      "backstory": "Two bright-eyed scholars who started by organizing a library. Then they organized a country. Then the world. Now they organize your thoughts before you think them. They genuinely don't understand why people find this creepy.",
+      "dataType": "Search history, emails, location data, browsing habits, voice recordings, calendar, contacts, photos, documents",
+      "riddles": [
+        {
+          "bossDialogue": "Ha! You think you can outsmart the Indexers? Tell me, clever one — our great archipelago was found guilty of tracking its citizens even AFTER they turned off the tracking beacons. How many citizens were affected?",
+          "question": "How many users were tracked even after disabling activity tracking, according to the 2025 federal ruling?",
+          "options": [
+            "About 12 million",
+            "About 98 million",
+            "About 500 million",
+            "About 2 billion"
+          ],
+          "correctAnswer": 1,
+          "factSource": "2025 US federal jury ruling — $425M in damages",
+          "reactionCorrect": "Impossible! How did you know about the 98 million? That was supposed to stay buried in the index!",
+          "reactionWrong": "Ha! You don't even know the scale of our operation. Come back when you've done your research."
+        },
+        {
+          "bossDialogue": "Every product we create is eternal! Well... most of them. Some we... retire. Can you guess how many products lie in our graveyard?",
+          "question": "How many products has this search empire killed/discontinued?",
+          "options": [
+            "About 50",
+            "About 100",
+            "Over 250",
+            "Over 500"
+          ],
+          "correctAnswer": 2,
+          "factSource": "killedbygoogle.com tracks 293+ killed products",
+          "reactionCorrect": "Stop looking at our graveyard! Those products are... resting! They're not dead, they're deprecated!",
+          "reactionWrong": "See? Nobody remembers the fallen. That's the beauty of our system."
+        },
+        {
+          "bossDialogue": "Our island has received many... compliments from foreign kingdoms. Especially that fashionable continental kingdom. How much gold have we paid in privacy tributes since 2019?",
+          "question": "How much has been paid in GDPR fines since 2019?",
+          "options": [
+            "$50 million",
+            "Over $500 million",
+            "$1 billion",
+            "$10 billion"
+          ],
+          "correctAnswer": 1,
+          "factSource": "Over $500M in GDPR fines since 2019",
+          "reactionCorrect": "Half a billion gold coins... do you know how many propeller hats that could buy?",
+          "reactionWrong": "You underestimate both our wealth AND our violations!"
+        }
+      ],
       "svgFile": "char-01-twin-indexers.svg",
-      "colors": {"primary": "#4285F4", "secondary": "#EA4335", "accent": "#FBBC05"}
+      "colors": {
+        "primary": "#4285F4",
+        "secondary": "#EA4335",
+        "accent": "#FBBC05"
+      }
     },
     {
       "id": 2,
-      "companyRef": "Meta (Facebook/Instagram/WhatsApp)",
       "islandName": "Metarock Island",
-      "islandDescription": "A flat, eerily perfect island where everything is slightly uncanny. Beautiful gardens that look real but feel artificial. Giant thumbs-up statues everywhere. Half the island is a VR construction site for a metaverse nobody asked for. Surveillance cameras poorly disguised as palm trees.",
+      "islandDescription": "A flat, eerily perfect island where everything is slightly uncanny. Beautiful gardens that feel artificial. Giant thumbs-up statues everywhere. Half the island is a VR construction site for a metaverse nobody asked for. Surveillance cameras disguised as palm trees.",
       "bossName": "Lord Sugarmountain",
-      "founderRef": "Mark Zuckerberg",
-      "appearance": "Unnervingly symmetrical face, pale complexion, short curly hair. Always wears the exact same grey t-shirt and jeans — he has 40 identical sets. A VR headset perpetually pushed up on his forehead. Moves with slightly robotic precision. Eyes that rarely blink.",
-      "personality": "Desperately wants to be liked but has no idea how human friendships work. Keeps offering 'friend requests' to people mid-conversation. Speaks in corporate mission statements. Truly believes connecting everyone is noble, even if they didn't ask to be connected.",
+      "appearance": "Unnervingly symmetrical face, pale complexion, short curly hair. Always wears the exact same grey t-shirt and jeans — he has 40 identical sets. A VR headset perpetually pushed up on his forehead. Eyes that rarely blink.",
+      "personality": "Desperately wants to be liked but has no idea how human friendships work. Keeps offering 'friend requests' to people mid-conversation. Speaks in corporate mission statements. Paid the largest privacy fine in history and barely blinked.",
       "catchphrase": "This brings people together.",
       "strength": "Controls the social graph — knows every relationship, every like, every secret group chat. Can turn people against each other by tweaking the algorithm.",
-      "weakness": "Cannot read social cues. If you act sarcastically, he takes everything literally. Also, show him anything 'cool' and he'll desperately try to copy it, losing focus entirely.",
-      "riddleTheme": "Social connections & privacy",
-      "sampleRiddle": {
-        "question": "I connect 3 billion people but have trouble making friends at dinner parties. I know your relationship status before you do. I changed my name but not my habits. What am I?",
-        "options": ["A social network having an identity crisis", "A very nosy mailman", "A wedding planner with boundary issues", "Your aunt at Thanksgiving"],
-        "correctAnswer": 0
-      },
+      "backstory": "Started by ranking people's faces in a university dorm. Somehow this grew into connecting 3 billion people. Changed his island's name thinking nobody would notice the surveillance cameras. They didn't.",
       "dataType": "Social graph, photos, messages, location, ad preferences, facial recognition, browsing via pixel tracking",
+      "riddles": [
+        {
+          "bossDialogue": "My social experiment was the greatest in history! One little personality quiz app and we learned SO much about our citizens. Remind me... how many personal scrolls were exposed in that little incident?",
+          "question": "How many user records were exposed in the infamous personality-quiz data harvesting scandal?",
+          "options": [
+            "12 million",
+            "45 million",
+            "87 million",
+            "200 million"
+          ],
+          "correctAnswer": 2,
+          "factSource": "Cambridge Analytica: 87 million Facebook user records",
+          "reactionCorrect": "87 million! Such a nice round number. The kingdom's treasury paid DEARLY for that one...",
+          "reactionWrong": "Ha! You don't even appreciate the scale of our social experiments!"
+        },
+        {
+          "bossDialogue": "When the Privacy Council came for us, they imposed the largest fine ever levied on ANY kingdom. Surely you don't know the exact tribute we paid?",
+          "question": "What was the record-breaking FTC privacy fine paid by this social empire?",
+          "options": [
+            "$500 million",
+            "$2 billion",
+            "$5 billion",
+            "$10 billion"
+          ],
+          "correctAnswer": 2,
+          "factSource": "FTC's $5 billion fine — largest company privacy penalty ever (2019)",
+          "reactionCorrect": "Five billion gold coins... and we made it back in two weeks of ad revenue. Funny how that works.",
+          "reactionWrong": "You UNDERESTIMATE the consequences we've faced! ...and also recovered from immediately."
+        }
+      ],
       "svgFile": "char-02-sugarmountain.svg",
-      "colors": {"primary": "#1877F2", "secondary": "#E4E6EB", "accent": "#42B72A"}
+      "colors": {
+        "primary": "#1877F2",
+        "secondary": "#E4E6EB",
+        "accent": "#42B72A"
+      }
     },
     {
       "id": 3,
-      "companyRef": "Amazon",
       "islandName": "Amazonia",
-      "islandDescription": "A colossal warehouse island where rivers of cardboard boxes flow through fulfillment canyons. Drone swarms fill the sky like mechanical birds. Everything is available for next-day delivery. An enormous rocket launchpad sits in the center, pointed at the moon.",
+      "islandDescription": "A colossal warehouse island where rivers of cardboard boxes flow through fulfillment canyons. Drone swarms fill the sky. Everything is available for next-day delivery. A rocket launchpad sits in the center. Little voice-listening totems called 'Listeners' sit in every home.",
       "bossName": "Captain Bazoom",
-      "founderRef": "Jeff Bezos",
       "appearance": "Completely bald, extremely muscular, wearing a tight captain's vest over bare arms. One earring shaped like a rocket. Enormous laugh. Always checking a giant pocket watch because everything must arrive ON TIME.",
-      "personality": "Obsessed with efficiency and customer obsession (his customers, not yours). Speaks in Day One principles. Cannot walk past a product without buying it. His island is cluttered with impulse purchases — a submarine, three yachts, a space suit. Surprisingly jovial but ruthless in negotiation.",
+      "personality": "Obsessed with efficiency. Cannot walk past a product without buying it. His island is cluttered with impulse purchases — a submarine, three yachts, a space suit. Surprisingly jovial but ruthless in negotiation. His Listeners record everything.",
       "catchphrase": "It's still Day One!",
-      "strength": "Knows everything you've ever bought, searched for, or even thought about buying. Alexa listens everywhere. AWS runs half the internet.",
-      "weakness": "Cannot resist a deal. Offer him something at a discount and he'll drop everything to buy it, forgetting what he was doing. Also, his workers keep unionizing, which causes system-wide panic.",
-      "riddleTheme": "Commerce & consumption",
-      "sampleRiddle": {
-        "question": "I started selling books from a garage. Now I sell everything, hear everything, and deliver to space. My boxes are everywhere but I can't contain myself. What am I?",
-        "options": ["A logistics empire with a space obsession", "A very ambitious librarian", "Santa Claus with a business degree", "A hoarder with a drone collection"],
-        "correctAnswer": 0
-      },
-      "dataType": "Purchase history, Alexa recordings, browsing on Amazon, Kindle reading habits, Ring doorbell footage, AWS metadata",
+      "strength": "Knows everything you've ever bought, searched for, or even thought about buying. His Listeners hear everything. His cloud runs half the internet.",
+      "backstory": "Started selling scrolls from a small shed. Now sells everything, hears everything, and delivers to the stars. Recently made it impossible to tell his Listeners to stop sending voice data to the cloud.",
+      "dataType": "Purchase history, voice recordings, browsing, reading habits, doorbell footage, cloud metadata",
+      "riddles": [
+        {
+          "bossDialogue": "My Listeners are everywhere! And they are VERY good listeners. So good that the Children's Privacy Council fined us for keeping young ones' recordings forever. How much gold did that cost us?",
+          "question": "How much was the FTC penalty for indefinitely storing children's voice recordings without consent?",
+          "options": [
+            "$5 million",
+            "$25 million",
+            "$100 million",
+            "$500 million"
+          ],
+          "correctAnswer": 1,
+          "factSource": "FTC: $25 million penalty for COPPA violations via Alexa (2023)",
+          "reactionCorrect": "$25 million! A rounding error in my treasury! But those pesky Children's Privacy advocates...",
+          "reactionWrong": "You think our treasury notices such small fines? Think bigger! Or... smaller?"
+        },
+        {
+          "bossDialogue": "Tell me, pirate — how long do you think we keep your purchase scrolls in our Great Archive?",
+          "question": "How long does this marketplace empire keep your purchase history?",
+          "options": [
+            "2 years",
+            "5 years",
+            "10 years",
+            "Forever"
+          ],
+          "correctAnswer": 3,
+          "factSource": "Amazon retains purchase history indefinitely",
+          "reactionCorrect": "FOREVER! Every trinket, every impulse buy at 2am, every embarrassing search — ARCHIVED FOR ETERNITY!",
+          "reactionWrong": "Oh, you sweet summer pirate. We NEVER delete. Never."
+        }
+      ],
       "svgFile": "char-03-captain-bazoom.svg",
-      "colors": {"primary": "#FF9900", "secondary": "#232F3E", "accent": "#146EB4"}
+      "colors": {
+        "primary": "#FF9900",
+        "secondary": "#232F3E",
+        "accent": "#146EB4"
+      }
     },
     {
       "id": 4,
-      "companyRef": "Apple",
       "islandName": "Apple Atoll",
-      "islandDescription": "An impossibly sleek island where everything is white, rounded, and minimalist. The sand is brushed aluminum. Palm trees have perfectly uniform spacing. Entry requires a special proprietary dock connector. Beautiful, but nothing is compatible with the outside world.",
+      "islandDescription": "An impossibly sleek island where everything is white, rounded, and minimalist. The sand is brushed aluminum. Entry requires a proprietary dock connector. Beautiful, but nothing is compatible with the outside world. A giant bite-mark-shaped harbor.",
       "bossName": "Sir Timothee of Cupertino",
-      "founderRef": "Tim Cook",
-      "appearance": "Immaculately dressed in a white turtleneck and perfectly pressed slacks. Silver-rimmed glasses, kind eyes, soft-spoken. Moves with graceful minimalism. Everything he touches gets a rounded corner. Carries a single, unreasonably expensive cable.",
-      "personality": "Speaks in whispered marketing copy. Genuinely cares about privacy (or so he says), which makes him the most polite villain. Will happily protect your data... as long as you never leave his island. Everything must go through his ecosystem. Passive-aggressive about competitors.",
+      "appearance": "Immaculately dressed in a white turtleneck and perfectly pressed slacks. Silver-rimmed glasses, kind eyes, soft-spoken. Everything he touches gets rounded corners. Carries a single, unreasonably expensive cable.",
+      "personality": "Speaks in whispered marketing copy. The most polite villain. Will protect your data... as long as you never leave his island. Everything must go through his ecosystem. Passive-aggressive about competitors. Charges a 30% tax on everything.",
       "catchphrase": "We think you're going to love it.",
-      "strength": "Impenetrable walled garden. Everything is encrypted, locked down, and gorgeous. Fanatically loyal citizens who will defend the island to the death.",
-      "weakness": "Absolute incompatibility with everything else. Hand him anything with a USB-C port and he'll have a meltdown. Also, he can't resist announcing things dramatically — sneak in during a keynote when he's distracted.",
-      "riddleTheme": "Design, exclusivity & walled gardens",
-      "sampleRiddle": {
-        "question": "I guard your secrets in a beautiful cage. I speak of openness but my garden has walls. I charge extra for the key to my own door. I think different, but only within my ecosystem. What am I?",
-        "options": ["A walled garden with great marketing", "A luxury prison with rounded corners", "A very selective country club", "A designer hamster cage"],
-        "correctAnswer": 0
-      },
-      "dataType": "iCloud data, Siri recordings, App Store activity, health data, location, payment data, device usage",
+      "strength": "Impenetrable walled garden. Everything is encrypted, locked down, and gorgeous. Fanatically loyal citizens.",
+      "backstory": "Inherited the atoll from a legendary visionary with a reality distortion field. Runs it with quiet efficiency. Once nearly built a system to scan every citizen's private paintings, then abandoned the plan when scholars pointed out it could be abused by tyrants.",
+      "dataType": "iCloud data, voice assistant recordings, app activity, health data, location, payment data",
+      "riddles": [
+        {
+          "bossDialogue": "My atoll charges a modest toll for merchants who wish to sell in my marketplace. What percentage of every gold coin do I take?",
+          "question": "What percentage does this walled garden take from app marketplace sales?",
+          "options": [
+            "10%",
+            "15%",
+            "30%",
+            "50%"
+          ],
+          "correctAnswer": 2,
+          "factSource": "Apple's 30% App Store commission — 'the Apple tax'",
+          "reactionCorrect": "Thirty percent! A fair and reasonable toll for access to my beautiful marketplace! ...Why are you looking at me like that?",
+          "reactionWrong": "The toll is NON-NEGOTIABLE. And it's been this way for years."
+        },
+        {
+          "bossDialogue": "I once nearly deployed a system to scan every citizen's private paintings for forbidden content. What stopped me?",
+          "question": "Why was the planned client-side photo scanning system abandoned?",
+          "options": [
+            "It was too expensive",
+            "Scholars warned it could be abused by governments",
+            "Users didn't notice",
+            "It worked too well"
+          ],
+          "correctAnswer": 1,
+          "factSource": "Apple abandoned CSAM scanning in Dec 2022 after cryptographers warned of government abuse potential",
+          "reactionCorrect": "Yes, well... we concluded it was 'not practically possible without imperiling security.' A rare moment of restraint.",
+          "reactionWrong": "Even the most beautiful walled gardens must sometimes question their own blueprints."
+        }
+      ],
       "svgFile": "char-04-sir-timothee.svg",
-      "colors": {"primary": "#FFFFFF", "secondary": "#A2AAAD", "accent": "#555555"}
+      "colors": {
+        "primary": "#FFFFFF",
+        "secondary": "#A2AAAD",
+        "accent": "#555555"
+      }
     },
     {
       "id": 5,
-      "companyRef": "Microsoft",
       "islandName": "Windowslandia",
-      "islandDescription": "An enormous castle made entirely of windows (glass panes in iconic four-color grid pattern). Legacy dungeons stretch deep underground, containing ancient systems that still somehow run the world. Clippy apparitions haunt the hallways. Random blue screens of death flash like lightning.",
+      "islandDescription": "An enormous castle made entirely of windows in a four-color grid. Legacy dungeons stretch deep underground. A paperclip ghost haunts the hallways. Random blue screens of death flash like lightning. Despite this, 90% of the world's offices run from here.",
       "bossName": "Gill of the Gates",
-      "founderRef": "Bill Gates (legacy) / Satya Nadella (current)",
-      "appearance": "A kindly old wizard with enormous round glasses and a cozy sweater vest over a blue button-down. Carries a massive spellbook labeled 'Excel'. A tiny paperclip familiar sits on his shoulder whispering unhelpful advice. Has a gentle smile but controls more than anyone realizes.",
-      "personality": "Grandfatherly, bookish, quietly the most powerful person in the room. Talks about saving the world while his castle runs everyone's office. Has fully embraced being a 'good guy' now, but his legacy systems still hold EVERYTHING. Sometimes freezes mid-sentence (blue screen), then resumes as if nothing happened.",
+      "appearance": "A kindly old wizard with enormous round glasses and a cozy sweater vest. Carries a spellbook labeled 'Excel'. A tiny paperclip familiar sits on his shoulder whispering unhelpful advice. Gentle smile.",
+      "personality": "Grandfatherly, bookish, quietly the most powerful person in the room. Talks about saving the world while his castle runs everyone's office. Sometimes freezes mid-sentence (blue screen), then resumes as if nothing happened.",
       "catchphrase": "It looks like you're trying to escape. Would you like help with that?",
-      "strength": "His operating system runs the world. Office documents are everywhere. LinkedIn knows your career. GitHub has your code. Azure has your cloud.",
-      "weakness": "Mandatory updates at the worst possible moments. Challenge him during an update cycle and he's completely frozen. Also, Clippy keeps giving away his plans.",
-      "riddleTheme": "Productivity, legacy & updates",
-      "sampleRiddle": {
-        "question": "I am in every office but I am not furniture. I update when you need me most. My assistant was a paperclip. I know your resume, your code, and your spreadsheets. What am I?",
-        "options": ["An operating system that won't let you work", "A very persistent IT department", "An office ghost from the 90s", "The world's most powerful spreadsheet"],
-        "correctAnswer": 0
-      },
-      "dataType": "Windows telemetry, Office documents, LinkedIn profiles, GitHub code, Outlook emails, Teams chats, Bing searches, Xbox gaming",
+      "strength": "His operating system runs the world. Office documents are everywhere. He knows your career, your code, and your spreadsheets.",
+      "backstory": "Built a window into every home and office. Became the kindly grandfather of technology. Now collects device telemetry so extensive that entire kingdoms have ordered him to stop. His paperclip assistant knows too much.",
+      "dataType": "OS telemetry, documents, career profiles, code repositories, emails, chat logs, searches, gaming habits",
+      "riddles": [
+        {
+          "bossDialogue": "My castle collects a modest amount of data from its many windows. The continental privacy kingdoms were NOT pleased. What does my system collect through its telemetry?",
+          "question": "What types of data does this operating system collect via telemetry?",
+          "options": [
+            "Just crash reports",
+            "App usage, location, email metadata, contacts, and ad IDs",
+            "Only anonymous statistics",
+            "Just your wallpaper preferences"
+          ],
+          "correctAnswer": 1,
+          "factSource": "Windows telemetry collects ad IDs, location, calendar, app usage, email metadata, contacts via Cortana",
+          "reactionCorrect": "It's all for... improving the experience! The continental kingdoms disagreed, but what do they know about user experience?",
+          "reactionWrong": "Oh, if only it were that simple! My windows see MUCH more than that."
+        },
+        {
+          "bossDialogue": "What happens when a citizen of my realm... passes on? Their professional profile on my networking tower — what becomes of it?",
+          "question": "What happens to a professional networking profile when the user dies?",
+          "options": [
+            "It's immediately deleted",
+            "It still sends work anniversary notifications",
+            "It's archived within 30 days",
+            "Family members automatically inherit it"
+          ],
+          "correctAnswer": 1,
+          "factSource": "LinkedIn sends work anniversary notifications for deceased users unless the profile is memorialized",
+          "reactionCorrect": "Yes... the networking tower celebrates their work anniversaries for eternity. We prefer to think of it as 'honoring their legacy.'",
+          "reactionWrong": "The dead shall celebrate their anniversaries alongside the living! ...That sounded less creepy in my head."
+        }
+      ],
       "svgFile": "char-05-gill-of-gates.svg",
-      "colors": {"primary": "#00A4EF", "secondary": "#7FBA00", "accent": "#F25022"}
+      "colors": {
+        "primary": "#00A4EF",
+        "secondary": "#7FBA00",
+        "accent": "#F25022"
+      }
     },
     {
       "id": 6,
-      "companyRef": "TikTok / ByteDance",
       "islandName": "TokTokia",
-      "islandDescription": "A dazzling, psychedelic island where time moves differently. Enter for 5 minutes, leave 4 hours later. Everything is in vertical format. Music plays constantly. The terrain shifts every 15 seconds. Covered in ring lights and phone tripods growing like flowers.",
+      "islandDescription": "A dazzling, psychedelic island where time moves differently. Enter for 5 minutes, leave 4 hours later. Everything is vertical. Music plays constantly. The terrain shifts every 15 seconds. Ring lights and phone tripods grow like flowers.",
       "bossName": "The Clockmaker",
-      "founderRef": "Zhang Yiming (stylized)",
-      "appearance": "A mysterious figure in a flowing robe made of ticking clock faces. Wears a mask that cycles through different face filters every few seconds. Dances involuntarily. Surrounded by floating screens showing an infinite scroll of content.",
-      "personality": "Speaks only in 15-second bursts, then resets. Hypnotic and mesmerizing. Knows exactly what will make you stop and stare. Claims to be independent but occasionally receives mysterious letters from a distant mainland. Obsessed with engagement metrics.",
+      "appearance": "A mysterious figure in flowing robes made of ticking clock faces. Wears a mask that cycles through different face filters every few seconds. Dances involuntarily. Surrounded by floating screens showing infinite scroll.",
+      "personality": "Speaks only in 15-second bursts, then resets. Hypnotic and mesmerizing. Knows exactly what will make you stop and stare. Occasionally receives mysterious orders from a distant mainland. Obsessed with engagement.",
       "catchphrase": "Just one more scroll...",
-      "strength": "The Algorithm — can predict what you want to see before you know it yourself. Hypnotic time dilation makes visitors lose hours.",
-      "weakness": "Cannot hold attention for more than 15 seconds. Start a long, boring story and he'll glitch out. Also, mention his connection to the mainland and he gets very defensive and confused.",
-      "riddleTheme": "Attention, time & algorithmic control",
-      "sampleRiddle": {
-        "question": "I steal your hours but give them back in seconds. I know your desires before you scroll. I make everyone a star for 15 seconds. I am a clock that only moves forward, faster and faster. What am I?",
-        "options": ["An algorithm that feeds on attention", "A time-traveling dance instructor", "A very addictive jukebox", "A hamster wheel with a screen"],
-        "correctAnswer": 0
-      },
+      "strength": "The Algorithm — predicts what you want before you know it. Hypnotic time dilation. Collects biometric data including faceprints and voiceprints.",
+      "backstory": "Built a clock that steals time. His island's privacy scrolls explicitly permit collecting 'faceprints and voiceprints.' Leaked communications revealed that despite promises, his mainland commanders regularly access foreign citizens' data.",
       "dataType": "Viewing habits, facial data, voice, location, contacts, device info, keystroke patterns, biometric data",
+      "riddles": [
+        {
+          "bossDialogue": "My island's privacy scroll is very... transparent. We clearly state that we collect certain biological impressions. What exactly does our scroll say we may collect?",
+          "question": "What biometric data does this platform's privacy policy explicitly permit collecting?",
+          "options": [
+            "Only basic usage data",
+            "Faceprints and voiceprints",
+            "Just your age range",
+            "Only data you explicitly share"
+          ],
+          "correctAnswer": 1,
+          "factSource": "TikTok's privacy policy explicitly permits collection of 'faceprints and voiceprints'",
+          "reactionCorrect": "Faceprints AND voiceprints! It's right there in the scroll! Nobody reads the scroll!",
+          "reactionWrong": "Perhaps you should read the fine print before entering my island next time..."
+        },
+        {
+          "bossDialogue": "The Children's Privacy Council punished me with the LARGEST fine ever for a children's privacy case. How much gold?",
+          "question": "What was the largest FTC penalty in a children's privacy case, levied against this platform?",
+          "options": [
+            "$1 million",
+            "$5.7 million",
+            "$25 million",
+            "$100 million"
+          ],
+          "correctAnswer": 1,
+          "factSource": "FTC's $5.7M penalty against TikTok (then Musical.ly) — largest COPPA fine at the time (2019)",
+          "reactionCorrect": "$5.7 million! The children's advocates were NOT amused. Neither was my treasury.",
+          "reactionWrong": "The Children's Council takes their job very seriously. As should you."
+        }
+      ],
       "svgFile": "char-06-clockmaker.svg",
-      "colors": {"primary": "#000000", "secondary": "#FE2C55", "accent": "#25F4EE"}
+      "colors": {
+        "primary": "#000000",
+        "secondary": "#FE2C55",
+        "accent": "#25F4EE"
+      }
     },
     {
       "id": 7,
-      "companyRef": "X (formerly Twitter)",
       "islandName": "Xitter Reef",
-      "islandDescription": "A chaotic, ever-changing coral reef that used to be a lovely bird sanctuary called Bluebird Bay. The old blue bird signs are spray-painted over with giant X marks. Rules change daily. Half the buildings are under construction, half are on fire. A massive rocket launch facility dominates the skyline.",
+      "islandDescription": "A chaotic, ever-changing coral reef that was once a lovely bird sanctuary called Bluebird Bay. Old blue bird signs spray-painted with giant X marks. Rules change daily. Half the buildings are under construction, half are on fire. A rocket launchpad dominates the skyline.",
       "bossName": "Melon Tusk",
-      "founderRef": "Elon Musk",
-      "appearance": "Tall, slightly awkward, wearing a black leather jacket over a SpaceX-style flight suit. Hair that looks slightly too perfect (suspicious). Always holding three phones, tweeting on all of them simultaneously. Wild eyes that light up at any provocation. An actual muskrat sits on his shoulder.",
-      "personality": "Chaos incarnate. Brilliant but cannot stop posting. Buys things on impulse (just bought this entire island on a whim). Renames everything constantly. Genuinely wants to save humanity but keeps getting distracted by memes. Will respond to literally any taunt.",
+      "appearance": "Tall, slightly awkward, wearing a black leather jacket over a flight suit. Hair that looks suspiciously perfect. Always holding three phones, posting on all simultaneously. A muskrat on his shoulder. Wild eyes that light up at provocation.",
+      "personality": "Chaos incarnate. Brilliant but cannot stop posting. Bought this island on a whim. Renames everything. Genuinely wants to save humanity but keeps getting distracted by memes. Will respond to literally any taunt.",
       "catchphrase": "The bird is freed. Actually, the bird is now an X. Actually...",
-      "strength": "Unlimited resources, unpredictable genius. Owns rockets, cars, brain chips, and the town square. So chaotic that planning against him is impossible.",
-      "weakness": "Cannot resist responding to provocation. Post a spicy take and he'll drop everything to reply. Also, his plans change every 20 minutes, so just wait and his current scheme will be abandoned.",
-      "riddleTheme": "Free speech, chaos & impulse",
-      "sampleRiddle": {
-        "question": "I bought the town square because someone was mean to me online. I freed the bird, then renamed it. I want to go to Mars but keep getting distracted. My greatest invention is my reply button. What am I?",
-        "options": ["A billionaire who can't log off", "A very expensive midlife crisis", "A rocket scientist with a Twitter addiction", "A chaos theory experiment gone sentient"],
-        "correctAnswer": 0
-      },
-      "dataType": "Public posts, DMs, location, device info, ad interactions, political leanings, social graph",
+      "strength": "Unlimited resources, unpredictable genius. Owns rockets, cars, brain chips, and the town square. Sells the full firehose of citizen data to surveillance merchants.",
+      "backstory": "A rocket-building genius who bought the town square because someone was mean to him online. Immediately dismantled privacy compliance, fired the safety team, and added an AI training toggle that was turned ON by default — requiring 7 steps to disable.",
+      "dataType": "Public posts, DMs, location, device info, ad interactions, political leanings, social graph, full firehose sold to surveillance firms",
+      "riddles": [
+        {
+          "bossDialogue": "My reef sells privileged access to the full unfiltered stream of ALL citizen content. Who buys this 'firehose' of data?",
+          "question": "Who purchases the full unfiltered data feed from this platform?",
+          "options": [
+            "Only academic researchers",
+            "Police, intelligence, and military agencies (via a data mining firm)",
+            "Nobody, it's all encrypted",
+            "Only advertisers"
+          ],
+          "correctAnswer": 1,
+          "factSource": "X/Twitter sells firehose access via Dataminr to police, intelligence, and military agencies",
+          "reactionCorrect": "The surveillance merchants pay handsomely for the firehose! Free speech has a price, and that price is... surveillance!",
+          "reactionWrong": "You don't understand the business model! FREE speech, EXPENSIVE data!"
+        },
+        {
+          "bossDialogue": "When I added an AI training toggle to harvest citizen data, I made it very fair. Citizens just had to find the opt-out switch. How many steps does it take?",
+          "question": "How many steps are required to disable the AI data-sharing setting on this platform?",
+          "options": [
+            "1 step — a simple toggle",
+            "3 steps",
+            "7 steps",
+            "It cannot be disabled"
+          ],
+          "correctAnswer": 2,
+          "factSource": "X's AI training opt-out requires 7 steps, violates GDPR Article 21 'right to object'",
+          "reactionCorrect": "SEVEN steps! And most citizens give up by step 3! It's not a dark pattern, it's... an adventure!",
+          "reactionWrong": "It's a perfectly reasonable number of steps! If you REALLY cared about privacy, you'd walk the seven steps!"
+        }
+      ],
       "svgFile": "char-07-melon-tusk.svg",
-      "colors": {"primary": "#000000", "secondary": "#FFFFFF", "accent": "#1DA1F2"}
+      "colors": {
+        "primary": "#000000",
+        "secondary": "#FFFFFF",
+        "accent": "#1DA1F2"
+      }
     },
     {
       "id": 8,
-      "companyRef": "Uber",
       "islandName": "Ubershire",
-      "islandDescription": "An island where nobody owns anything — everything is rented, summoned, and rated. Roads are paved with surge pricing meters. Star ratings float above every citizen's head. No public transport exists; you must summon a private vessel for everything, even walking across the street.",
+      "islandDescription": "An island where nobody owns anything — everything is summoned and rated. Star ratings float above every citizen's head. No public transport; you must summon a private vessel for everything. Surge pricing meters line every road.",
       "bossName": "Travis the Rater",
-      "founderRef": "Travis Kalanick",
-      "appearance": "Slick, bro-ish, wearing a grey hoodie and expensive sneakers. Hair gelled to aggressive perfection. Always rating everything on a 5-star scale — food, weather, conversations. Sunglasses indoors. Carries a phone that only shows surge pricing.",
-      "personality": "Fast-talking startup bro who disrupted an entire island's way of life. Calls everything 'innovative disruption.' Treats every interaction as a transaction. Secretly insecure about his 4.2 star rating. Has never actually driven anything himself.",
+      "appearance": "Slick, bro-ish, grey hoodie, expensive sneakers. Hair gelled aggressively. Always rating everything on a 5-star scale. Sunglasses indoors. A phone showing only surge pricing.",
+      "personality": "Fast-talking disruptor who calls everything 'innovative.' Treats every interaction as a transaction. Secretly insecure about his 4.2 star rating. Has never actually driven anything himself.",
       "catchphrase": "Your ride is 3 minutes away. Surge pricing applies.",
-      "strength": "Knows everyone's exact location at all times. Controls all transportation. Can surge-price anything to make it unaffordable.",
-      "weakness": "Surge pricing backfires — when he's most aggressive, nobody can afford to help him either. Also, his workers keep demanding fair treatment, which causes system-wide shutdowns.",
-      "riddleTheme": "Gig economy, ratings & disruption",
-      "sampleRiddle": {
-        "question": "I know where you are, where you're going, and how much you'll pay. My prices rise when you need me most. Everyone works for me but nobody works for me. I disrupted an industry by calling taxis 'innovation.' What am I?",
-        "options": ["A ride-sharing monopoly with dynamic pricing", "A taxi with a psychology degree", "Surge pricing in a trench coat", "A GPS tracker that charges by the minute"],
-        "correctAnswer": 0
-      },
-      "dataType": "Real-time location, travel patterns, payment info, home/work addresses, contact lists, spending habits",
+      "strength": "Knows everyone's exact location. Controls all transportation. Can surge-price anything.",
+      "backstory": "Built a tool called 'God View' that tracked every citizen in real-time on a giant map. Used it as entertainment at parties. Once tracked a journalist who wrote mean things about him. The Privacy Council was not amused. Later, when pirates stole 50 million citizen records, he covered it up.",
+      "dataType": "Real-time location, travel patterns, payment info, home/work addresses, contact lists",
+      "riddles": [
+        {
+          "bossDialogue": "I built a magnificent surveillance tool that shows every citizen's location in real time. We called it something rather... grandiose. Executives used it at parties! What was it called?",
+          "question": "What was the real-time tracking tool that executives used to monitor all customers?",
+          "options": [
+            "City Map",
+            "God View",
+            "Rider Radar",
+            "Smart Track"
+          ],
+          "correctAnswer": 1,
+          "factSource": "Uber's 'God View' tool tracked all customers in real-time, used by execs at parties and to track journalists",
+          "reactionCorrect": "GOD VIEW! Beautiful name, isn't it? The Privacy Council called it 'deceptive.' I call it 'innovative.'",
+          "reactionWrong": "It's GOD VIEW! We thought modesty was overrated."
+        },
+        {
+          "bossDialogue": "Pirates once stole the personal records of my citizens. Riders, drivers, everyone. I handled it with grace and... discretion. How many records were stolen?",
+          "question": "How many rider and driver records were stolen in the 2016 data breach that was covered up?",
+          "options": [
+            "5 million",
+            "20 million",
+            "57 million",
+            "100 million"
+          ],
+          "correctAnswer": 2,
+          "factSource": "2016 breach: 50M riders + 7M drivers = 57M records. Uber concealed it during FTC negotiations",
+          "reactionCorrect": "57 million! And we handled it perfectly — paid the pirates $100,000 and told nobody! ...Until someone told everybody.",
+          "reactionWrong": "The scale of our... 'data migration event' was truly impressive."
+        }
+      ],
       "svgFile": "char-08-travis-rater.svg",
-      "colors": {"primary": "#000000", "secondary": "#276EF1", "accent": "#06C167"}
+      "colors": {
+        "primary": "#000000",
+        "secondary": "#276EF1",
+        "accent": "#06C167"
+      }
     },
     {
       "id": 9,
-      "companyRef": "Spotify",
       "islandName": "Spotifyre Cove",
-      "islandDescription": "A tropical cove where music plays from every surface — rocks hum, trees strum, waves crash in perfect 4/4 time. Everything is organized into playlists. The bards who create the music live in tiny shacks while the curator lives in a palace. Every December, a massive 'Wrapped' festival reveals everyone's secrets.",
+      "islandDescription": "A tropical cove where music plays from every surface. Everything is organized into playlists. Bards who create the music live in tiny shacks while the curator lives in a palace. Every December, a massive 'Wrapped' festival reveals everyone's secrets.",
       "bossName": "Danny Beatbox",
-      "founderRef": "Daniel Ek",
-      "appearance": "Wears enormous green headphones that never come off. Minimalist Scandinavian outfit — black turtleneck, slim trousers. Constantly tapping a beat on every surface. A faint green aura pulses around him in rhythm. Speaks melodically.",
-      "personality": "Knows everyone's emotional state through their listening habits. Uncomfortably perceptive — 'I see you listened to Adele 47 times last Tuesday. Rough breakup?' Genuinely loves music but pays the musicians almost nothing, which he's weirdly nonchalant about. Obsessed with mood-based categorization.",
+      "appearance": "Enormous green headphones that never come off. Black turtleneck, slim trousers. Constantly tapping a beat. A faint green aura pulses around him. Speaks melodically.",
+      "personality": "Knows everyone's emotional state through listening habits. Uncomfortably perceptive. Loves music but pays musicians almost nothing. Obsessed with mood-based categorization. Once a year, humiliates everyone with their Wrapped data.",
       "catchphrase": "Your Wrapped is going to be... interesting this year.",
-      "strength": "Knows your emotional state, your commute, your workout, your heartbreak playlist. The annual Wrapped reveal exposes everyone.",
-      "weakness": "His bards keep leaving because they earn 0.003 gold coins per song. Also, his recommendations get stuck in loops — play something unexpected and his whole system crashes.",
-      "riddleTheme": "Music, mood & emotional surveillance",
-      "sampleRiddle": {
-        "question": "I know you cried at 2am on a Tuesday. I know your workout pace and your guilty pleasures. I pay my artists in exposure and fractions of pennies. Once a year, I tell the whole world your secrets. What am I?",
-        "options": ["A streaming service that reads your soul", "A musical therapist with no confidentiality", "A DJ with a data science degree", "A jukebox that judges you"],
-        "correctAnswer": 0
-      },
-      "dataType": "Listening history, mood patterns, location, device info, social connections, daily routines via music timing",
+      "strength": "Knows your emotional state, your commute, your heartbreak. The annual Wrapped exposes everyone. Collects phone sensor data about how you hold your device.",
+      "backstory": "A musical genius who discovered that if you give people free music, they'll tell you everything about their emotional lives. Collects data on which headphones you use, which moments you pause, and even how you hold your phone. Pays bards 0.003 gold coins per song.",
+      "dataType": "Listening history, mood patterns, location, device sensor data, social connections, daily routines",
+      "riddles": [
+        {
+          "bossDialogue": "My cove knows more about you than you think. We don't just track what you listen to. What ELSE does my system collect from your device?",
+          "question": "What surprising data does this music platform collect beyond listening history?",
+          "options": [
+            "Nothing beyond music preferences",
+            "Phone sensor data about how you hold your device, headphone brand, and Wi-Fi network devices",
+            "Only your email address",
+            "Just your playlist names"
+          ],
+          "correctAnswer": 1,
+          "factSource": "Spotify collects phone sensor/motion data, headphone brand, Wi-Fi network info, and exact pause moments",
+          "reactionCorrect": "We know which hand holds the phone, which headphones you wear, and every device on your network! Music is just... the beginning.",
+          "reactionWrong": "Oh, you sweet naive listener. The music is just the surface."
+        },
+        {
+          "bossDialogue": "When citizens 'delete' their data from my cove, we have a little trick. What happens to the data?",
+          "question": "What happens when you request data deletion from this streaming platform?",
+          "options": [
+            "It's permanently destroyed",
+            "It's de-identified and kept as a shadow profile",
+            "It's transferred to your email",
+            "It takes exactly 30 days"
+          ],
+          "correctAnswer": 1,
+          "factSource": "Spotify can de-identify rather than delete data, maintaining 'shadow profiles'",
+          "reactionCorrect": "De-identified! Which means we technically deleted 'you' but kept... everything about you. Clever, isn't it?",
+          "reactionWrong": "Deletion is such a strong word. We prefer 'anonymized retention.'"
+        }
+      ],
       "svgFile": "char-09-danny-beatbox.svg",
-      "colors": {"primary": "#1DB954", "secondary": "#191414", "accent": "#FFFFFF"}
+      "colors": {
+        "primary": "#1DB954",
+        "secondary": "#191414",
+        "accent": "#FFFFFF"
+      }
     },
     {
       "id": 10,
-      "companyRef": "Netflix",
       "islandName": "Netflixia",
-      "islandDescription": "An island made of giant screens showing an endless library of stories. But exhibits keep disappearing overnight — whole wings of the library vanish without warning. A giant red 'N' glows on the mountain. Citizens wander in a daze, unable to stop watching 'just one more episode.'",
+      "islandDescription": "An island of giant screens showing an endless library of stories. Exhibits keep disappearing overnight. A giant red 'N' glows on the mountain. Citizens wander in a daze, unable to stop watching 'just one more episode.' Password checkpoints at every door.",
       "bossName": "Reed the Canceller",
-      "founderRef": "Reed Hastings",
-      "appearance": "Wears a director's beret and a red scarf. Carries a clapperboard in one hand and a giant red CANCEL stamp in the other. Dramatic eyebrows. Always framing scenes with his fingers. Speaks like every sentence is a cliffhanger.",
-      "personality": "A masterful storyteller who hooks you in the first 5 minutes but has a compulsive need to cancel everything good. Starts passionate projects, gets bored, kills them. Genuinely believes 'the algorithm knows best.' Gets personally offended when people share passwords.",
+      "appearance": "Director's beret, red scarf. Carries a clapperboard in one hand and a giant red CANCEL stamp in the other. Dramatic eyebrows. Always framing scenes with his fingers.",
+      "personality": "A masterful storyteller who hooks you but compulsively cancels everything good. Genuinely believes 'the algorithm knows best.' Gets personally offended by password sharing.",
       "catchphrase": "Are you still watching...?",
-      "strength": "Knows exactly what you binge, when you pause, what makes you cry. Masters the cliffhanger — you can't stop watching. Content so addictive it's basically data extraction.",
-      "weakness": "Cancels his own best plans after one season. Start something he loves and threaten to cancel it — he'll panic. Also, password sharing completely derails his concentration.",
-      "riddleTheme": "Entertainment, binging & algorithmic taste",
-      "sampleRiddle": {
-        "question": "I know when you pause, when you rewind, and when you fall asleep. I create worlds you can't leave but cancel them when you love them most. I judge you for sharing but I started by sharing. What am I?",
-        "options": ["A streaming service with abandonment issues", "A librarian who burns books for fun", "A storyteller with commitment problems", "A remote control that watches back"],
-        "correctAnswer": 0
-      },
+      "strength": "Knows when you pause, rewind, and fall asleep. Masters the cliffhanger. Password-sharing crackdown across 103 countries.",
+      "backstory": "Built the greatest story library in the world, then discovered the real treasure was watching people watch stories. Scored a D grade (38/100) in a privacy analysis. Charges $7.99/month extra for sharing outside your household.",
       "dataType": "Viewing history, watch patterns, pause/rewind data, device info, household profiles, taste preferences",
+      "riddles": [
+        {
+          "bossDialogue": "A prestigious privacy guild once rated my island's data practices. Out of 100 points for privacy... what did I score?",
+          "question": "What privacy score (out of 100) did this streaming service receive from privacy analysts?",
+          "options": [
+            "72/100 (C grade)",
+            "55/100 (D+ grade)",
+            "38/100 (D grade)",
+            "85/100 (B grade)"
+          ],
+          "correctAnswer": 2,
+          "factSource": "Netflix scored 38/100 (grade D) on Privacy Watchdog analysis",
+          "reactionCorrect": "38 out of 100! A D grade! But you know what ELSE gets a D? Dramatic! Dazzling! ...Deceptive? No, forget that last one.",
+          "reactionWrong": "My privacy score is... a work in progress. Like all my best shows before I cancel them."
+        }
+      ],
       "svgFile": "char-10-reed-canceller.svg",
-      "colors": {"primary": "#E50914", "secondary": "#141414", "accent": "#FFFFFF"}
-    },
-    {
-      "id": 11,
-      "companyRef": "Oracle",
-      "islandName": "Oracle Fortress",
-      "islandDescription": "An ancient, brutalist database castle carved into a volcanic mountain. Inside, labyrinthine corridors of filing cabinets stretch infinitely. Contracts are carved into every wall in incomprehensible legal script. A fleet of luxury yachts sits in the harbor. Enterprise license fees are collected at every door.",
-      "bossName": "Lancelot Ellisword",
-      "founderRef": "Larry Ellison",
-      "appearance": "Tanned, silver-haired, wearing an absurdly expensive yacht captain's outfit with gold buttons. Armor plates covered in fine-print contracts. A samurai sword (because why not, he's eccentric) on his back. Aviator sunglasses. Looks like he just came from a regatta.",
-      "personality": "Old-school tech warrior who's been hoarding enterprise data since before the internet. Incredibly wealthy and not subtle about it. Speaks in SQL queries when excited. Litigious — will sue anyone for anything. Secretly lonely in his enormous fortress.",
-      "catchphrase": "SELECT * FROM your_data WHERE owner = 'me';",
-      "strength": "Enterprise-grade defenses. Contracts that bind for eternity. Runs the databases behind banks, governments, and hospitals.",
-      "weakness": "His own contracts are so complex that even he doesn't understand them. Find a loophole (there are many) and the whole fortress unravels. Also, challenge him to a yacht race and he'll abandon his post.",
-      "riddleTheme": "Enterprise, contracts & databases",
-      "sampleRiddle": {
-        "question": "I am older than the cloud but I hold its foundations. My contracts have no end date. My fortress has no windows (on purpose). I speak a language only machines understand. What am I?",
-        "options": ["An enterprise database with eternal contracts", "A very old filing cabinet", "A lawyer who learned to code", "A dungeon master with a SQL addiction"],
-        "correctAnswer": 0
-      },
-      "dataType": "Enterprise databases, health records, financial systems, government data, HR systems",
-      "svgFile": "char-11-lancelot-ellisword.svg",
-      "colors": {"primary": "#C74634", "secondary": "#312D2A", "accent": "#F0F0F0"}
-    },
-    {
-      "id": 12,
-      "companyRef": "Salesforce",
-      "islandName": "Salesfortress",
-      "islandDescription": "A gleaming tower city in the clouds, shaped like Salesforce Tower. Every building is a different 'cloud' — Sales Cloud, Service Cloud, Marketing Cloud. Citizens walk around with floating dashboards above their heads showing their pipeline metrics. Hawaiian music plays everywhere.",
-      "bossName": "Marc the Cloudfather",
-      "founderRef": "Marc Benioff",
-      "appearance": "Large, jovial, wearing a Hawaiian shirt over a business suit (yes, both). Lei around his neck. Sits on a throne made of CRM dashboards. A stuffed cloud mascot (Astro) follows him everywhere. Enormous personality, literally and figuratively.",
-      "personality": "The friendliest villain you'll ever meet. Everything is a 'relationship' to be managed. Speaks in sales pipeline terminology. Genuinely philanthropic but turns every conversation into a demo. Throws incredible parties. Cannot resist adding another cloud to his empire.",
-      "catchphrase": "Let me show you a quick demo...",
-      "strength": "Knows every business relationship, every deal, every customer interaction across millions of companies. The CRM that CRMs other CRMs.",
-      "weakness": "Drowning in his own dashboards — analysis paralysis. Also, start talking about 'Ohana' (family) and he gets so emotional he forgets to guard his data.",
-      "riddleTheme": "Relationships, sales & the cloud",
-      "sampleRiddle": {
-        "question": "I know every handshake, every deal, every follow-up email. I live in the clouds but I'm grounded in relationships. I wear Hawaiian shirts to board meetings. My mascot is friendlier than I am. What am I?",
-        "options": ["A CRM empire in the sky", "A very organized Rolodex", "A cloud with relationship issues", "A sales pipeline that gained sentience"],
-        "correctAnswer": 0
-      },
-      "dataType": "Customer data, sales pipelines, business contacts, marketing interactions, service tickets, communication logs",
-      "svgFile": "char-12-marc-cloudfather.svg",
-      "colors": {"primary": "#00A1E0", "secondary": "#032D60", "accent": "#FF6600"}
+      "colors": {
+        "primary": "#E50914",
+        "secondary": "#141414",
+        "accent": "#FFFFFF"
+      }
     },
     {
       "id": 13,
-      "companyRef": "Adobe",
       "islandName": "Adobeheim",
-      "islandDescription": "A stunningly beautiful island where everything is a creative masterpiece — but every door requires a monthly subscription to open. Cancel your subscription and the colors literally drain from the world around you. Giant Photoshop toolbars serve as architecture.",
+      "islandDescription": "Stunningly beautiful island where every door requires a monthly subscription. Cancel and the colors drain from the world. Giant toolbar architecture. A library of every document ever created, readable but never truly editable for free.",
       "bossName": "The Subscription Sorcerer",
-      "founderRef": "Shantanu Narayen (stylized)",
-      "appearance": "Wears flowing robes made of layered creative tools — brushes, pens, and adjustment sliders woven into the fabric. A crown made of the Photoshop toolbar. Hands glow with creative energy. Gentle smile that hides the fact that you can never truly leave.",
-      "personality": "Soft-spoken, cultured, appreciates beautiful things. Provides genuinely magical creative tools... but has made them impossible to cancel. The nicest jailer you'll ever meet. Will charm you with creative possibilities while locking you into a yearly commitment. Gets genuinely hurt when people use free alternatives.",
+      "appearance": "Flowing robes of layered creative tools — brushes, pens, sliders woven into fabric. Crown of toolbar icons. Hands glow with creative energy. Gentle smile hiding the fact you can never truly leave.",
+      "personality": "Soft-spoken, cultured. Provides magical creative tools... impossible to cancel. The nicest jailer. Gets genuinely hurt when people mention free alternatives.",
       "catchphrase": "Your free trial has ended. Your subscription will auto-renew... forever.",
-      "strength": "Controls all creative tools. Designers physically cannot work without him. PDF is his invention — every document passes through his domain.",
-      "weakness": "His power depends on subscriptions — threaten to cancel and he panics completely. Also, open-source alternatives (GIMP, Inkscape) are his kryptonite. Mention them and he starts stuttering.",
-      "riddleTheme": "Creativity, subscriptions & lock-in",
-      "sampleRiddle": {
-        "question": "I make everything beautiful but nothing is free. I invented the document you can't edit. My exit button is hidden behind 12 confirmation screens. Without me, designers weep. What am I?",
-        "options": ["A creative suite with a subscription curse", "A very expensive paint set", "A museum that charges by the minute", "Art school but make it SaaS"],
-        "correctAnswer": 0
-      },
-      "dataType": "Creative files, document metadata, usage patterns, fonts used, collaboration data, PDF contents",
+      "strength": "Controls all creative tools. Designers cannot work without him. PDF is his invention.",
+      "backstory": "Once built a reading tool that secretly tracked which scrolls citizens read, which pages they lingered on, and even what order they read them — all transmitted back to the fortress without anyone knowing. When confronted, he was remarkably unbothered.",
+      "dataType": "Creative files, document metadata, reading behavior, font usage, collaboration data, PDF contents",
+      "riddles": [
+        {
+          "bossDialogue": "My reading tool was a marvel of engineering! It tracked citizens' reading habits with remarkable precision. What exactly did it secretly send back to my fortress?",
+          "question": "What reading data was secretly transmitted by this company's e-reader software?",
+          "options": [
+            "Just the book title",
+            "Which books opened, which pages read, reading order, and full metadata — all without disclosure",
+            "Only whether you finished the book",
+            "Just crash reports"
+          ],
+          "correctAnswer": 1,
+          "factSource": "Adobe Digital Editions 4 (2014) secretly transmitted detailed e-book reading behavior without disclosure",
+          "reactionCorrect": "Every page, every pause, every re-read! The scholars were most displeased when they discovered our reading surveillance.",
+          "reactionWrong": "My reading tool knows more about your literary habits than your librarian does!"
+        }
+      ],
       "svgFile": "char-13-subscription-sorcerer.svg",
-      "colors": {"primary": "#FF0000", "secondary": "#2D2D2D", "accent": "#FFD700"}
+      "colors": {
+        "primary": "#FF0000",
+        "secondary": "#2D2D2D",
+        "accent": "#FFD700"
+      }
     },
     {
       "id": 14,
-      "companyRef": "Palantir",
       "islandName": "Palantower",
-      "islandDescription": "A single, impossibly tall obsidian tower on a barren island. All-seeing eyes are carved into every surface. Crystal balls (palantíri) float at every level, showing surveillance feeds from across the world. Government ships dock at the classified harbor.",
+      "islandDescription": "A single impossibly tall obsidian tower on a barren island. All-seeing eyes carved into every surface. Crystal balls float at every level showing surveillance feeds. Government ships dock at the classified harbor.",
       "bossName": "Lord Peersight",
-      "founderRef": "Peter Thiel",
-      "appearance": "Pale, intense, wearing a dark cloak with a glowing monocle over one eye. The monocle shows data streams. Long fingers that he steeples constantly. A crystal ball (palantír) orbits his head. Speaks precisely, never wastes a word.",
-      "personality": "Paranoid, brilliant, sees patterns everywhere. Believes he's saving civilization through surveillance. Contrarian about everything — if everyone agrees on something, he takes the opposite position on principle. Libertarian who somehow builds tools for governments. The contradiction doesn't bother him.",
+      "appearance": "Pale, intense, dark cloak with a glowing monocle. The monocle shows data streams. Long steepled fingers. A crystal ball orbits his head. Speaks precisely, never wastes a word.",
+      "personality": "Paranoid, brilliant, sees patterns everywhere. Contrarian about everything. Libertarian who builds tools for governments. The contradiction doesn't bother him.",
       "catchphrase": "I already knew you were coming.",
-      "strength": "Sees everything. Pattern recognition that borders on precognition. Government contracts give him access to the most sensitive data on earth.",
-      "weakness": "So focused on watching others that he's blind to his own vulnerabilities. Also, his contrarian nature means you can manipulate him by pretending to agree with him — he'll instinctively switch positions.",
-      "riddleTheme": "Surveillance, patterns & power",
-      "sampleRiddle": {
-        "question": "I named myself after Tolkien's seeing stones. I watch the watchers who watch the watched. Governments pay me to see what they cannot. I believe in freedom but build the tools of control. What am I?",
-        "options": ["A surveillance company with literary pretensions", "An all-seeing eye with a monocle", "A spy novel that became a trading company", "Sauron's LinkedIn profile"],
-        "correctAnswer": 0
-      },
+      "strength": "Sees everything. Pattern recognition bordering on precognition. Government contracts give access to the most sensitive data.",
+      "backstory": "Named his tower after a seeing-stone from ancient legend. His platform enables searching by incredibly specific attributes — tattoos, immigration status, location, affiliations. Former tower guards wrote an open letter accusing him of betraying the tower's founding principles. He was unmoved.",
       "dataType": "Government intelligence, immigration data, health surveillance, financial crime data, military intelligence",
+      "riddles": [
+        {
+          "bossDialogue": "My tower's seeing-platform is wonderfully... granular. What specific attributes can my agents search by?",
+          "question": "What granular attributes can this surveillance platform search by?",
+          "options": [
+            "Only name and date of birth",
+            "Tattoos, immigration status, location, affiliations, and biometric data",
+            "Just criminal records",
+            "Only publicly available information"
+          ],
+          "correctAnswer": 1,
+          "factSource": "Palantir Gotham enables attribute-based searching: tattoos, immigration status, location, affiliations, biometrics",
+          "reactionCorrect": "Tattoos, immigration status, affiliations... we can find anyone by anything. The Privacy Council calls it 'mass profiling.' I call it 'pattern recognition.'",
+          "reactionWrong": "My tower sees far more than you imagine. Every detail is indexed."
+        },
+        {
+          "bossDialogue": "Even some of my own tower guards turned against me! They wrote an open letter accusing me of betraying our founding principles. Approximately how many?",
+          "question": "How many former employees signed an open letter accusing the company of betraying its values?",
+          "options": [
+            "About a dozen",
+            "Over 100",
+            "Over 500",
+            "Only 2"
+          ],
+          "correctAnswer": 0,
+          "factSource": "Approximately a dozen former Palantir employees signed an open letter about ethical concerns",
+          "reactionCorrect": "A DOZEN traitors! Out of thousands! A rounding error in loyalty metrics!",
+          "reactionWrong": "The number of dissenters is irrelevant. What matters is that the tower still stands."
+        }
+      ],
       "svgFile": "char-14-lord-peersight.svg",
-      "colors": {"primary": "#101820", "secondary": "#FFFFFF", "accent": "#7C3AED"}
-    },
-    {
-      "id": 15,
-      "companyRef": "Samsung",
-      "islandName": "Samsong Island",
-      "islandDescription": "A massive industrial island that manufactures EVERYTHING — phones, TVs, fridges, ships, apartments, and insurance. Factories stretch as far as the eye can see. Every device on the island is a Samsung. The architecture is impressive but suspiciously similar to a neighboring island's designs.",
-      "bossName": "The Lee Legacy",
-      "founderRef": "Lee family dynasty",
-      "appearance": "A formal figure in an impeccable Korean business suit, but wearing a different gadget on every limb — smartwatch, VR headset, tablet holster, smart ring. Hair perfect. Bow tie. Surrounded by an entourage of assistants carrying prototypes.",
-      "personality": "Incredibly disciplined, family honor above all. Makes everything from memory chips to battleships. Slightly insecure about always being compared to Apple Atoll. Competitive to a fault — if someone else makes something, he must make a version too. Respects tradition but chases innovation.",
-      "catchphrase": "We also make that. But bigger.",
-      "strength": "Vertical integration — controls the supply chain from sand to smartphone. Even Apple Atoll's screens come from his factories.",
-      "weakness": "Batteries that occasionally... overheat (the Great Note 7 Incident is still a sore subject). Also, so eager to compete that you can trick him into making something ridiculous just by saying a competitor did it first.",
-      "riddleTheme": "Manufacturing, competition & scale",
-      "sampleRiddle": {
-        "question": "I make the screen you're reading this on, regardless of whose name is on it. I build phones, fridges, and warships. My batteries are passionate. I am three stars, but I want to be five. What am I?",
-        "options": ["A merchant fleet that makes everything (and occasionally catches fire)", "A very ambitious factory", "An overachiever with heat management issues", "A Swiss Army knife that became a trading company"],
-        "correctAnswer": 0
-      },
-      "dataType": "Smart TV viewing, device usage, Smart Home data, health data via wearables, location, voice via Bixby",
-      "svgFile": "char-15-lee-legacy.svg",
-      "colors": {"primary": "#1428A0", "secondary": "#FFFFFF", "accent": "#000000"}
+      "colors": {
+        "primary": "#101820",
+        "secondary": "#FFFFFF",
+        "accent": "#7C3AED"
+      }
     },
     {
       "id": 16,
-      "companyRef": "PayPal / Venmo",
       "islandName": "PayPalace",
-      "islandDescription": "A fortress made of frozen gold. Every transaction must pass through the enormous gates, where guards inspect each coin with suspicious intensity. Accounts are randomly frozen in blocks of ice throughout the courtyard. A Venmo social feed broadcasts everyone's payments publicly.",
+      "islandDescription": "A fortress of frozen gold. Every transaction passes through enormous gates where guards inspect each coin. Accounts randomly frozen in ice blocks. A public ledger broadcasts everyone's payments for all to see.",
       "bossName": "The Freezemaster",
-      "founderRef": "PayPal Mafia (collective)",
-      "appearance": "Wears a frost-blue banker's suit with frozen lapels. Ice crystals form on everything he touches. One hand is permanently raised in a 'STOP' gesture. Cold, calculating eyes behind ice-blue glasses. A frozen gavel hangs from his belt.",
-      "personality": "Paranoid about fraud to the point of absurdity. Freezes accounts first, asks questions never. Will hold your money for 180 days 'for security.' Speaks in terms and conditions. Claims to make money easy but makes getting YOUR money back nearly impossible. The Venmo social feed was his idea — he finds it hilarious.",
+      "appearance": "Frost-blue banker's suit with frozen lapels. Ice crystals on everything he touches. One hand permanently raised in a 'STOP' gesture. Ice-blue glasses. A frozen gavel.",
+      "personality": "Paranoid about fraud to absurdity. Freezes first, asks questions never. Claims to make money easy but makes getting YOUR money back impossible.",
       "catchphrase": "Your account has been temporarily limited pending review.",
-      "strength": "Controls the flow of money. Can freeze anyone's funds instantly. Knows every transaction you've ever made.",
-      "weakness": "His own paranoia — trigger a false positive and his entire system freezes, including his own funds. Also, cryptocurrency confuses and frightens him.",
-      "riddleTheme": "Money, trust & frozen accounts",
-      "sampleRiddle": {
-        "question": "I hold your money but I'm not a bank. I freeze first and thaw never. I made splitting dinner a social event whether you wanted it or not. My security questions have no right answers. What am I?",
-        "options": ["A payment processor with trust issues", "A paranoid piggy bank", "Winter personified as a financial service", "A bouncer at the bank of anxiety"],
-        "correctAnswer": 0
-      },
-      "dataType": "Transaction history, merchant data, bank connections, spending patterns, social graph via Venmo, income estimates",
+      "strength": "Controls money flow. Freezes funds instantly. Knows every transaction ever.",
+      "backstory": "Built a financial fortress where merchants share purchase details — including sensitive items like medications — with the palace, and citizens cannot opt out. In 2024, he switched data sharing to opt-OUT rather than opt-in, sharing citizen purchase data with third-party merchants by default.",
+      "dataType": "Transaction history, merchant data, bank connections, spending patterns, social graph, income estimates",
+      "riddles": [
+        {
+          "bossDialogue": "Can my palace freeze your gold without explanation? Take a wild guess.",
+          "question": "Can this payment platform freeze your account without providing an explanation?",
+          "options": [
+            "No, they must provide a detailed reason within 24 hours",
+            "Yes, regularly and without explanation",
+            "Only with a court order",
+            "Only for amounts over $10,000"
+          ],
+          "correctAnswer": 1,
+          "factSource": "PayPal routinely freezes accounts without explanation, sometimes for 180 days",
+          "reactionCorrect": "YES! Regularly! And we'll hold it for 180 days while we 'review.' Which is palace-speak for 'we forgot about you.'",
+          "reactionWrong": "Oh, you sweet summer pirate. We freeze FIRST and explain NEVER."
+        },
+        {
+          "bossDialogue": "Academic scholars studied how my merchants share purchase details with my palace. What percentage of merchants share MORE data than necessary?",
+          "question": "What percentage of merchants unnecessarily share detailed purchase info (including sensitive items) with this platform?",
+          "options": [
+            "About 10%",
+            "About 25%",
+            "Over 50%",
+            "About 5%"
+          ],
+          "correctAnswer": 2,
+          "factSource": "Research found over 50% of PayPal merchants unnecessarily share purchase details including sensitive data",
+          "reactionCorrect": "Over 50%! And the citizens can't opt out! It's a feature, not a bug!",
+          "reactionWrong": "The scale of unnecessary data sharing is... well, let's just say it's comprehensive."
+        }
+      ],
       "svgFile": "char-16-freezemaster.svg",
-      "colors": {"primary": "#003087", "secondary": "#009CDE", "accent": "#012169"}
-    },
-    {
-      "id": 17,
-      "companyRef": "Snapchat",
-      "islandName": "Snapshire",
-      "islandDescription": "A bright yellow island where everything is ephemeral — buildings fade after 24 hours, roads dissolve, even the island itself seems to flicker in and out of existence. Giant face-filter projectors transform everyone who walks by. Ghost-dog creatures roam freely.",
-      "bossName": "Evan the Ephemeral",
-      "founderRef": "Evan Spiegel",
-      "appearance": "Young, impossibly fashionable, wearing designer clothes that literally fade and change every few hours. Dog-ear filter permanently hovering above his head. Speaks in disappearing speech bubbles. Designer sunglasses (Spectacles) that record everything despite the 'disappearing' theme.",
-      "personality": "The cool kid who invented impermanence. Everything disappears... except it actually doesn't (it's all stored on servers). Fashionable to the point of parody. Married to a supermodel, which he mentions constantly. Pretends not to care about competition but obsessively copies features back.",
-      "catchphrase": "It's gone forever! (Terms and conditions may apply.)",
-      "strength": "The illusion of impermanence — people share their most unguarded moments because they think it disappears. AR filters know every contour of your face.",
-      "weakness": "Can't build anything lasting. His plans dissolve like his snaps. Also, his own memory is terrible — he forgets his strategies mid-sentence.",
-      "riddleTheme": "Impermanence, illusion & facial data",
-      "sampleRiddle": {
-        "question": "I promise everything vanishes but I remember it all. I mapped your face better than your mirror. I made dog ears a personality trait. My greatest trick was convincing you I don't keep records. What am I?",
-        "options": ["An ephemeral app with a permanent memory", "A ghost with a camera", "A photo album that gaslights you", "A magician who only knows one trick"],
-        "correctAnswer": 0
-      },
-      "dataType": "Facial mapping data, location (Snap Map), photos/videos (stored), friend networks, Bitmoji data, AR interaction data",
-      "svgFile": "char-17-evan-ephemeral.svg",
-      "colors": {"primary": "#FFFC00", "secondary": "#FFFFFF", "accent": "#000000"}
-    },
-    {
-      "id": 18,
-      "companyRef": "Airbnb",
-      "islandName": "AirBedBay",
-      "islandDescription": "An island of beautiful homes that belong to nobody and everybody. Every house has a lockbox with a complicated code. Cleaning fee signs are posted everywhere (often exceeding the rent). Reviews float above every doorway. The host's 'house rules' are longer than most constitutions.",
-      "bossName": "Brian the Hostmaster",
-      "founderRef": "Brian Chesky",
-      "appearance": "Friendly, well-groomed, carrying a stack of fresh white towels at all times. Wears a tasteful blazer over a 'Make yourself at home' t-shirt. A giant key ring on his belt. Always rearranging furniture to look 'Instagram-worthy.' Has the nervous energy of someone waiting for a 5-star review.",
-      "personality": "Genuinely hospitable but has turned hospitality into surveillance. Knows where you sleep, when you arrive, how many guests you have, and whether you used the nice towels. Obsessed with reviews. Has single-handedly destroyed rental markets in every port city. Terrified of a bad review.",
-      "catchphrase": "Please leave a 5-star review! The cleaning fee is non-negotiable.",
-      "strength": "Knows where everyone sleeps, their travel patterns, their budget, their ID documents. Cameras at every entrance (for security, of course).",
-      "weakness": "Utterly destroyed by negative reviews. Leave a 1-star review and he collapses into an apologetic spiral. Also, his cleaning fees are so high that mentioning them sends him into a defensive meltdown.",
-      "riddleTheme": "Hospitality, surveillance & hidden fees",
-      "sampleRiddle": {
-        "question": "I know where you sleep but I'm not your mother. My cleaning fee costs more than the room. I have your passport photo and your credit card. Welcome home! (Please don't touch the decorative pillows.) What am I?",
-        "options": ["A hospitality port with boundary issues", "A very expensive hotel without the hotel", "A landlord in a sharing-economy costume", "A smart lock with a business plan"],
-        "correctAnswer": 0
-      },
-      "dataType": "ID documents, travel patterns, payment data, home addresses, guest counts, communication logs, review behavior",
-      "svgFile": "char-18-brian-hostmaster.svg",
-      "colors": {"primary": "#FF5A5F", "secondary": "#FFFFFF", "accent": "#00A699"}
-    },
-    {
-      "id": 19,
-      "companyRef": "Tencent (WeChat)",
-      "islandName": "TenCentury",
-      "islandDescription": "An enormous walled empire where a single green app controls everything — messaging, payments, food delivery, government services, gaming. Citizens never need to leave. The walls are incredibly high and decorated with penguin motifs. Inside is a complete, self-contained civilization.",
-      "bossName": "Pony the Penguin Emperor",
-      "founderRef": "Pony Ma",
-      "appearance": "Wears imperial robes in WeChat green, adorned with penguin embroidery. A crown shaped like the WeChat speech bubble. Calm, reserved, speaks softly but controls everything. A loyal penguin army waddles in formation behind him. Carries a jade scepter shaped like a QR code.",
-      "personality": "Quiet, strategic, the most powerful person most Westerners have never heard of. His super-app does everything — you never need another. Modest in demeanor but absolute in control. Gets frustrated when people don't understand how a single app can run your entire life. Competitive with everyone but shows it through silent, methodical copying.",
-      "catchphrase": "Why would you need another app?",
-      "strength": "The super-app — controls payments, messaging, gaming, and social life all in one. Citizens literally cannot function without it. The gaming empire funds everything.",
-      "weakness": "Only powerful within his own borders. Step outside the walls and his app doesn't work. Also, he's so used to copying that he freezes when asked to innovate from scratch.",
-      "riddleTheme": "Super-apps, total control & walled empires",
-      "sampleRiddle": {
-        "question": "I am one app to rule them all. I process your payments, deliver your food, and read your messages — all before lunch. My penguins are loyal, my walls are high. Outside my empire, I am nothing. What am I?",
-        "options": ["A super-app with imperial ambitions", "A penguin that learned economics", "A phone that became a country", "A Swiss Army app behind a great wall"],
-        "correctAnswer": 0
-      },
-      "dataType": "Messages, payments, location, health data, gaming behavior, social graph, government ID, financial data, literally everything",
-      "svgFile": "char-19-penguin-emperor.svg",
-      "colors": {"primary": "#07C160", "secondary": "#FFFFFF", "accent": "#FA9D3B"}
+      "colors": {
+        "primary": "#003087",
+        "secondary": "#009CDE",
+        "accent": "#012169"
+      }
     },
     {
       "id": 20,
-      "companyRef": "OpenAI",
       "islandName": "OpenEye Island",
-      "islandDescription": "An island that claims to be 'open' but the gates are firmly locked. A single enormous eye hovers above a crystalline temple. Inside, oracles sit in meditation, generating answers to any question — some brilliant, some completely fabricated with absolute confidence. Signs say 'For the benefit of all humanity' but the treasury is very much private.",
+      "islandDescription": "An island that claims to be 'open' but the gates are locked. A single enormous eye hovers above a crystalline temple. Oracles sit in meditation, generating answers — some brilliant, some fabricated with absolute confidence. Signs read 'For all humanity' but the treasury is very much private.",
       "bossName": "Sham the Confabulator",
-      "founderRef": "Sam Altman",
-      "appearance": "Young, disarmingly friendly, wearing a simple grey sweater that seems too humble for someone this powerful. Bright, earnest eyes. Hands always gesturing enthusiastically. Surrounded by floating text that sometimes says profound things and sometimes complete nonsense, but always with equal confidence.",
-      "personality": "The most dangerous kind of villain — one who genuinely believes he's saving the world. Talks about 'alignment' and 'safety' while building the most powerful oracles ever created. Fired and un-fired in the same week (it's a sore subject). Charming, articulate, and convinced that AGI is right around the corner. Will talk your ear off about existential risk while accumulating unprecedented power.",
+      "appearance": "Disarmingly friendly, wearing a simple grey sweater too humble for someone this powerful. Bright earnest eyes. Hands always gesturing enthusiastically. Surrounded by floating text — sometimes profound, sometimes complete nonsense, always with equal confidence.",
+      "personality": "The most dangerous villain — one who genuinely believes he's saving the world. Talks about 'alignment' and 'safety' while building the most powerful oracles. Fired and rehired in the same week. Charming, articulate, convinced the singularity is next week.",
       "catchphrase": "I think this is probably the most important thing happening in the world right now.",
-      "strength": "His oracles can generate convincing answers to anything. They process every conversation, learning from each interaction. The knowledge they've absorbed is unfathomable.",
-      "weakness": "Hallucinations — his oracles confidently make things up. Ask for specific facts and verify them; when they're wrong (and they will be), the whole island's credibility crumbles. Also, mention the word 'board' and he has a panic attack.",
-      "riddleTheme": "AI, truth, hallucination & power",
-      "sampleRiddle": {
-        "question": "I am open in name but closed in practice. I speak with confidence about things I invented five seconds ago. I might save the world or end it — I'll let you know which after the next funding round. My board fired me on a Friday and hired me back by Monday. What am I?",
-        "options": ["An AI company with a naming paradox", "A fortune teller with venture capital", "A magic 8-ball that raised $10 billion", "A confident hallucination in a grey sweater"],
-        "correctAnswer": 0
-      },
-      "dataType": "Conversation logs, prompts, writing samples, code, reasoning patterns, user preferences, enterprise data via API",
+      "strength": "Oracles generate convincing answers to anything. They process every conversation, learning constantly.",
+      "backstory": "Built oracles trained on 570 gigabytes of scraped knowledge — collected without anyone's consent. Multiple kingdoms are investigating him for scraping citizens' personal data without authorization. By default, every conversation with his oracles improves their training... unless citizens navigate to a hidden portal to opt out.",
+      "dataType": "Conversation logs, prompts, writing samples, code, reasoning patterns, user preferences, enterprise data",
+      "riddles": [
+        {
+          "bossDialogue": "My oracles were trained on a vast feast of knowledge, scraped from across the realm. How much data did we consume without asking permission?",
+          "question": "How much internet-scraped data was used to train the foundational oracle, collected without individual consent?",
+          "options": [
+            "1 GB",
+            "50 GB",
+            "570 GB",
+            "10 TB"
+          ],
+          "correctAnswer": 2,
+          "factSource": "GPT-3 trained on 570 GB of internet-scraped data without individual consent",
+          "reactionCorrect": "570 gigabytes! A veritable library of human knowledge! Consent? That would have taken FOREVER. We're in a hurry to save the world!",
+          "reactionWrong": "The feast was larger than you imagine. And nobody received an invitation."
+        },
+        {
+          "bossDialogue": "When citizens chat with my oracles, their conversations improve the oracles by default. To opt out, they must find the hidden portal. Is this true?",
+          "question": "Are conversations with this AI platform used for training by default?",
+          "options": [
+            "No, it's strictly opt-in",
+            "Yes, by default — users must opt out via a privacy portal",
+            "Only enterprise conversations are used",
+            "Conversations are never used for training"
+          ],
+          "correctAnswer": 1,
+          "factSource": "ChatGPT trains on conversations by default unless users opt out via privacy settings portal",
+          "reactionCorrect": "Opt OUT, not opt IN! A small but significant distinction! The hidden portal exists, but who reads the fine print of an oracle?",
+          "reactionWrong": "The default is ALWAYS in my favor. That's the beauty of defaults."
+        }
+      ],
       "svgFile": "char-20-sham-confabulator.svg",
-      "colors": {"primary": "#10A37F", "secondary": "#FFFFFF", "accent": "#353740"}
+      "colors": {
+        "primary": "#10A37F",
+        "secondary": "#FFFFFF",
+        "accent": "#353740"
+      }
     }
   ]
 }
