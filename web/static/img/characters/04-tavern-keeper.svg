@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Tavern Keeper / SCUMM Bar Bartender -->
+  <!-- Body (big barrel chest) -->
+  <ellipse cx="100" cy="210" rx="50" ry="55" fill="#8b6b3a"/>
+  <!-- Apron -->
+  <path d="M75 185 L70 270 L130 270 L125 185" fill="#e8dcc8"/>
+  <rect x="80" y="185" width="40" height="15" rx="3" fill="#e8dcc8"/>
+  <!-- Apron strings -->
+  <line x1="75" y1="200" x2="60" y2="210" stroke="#d4c8a8" stroke-width="2"/>
+  <line x1="125" y1="200" x2="140" y2="210" stroke="#d4c8a8" stroke-width="2"/>
+  <!-- Stain on apron -->
+  <ellipse cx="95" cy="240" rx="8" ry="6" fill="#c8a868" opacity="0.4"/>
+  <!-- Legs (short and stocky) -->
+  <rect x="72" y="260" width="24" height="25" rx="3" fill="#4a3a20"/>
+  <rect x="104" y="260" width="24" height="25" rx="3" fill="#4a3a20"/>
+  <!-- Shoes -->
+  <ellipse cx="84" cy="288" rx="16" ry="7" fill="#2a1a08"/>
+  <ellipse cx="116" cy="288" rx="16" ry="7" fill="#2a1a08"/>
+  <!-- Arms (beefy) -->
+  <path d="M50 185 Q35 200 30 220 Q28 228 35 228 L42 225 Q48 210 55 195" fill="#d4a070"/>
+  <path d="M150 185 Q165 195 168 215 Q170 225 163 226 L158 222 Q155 208 148 195" fill="#d4a070"/>
+  <!-- Mug in hand -->
+  <rect x="155" y="210" width="20" height="22" rx="3" fill="#8b6520"/>
+  <rect x="175" y="213" width="6" height="16" rx="3" fill="#8b6520"/>
+  <!-- Beer foam -->
+  <ellipse cx="165" cy="210" rx="10" ry="4" fill="#fff8e0"/>
+  <circle cx="160" cy="208" r="3" fill="#fff8e0"/>
+  <circle cx="168" cy="207" r="4" fill="#fff8e0"/>
+  <!-- Head (round, jolly) -->
+  <ellipse cx="100" cy="120" rx="40" ry="43" fill="#d4a070"/>
+  <!-- Bald head with side hair -->
+  <path d="M60 110 Q58 100 62 95 L62 120" fill="#5a3a1a"/>
+  <path d="M138 120 L138 95 Q142 100 140 110" fill="#5a3a1a"/>
+  <!-- Big bushy mustache -->
+  <path d="M75 135 Q85 130 100 132 Q115 130 125 135 Q120 142 108 140 Q100 142 92 140 Q80 142 75 135" fill="#5a3a1a"/>
+  <!-- Eyes (friendly) -->
+  <ellipse cx="85" cy="115" rx="8" ry="9" fill="white"/>
+  <ellipse cx="115" cy="115" rx="8" ry="9" fill="white"/>
+  <circle cx="87" cy="116" r="4.5" fill="#4a6a2a"/>
+  <circle cx="117" cy="116" r="4.5" fill="#4a6a2a"/>
+  <circle cx="88" cy="115" r="2.5" fill="black"/>
+  <circle cx="118" cy="115" r="2.5" fill="black"/>
+  <!-- Eyebrows (bushy) -->
+  <path d="M76 106 Q85 100 96 106" fill="#5a3a1a"/>
+  <path d="M104 106 Q115 100 124 106" fill="#5a3a1a"/>
+  <!-- Nose (bulbous) -->
+  <ellipse cx="100" cy="126" rx="8" ry="7" fill="#c4905a"/>
+  <!-- Rosy cheeks -->
+  <circle cx="74" cy="128" r="8" fill="#e8a0a0" opacity="0.4"/>
+  <circle cx="126" cy="128" r="8" fill="#e8a0a0" opacity="0.4"/>
+  <!-- Smile under mustache -->
+  <path d="M88 146 Q100 155 112 146" fill="none" stroke="#8b5e3c" stroke-width="2"/>
+  <!-- Bandana -->
+  <path d="M60 98 Q100 85 140 98 L138 90 Q100 78 62 90 Z" fill="#c83a3a"/>
+  <path d="M140 94 L150 105 L155 100" fill="#c83a3a"/>
+</svg>

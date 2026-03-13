@@ -23,6 +23,7 @@ from datetime import datetime
 # ---------------------------------------------------------------------------
 
 JARGON_MAP = {
+    # --- Data types (loot) ---
     "Scroll": "Email",
     "Scrolls": "Emails",
     "Soul Bond": "Contact",
@@ -61,19 +62,72 @@ JARGON_MAP = {
     "Proclamations": "Social Posts",
     "Shadow Message": "Chat Message",
     "Shadow Messages": "Chat Messages",
-    "Conglomerate": "Company",
-    "Conglomerates": "Companies",
-    "The Flatcloud": "The Cloud",
-    "Flatcloud": "Cloud",
+
+    # --- UI elements ---
+    "SCUMM Bar": "Dashboard",
+    "The SCUMM Bar": "The Dashboard",
+    "Loot Log": "Records",
+    "Raid Targets": "Sources",
+    "Ship's Helm": "Settings",
+    "Captain's Quarters": "Profile",
+    "Loot Inventory": "Data Inventory",
+    "Treasure Hold": "Data Storage",
+    "Raiding Orders": "Collection",
+    "Here Be Dragons": "Danger Zone",
+    "Memory Tavern": "Data Quiz",
+    "The Armada": "Your Sources",
+    "Plundered Islands": "Connected",
+    "Uncharted Waters": "Available",
+
+    # --- Actions ---
     "Raid": "Import",
     "raid": "import",
+    "Raid All": "Collect All",
     "Raided": "Imported",
     "raided": "imported",
+    "Plunder": "Download",
+    "plunder": "download",
+    "Board their ship": "Connect",
+    "Cast off": "Disconnect",
+    "Scan the horizon": "Refresh",
+    "Scan the Horizon": "Refresh",
+    "Stash": "Save",
+    "Scuttle": "Delete",
+    "Patch the hull": "Update",
+    "Load the cannons": "Upload",
+    "Search the seas": "Search",
+    "Search the Seas": "Search",
+    "Chart the course": "Navigate",
+    "Click to plunder": "Click to collect",
+    "Begin the Raid": "Start Collection",
+
+    # --- Nouns / concepts ---
     "Loot": "Records",
     "loot": "records",
+    "Booty": "Total",
+    "Plunder": "Data",
+    "Treasure": "Files",
+    "pieces of loot": "records",
+    "pieces of plunder": "records",
     "Vault": "Archive",
     "vault": "archive",
+    "Armada": "Company",
+    "Armada fleet": "Company",
+    "Armada fleets": "Companies",
+    "The Flatcloud": "The Cloud",
+    "Flatcloud": "Cloud",
     "Reclaimer": "User",
+    "Seven Seas of Data": "The Internet",
+    "Island of Nomolo": "Digital Sovereignty",
+    "Map Fragment": "Data Source",
+    "The One": "Personal AI",
+    "Letter of Marque": "Google Credentials",
+    "Total Booty": "Total Records",
+    "Islands Plundered": "Connected Sources",
+    "Local Harbors": "Mac Sources",
+    "Captured Cargo": "Import Files",
+
+    # --- Entities (Conglomerates) ---
     "The Omniscient Eye": "Google",
     "The Walled Garden": "Apple",
     "The Hydra of Faces": "Meta",
@@ -86,6 +140,83 @@ JARGON_MAP = {
     "The Dream Weaver": "Netflix",
     "The Hive Mind": "Reddit",
     "The Coin Master": "PayPal",
+    "The Merchant Fleet": "Amazon",
+    "The Professional Port": "Microsoft",
+    "The Bard's Guild": "Spotify/YouTube",
+    "The Shadow Broker": "Telegram/Signal",
+    "The Coin Counter": "PayPal",
+
+    # --- Captain names ---
+    "Captain Lexicon": "Google (Captain)",
+    "Admiral Polished": "Apple (Admiral)",
+    "Captain Pivot": "Meta (Captain)",
+    "Commodore Prime": "Amazon (Commodore)",
+    "The Harbormaster": "Microsoft/LinkedIn",
+    "The Maestro": "Spotify/YouTube",
+    "Baron Ledger": "PayPal",
+
+    # --- Pirate-world locations & things ---
+    "the Omniscient Archipelago": "Google's platform",
+    "the Archipelago": "Google's ecosystem",
+    "the Fortress": "Apple's ecosystem",
+    "the Fortress Marketplace": "the App Store",
+    "Fortress Marketplace": "App Store",
+    "the Reef": "Facebook/Meta's platform",
+    "the Scroll Archives": "Gmail",
+    "Scroll Archives": "Gmail",
+    "the Listening Parrot": "Alexa",
+    "Listening Parrot": "Alexa",
+    "the Great Logbook Scandal": "the Cambridge Analytica scandal",
+    "Great Logbook Scandal": "Cambridge Analytica scandal",
+    "the Glass Panes": "Windows",
+    "Glass Panes": "Windows",
+    "the Spyglass": "Chrome / Google Analytics",
+    "Spyglass": "Chrome / Analytics",
+    "the Bard's Stage": "YouTube",
+    "Bard's Stage": "YouTube",
+    "the Hydra's Whisper Channel": "WhatsApp",
+    "Hydra's Whisper Channel": "WhatsApp",
+    "the Scuttled Ships Registry": "killedbygoogle.com",
+    "Scuttled Ships Registry": "killedbygoogle.com",
+    "the Pirate's Code": "GDPR",
+    "Pirate's Code": "GDPR",
+    "the Data Protection Treaty": "GDPR",
+    "Secret Dispatches": "Secret Chats (Telegram)",
+    "harbor dispatches": "InMails",
+    "harbor messages": "InMails",
+
+    # --- States ---
+    "Aboard": "Connected",
+    "Adrift": "Disconnected",
+    "Battle-ready": "Active",
+    "In dry dock": "Inactive",
+    "Defeated": "Fully Imported",
+    "Uncharted": "Available",
+
+    # --- Fun phrases used in toasts / UI ---
+    "Yo ho ho!": "Success!",
+    "Kraken attack!": "Error!",
+    "Man overboard!": "Warning!",
+    "Batten down!": "Close",
+    "Aye!": "OK",
+    "Belay that!": "Cancel",
+    "Yer": "Your",
+    "yer": "your",
+    "ye": "you",
+    "Captain": "User",
+
+    # --- Loading / empty / error phrases ---
+    "Polishing the brass at the SCUMM Bar...": "Loading dashboard...",
+    "Unfurling the treasure maps...": "Loading records...",
+    "Scanning the horizon with the spyglass...": "Loading sources...",
+    "Adjusting the ship's wheel...": "Loading settings...",
+    "Sending the parrot to look...": "Searching...",
+    "The hold is empty, Captain. Time to raid the Armada!": "No records yet. Time to import from some companies!",
+    "No islands on the chart yet. The seven seas await!": "No sources connected yet.",
+    "The parrot came back empty-clawed. Try different waters?": "No results found. Try a different search?",
+    "A kraken has severed the communication lines!": "Network error!",
+    "The ship's engine room is on fire!": "Server error!",
+    "The messenger pigeon got lost. Sending another...": "Request timed out. Retrying...",
 }
 
 
@@ -221,6 +352,164 @@ VILLAIN_REGISTRY = {
 }
 
 # ---------------------------------------------------------------------------
+# CHARACTER PORTRAITS — Placeholder SVG mappings from Cowork's assets
+# ---------------------------------------------------------------------------
+# These are GENERIC Monkey Island-style SVGs used as temporary placeholders.
+# Cowork will create actual villain-specific art later.
+# Each entry maps a villain_id to its placeholder SVG path and richer
+# character data from Cowork's nomolo-characters.json.
+
+CHARACTER_PORTRAITS = {
+    "omniscient_eye": {
+        "svg": "/static/img/characters/06-island-governor.svg",
+        "cowork_name": "The Twin Indexers: Surjay & Lorry",
+        "island_name": "Joogle Archipelago",
+        "cowork_id": 1,
+    },
+    "walled_garden": {
+        "svg": "/static/img/characters/08-island-merchant.svg",
+        "cowork_name": "Sir Timothee of Cupertino",
+        "island_name": "Apple Atoll",
+        "cowork_id": 4,
+    },
+    "hydra_of_faces": {
+        "svg": "/static/img/characters/02-ghost-pirate.svg",
+        "cowork_name": "Lord Sugarmountain",
+        "island_name": "Metarock Island",
+        "cowork_id": 2,
+    },
+    "melody_merchant": {
+        "svg": "/static/img/characters/10-island-parrot.svg",
+        "cowork_name": "Danny Beatbox",
+        "island_name": "Spotifyre Cove",
+        "cowork_id": 9,
+    },
+    "bazaar_eternal": {
+        "svg": "/static/img/characters/09-cannoneer.svg",
+        "cowork_name": "Captain Bazoom",
+        "island_name": "Amazonia",
+        "cowork_id": 3,
+    },
+    "professional_masque": {
+        "svg": "/static/img/characters/04-tavern-keeper.svg",
+        "cowork_name": "Gill of the Gates",
+        "island_name": "Windowslandia",
+        "cowork_id": 5,
+    },
+    "shadow_courier": {
+        "svg": "/static/img/characters/07-skeleton-pirate.svg",
+        "cowork_name": "Evan the Ephemeral",
+        "island_name": "Snapshire",
+        "cowork_id": 17,
+    },
+    "chaos_herald": {
+        "svg": "/static/img/characters/01-mighty-pirate.svg",
+        "cowork_name": "Melon Tusk",
+        "island_name": "Xitter Reef",
+        "cowork_id": 7,
+    },
+    "dream_weaver": {
+        "svg": "/static/img/characters/03-voodoo-priestess.svg",
+        "cowork_name": "Reed the Canceller",
+        "island_name": "Netflixia",
+        "cowork_id": 10,
+    },
+    "coin_master": {
+        "svg": "/static/img/characters/05-three-headed-monkey.svg",
+        "cowork_name": "The Freezemaster",
+        "island_name": "PayPalace",
+        "cowork_id": 16,
+    },
+}
+
+
+def _load_cowork_characters():
+    """Load Cowork's rich character JSON data. Returns dict keyed by id."""
+    json_path = os.path.join(os.path.dirname(__file__),
+                             "static", "img", "characters",
+                             "nomolo-characters.json")
+    try:
+        with open(json_path, "r") as f:
+            data = json.load(f)
+        return {c["id"]: c for c in data.get("characters", [])}
+    except (FileNotFoundError, json.JSONDecodeError, KeyError):
+        return {}
+
+
+# Lazy-loaded cache for Cowork character data
+_COWORK_CHARACTERS_CACHE = None
+
+
+def get_cowork_characters():
+    """Return Cowork character data, loading once and caching."""
+    global _COWORK_CHARACTERS_CACHE
+    if _COWORK_CHARACTERS_CACHE is None:
+        _COWORK_CHARACTERS_CACHE = _load_cowork_characters()
+    return _COWORK_CHARACTERS_CACHE
+
+
+def get_character_portrait(villain_id):
+    """Return portrait data for a villain, or None if no portrait assigned."""
+    portrait = CHARACTER_PORTRAITS.get(villain_id)
+    if portrait is None:
+        return None
+    # Merge with Cowork's richer data if available
+    cowork = get_cowork_characters().get(portrait.get("cowork_id"))
+    result = {
+        "svg": portrait["svg"],
+        "cowork_name": portrait["cowork_name"],
+        "island_name": portrait["island_name"],
+    }
+    if cowork:
+        result["colors"] = cowork.get("colors", {})
+        result["catchphrase"] = cowork.get("catchphrase", "")
+        result["appearance"] = cowork.get("appearance", "")
+        result["riddle"] = cowork.get("sampleRiddle")
+    return result
+
+
+def get_full_character_registry():
+    """Merge VILLAIN_REGISTRY with Cowork character data for API output."""
+    cowork_chars = get_cowork_characters()
+    result = []
+    for vid, vdata in VILLAIN_REGISTRY.items():
+        entry = {
+            "id": vid,
+            "name": vdata["name"],
+            "company": vdata["company"],
+            "color": vdata["color"],
+            "icon": vdata["icon"],
+            "tagline": vdata["tagline"],
+            "description": vdata["description"],
+        }
+        portrait = CHARACTER_PORTRAITS.get(vid)
+        if portrait:
+            entry["portrait"] = {
+                "svg": portrait["svg"],
+                "cowork_name": portrait["cowork_name"],
+                "island_name": portrait["island_name"],
+            }
+            cowork = cowork_chars.get(portrait.get("cowork_id"))
+            if cowork:
+                entry["cowork"] = {
+                    "boss_name": cowork.get("bossName", ""),
+                    "island_name": cowork.get("islandName", ""),
+                    "island_description": cowork.get("islandDescription", ""),
+                    "appearance": cowork.get("appearance", ""),
+                    "personality": cowork.get("personality", ""),
+                    "catchphrase": cowork.get("catchphrase", ""),
+                    "strength": cowork.get("strength", ""),
+                    "weakness": cowork.get("weakness", ""),
+                    "riddle_theme": cowork.get("riddleTheme", ""),
+                    "sample_riddle": cowork.get("sampleRiddle"),
+                    "data_type": cowork.get("dataType", ""),
+                    "colors": cowork.get("colors", {}),
+                }
+        result.append(entry)
+    return result
+
+
+# ---------------------------------------------------------------------------
 # VAULT_DIR_TO_VILLAIN — Reverse lookup: vault directory -> villain_id
 # ---------------------------------------------------------------------------
 
@@ -275,14 +564,14 @@ VAULT_DIR_TO_LOOT = {
 
 LEVEL_TIERS = [
     (0,       1,  "Digital Peasant",     "You own nothing. You are happy. Wait, no you're not."),
-    (100,     2,  "Data Scavenger",      "You've started picking through the scraps. The Conglomerates haven't noticed yet."),
+    (100,     2,  "Data Scavenger",      "You've started picking through the scraps. The Armada hasn't noticed yet."),
     (1000,    3,  "Archive Apprentice",  "You're learning the trade. Your Vault smells of fresh parchment."),
     (5000,    4,  "Vault Keeper",        "You've built walls around your memories. Good walls. With a moat."),
-    (10000,   5,  "Loot Hunter",         "The Conglomerates have placed a small bounty on your head. Flattering, really."),
-    (25000,   6,  "Raid Captain",        "Others are starting to follow your example. This worries the Conglomerates."),
+    (10000,   5,  "Loot Hunter",         "The Armada has placed a small bounty on your head. Flattering, really."),
+    (25000,   6,  "Raid Captain",        "Others are starting to follow your example. This worries the Armada."),
     (50000,   7,  "Data Knight",         "You've sworn an oath to data sovereignty. The oath was notarized locally."),
     (100000,  8,  "Archive Lord",        "Your Vault is legendary. Bards sing of its organizational structure."),
-    (250000,  9,  "Digital Liberator",   "You've freed more data than most people generate. The Conglomerates send lawyers."),
+    (250000,  9,  "Digital Liberator",   "You've freed more data than most people generate. The Armada sends lawyers."),
     (500000,  10, "Data Sovereign",      "You own your entire digital existence. The Algorithm Turtle nods approvingly."),
 ]
 
@@ -331,7 +620,7 @@ MEMORY_STATES = {
     },
     6: {
         "state": "sharp",
-        "description": "Your memory is a weapon. The Conglomerates should worry.",
+        "description": "Your memory is a weapon. The Armada should worry.",
         "speech_style": "articulate, witty, occasionally profound",
         "emoji": "\u2694\ufe0f",
         "real_label": "Data Completeness: 70%",
@@ -383,14 +672,14 @@ MEMORY_DIALOGUE = {
         "hazy": [  # levels 3-4
             "Right! I'm a pirate! I think. Yes, definitely a pirate. Probably.",
             "I remember now \u2014 I had all this data, and they... wait, WHO took it?",
-            "The fog is clearing. I can almost see the... was it Google? GoogleFace? FaceGoogle?",
+            "The fog is clearing. I can almost see the... was it the Eye? The Hydra? The Eye-dra?",
             "I'm getting better at this. Yesterday I remembered my own email address. Progress!",
-            "Something about Conglomerates... they stole my... scrolls? Yes! Scrolls!",
+            "Something about the Armada... they stole my... scrolls? Yes! Scrolls!",
         ],
         "sharp": [  # levels 5-6
-            "Captain on deck! Let's see what the Conglomerates are hiding today.",
-            "I remember every email, every message, every late-night search. The Conglomerates should be nervous.",
-            "Another day, another Conglomerate to raid. My memory is my weapon.",
+            "Captain on deck! Let's see what the Armada is hiding today.",
+            "I remember every email, every message, every late-night search. The Armada should be nervous.",
+            "Another day, another Armada fleet to raid. My memory is my weapon.",
             "The fog is long gone. Now I see clearly \u2014 and what I see is MY data in THEIR vaults.",
         ],
         "crystal": [  # levels 7-8
@@ -400,7 +689,7 @@ MEMORY_DIALOGUE = {
         ],
         "transcendent": [  # levels 9-10
             "I have achieved total recall. Every byte, every bit, every moment \u2014 sovereign.",
-            "The Conglomerates built empires on our forgetting. But I remember now. I remember everything.",
+            "The Armada built empires on our forgetting. But I remember now. I remember everything.",
             "When you hold your entire digital life in your hands, the cloud becomes... unnecessary.",
         ],
     },
@@ -435,7 +724,7 @@ MEMORY_DIALOGUE = {
             "Nothing here... yet. But I'm starting to remember what should be.",
         ],
         "sharp": [
-            "This vault is empty. Time to raid some Conglomerates and fill it up.",
+            "This vault is empty. Time to raid the Armada and fill it up.",
             "An empty vault is a challenge. I know exactly where to find what belongs here.",
         ],
         "crystal": [
@@ -457,7 +746,7 @@ MEMORY_DIALOGUE = {
         ],
         "sharp": [
             "Charting course with precision. Stand by, Captain.",
-            "Processing at full speed. The Conglomerates won't know what hit them.",
+            "Processing at full speed. The Armada won't know what hit them.",
         ],
         "crystal": [
             "I already know what we'll find. Loading it anyway for the satisfaction.",
@@ -478,7 +767,7 @@ MEMORY_DIALOGUE = {
         ],
         "sharp": [
             "Scrolls recovered. Each one a piece of the puzzle. The picture is becoming clear.",
-            "Another successful raid. The Conglomerates' grip weakens.",
+            "Another successful raid. The Armada's grip weakens.",
         ],
         "crystal": [
             "Scrolls recovered. I remember writing every single one. And now they're home.",
@@ -593,7 +882,7 @@ POWER_UPS = {
         "id": "fleet_commander",
         "name": "Fleet Commander",
         "emoji": "\u2693",
-        "description": "Your armada grows. The Conglomerates can see your sails on the horizon.",
+        "description": "Your fleet grows. The Armada can see your sails on the horizon.",
         "how_to_earn": "5 referrals installed.",
         "effect": "+25 STR, unlock Fleet view",
         "effect_stat": "STR",
@@ -606,7 +895,7 @@ POWER_UPS = {
         "id": "the_broadcaster",
         "name": "The Broadcaster",
         "emoji": "\U0001F4E1",
-        "description": "The Conglomerates HATE this one simple trick.",
+        "description": "The Armada HATES this one simple trick.",
         "how_to_earn": "Share a villain defeat on social media.",
         "effect": "+5 CHA per share (max 3)",
         "effect_stat": "CHA",
@@ -634,7 +923,7 @@ POWER_UPS = {
         "id": "midnight_raider",
         "name": "Midnight Raider",
         "emoji": "\U0001F319",
-        "description": "The best raids happen when the Conglomerates are sleeping.",
+        "description": "The best raids happen when the Armada is sleeping.",
         "how_to_earn": "Run a collection between midnight and 4am.",
         "effect": "+10 DEX",
         "effect_stat": "DEX",
@@ -896,19 +1185,19 @@ def compute_serotonin_level(total_records, sources_raided, total_sources):
     SEROTONIN_STATES = [
         (0,  "bottom_feeder",
          "You scuttle along the ocean floor, avoiding eye contact with the "
-         "other crustaceans. The Conglomerates don't even notice you."),
+         "other crustaceans. The Armada doesn't even notice you."),
         (21, "shell_dweller",
          "You've found a decent shell, but you're still hiding in it. "
-         "The Conglomerates occasionally step on you."),
+         "The Armada occasionally steps on you."),
         (41, "reef_walker",
          "Your claws are getting stronger. Other lobsters are starting to "
          "give you right of way on the reef."),
         (61, "current_rider",
-         "Your serotonin flows like a warm current. The Conglomerates are "
+         "Your serotonin flows like a warm current. The Armada is "
          "starting to worry."),
         (81, "apex_lobster",
          "You stand fully upright, claws wide, data flowing. The ocean "
-         "parts before you. The Conglomerates flee."),
+         "parts before you. The Armada flees."),
     ]
 
     state = SEROTONIN_STATES[0][1]
@@ -1000,7 +1289,10 @@ def compute_villain_progress(vault_stats):
 
         sources_total = len(vdata["vault_dirs"])
 
-        villains.append({
+        # Get character portrait data if available
+        portrait = get_character_portrait(vid)
+
+        villain_entry = {
             "id": vid,
             "name": vdata["name"],
             "company": vdata["company"],
@@ -1014,7 +1306,10 @@ def compute_villain_progress(vault_stats):
             "raid_complete": sources_raided >= sources_total,
             "raided": sources_raided > 0,
             "loot_breakdown": loot_breakdown,
-        })
+        }
+        if portrait:
+            villain_entry["portrait"] = portrait
+        villains.append(villain_entry)
 
     # Sort: raided villains first (by loot count desc), then unraided
     villains.sort(key=lambda v: (-v["raided"], -v["total_loot"]))
@@ -1658,7 +1953,7 @@ def get_demo_character():
         "serotonin": {
             "level": 78,
             "state": "current_rider",
-            "flavor_text": "Your serotonin flows like a warm current. The Conglomerates are starting to worry.",
+            "flavor_text": "Your serotonin flows like a warm current. The Armada is starting to worry.",
         },
         "the_one": compute_the_one_status(8, 14, 142387),
         "total_records": 142387,

@@ -169,7 +169,7 @@
             <button class="expert-modal__close" onclick="NomoloBridge.closeExpertModal()">&times;</button>
 
             <h2 class="expert-modal__title">Board the Omniscient Eye's Fleet</h2>
-            <p class="expert-modal__subtitle">Raid yer Gmail, Contacts, and Calendar. Everything stays aboard yer ship.</p>
+            <p class="expert-modal__subtitle jargon" data-rpg="Raid yer Scroll Archives, Soul Bonds, and Time Crystals. Everything stays aboard yer ship." data-real="Import your Gmail, Contacts, and Calendar. Everything stays on your machine.">Raid yer Scroll Archives, Soul Bonds, and Time Crystals. Everything stays aboard yer ship.</p>
 
             <!-- Phase 1: Upload Credentials -->
             <div class="expert-phase" id="expert-phase-upload">
@@ -199,7 +199,7 @@
                 <div class="expert-source-rows">
                     <div class="expert-source-row" data-source="gmail">
                         <div class="expert-source-row__icon">&#9993;</div>
-                        <div class="expert-source-row__name">Gmail</div>
+                        <div class="expert-source-row__name jargon" data-rpg="Scroll Archives" data-real="Gmail">Scroll Archives</div>
                         <div class="expert-source-row__status" id="expert-auth-gmail">Not boarded</div>
                         <button class="expert-source-row__btn" onclick="NomoloBridge.triggerExpertAuth('gmail')">Board</button>
                     </div>
@@ -226,7 +226,7 @@
                 </div>
                 <div class="expert-collect-rows">
                     <div class="expert-collect-row">
-                        <div class="expert-collect-row__name">Gmail</div>
+                        <div class="expert-collect-row__name jargon" data-rpg="Scroll Archives" data-real="Gmail">Scroll Archives</div>
                         <div class="expert-collect-row__bar"><div class="expert-collect-row__bar-fill" id="expert-bar-gmail"></div></div>
                         <div class="expert-collect-row__status" id="expert-collect-gmail">Awaiting orders</div>
                     </div>

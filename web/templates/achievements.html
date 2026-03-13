@@ -1,18 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Achievements{% endblock %}
+{% block title %}Power-Ups{% endblock %}
 
 {% block content %}
 <div class="achievements-page">
     <header class="dashboard__header">
         <div class="dashboard__greeting">
-            <h1 class="dashboard__title">Achievement Showcase</h1>
+            <h1 class="dashboard__title jargon" data-rpg="Power-Up Gallery" data-real="Achievement Showcase">Power-Up Gallery</h1>
             <p class="dashboard__subtitle">
-                {{ achievements|selectattr('unlocked')|list|length }} of {{ achievements|length }} unlocked
+                {{ achievements|selectattr('unlocked')|list|length }} of {{ achievements|length }}
+                <span class="jargon" data-rpg="unlocked" data-real="unlocked">unlocked</span>
             </p>
         </div>
 
         <!-- Score Widget -->
-        <div class="score-widget">
+        <div class="score-widget" title="Your overall data sovereignty progress">
             <div class="score-widget__ring">
                 <svg viewBox="0 0 80 80">
                     <circle class="score-widget__track" cx="40" cy="40" r="35" />
@@ -24,7 +25,7 @@
             </div>
             <div class="score-widget__info">
                 <div class="score-widget__title">{{ score.level.title }}</div>
-                <div class="score-widget__detail">{{ score.sources_collected }}/{{ score.sources_total }} sources</div>
+                <div class="score-widget__detail jargon" data-rpg="{{ score.sources_collected }}/{{ score.sources_total }} islands raided" data-real="{{ score.sources_collected }}/{{ score.sources_total }} sources connected">{{ score.sources_collected }}/{{ score.sources_total }} islands raided</div>
             </div>
         </div>
     </header>
@@ -32,10 +33,10 @@
     <!-- Category Filters -->
     <div class="achievement-filters">
         <button class="achievement-filter achievement-filter--active" data-category="all" onclick="filterAchievements('all', this)">All</button>
-        <button class="achievement-filter" data-category="collection" onclick="filterAchievements('collection', this)">Collection</button>
-        <button class="achievement-filter" data-category="quality" onclick="filterAchievements('quality', this)">Quality</button>
-        <button class="achievement-filter" data-category="exploration" onclick="filterAchievements('exploration', this)">Exploration</button>
-        <button class="achievement-filter" data-category="dedication" onclick="filterAchievements('dedication', this)">Dedication</button>
+        <button class="achievement-filter" data-category="collection" onclick="filterAchievements('collection', this)"><span class="jargon" data-rpg="Plundering" data-real="Collection">Plundering</span></button>
+        <button class="achievement-filter" data-category="quality" onclick="filterAchievements('quality', this)"><span class="jargon" data-rpg="Treasure Quality" data-real="Quality">Treasure Quality</span></button>
+        <button class="achievement-filter" data-category="exploration" onclick="filterAchievements('exploration', this)"><span class="jargon" data-rpg="Charting" data-real="Exploration">Charting</span></button>
+        <button class="achievement-filter" data-category="dedication" onclick="filterAchievements('dedication', this)"><span class="jargon" data-rpg="Sea Legs" data-real="Dedication">Sea Legs</span></button>
     </div>
 
     <!-- Achievement Grid -->
@@ -83,9 +84,9 @@
             <span class="achievement-card__category">{{ ach.category|title }}</span>
 
             {% if ach.unlocked %}
-            <div class="achievement-card__status achievement-card__status--unlocked">Unlocked</div>
+            <div class="achievement-card__status achievement-card__status--unlocked jargon" data-rpg="&#9876; Earned!" data-real="Unlocked">&#9876; Earned!</div>
             {% else %}
-            <div class="achievement-card__status achievement-card__status--locked">Locked</div>
+            <div class="achievement-card__status achievement-card__status--locked jargon" data-rpg="&#128274; Undiscovered" data-real="Locked">&#128274; Undiscovered</div>
             {% endif %}
         </div>
         {% endfor %}

@@ -10,7 +10,7 @@
             <h1 class="rpg__title">{{ rpg.level.title }}</h1>
             <p class="rpg__flavor">{{ rpg.level.flavor_text }}</p>
         </div>
-        <div class="rpg__power">
+        <div class="rpg__power" title="Pieces of treasure in your vault">
             <span class="rpg__power-number">{{ "{:,}".format(rpg.total_records) }}</span>
             <span class="rpg__power-label jargon" data-rpg="items reclaimed" data-real="records collected">items reclaimed</span>
         </div>
@@ -44,7 +44,7 @@
     <div class="rpg__grid">
         <!-- Character Stats -->
         <div class="rpg__card rpg__card--stats">
-            <h2 class="rpg__card-title">Character Stats</h2>
+            <h2 class="rpg__card-title jargon" data-rpg="Character Stats" data-real="Data Overview">Character Stats</h2>
             <div class="rpg__stats">
                 {% for stat_name in ['STR', 'WIS', 'DEX', 'INT', 'CHA', 'END'] %}
                 <div class="rpg__stat">
@@ -56,7 +56,7 @@
                 </div>
                 {% endfor %}
             </div>
-            <div class="rpg__total-power">
+            <div class="rpg__total-power jargon" data-rpg="Total Plunder Power: {{ rpg.stats.total_power }} / 600" data-real="Data Coverage: {{ rpg.stats.total_power }} / 600">
                 Total Plunder Power: <strong>{{ rpg.stats.total_power }}</strong> / 600
             </div>
 
@@ -86,14 +86,14 @@
                 </div>
                 {% endfor %}
                 {% if not rpg.inventory %}
-                <p class="rpg__empty jargon" data-rpg="No loot yet. Time to raid some Conglomerates!" data-real="No records yet. Time to import from some companies!">No loot yet. Time to raid some Conglomerates!</p>
+                <p class="rpg__empty jargon" data-rpg="No loot yet. Time to raid the Armada!" data-real="No records yet. Time to import from some companies!">No loot yet. Time to raid the Armada!</p>
                 {% endif %}
             </div>
         </div>
 
         <!-- Power-Ups -->
         <div class="rpg__card rpg__card--powerups">
-            <h2 class="rpg__card-title">Power-Ups</h2>
+            <h2 class="rpg__card-title jargon" data-rpg="Power-Ups" data-real="Achievements">Power-Ups</h2>
             <div class="rpg__powerups-grid">
                 {% for pu in rpg.power_ups[:13] %}
                 <div class="rpg__powerup {% if pu.earned %}rpg__powerup--earned rpg__powerup--{{ pu.rarity }}{% else %}rpg__powerup--locked{% endif %}" title="{{ pu.display_description }}">
@@ -104,30 +104,44 @@
                     {% endif %}
                 </div>
                 {% endfor %}
+                {% if not rpg.power_ups or rpg.power_ups|selectattr('earned')|list|length == 0 %}
+                <p class="rpg__empty jargon" data-rpg="Yer trophy shelf gathers dust. Adventure awaits!" data-real="No achievements yet. Start collecting data!">Yer trophy shelf gathers dust. Adventure awaits!</p>
+                {% endif %}
             </div>
         </div>
 
         <!-- Memory Tavern -->
         <div class="rpg__card rpg__card--tavern">
-            <h2 class="rpg__card-title">Memory Tavern</h2>
+            <h2 class="rpg__card-title jargon" data-rpg="Memory Tavern" data-real="Data Quiz">Memory Tavern</h2>
             <div class="rpg__tavern">
                 <div class="rpg__tavern-icon">&#x1F3B2;</div>
-                <p class="rpg__tavern-desc">Your data has stories. Can you remember them?</p>
-                <button class="rpg__tavern-btn" onclick="NomoloBridge.startMiniGame()">Test Your Memory</button>
+                <p class="rpg__tavern-desc jargon" data-rpg="Yer data has stories. Can ye remember them? The bartender is challenging ye to a game of wits." data-real="Test your knowledge about your own data.">Yer data has stories. Can ye remember them? The bartender is challenging ye to a game of wits.</p>
+                <button class="rpg__tavern-btn jargon" data-rpg="Challenge the Bartender" data-real="Start Quiz" onclick="NomoloBridge.startMiniGame()">Challenge the Bartender</button>
                 <div class="rpg__tavern-streak" id="tavern-streak">
                     Streak: <span id="tavern-streak-count">0</span>
                 </div>
             </div>
         </div>
 
-        <!-- Villain Progress (Conglomerates) -->
+        <!-- Villain Progress (The Armada) -->
         <div class="rpg__card rpg__card--villains pixel-border">
-            <h2 class="rpg__card-title jargon" data-rpg="The Conglomerates" data-real="Your Sources">The Conglomerates</h2>
+            <h2 class="rpg__card-title jargon" data-rpg="The Armada" data-real="Your Sources">The Armada</h2>
             <div class="rpg__villains">
                 {% for villain in rpg.villains %}
-                <div class="rpg__villain {% if villain.raid_complete %}rpg__villain--defeated{% elif villain.raided %}rpg__villain--raiding{% else %}rpg__villain--locked{% endif %}">
+                <div class="rpg__villain {% if villain.raid_complete %}rpg__villain--defeated{% elif villain.raided %}rpg__villain--raiding{% else %}rpg__villain--locked{% endif %}"
+                     {% if villain.portrait and villain.portrait.colors %}style="border-left: 3px solid {{ villain.portrait.colors.primary | default(villain.color) }}"{% endif %}>
                     <div class="rpg__villain-icon" style="{% if villain.raided %}background: {{ villain.color }}20; color: {{ villain.color }}{% endif %}">
-                        {% if villain.raided %}{{ villain.icon }}{% else %}?{% endif %}
+                        {% if villain.portrait and villain.raided %}
+                        <img src="{{ villain.portrait.svg }}"
+                             alt="{{ villain.portrait.cowork_name }}"
+                             class="rpg__villain-portrait"
+                             style="{% if villain.portrait.colors %}filter: drop-shadow(0 0 2px {{ villain.portrait.colors.primary | default(villain.color) }}){% endif %}"
+                             width="48" height="48"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                        <span class="rpg__villain-emoji" style="display: none;">{{ villain.icon }}</span>
+                        {% elif villain.raided %}
+                        <span class="rpg__villain-emoji">{{ villain.icon }}</span>
+                        {% else %}?{% endif %}
                     </div>
                     <div class="rpg__villain-info">
                         <span class="rpg__villain-name jargon" data-rpg="{{ villain.name if villain.raided else '???' }}" data-real="{{ villain.company if villain.raided else '???' }}">
@@ -135,6 +149,9 @@
                         </span>
                         {% if villain.raided %}
                         <span class="rpg__villain-company jargon" data-rpg="{{ villain.company }}" data-real="">{{ villain.company }}</span>
+                        {% endif %}
+                        {% if villain.portrait and villain.raided %}
+                        <span class="rpg__villain-island">{{ villain.portrait.island_name }}</span>
                         {% endif %}
                     </div>
                     <div class="rpg__villain-progress">
@@ -218,19 +235,19 @@
     <div class="verb-bar">
         <button class="verb-bar__btn" data-verb="scan">
             <span class="verb-bar__icon">&#x1F50D;</span>
-            Scan
+            <span class="jargon" data-rpg="Scan the Horizon" data-real="Scan">Scan the Horizon</span>
         </button>
         <button class="verb-bar__btn" data-verb="collect">
             <span class="verb-bar__icon">&#x1F4E6;</span>
-            Plunder
+            <span class="jargon" data-rpg="Plunder" data-real="Collect">Plunder</span>
         </button>
         <button class="verb-bar__btn" data-verb="search">
             <span class="verb-bar__icon">&#x1F50E;</span>
-            Search the Seas
+            <span class="jargon" data-rpg="Search the Seas" data-real="Search">Search the Seas</span>
         </button>
         <button class="verb-bar__btn" data-verb="explore">
             <span class="verb-bar__icon">&#x1F5FA;</span>
-            Explore
+            <span class="jargon" data-rpg="Explore" data-real="Browse">Explore</span>
         </button>
     </div>
 </div>

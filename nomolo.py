@@ -284,17 +284,17 @@ def _setup_gmail(args, config):
     token = os.path.join(PROJECT_ROOT, "token.json")
 
     print("\n" + "=" * 50)
-    print("  NOMOLO Gmail Setup")
+    print("  \u2693 NOMOLO — Board the Omniscient Eye (Gmail)")
     print("=" * 50)
 
     target = os.path.join(PROJECT_ROOT, "credentials.json")
 
     # Check if already set up
     if os.path.exists(target) and os.path.exists(token):
-        print("\nGmail is already set up!")
-        print(f"  Credentials: {target}")
-        print(f"  Token: {token}")
-        print("\nRun 'nomolo collect gmail' to start downloading.")
+        print("\n\u2694\ufe0f Gmail is already boarded, Captain!")
+        print(f"  Letter of Marque: {target}")
+        print(f"  Boarding pass: {token}")
+        print("\nRun 'nomolo collect gmail' to raid yer Scrolls.")
         return
 
     _setup_google_credentials(config)
@@ -357,17 +357,17 @@ def _setup_contacts_google(args, config):
     )
 
     print("\n" + "=" * 50)
-    print("  NOMOLO Google Contacts Setup")
+    print("  \u2693 NOMOLO — Raid the Soul Bonds (Google Contacts)")
     print("=" * 50)
 
     target = os.path.join(PROJECT_ROOT, "credentials.json")
 
     # Check if already set up
     if os.path.exists(target) and os.path.exists(token):
-        print("\nGoogle Contacts is already set up!")
-        print(f"  Credentials: {target}")
-        print(f"  Token: {token}")
-        print("\nRun 'nomolo collect contacts-google' to start downloading.")
+        print("\n\u2694\ufe0f Google Contacts already boarded, Captain!")
+        print(f"  Letter of Marque: {target}")
+        print(f"  Boarding pass: {token}")
+        print("\nRun 'nomolo collect contacts-google' to raid yer Soul Bonds.")
         return
 
     _setup_google_credentials(config)
@@ -1274,8 +1274,9 @@ def cmd_status(args, config):
         return
 
     entries_found = False
-    print(f"Vault root: {vault_root}\n")
+    print(f"\n\u2693 Treasure Hold: {vault_root}\n")
 
+    grand_total = 0
     for entry in sorted(os.listdir(vault_root)):
         vault_path = os.path.join(vault_root, entry)
         if not os.path.isdir(vault_path):
@@ -1285,6 +1286,7 @@ def cmd_status(args, config):
 
         from core.vault import count_entries as _count_entries
         total_entries, jsonl_files = _count_entries(vault_path)
+        grand_total += total_entries
 
         processed_log = os.path.join(vault_path, "processed_ids.txt")
         processed = 0
@@ -1304,20 +1306,23 @@ def cmd_status(args, config):
             except (OSError, PermissionError) as e:
                 logger.warning("Could not read missing log: %s", e)
 
-        status = "OK"
+        status = "\u2694\ufe0f Shipshape"
         if ghosts > 0:
-            status = f"GHOSTS ({ghosts} missing — run 'nomolo collect' to recover)"
+            status = f"\U0001F3AF {ghosts} ghost IDs — the Sniper is tracking 'em"
         elif total_entries == 0:
-            status = "EMPTY"
+            status = "\U0001F3DD\ufe0f Empty island"
 
-        print(f"  {entry}")
-        print(f"    Entries:   {total_entries:,} across {jsonl_files} files")
-        print(f"    Processed: {processed:,}")
+        print(f"  \U0001F4DC {entry}")
+        print(f"    Loot:      {total_entries:,} pieces across {jsonl_files} scrolls")
+        print(f"    Logged:    {processed:,}")
         print(f"    Status:    {status}")
         print()
 
-    if not entries_found:
-        print("  (no treasure vaults yet, Captain)")
+    if entries_found:
+        print(f"  \U0001F4B0 Total plunder: {grand_total:,} pieces of loot")
+        print(f"  \U0001F37A Visit the SCUMM Bar: nomolo web\n")
+    else:
+        print("  (the hold is empty, Captain)")
         print()
         print("  Set sail: nomolo setup gmail")
 

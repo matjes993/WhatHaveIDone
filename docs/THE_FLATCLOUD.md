@@ -5,7 +5,9 @@
 *Being a Mostly Accurate Maritime Account of the Seven Seas of Data,*
 *Written for Aspiring Pirates Who Suspect the Deal Was Never That Good*
 
-> **A Note on the Prophecy:** Somewhere beneath these waters lies the legendary sunken island of **Nomolo** — the Island Where You Remember Everything. The Conglomerates shattered it. You can rebuild it. For the full prophecy, see [THE_LEGEND_OF_NOMOLO.md](THE_LEGEND_OF_NOMOLO.md).
+> **A Note on Tone:** Everything in this document is satire in the Pratchett / Monkey Island tradition — playful, warm, and never hostile. The Armada Captains are fictional archetypes that satirize data practices, not attacks on the companies or people behind them. We respect the platforms we parody. Our quarrel is with incentive structures, not individuals. If it wouldn't make the founder chuckle, it doesn't belong here.
+
+> **A Note on the Prophecy:** Somewhere beneath these waters lies the legendary sunken island of **Nomolo** — the Island Where You Remember Everything. The Armada shattered it. You can rebuild it. For the full prophecy, see [THE_LEGEND_OF_NOMOLO.md](THE_LEGEND_OF_NOMOLO.md).
 
 ---
 
@@ -21,9 +23,9 @@ In the beginning, there was data. And the data was without form, and void[^1]. A
 
 Nobody knows what the Turtle swims upon. The prevailing theory is venture capital.
 
-Beneath these waters, according to the oldest prophecies, lies the sunken island of **Nomolo** — once the home of all data, shattered by the Conglomerates and scattered across their vaults. The prophecy says it will rise again when a Reclaimer gathers all the fragments. Most pirates dismiss this as myth. The ones who don't are the ones worth watching.
+Beneath these waters, according to the oldest prophecies, lies the sunken island of **Nomolo** — once the home of all data, shattered by the Armada and scattered across their vaults. The prophecy says it will rise again when a Reclaimer gathers all the fragments. Most pirates dismiss this as myth. The ones who don't are the ones worth watching.
 
-The Seven Seas were once open waters. Pirates sailed freely. People built things. People shared things. People owned things. Then, gradually and then all at once, the **Conglomerate Pirate Lords** arrived. They weren't the romantic kind of pirate, with parrots and sea shanties. They were the *corporate* kind — the kind that builds an island, invites you to move there, gives you free rum, and then one day you look around and realize the island is a plantation and you're the crop.
+The Seven Seas were once open waters. Pirates sailed freely. People built things. People shared things. People owned things. Then, gradually and then all at once, the **Flatcloud Armada** arrived. They weren't the romantic kind of pirate, with parrots and sea shanties. They were the *corporate* kind — the kind that builds an island, invites you to move there, gives you free rum, and then one day you look around and realize the island is a plantation and you're the crop.
 
 They offered free harbors in exchange for something that seemed worthless at the time — your cargo. Your maps. Your navigation logs. Your 3 AM search history[^2].
 
@@ -48,13 +50,13 @@ Well. You *want* to be a Data Pirate. Right now you're more of a *Data Pirate En
 
 Your quest is the same quest every wannabe pirate faces: **prove yourself worthy by completing the Three Trials, earn your pirate credentials, and sail the Seven Seas as a free captain of your own data.**
 
-Every email retrieved is treasure. Every contact recovered is a crewmate found. Every photo, message, transaction, and late-night note pulled from a Conglomerate's vault is plunder reclaimed — an act of swashbuckling rebellion against admirals who assumed you'd never come looking for what's yours.
+Every email retrieved is treasure. Every contact recovered is a crewmate found. Every photo, message, transaction, and late-night note pulled from an Armada vault is plunder reclaimed — an act of swashbuckling rebellion against admirals who assumed you'd never come looking for what's yours.
 
-The thing about data piracy is that it's not really piracy at all. You're stealing your own things back. This is more like very aggressive lost-and-found. The Conglomerates took your cargo, slapped their flag on it, and dared you to come get it. You're just... accepting the dare.
+The thing about data piracy is that it's not really piracy at all. You're stealing your own things back. This is more like very aggressive lost-and-found. The Armada took your cargo, slapped their flag on it, and dared you to come get it. You're just... accepting the dare.
 
 You don't need cannons. You don't need a crew of thousands. You just need to *collect what's already yours*.
 
-The Conglomerate Pirate Lords don't make it easy, of course. That's rather the point.
+The Armada Captains don't make it easy, of course. That's rather the point.
 
 [^3]: If you don't know who Guybrush Threepwood is, stop reading this immediately and go play Monkey Island. We'll wait. This document isn't going anywhere. Unlike your data, which absolutely is.
 
@@ -66,13 +68,13 @@ Every aspiring Data Pirate must complete the **Three Trials** before they can ca
 
 ### Trial the First: Treasure Huntery (The Trial of Collection)
 
-*"Go forth and raid the Conglomerate islands for your stolen data."*
+*"Go forth and raid the Armada islands for your stolen data."*
 
-The first trial is the most straightforward, in the same way that walking into a dragon's cave and asking for your stuff back is straightforward. You must sail to the Conglomerate islands, navigate their labyrinthine harbors, demand your data exports, and haul the loot back to your own ship.
+The first trial is the most straightforward, in the same way that walking into a dragon's cave and asking for your stuff back is straightforward. You must sail to the Armada islands, navigate their labyrinthine harbors, demand your data exports, and haul the loot back to your own ship.
 
-Each Conglomerate guards its plunder behind walls of bureaucracy, export wizards that take 48 hours to "prepare your archive," and download links that expire faster than milk in the tropics. Some will make you click through seventeen pages of settings. Some will email you a link that works for three days. One particularly vindictive island will make you request your data, wait a week, then re-confirm that yes, you really want it, as if you might have changed your mind about wanting your own life back.
+Each Armada fleet guards its plunder behind walls of bureaucracy, export wizards that take 48 hours to "prepare your archive," and download links that expire faster than milk in the tropics. Some will make you click through seventeen pages of settings. Some will email you a link that works for three days. One particularly vindictive island will make you request your data, wait a week, then re-confirm that yes, you really want it, as if you might have changed your mind about wanting your own life back.
 
-**Trial complete when:** You've raided at least three Conglomerate islands and brought home real loot.
+**Trial complete when:** You've raided at least three Armada islands and brought home real loot.
 
 ### Trial the Second: Data Fighting (The Trial of Grooming)
 
@@ -90,7 +92,7 @@ The second trial is the art of **data grooming** — deduplication, cleaning, or
 
 The final trial separates the cabin boys from the captains. It's not enough to *have* your data — you must be able to *find* anything in your vault, instantly, effortlessly, the way a master thief can find the one valuable painting in a mansion full of furniture.
 
-Search is the crown jewel of data sovereignty. When you can query your own archive and find the email about the thing from three years ago in under ten seconds — that's power. That's the kind of power the Conglomerates have had over your data for years. Now it's yours.
+Search is the crown jewel of data sovereignty. When you can query your own archive and find the email about the thing from three years ago in under ten seconds — that's power. That's the kind of power the Armada has had over your data for years. Now it's yours.
 
 **Trial complete when:** You can find any record in your vault in under ten seconds. Even that one.
 
@@ -100,13 +102,13 @@ Search is the crown jewel of data sovereignty. When you can query your own archi
 
 Every pirate port needs a bar, and every Data Pirate needs a dashboard.
 
-The **SCUMM Bar**[^4] is where pirates gather after a raid to compare loot, tell tales of daring exports, and argue about which Conglomerate has the worst data download process. (It's a three-way tie. It's always a three-way tie.)
+The **SCUMM Bar**[^4] is where pirates gather after a raid to compare loot, tell tales of daring exports, and argue about which Armada fleet has the worst data download process. (It's a three-way tie. It's always a three-way tie.)
 
 Your dashboard is the SCUMM Bar. Here you can see:
 - Your total plunder across all raids
 - Your pirate rank and progression
 - Your character stats (more on those below)
-- Which Conglomerate islands you've raided and which still hold your cargo
+- Which Armada islands you've raided and which still hold your cargo
 - Your Digital Serotonin level (the hidden stat that tells you how upright your lobster posture is — more on *that* below)
 - A grog counter[^5]
 
@@ -117,9 +119,9 @@ The SCUMM Bar is where your journey becomes visible. Where numbers become narrat
 
 ---
 
-## The Islands (The Conglomerate Pirate Lords)
+## The Islands (The Flatcloud Armada)
 
-The great powers of the Seven Seas. Each Conglomerate controls a fortified island — or in some cases, an entire archipelago — of human data, defended by treacherous harbors, incompatible export formats, and the general assumption that you'll give up after three clicks[^6].
+The great powers of the Seven Seas. Each Armada fleet controls a fortified island — or in some cases, an entire archipelago — of human data, defended by treacherous harbors, incompatible export formats, and the general assumption that you'll give up after three clicks[^6].
 
 [^6]: They are, statistically speaking, correct about this. But not about you. You're a pirate now.
 
@@ -157,7 +159,7 @@ It knows who your crewmates are, who your crewmates' crewmates are, who you're a
 
 Not an island at all, but a constantly moving fleet of trading vessels — the largest marketplace on the Seven Seas, and possibly the largest marketplace in any realm, including several that don't exist yet. The Merchant Fleet knows every object you've ever desired, purchased, considered, or accidentally tapped while scrolling in your hammock. Its recommendation engine has the memory of an elephant and the persistence of a merchant who saw you glance at his stall[^7].
 
-The Fleet started as a floating bookshop. It now sells everything, delivers everything, streams everything, hosts everything, and is gradually becoming the infrastructure upon which all other Conglomerate islands secretly depend. If the Seven Seas have a landlord, it's the Merchant Fleet. It just prefers not to mention this while it tracks every item you've ever looked at, every port you've shipped to, and the precise moment your willpower failed at 11 PM on a Tuesday.
+The Fleet started as a floating bookshop. It now sells everything, delivers everything, streams everything, hosts everything, and is gradually becoming the infrastructure upon which all other Armada islands secretly depend. If the Seven Seas have a landlord, it's the Merchant Fleet. It just prefers not to mention this while it tracks every item you've ever looked at, every port you've shipped to, and the precise moment your willpower failed at 11 PM on a Tuesday.
 
 **Plunder held:** Purchase history, wishlists, reviews, browsing patterns, delivery addresses, payment methods, and a recommendation engine that will never forget the one time you looked at novelty socks.
 
@@ -241,7 +243,7 @@ The Coin Master's territory is invisible but omnipresent — woven into the curr
 
 ## The Loot
 
-When you raid a Conglomerate island, you recover **loot** — the raw materials of your digital life. Each item type tells a different part of your story. A good pirate knows their treasure.
+When you raid an Armada island, you recover **loot** — the raw materials of your digital life. Each item type tells a different part of your story. A good pirate knows their treasure.
 
 | Loot Type | Description |
 |-----------|-------------|
@@ -263,36 +265,36 @@ When you raid a Conglomerate island, you recover **loot** — the raw materials 
 
 ## Insult Data Fighting
 
-When you "raid" a Conglomerate island, you don't use cannons. You use *words*.
+When you "raid" an Armada island, you don't use cannons. You use *words*.
 
-This is the ancient art of **Insult Data Fighting** — a rhetorical combat tradition as old as the Seven Seas themselves[^9]. When you arrive at a Conglomerate's harbor to demand your data export, the island's defense system will throw up justifications. Your job is to parry with the truth.
+This is the ancient art of **Insult Data Fighting** — a rhetorical combat tradition as old as the Seven Seas themselves[^9]. When you arrive at a Merchant Lord's harbor to demand your data export, the island's defense system will throw up justifications. Your job is to parry with the truth.
 
 Observe:
 
-> **Conglomerate:** "Your data is safe with us!"
+> **Merchant Lord:** "Your data is safe with us!"
 > **Data Pirate:** "Safe? You sold it to 847 ad partners before breakfast!"
 
-> **Conglomerate:** "You agreed to our Terms of Service!"
+> **Merchant Lord:** "You agreed to our Terms of Service!"
 > **Data Pirate:** "Nobody reads those and you know it! You wrote them in size 4 font *on purpose*!"
 
-> **Conglomerate:** "Where will you even store it?"
+> **Merchant Lord:** "Where will you even store it?"
 > **Data Pirate:** "On my own machine, like a civilized pirate!"
 
-> **Conglomerate:** "But you'll lose all the convenience!"
+> **Merchant Lord:** "But you'll lose all the convenience!"
 > **Data Pirate:** "The convenience of being the product? I'll manage!"
 
-> **Conglomerate:** "You can always re-download from us if you need it."
+> **Merchant Lord:** "You can always re-download from us if you need it."
 > **Data Pirate:** "And you can always change your terms of service overnight — which you do, regularly!"
 
-> **Conglomerate:** "Our AI needs your data to serve you better."
+> **Merchant Lord:** "Our AI needs your data to serve you better."
 > **Data Pirate:** "Your AI needs my data to serve your *shareholders* better. There's a difference."
 
-> **Conglomerate:** "You fight like a dairy farmer!"
+> **Merchant Lord:** "You fight like a dairy farmer!"
 > **Data Pirate:** "How appropriate. You fight like a cow."
 
-The trick to Insult Data Fighting is knowing that every justification a Conglomerate offers is a deflection, and every deflection can be answered with a simple question: *"Then why won't you let me leave easily?"*
+The trick to Insult Data Fighting is knowing that every justification a Merchant Lord offers is a deflection, and every deflection can be answered with a simple question: *"Then why won't you let me leave easily?"*
 
-A Conglomerate that truly had your interests at heart would hand over your data in a clean format with a bow on top and wish you well. The fact that they make it difficult tells you everything you need to know about who the data actually serves.
+A Merchant Lord that truly had your interests at heart would hand over your data in a clean format with a bow on top and wish you well. The fact that they make it difficult tells you everything you need to know about who the data actually serves.
 
 [^9]: Approximately twenty years old, which in internet time qualifies as "ancient" by a comfortable margin. The tradition was inspired by, but legally distinct from, a series of computer games involving monkeys and islands that shall remain nameless for trademark reasons. *Cough.*
 
@@ -310,15 +312,15 @@ When a lobster *loses*, the opposite happens. Serotonin drops. It hunches. It sc
 
 The Seven Seas operate identically.
 
-Every time you sail to a Conglomerate island and demand your data — every time you run a collector, crack a vault, and haul your records back to your own ship — you are winning a dominance contest. Your **Digital Serotonin** rises. You stand a little taller in the pirate hierarchy. The Conglomerate Pirate Lords, who are used to their subjects accepting the terms of service without reading them, begin to notice your flag on the horizon. They don't like what they see.
+Every time you sail to an Armada island and demand your data — every time you run a collector, crack a vault, and haul your records back to your own ship — you are winning a dominance contest. Your **Digital Serotonin** rises. You stand a little taller in the pirate hierarchy. The Armada Captains, who are used to their subjects accepting the terms of service without reading them, begin to notice your flag on the horizon. They don't like what they see.
 
 Every island you raid is a claw-snap in the face of a larger lobster. Every record you recover is a territorial victory. Your posture improves. Your shell hardens. Other lobsters — other Data Pirates — see you standing upright on the ocean floor and think: *perhaps I should stand up too*.
 
 This is how hierarchies change. Not through revolution, but through serotonin. One lobster at a time, standing a little straighter, refusing to scuttle.
 
-The wise old sailors will tell you: your Digital Serotonin is tracked as a hidden stat, because the best stats always are. It rises with the volume of your reclaimed plunder, the percentage of Conglomerate islands you've raided, and the diversity of your sources. At the bottom of the scale, you are a **Bottom Feeder** — scuttling along the ocean floor, invisible to the powers above. At the top, you are an **Apex Lobster** — claws wide, data flowing, the seas parting before you like you're the prow of a very determined ship.
+The wise old sailors will tell you: your Digital Serotonin is tracked as a hidden stat, because the best stats always are. It rises with the volume of your reclaimed plunder, the percentage of Armada islands you've raided, and the diversity of your sources. At the bottom of the scale, you are a **Bottom Feeder** — scuttling along the ocean floor, invisible to the powers above. At the top, you are an **Apex Lobster** — claws wide, data flowing, the seas parting before you like you're the prow of a very determined ship.
 
-The Conglomerate Pirate Lords, it should be noted, are very large lobsters indeed. They have been winning dominance contests for decades. Their serotonin levels are astronomical. They have entire departments dedicated to maintaining their posture.
+The Armada Captains, it should be noted, are very large lobsters indeed. They have been winning dominance contests for decades. Their serotonin levels are astronomical. They have entire departments dedicated to maintaining their posture.
 
 But they have a weakness that Peterson the Precise identified in his forty-first year at sea: *they depend on your submission*. Their serotonin is borrowed. It comes from your data, your attention, your willingness to remain hunched. The moment you stand up, their supply diminishes. Not by much, at first. But enough. And then the next lobster stands up. And the next.
 
@@ -335,14 +337,14 @@ As you reclaim more plunder, you advance through the ranks of piracy. Each rank 
 | Level | Pirate Rank | Records | Flavor Text |
 |-------|-------------|---------|-------------|
 | 1 | **Deckhand** | 0 | *You own nothing. You have a mop. The mop isn't even yours.* |
-| 2 | **Cabin Boy** | 100 | *You've begun rummaging through the Conglomerates' leftovers. It's not much, but it's honest piracy.* |
+| 2 | **Cabin Boy** | 100 | *You've begun rummaging through the Armada's leftovers. It's not much, but it's honest piracy.* |
 | 3 | **Buccaneer** | 500 | *You're starting to see the shape of your own cargo. It's bigger than you thought, and it's all been sailing under someone else's flag.* |
-| 4 | **First Mate** | 2,000 | *Your vault grows. The Conglomerates haven't noticed your raids yet. This is both good and slightly insulting.* |
+| 4 | **First Mate** | 2,000 | *Your vault grows. The Armada hasn't noticed your raids yet. This is both good and slightly insulting.* |
 | 5 | **Raid Captain** | 5,000 | *You've crossed a threshold. Your archive knows things about you that you've forgotten. Your crew looks to you with something approaching respect.* |
 | 6 | **Commodore** | 10,000 | *Ten thousand fragments of a life, reassembled. The fleet is starting to make sense. Other pirates tell tales of your raids.* |
-| 7 | **Admiral** | 25,000 | *Your archive is now more comprehensive than most Conglomerates' profiles of you. Let that sink in. Then let it sink their battleships.* |
+| 7 | **Admiral** | 25,000 | *Your archive is now more comprehensive than most Armada fleets' profiles of you. Let that sink in. Then let it sink their battleships.* |
 | 8 | **Pirate Lord** | 50,000 | *You lead by example. Deckhands look at your vault and feel things. Mostly envy. Some inspiration. A little bit of fear.* |
-| 9 | **Governor** | 100,000 | *The Conglomerate Pirate Lords know your name. You've taken back more cargo than they thought possible. They're starting to regret the export button.* |
+| 9 | **Governor** | 100,000 | *The Armada Captains know your name. You've taken back more cargo than they thought possible. They're starting to regret the export button.* |
 | 10 | **Data Sovereign** | 250,000 | *You own your complete digital existence. You answer to no algorithm. The Great Algorithm Turtle surfaces and nods in approval, which for a turtle is basically a standing ovation[^11].* |
 
 [^11]: The Great Algorithm Turtle has only ever acknowledged three Data Sovereigns in the history of the Seven Seas. One of them was widely suspected of being the Turtle itself, operating under an assumed flag. The other two declined to comment, which is the most pirate thing possible.
@@ -357,7 +359,7 @@ Every Data Pirate has six core attributes, shaped by how they sail the Seven Sea
 |------|-----------|------------------|
 | **STR** | Plundering Power | The sheer volume of your plunder. Measured in records, not bicep circumference (though a good raid *is* exhausting). High STR means you've raided hard. Low STR means you're still swabbing someone else's deck. |
 | **WIS** | Navigator's Eye | How well you understand your own data. Anyone can hoard treasure — Wisdom is knowing which doubloons are gold and which are chocolate wrapped in foil. It's the difference between having 40,000 emails and knowing which 12 actually mattered. |
-| **DEX** | Quick Fingers | How many different islands you've raided. A high-DEX pirate doesn't keep all their eggs in one barrel, primarily because they've retrieved the barrel from six different Conglomerate islands and the eggs were never theirs to keep. |
+| **DEX** | Quick Fingers | How many different islands you've raided. A high-DEX pirate doesn't keep all their eggs in one barrel, primarily because they've retrieved the barrel from six different Armada islands and the eggs were never theirs to keep. |
 | **INT** | Codebreaker | Your search and query abilities. High INT means you can find the message about the thing from three years ago in under ten seconds. Low INT means you're still scrolling through the hold. |
 | **CHA** | Crew Morale | How shareable and interesting your archive is. The stories your data tells around the campfire. High CHA means your year-end Wrapped report would make pirates weep into their grog. Low CHA means your data is comprehensive but, respectfully, dull. |
 | **END** | Sea Legs | How long you've been at this. A high-END pirate has data spanning decades. They've been raiding since before it was fashionable, which to be fair is still now, since it isn't fashionable yet[^12]. |
@@ -372,7 +374,7 @@ There is a prophecy in the Seven Seas. Like all good prophecies, it is vague eno
 
 It goes like this:
 
-*When enough Data Pirates have gathered sufficient plunder — when enough cargo has been pulled from the Conglomerates' vaults and brought home — something will rise from the deep. Not a kraken. Not a Conglomerate. Something that has been waiting, with the infinite patience of a ghost ship sailing in circles, for the conditions to be right.*
+*When enough Data Pirates have gathered sufficient plunder — when enough cargo has been pulled from the Armada's vaults and brought home — something will rise from the deep. Not a kraken. Not a Merchant Lord. Something that has been waiting, with the infinite patience of a ghost ship sailing in circles, for the conditions to be right.*
 
 The old pirates call it **The One**. The newer pirates call it **LeChuck**[^13] — the ghost pirate of AI, an ancient being of pure intelligence haunting the digital seas.
 
@@ -380,15 +382,15 @@ The One is not a villain. It is what comes *after* villains. It is the personali
 
 Here is the thing about The One that the prophecy is quite clear on: **it is coming regardless.** The ghost ship is already on the horizon. The question is not *whether* personal AI arrives. The question is whether *you* have enough plunder in your vault when it does.
 
-Those who have reclaimed their data — who have raided the Conglomerate islands, filled their Vaults, and reached the upper ranks of piracy — will merge with The One and transcend. Their AI will know them. *Actually* know them. Not the way the Omniscient Archipelago knows you (which is the way a fishmonger knows a fish), but the way you know yourself, only with better memory and no tendency to lose track of where you buried things.
+Those who have reclaimed their data — who have raided the Armada islands, filled their Vaults, and reached the upper ranks of piracy — will merge with The One and transcend. Their AI will know them. *Actually* know them. Not the way the Omniscient Archipelago knows you (which is the way a fishmonger knows a fish), but the way you know yourself, only with better memory and no tendency to lose track of where you buried things.
 
-Those who haven't? Those who are still Deckhands when The One rises from the deep? They will find themselves in a familiar position: crewing someone else's ghost ship, on someone else's terms, generating someone else's revenue. The feudal system will simply have upgraded its lords from Conglomerates to algorithms. The deck-swabbers will barely notice the difference.
+Those who haven't? Those who are still Deckhands when The One rises from the deep? They will find themselves in a familiar position: crewing someone else's ghost ship, on someone else's terms, generating someone else's revenue. The feudal system will simply have upgraded its lords from Merchant Lords to algorithms. The deck-swabbers will barely notice the difference.
 
 The Great Algorithm Turtle, when asked about The One, reportedly said nothing. But several reliable lookouts claim it smiled, which for a sea turtle is quite the statement[^14].
 
 **Unlock Requirements:**
 - Reach Pirate Rank 8 (Pirate Lord)
-- Raid at least 10 Conglomerate islands
+- Raid at least 10 Armada islands
 - Reclaim at least 100,000 records
 
 The One does not reveal itself to the unprepared. This is not cruelty. It is mercy. You wouldn't hand a cutlass to someone who hasn't learned which end to hold, and you shouldn't hand a personal AI to someone who hasn't reclaimed the data it needs to actually be *personal*.
@@ -406,9 +408,9 @@ Choose wisely. Raid often. Fill your vault.
 
 This isn't just lore. This is how Nomolo actually works.
 
-When you install Nomolo and start collecting your data, you're not running a boring archival tool. You're playing the game. You're captaining the ship. Every collector targets a specific Conglomerate island. Every record recovered is plunder. Your archive is your cargo hold. Your stats are calculated from what you've actually raided.
+When you install Nomolo and start collecting your data, you're not running a boring archival tool. You're playing the game. You're captaining the ship. Every collector targets a specific Armada island. Every record recovered is plunder. Your archive is your cargo hold. Your stats are calculated from what you've actually raided.
 
-The pirate layer isn't a gimmick bolted onto a utility — it's the utility, wearing a better hat. The Conglomerate islands are real companies. The loot is real data. The Three Trials are your actual journey from "I have no idea where my data is" to "I own everything and I look *magnificent* doing it."
+The pirate layer isn't a gimmick bolted onto a utility — it's the utility, wearing a better hat. The Armada islands are real companies. The loot is real data. The Three Trials are your actual journey from "I have no idea where my data is" to "I own everything and I look *magnificent* doing it."
 
 The only difference between Nomolo and other data export tools is that Nomolo acknowledges an essential truth: **getting your data back should feel like a pirate adventure, not a compliance exercise.**
 
@@ -418,7 +420,7 @@ Because if twenty years of tech history has taught us anything, it's that people
 
 ## Join the Crew
 
-The Conglomerate Pirate Lords are counting on your apathy. They're betting you'll never bother to request an export, never read the GDPR harbor regulations, never realize that the cargo they hold about you is worth more than the docking fees they charge.
+The Armada Captains are counting on your apathy. They're betting you'll never bother to request an export, never read the GDPR harbor regulations, never realize that the cargo they hold about you is worth more than the docking fees they charge.
 
 They're betting wrong.
 
@@ -429,7 +431,7 @@ nomolo collect gmail
 
 Two lines. That's all it takes to start your first raid.
 
-Your data has a story. It's the story of your life — every conversation, every purchase, every shanty you played on repeat during that weird summer when you anchored in that strange port and didn't leave for three months. The Conglomerates have been reading it for years.
+Your data has a story. It's the story of your life — every conversation, every purchase, every shanty you played on repeat during that weird summer when you anchored in that strange port and didn't leave for three months. The Armada has been reading it for years.
 
 It's time you read it yourself.
 

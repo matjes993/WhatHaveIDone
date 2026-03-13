@@ -19,9 +19,9 @@ Want to contribute? github.com/matjes993/nomolo
 <body>
     <!-- Top Bar: Trust Badge + Jargon Toggle -->
     <div class="top-bar">
-        <div class="trust-badge" title="All yer plunder stays aboard this vessel">
+        <div class="trust-badge jargon" title="All yer plunder stays aboard this vessel" data-rpg="" data-real="">
             <span class="trust-badge__icon">&#x1f512;</span>
-            <span class="trust-badge__text">LOCAL ONLY — yer data never leaves this ship</span>
+            <span class="trust-badge__text jargon" data-rpg="LOCAL ONLY — yer data never leaves this ship" data-real="LOCAL ONLY — your data never leaves this machine">LOCAL ONLY — yer data never leaves this ship</span>
         </div>
 
         <!-- Jargon Mode Toggle -->
@@ -45,31 +45,32 @@ Want to contribute? github.com/matjes993/nomolo
         <ul class="sidebar__nav">
             <li>
                 <a href="/" class="sidebar__link {% if page == 'dashboard' or not page %}sidebar__link--active{% endif %}">
-                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    <span class="sidebar__icon sidebar__icon--emoji">&#127866;</span>
                     <span class="jargon" data-rpg="SCUMM Bar" data-real="Dashboard">SCUMM Bar</span>
                 </a>
             </li>
             <li>
                 <a href="/records" class="sidebar__link {% if page == 'records' %}sidebar__link--active{% endif %}">
-                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <span class="sidebar__icon sidebar__icon--emoji">&#128220;</span>
                     <span class="jargon" data-rpg="Loot Log" data-real="Records">Loot Log</span>
                 </a>
             </li>
             <li>
                 <a href="/sources" class="sidebar__link {% if page == 'sources' %}sidebar__link--active{% endif %}">
-                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                    <span class="sidebar__icon sidebar__icon--emoji">&#128506;&#65039;</span>
                     <span class="jargon" data-rpg="Raid Targets" data-real="Sources">Raid Targets</span>
                 </a>
             </li>
             <li>
                 <a href="/settings" class="sidebar__link {% if page == 'settings' %}sidebar__link--active{% endif %}">
-                    <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <span class="sidebar__icon sidebar__icon--emoji">&#9881;&#65039;</span>
                     <span class="jargon" data-rpg="Ship's Helm" data-real="Settings">Ship's Helm</span>
                 </a>
             </li>
         </ul>
 
         <div class="sidebar__footer">
+            <div class="sidebar__proverb" id="pirate-proverb"></div>
             <div class="sidebar__version">v0.1.0</div>
         </div>
     </nav>
@@ -88,6 +89,39 @@ Want to contribute? github.com/matjes993/nomolo
         document.addEventListener('DOMContentLoaded', () => {
             NomoloBridge.init();
             NomoloBridge.initJargonToggle();
+
+            // Rotating proverbs in sidebar footer — pirate or real
+            const rpgProverbs = [
+                "A smooth sea never made a skilled pirate.",
+                "Take what ye can. Give nothing back.",
+                "Not all treasure is silver and gold.",
+                "The problem is not the problem. The problem is your attitude about the problem.",
+                "Even the fiercest pirates started with a rowboat.",
+                "Your data is worth more than Spanish doubloons.",
+                "In a world of Merchant Lords, be the open-source pirate.",
+                "He who controls the data controls the seas.",
+                "The best time to reclaim yer data was yesterday. The second best is now.",
+                "Behind every great pirate is a well-organized vault.",
+            ];
+            const realProverbs = [
+                "Your data has real value. Own it.",
+                "Privacy is not a feature. It's a right.",
+                "The best backup is the one you control.",
+                "Data sovereignty starts locally.",
+                "Every record tells a story about you.",
+                "Open source means you can verify the trust.",
+                "Your digital footprint is yours to manage.",
+                "Local-first: no servers, no surprises.",
+                "The best time to take back your data was yesterday. The second best is now.",
+                "Behind every organized person is a well-organized archive.",
+            ];
+            const proverbEl = document.getElementById('pirate-proverb');
+            if (proverbEl) {
+                const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+                const pool = jM === 'rpg' ? rpgProverbs : realProverbs;
+                proverbEl.textContent = pool[Math.floor(Math.random() * pool.length)];
+                proverbEl.style.cssText = 'font-size: 10px; color: rgba(255,255,255,0.25); padding: 8px 12px; line-height: 1.4; font-style: italic;';
+            }
         });
     </script>
     {% block scripts %}{% endblock %}

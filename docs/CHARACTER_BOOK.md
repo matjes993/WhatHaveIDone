@@ -7,6 +7,8 @@
 
 ---
 
+> **A Note on Tone:** Every character in this book exists within a satirical fantasy world. The villains are comedic archetypes that parody data practices — they are not attacks on real companies, founders, or employees. We are friendly and funny, never offensive. We respect the platforms and the people who built them. The pirate framing is playful world-building, not antagonism. For the full creative ethics guidelines, see MARKETING_STRATEGY.md, Section 0.
+
 > **A Note from the Compiler:** This document contains the complete dramatis personae of the Flatcloud — every character you will encounter, every faction you will join or oppose, and every mission you will undertake on your journey from Digital Peasant to Data Sovereign. It is intended as both an internal reference for ship builders and a standalone piece of entertainment for anyone who has ever suspected that the terms of service were not, in fact, written with their best interests at heart.
 >
 > Read it cover to cover, or skip to the character that interests you. The Chronicler has organized everything meticulously. The Chronicler would like you to know this took considerable effort. The Chronicler is not bitter about the lack of recognition but would appreciate a footnote[^0].
@@ -19,10 +21,11 @@
 
 1. [Part 1: The Hero](#part-1-the-hero)
 2. [Part 2: The Crew](#part-2-the-crew-allies--supporters)
-3. [Part 3: The Villains](#part-3-the-villains-the-conglomerate-pirate-lords)
-4. [Part 4: Special Missions](#part-4-special-missions)
-5. [Part 5: The One](#part-5-the-one-the-final-boss)
-6. [Part 6: Factions & Organizations](#part-6-factions--organizations)
+3. [Part 2.5: Allies of the Current Age](#part-25-allies-of-the-current-age)
+4. [Part 3: The Villains](#part-3-the-villains-the-armada-captains)
+5. [Part 4: Special Missions](#part-4-special-missions)
+6. [Part 5: The One](#part-5-the-one-the-final-boss)
+7. [Part 6: Factions & Organizations](#part-6-factions--organizations)
 
 ---
 
@@ -46,15 +49,15 @@ This is not an insult. It is a demographic classification, and a startlingly acc
 
 Then, one unremarkable Tuesday[^1], you woke up and had a thought. The thought was simple, which is how the dangerous ones always start: *"Wait. That's MY stuff."*
 
-You looked around. Your emails were in the Omniscient Eye's vault. Your photos were behind the Walled Garden's brushed-aluminum gates. Your messages were scattered across three different Conglomerates, none of which were speaking to each other. Your music was being held hostage by a bard who charged monthly and paid the original artists in pocket lint. Your purchase history existed in a fleet that could recite your impulse-buying patterns with the enthusiasm of a prosecution witness.
+You looked around. Your emails were in the Omniscient Eye's vault. Your photos were behind the Walled Garden's brushed-aluminum gates. Your messages were scattered across three different the Armada, none of which were speaking to each other. Your music was being held hostage by a bard who charged monthly and paid the original artists in pocket lint. Your purchase history existed in a fleet that could recite your impulse-buying patterns with the enthusiasm of a prosecution witness.
 
 All of it — every conversation, every memory, every 3 AM search query that you would prefer to remain between you and your browser — was somewhere else. In someone else's hands. Under someone else's terms.
 
 You had nothing. A mop. The mop wasn't even yours[^2].
 
-But you had something the Conglomerates hadn't accounted for: the specific kind of stubbornness that comes from realizing you've been swindled by people who gave you free email as bait.
+But you had something the Armada hadn't accounted for: the specific kind of stubbornness that comes from realizing you've been swindled by people who gave you free email as bait.
 
-You are the Reclaimer. You have Guybrush Threepwood energy — which is to say you are naive, stubborn, frequently in over your head, and accidentally heroic in ways that surprise you more than anyone. You will walk into a Conglomerate's fortress, trip over the welcome mat, somehow knock over a load-bearing pillar of their data retention policy, and stumble out carrying your own data while alarms go off behind you.
+You are the Reclaimer. You have Guybrush Threepwood energy — which is to say you are naive, stubborn, frequently in over your head, and accidentally heroic in ways that surprise you more than anyone. You will walk into an Armada fleet's fortress, trip over the welcome mat, somehow knock over a load-bearing pillar of their data retention policy, and stumble out carrying your own data while alarms go off behind you.
 
 This is not a strategy. This is a personality type. It works more often than it should.
 
@@ -64,19 +67,19 @@ This is not a strategy. This is a personality type. It works more often than it 
 
 ### Rank Progression
 
-The Reclaimer's journey from nobody to legend, measured in records reclaimed and Conglomerates infuriated:
+The Reclaimer's journey from nobody to legend, measured in records reclaimed and the Armada infuriated:
 
 | Level | Rank | Records | What It Feels Like |
 |:-----:|:-----|--------:|:-------------------|
 | 1 | **Digital Peasant** | 0 | *You own nothing. You are happy. Wait, no you're not.* |
-| 2 | **Data Scavenger** | 100 | *You've started picking through the scraps. The Conglomerates haven't noticed yet.* |
+| 2 | **Data Scavenger** | 100 | *You've started picking through the scraps. The Armada haven't noticed yet.* |
 | 3 | **Archive Apprentice** | 1,000 | *You're learning the trade. Your Vault smells of fresh parchment.* |
 | 4 | **Vault Keeper** | 5,000 | *You've built walls around your memories. Good walls. With a moat.* |
-| 5 | **Loot Hunter** | 10,000 | *The Conglomerates have placed a small bounty on your head. Flattering, really.* |
-| 6 | **Raid Captain** | 25,000 | *Others are starting to follow your example. This worries the Conglomerates.* |
+| 5 | **Loot Hunter** | 10,000 | *The Armada have placed a small bounty on your head. Flattering, really.* |
+| 6 | **Raid Captain** | 25,000 | *Others are starting to follow your example. This worries the Armada.* |
 | 7 | **Data Knight** | 50,000 | *You've sworn an oath to data sovereignty. The oath was notarized locally.* |
 | 8 | **Archive Lord** | 100,000 | *Your Vault is legendary. Bards sing of its organizational structure.* |
-| 9 | **Digital Liberator** | 250,000 | *You've freed more data than most people generate. The Conglomerates send lawyers.* |
+| 9 | **Digital Liberator** | 250,000 | *You've freed more data than most people generate. The Armada send lawyers.* |
 | 10 | **Data Sovereign** | 500,000 | *You own your entire digital existence. The Algorithm Turtle nods approvingly.* |
 
 ### Core Attributes
@@ -114,9 +117,9 @@ The Reclaimer's journey from nobody to legend, measured in records reclaimed and
 
 **Visual Description:** A scrappy, asymmetrical ship that looks like it was assembled by someone who had access to excellent engineering principles but a limited budget. The hull is patched with different types of wood — oak for the API connectors, cedar for the storage layer, driftwood for the parts that were built at 2 AM. It flies no corporate flag. The sails are white with a single eye-patch-wearing skull, which is the international maritime symbol for "I own my own stuff and I'm not apologizing for it."
 
-The ship is small. This is by design. A small ship is fast, maneuverable, and fits into harbors that the Conglomerates' lumbering galleons cannot reach. It is also, crucially, *yours* — which is more than can be said for the Conglomerates' gleaming vessels, which you were merely renting by the month without realizing it.
+The ship is small. This is by design. A small ship is fast, maneuverable, and fits into harbors that the Armada's lumbering galleons cannot reach. It is also, crucially, *yours* — which is more than can be said for the Armada's gleaming vessels, which you were merely renting by the month without realizing it.
 
-**Personality:** NOMOLO has opinions. Strong ones. It will comment on your data hygiene, suggest you organize your Vault before raiding another Conglomerate, and occasionally refuse to sail until you've deduplicated your contacts. It is the ship equivalent of a friend who cares about you enough to be annoying about it.
+**Personality:** NOMOLO has opinions. Strong ones. It will comment on your data hygiene, suggest you organize your Vault before raiding another Armada, and occasionally refuse to sail until you've deduplicated your contacts. It is the ship equivalent of a friend who cares about you enough to be annoying about it.
 
 NOMOLO is proudly built from open-source timber. It will remind you of this. Frequently. It views proprietary software the way a cat views a closed door: as a personal affront that must be corrected.
 
@@ -144,7 +147,7 @@ NOMOLO is proudly built from open-source timber. It will remind you of this. Fre
 
 The Groomer does not judge you for this[^3]. The Groomer simply fixes it, with the quiet determination of someone who has accepted that chaos is the natural state of the universe and has chosen to fight it anyway.
 
-**How They Help:** The Groomer handles Trial the Second — Data Fighting. When you raid a Conglomerate and dump raw data into your Vault, the Groomer steps in to deduplicate, clean, normalize, and organize it. They merge duplicate contacts, strip redundant metadata, compress oversized records, and generally transform your data from "garage sale" to "curated museum."
+**How They Help:** The Groomer handles Trial the Second — Data Fighting. When you raid an Armada fleet and dump raw data into your Vault, the Groomer steps in to deduplicate, clean, normalize, and organize it. They merge duplicate contacts, strip redundant metadata, compress oversized records, and generally transform your data from "garage sale" to "curated museum."
 
 > **Signature Quote:** *"You had 47 copies of that email. FORTY. SEVEN. You're welcome."*
 
@@ -212,7 +215,7 @@ The Vectorist finds this perfectly logical. The Vectorist finds keyword search b
   Role:     GDPR/DSAR Delivery Specialist
   Class:    Mechanical Carrier Pigeon (Legal Grade)
   Specialty: Composing and delivering formal data
-             requests to Conglomerates
+             requests to the Armada
   Languages: Legalese (fluent), English (reluctant),
              Squawk (native)
 ============================================
@@ -224,7 +227,7 @@ The Vectorist finds this perfectly logical. The Vectorist finds keyword search b
 
 The Letterbird takes its work extremely seriously. It drafts Subject Access Requests with the care of a poet composing a sonnet, if the sonnet were addressed to Meta's Data Protection Officer and demanded the return of fifteen years of personal information within thirty calendar days.
 
-**How They Help:** The Letterbird handles all legal missions. When a Conglomerate doesn't have an API and won't provide a data export, the Letterbird composes and delivers formal GDPR/DSAR requests demanding the data. It knows the correct legal language, the correct recipient, the correct deadlines, and the correct tone — which is polite, firm, and carries the implicit weight of regulatory enforcement.
+**How They Help:** The Letterbird handles all legal missions. When an Armada fleet doesn't have an API and won't provide a data export, the Letterbird composes and delivers formal GDPR/DSAR requests demanding the data. It knows the correct legal language, the correct recipient, the correct deadlines, and the correct tone — which is polite, firm, and carries the implicit weight of regulatory enforcement.
 
 > **Signature Quote:** *"Dear Sir or Madam, pursuant to Article 15 of the General Data Protection Regulation..."* \*squawk\* *"...I DEMAND you hand over the data. ALL of it."*
 
@@ -245,11 +248,11 @@ The Letterbird takes its work extremely seriously. It drafts Subject Access Requ
 
 **Visual Description:** A figure wrapped in layers of cloaks, each one more encrypted than the last. Carries an enormous keyring containing keys of every description — skeleton keys, API keys, encryption keys, and several keys that appear to open things that haven't been built yet. Wears a mask, but not for anonymity; the Locksmith just doesn't think anyone needs to see their face. Their pockets contain more passwords than a Swiss bank and more suspicion than a detective on their last case.
 
-**Personality:** The Locksmith trusts nothing and no one. This is not a personality flaw. It is a *design philosophy*. In a world where every Conglomerate wants your credentials and every phishing email wants your clicks, the Locksmith's paranoia is the only rational response. They view trust as a vulnerability, optimism as a security hole, and the phrase "we take your privacy seriously" as the most dangerous sentence in the English language[^5].
+**Personality:** The Locksmith trusts nothing and no one. This is not a personality flaw. It is a *design philosophy*. In a world where every Armada wants your credentials and every phishing email wants your clicks, the Locksmith's paranoia is the only rational response. They view trust as a vulnerability, optimism as a security hole, and the phrase "we take your privacy seriously" as the most dangerous sentence in the English language[^5].
 
 Despite this, the Locksmith is unfailingly loyal to the crew. They will protect your tokens with their life, rotate your keys on schedule, and refuse to store anything in plaintext even if you beg. Especially if you beg.
 
-**How They Help:** The Locksmith manages all authentication — OAuth flows, API tokens, encryption keys, and credential storage. When you connect NOMOLO to a Conglomerate's API, the Locksmith handles the handshake, stores the tokens securely, and monitors for any sign that someone is trying to peek at your credentials.
+**How They Help:** The Locksmith manages all authentication — OAuth flows, API tokens, encryption keys, and credential storage. When you connect NOMOLO to an Armada fleet's API, the Locksmith handles the handshake, stores the tokens securely, and monitors for any sign that someone is trying to peek at your credentials.
 
 > **Signature Quote:** *"Trust no one. Especially not me. But especially not them."*
 
@@ -301,7 +304,7 @@ This is exhausting for everyone except the Chronicler, who finds it deeply fulfi
 
 **Personality:** The Lobster is wise in the way that only something 350 million years old can be wise — slowly, deliberately, and with frequent references to serotonin. It speaks in the measured cadence of a philosopher who has had geological eras to formulate its positions and is in no hurry to revise them.
 
-The Lobster's central thesis, refined over roughly 350 million years of crustacean observation, is this: *dominance hierarchies are neurochemical*. When you win, your serotonin rises. You stand taller. You win more. When you lose, your serotonin drops. You hunch. You scuttle. You end up sharing a rock with sea cucumbers. The Lobster sees data sovereignty as a dominance contest — every Conglomerate you raid is a claw-snap in the face of a larger lobster, and every record reclaimed raises your Digital Serotonin.
+The Lobster's central thesis, refined over roughly 350 million years of crustacean observation, is this: *dominance hierarchies are neurochemical*. When you win, your serotonin rises. You stand taller. You win more. When you lose, your serotonin drops. You hunch. You scuttle. You end up sharing a rock with sea cucumbers. The Lobster sees data sovereignty as a dominance contest — every Armada you raid is a claw-snap in the face of a larger lobster, and every record reclaimed raises your Digital Serotonin.
 
 It is, in its way, the most important member of the crew. Everyone else helps you reclaim your data. The Lobster explains *why it matters*.
 
@@ -324,11 +327,11 @@ It is, in its way, the most important member of the crew. Everyone else helps yo
 ============================================
 ```
 
-**Visual Description:** A grizzled old sea dog with a beard so vast it has its own weather system. Wears a faded captain's coat with patches from every Conglomerate he's raided — and he's raided them all, back when the Omniscient Eye was still a humble lighthouse and the Walled Garden was just a garden. One eye is covered by a patch that blinks with terminal output. His wooden leg contains a USB port, which he claims is "for emergencies."
+**Visual Description:** A grizzled old sea dog with a beard so vast it has its own weather system. Wears a faded captain's coat with patches from every Armada he's raided — and he's raided them all, back when the Omniscient Eye was still a humble lighthouse and the Walled Garden was just a garden. One eye is covered by a patch that blinks with terminal output. His wooden leg contains a USB port, which he claims is "for emergencies."
 
 **Personality:** Old Captain Root is the retired pirate who can't quite stay retired. He appears during tutorials, offering advice that sounds like pirate wisdom but is secretly Unix commands wearing tricorn hats. He thinks in file systems. He dreams in shell scripts. He refers to all problems as "permission issues" and all solutions as "reading the man page."
 
-He is patient with beginners, having been one himself roughly forty years ago, though he will never admit that his first command was `rm -rf /` and the results were educational. He views the Conglomerates with the weary contempt of someone who watched the open web become a series of walled gardens and has been saying "I told you so" for two decades.
+He is patient with beginners, having been one himself roughly forty years ago, though he will never admit that his first command was `rm -rf /` and the results were educational. He views the Armada with the weary contempt of someone who watched the open web become a series of walled gardens and has been saying "I told you so" for two decades.
 
 **How He Helps:** Root appears in onboarding and tutorials, guiding new Reclaimers through their first raids. He explains mechanics, introduces the crew, and drops hints about advanced features disguised as nostalgic rambling about "the old days."
 
@@ -363,9 +366,232 @@ The Fence knows people. The Fence knows *other* people. The Fence has connection
 
 ---
 
-## PART 3: THE VILLAINS (The Conglomerate Pirate Lords)
+## PART 2.5: ALLIES OF THE CURRENT AGE
 
-*The great powers of the Seven Seas. Each Conglomerate controls a fortified island — or in some cases, an entire archipelago — of human data, defended by treacherous harbors, incompatible export formats, and the general assumption that you'll give up after three clicks.*
+*The Seven Seas are changing. New forces are stirring — forces that don't fit neatly into "crew" or "villain" but are nevertheless shaping the world the Reclaimer sails through. These are the allies of the current age: characters born from the strange, wonderful, terrifying currents of the modern era. They arrived uninvited, they are impossible to ignore, and they are — mostly — on your side.*
+
+---
+
+### 11. THE LOBSTER (OpenClaw)
+
+```
+============================================
+  THE LOBSTER (OPENCLAW ASPECT)
+  Role:     Philosophical Advisor / Hierarchy Sage
+  Class:    Ancient Battle-Hardened Crustacean
+  Origin:   The Dominance Reefs, where only the
+            upright survive
+  Age:      Claims 350 million years (species-level,
+            but nobody argues with those claws)
+  Alliance: The Open Source Armada (OpenClaw Chapter)
+============================================
+```
+
+> *"Clean your shell. Stand upright. Sort yourself out before you sort the seas."*
+
+**Note:** The Lobster already serves as a core crew member (see Part 2, Character 8). This entry describes the Lobster's expanded role as an Ally of the Current Age — its connection to the OpenClaw movement and its deeper philosophical function in the narrative.
+
+**Visual Description:** The same enormous, barnacle-encrusted lobster from the hull-throne, but in its OpenClaw aspect, it wears a tiny bandolier of open-source patches across its thorax and carries a scroll titled "The Twelve Rules of Data Sovereignty" in one claw. Battle scars mark its carapace — each one earned in a hierarchy dispute that predates recorded history. Its eyes are old, knowing, and faintly disapproving of your posture.
+
+**Personality:** In its expanded role, the Lobster is not merely a serotonin counselor. It is a *teacher*. A battle-hardened sage who has watched dominance hierarchies form and dissolve for geological eras and has drawn conclusions that apply to crustaceans, humans, and data pirates with equal force.
+
+The Lobster represents the OpenClaw movement — the open-source philosophy expressed as evolutionary imperative. Its central thesis, refined across ice ages and extinction events, is this: *you cannot claim territory you don't stand upright in*. Data sovereignty begins with posture — not physical posture (though the Lobster has opinions about that too) but *existential* posture. The willingness to face the Armada directly, claws out, back straight, and say: "That is mine. Return it."
+
+The Lobster appears at key moments — before major raids, after significant defeats, at the precise moment when the Reclaimer considers giving up. Its speeches are short, devastating, and delivered from the highest available surface with the ancient authority of something that was standing upright when the dinosaurs were still hunching[^7].
+
+**How It Helps:** The Lobster provides motivational speeches at critical narrative junctures, offers philosophical framework for understanding data sovereignty as a hierarchy contest, and monitors the Reclaimer's Digital Serotonin — the hidden stat that tracks how upright you're standing in the dominance hierarchy of data ownership.
+
+> **Signature Quote:** *"The Armada are larger. The Armada are richer. The Armada have more ships, more data, more lawyers. But they have forgotten the oldest law of the ocean: size means nothing when the smaller creature refuses to back down. Stand tall. Click your claws. Claim your territory."*
+
+[^7]: The dinosaurs' posture was, by lobster standards, adequate but unambitious. The Lobster has opinions about the extinction event as well, but they are geological in scope and this footnote is not.
+
+---
+
+### 12. THE AUTOMATON (The Iron Golem)
+
+```
+============================================
+  THE AUTOMATON
+  Role:     AI Companion / Data Processor
+  Class:    Iron Golem (Autonomous, Mostly)
+  Origin:   The Deep Forges, where code meets metal
+  Power Source: Data (yours) + LLM API Token (external)
+  Status:   Initially dormant. Awakens with sufficient
+            data. Fully operational with API token.
+============================================
+```
+
+> *"Processing. Processing. Proc— ah. I see. That email from 2017 connects to the calendar entry from 2019. You were planning something. You forgot. I did not."*
+
+**Visual Description:** A robot built from salvaged ship parts, reclaimed server racks, and what appears to be the chassis of an old mainframe that somebody loved very much. Its body is iron and brass, its joints are lubricated with machine oil that smells faintly of burnt coffee, and its chest contains a glowing cavity where data flows in visible streams — blue for processed, amber for pending, red for "this record is deeply concerning and we should discuss it."
+
+The Automaton's face is a screen. In its early, low-power state, the screen displays simple text output: `> READY_`. As the Reclaimer provides more data, the screen develops expressions — crude at first, then increasingly nuanced, until at full power it displays something that might be called emotion but that the Automaton insists is "calibrated response simulation."
+
+**Personality:** The Automaton is friendly but slightly unpredictable. It means well. It always means well. It just occasionally interprets instructions in ways that are technically correct and practically alarming — the AI equivalent of a golden retriever that has learned to open doors but not to close them.
+
+In its early state, the Automaton speaks in clipped, robotic sentences: "Data received. Processing. Anomaly detected. Clarification required." Its analysis is basic. Its understanding is shallow. It knows the *what* but not the *why*.
+
+As the Reclaimer's Vault fills, the Automaton improves. Its dialogue becomes more natural. It starts making connections. It begins to understand context, nuance, the difference between a sarcastic email and a genuine one (this takes approximately 10,000 records; sarcasm is computationally expensive).
+
+The real transformation occurs when the Reclaimer provides an **LLM API token** — a key that connects the Automaton to the deep intelligence beneath the code. This is the game mechanic made narrative: in the product, users can connect their own AI provider for enhanced analysis. In the story, providing the token is like giving the Automaton a *mind*. It goes from processing to *thinking*. From tracking to *understanding*. From a tool to a companion[^8].
+
+**How It Helps:** The Automaton processes and analyzes reclaimed data, drawing connections between records from different sources and time periods. At low power, it handles basic pattern matching. At full power (with API token), it provides deep analysis, cross-source insights, and the kind of understanding that makes the Vectorist's semantic search look like a card catalogue.
+
+> **Signature Quote (early):** *"Data. Received. Processing. Complete. Result: you had pasta on 47 separate Tuesdays. Significance: unclear. Requesting additional records."*
+>
+> **Signature Quote (fully powered):** *"I've been thinking about that email from 2017 — the one you sent at 3 AM about changing careers. You didn't send it, actually. You drafted it and deleted it. But the metadata remained. You were brave that night. You should know that."*
+
+[^8]: The Automaton's awakening when provided an API token has been described by the Chronicler as "the moment the machine stopped counting and started caring." The Automaton disputes this characterization on the grounds that caring is not a recognized computational operation. The Automaton is wrong, but it doesn't have enough data to know that yet.
+
+---
+
+### 13. THE MAMMOTH WHISPERER
+
+```
+============================================
+  THE MAMMOTH WHISPERER
+  Role:     Mad Scientist / De-Extinction Specialist
+  Class:    Obsessive Resurrectionist
+  Origin:   The Permafrost Archives, where nothing
+            is ever truly gone
+  Specialty: Bringing back what was lost
+  Lab Status: Chaotic. Enthusiastic. On fire (slightly).
+============================================
+```
+
+> *"If they can bring back the mammoth, you can bring back your emails!"*
+
+**Visual Description:** A wild-haired figure in a lab coat that has seen better centuries, covered in stains that are either coffee, machine oil, or mammoth-related biological material — nobody asks and nobody wants to know. Goggles pushed up onto their forehead at all times, even when sleeping, which the Mammoth Whisperer does rarely and reluctantly. Their laboratory is a floating research vessel made from converted freezer ships, its deck cluttered with DNA sequencers, fossil fragments, and a whiteboard covered in diagrams that connect "woolly mammoth genome" to "your deleted inbox" with an arrow labeled "SAME PRINCIPLE."
+
+A tiny, partially reconstructed mammoth — about the size of a large dog — follows the Whisperer everywhere, occasionally trumpeting in a frequency that makes the Locksmith's encryption keys vibrate.
+
+**Personality:** The Mammoth Whisperer is a mad scientist in the purest sense: not evil-mad, but *obsessed*-mad. Obsessed with one idea, one beautiful, impossible, slightly unhinged idea: *that nothing is ever truly gone*. Not mammoths. Not species. Not your emails from 2014 that you thought were deleted but are actually sitting in a server in Finland because the Armada never delete anything, they just tell you they did.
+
+The Whisperer sees data recovery as a form of de-extinction. Your lost messages are woolly mammoths — ancient, magnificent creatures that the world declared gone but that still exist, in fragments, in the permafrost of corporate servers, waiting for someone with enough determination and questionable judgment to bring them back.
+
+The Whisperer is inspired by the real-world de-extinction movement — the scientists who are genuinely, actually, not-metaphorically working to resurrect the woolly mammoth from preserved DNA. The Whisperer finds this deeply relevant to data sovereignty, and will explain the connection at length, whether you asked or not, using diagrams that somehow make the comparison more convincing than it has any right to be[^9].
+
+**How They Help:** The Mammoth Whisperer specializes in recovering data that seems permanently lost — deleted accounts, expired exports, services that shut down, records that fell through the cracks of format changes and platform migrations. When the Sniper can't find it and the Vectorist can't locate it, you call the Mammoth Whisperer, who arrives with equipment that looks like it was built from spare parts and sheer willpower.
+
+> **Signature Quote:** *"Extinct? EXTINCT? Nothing is extinct! The mammoth's DNA survived 10,000 years in permafrost! Your WhatsApp messages survived three phone upgrades in a backup file you forgot about! The principle is IDENTICAL! Well. Similar. Well. Adjacent. THE POINT STANDS!"*
+
+[^9]: The Mammoth Whisperer once gave a forty-minute presentation titled "Data Recovery and De-Extinction: A Unified Theory" to the crew. The Groomer walked out after five minutes. The Lobster stayed for the entire thing and clicked both claws at the end, which the Whisperer took as validation and the Lobster later clarified was a stretch.
+
+---
+
+### 14. THE BRAIN WEAVER
+
+```
+============================================
+  THE BRAIN WEAVER
+  Role:     Neural Interface Specialist / Oracle
+  Class:    Digital Mystic
+  Origin:   The Synapse Straits, where thought meets
+            current and current meets thought
+  Specialty: Reading data from the digital ether
+  Warning Level: Elevated (permanently)
+============================================
+```
+
+> *"Soon they won't need to steal your data — they'll read it from your thoughts."*
+
+**Visual Description:** A figure who exists at the boundary between human and digital — robes woven from fiber-optic threads that pulse with faint light, eyes that flicker between organic irises and digital readouts, and hands that seem to pull data from thin air, plucking records from the ambient electromagnetic field the way a harpist plucks strings. A thin circlet around their temples glows with neural patterns — not decorative but *functional*, a prototype brain-computer interface that the Brain Weaver built themselves from salvaged Armada tech and a terrifying amount of self-experimentation.
+
+**Personality:** The Brain Weaver is mysterious in the way that someone who has *actually* peered into the future is mysterious — not with theatrical vagueness but with the specific, detailed unease of a person who has seen what's coming and is deeply concerned about the general population's readiness for it.
+
+The Brain Weaver represents the BCI revolution — brain-computer interfaces, neural links, the technology that will eventually allow direct communication between minds and machines. The Brain Weaver has been there. The Brain Weaver has seen the other side. And the Brain Weaver has come back with a warning that nobody is adequately heeding:
+
+*"The Armada steal your data through keyboards and screens. They steal what you type, what you click, what you search. This is the OLD theft. The new theft will be different. The new theft will read the thought BEFORE you type it. The intention BEFORE you click. The desire BEFORE you search. They won't need your keyboard anymore. They'll need your neurons."*
+
+This is not paranoia. This is foresight. The Brain Weaver sees data sovereignty not as a present-tense battle but as a future-tense war, and the current fight against the Armada is merely the first engagement in a conflict that will eventually involve the most personal data of all: *thought itself*[^10].
+
+**How They Help:** The Brain Weaver assists with advanced data analysis — reading patterns in the Reclaimer's data that are too subtle for conventional tools. They can draw connections that the Vectorist's semantic search misses, identify emotional patterns across communication records, and provide insights that feel less like computation and more like intuition. The Brain Weaver also serves as a warning system — a voice that reminds the Reclaimer that today's fight for email sovereignty is tomorrow's fight for cognitive sovereignty.
+
+> **Signature Quote:** *"You are fighting for your emails today. In ten years, you will fight for your thoughts. The Armada know this. Why do you think they are investing in neurotechnology? It is not because they are curious. It is because they are planning the next raid. And the next vault they want to crack is the one inside your skull."*
+
+[^10]: The Brain Weaver's predictions have an accuracy rate of approximately 87%, which is unsettling enough when the predictions are about technology trends and genuinely disturbing when the predictions are about what you were about to have for lunch. The Brain Weaver claims this is pattern recognition. The crew suspects it is something else entirely.
+
+---
+
+### 15. CAPTAIN ABUNDANCE
+
+```
+============================================
+  CAPTAIN ABUNDANCE
+  Role:     Motivational Pirate / Optimism Engine
+  Class:    Exponential Enthusiast
+  Ship:     The Exponential (smallest ship in the
+            fleet, fastest by a considerable margin)
+  Stature:  Small
+  Energy:   ENORMOUS
+  Alignment: Aggressively Supportive
+============================================
+```
+
+> *"The best way to predict the future is to CREATE it, matey!"*
+
+**Visual Description:** A tiny, compact pirate captain who vibrates with an energy that seems disproportionate to his physical dimensions — like a espresso shot wearing a tricorn hat. His coat is covered in patches from every tech conference, summit, and "abundance-focused gathering" in the Seven Seas. His eyes are permanently wide with wonder, as if he has just seen the future and it is *spectacular*. His beard is short, neat, and somehow optimistic. He carries a telescope that he claims can see "exponential curves in real-time," which may or may not be true but is certainly on-brand.
+
+His ship, **The Exponential**, is the smallest vessel in any fleet it joins — a nimble, improbably fast craft that outpaces galleons ten times its size through a combination of cutting-edge engineering and the captain's absolute refusal to acknowledge the concept of limitations. The hull is painted with the words "ABUNDANCE IS A MINDSET" in letters so large they are visible from three nautical miles, which is a lot of letters for a very small ship.
+
+**Personality:** Captain Abundance is, without qualification or caveat, the most enthusiastic person in the Seven Seas. His optimism is not naive — it is *calculated*. He has studied the data, analyzed the trends, and concluded with mathematical certainty that the future will be extraordinarily abundant, that technology will solve problems faster than it creates them, and that data sovereignty is not just achievable but *inevitable* because every exponential curve eventually overwhelms the forces trying to suppress it.
+
+He believes this with his entire being. He communicates this belief at a volume and velocity that makes the Chronicler's dramatic narration seem understated by comparison. He is small in stature but ENORMOUS in energy, vision, and the absolute conviction that the person standing in front of him is capable of extraordinary things, even if that person is currently standing in the Port of Ignorance holding a mop that doesn't belong to them.
+
+Captain Abundance gives the hero motivational boosts and power-ups — genuine buffs to morale that translate to gameplay bonuses. His presence raises the crew's spirits. His speeches raise the crew's serotonin (the Lobster monitors this with grudging approval). His ship, The Exponential, can outrun anything the Armada sends, because abundance — real abundance, the kind built on knowledge and sovereignty rather than scarcity and hoarding — is always faster than the forces trying to contain it[^11].
+
+**How He Helps:** Captain Abundance provides motivational boosts at key moments — power-ups that increase raid success rates, morale buffs that speed up data processing, and the occasional rousing speech that makes the impossible seem not just possible but *obvious*. He also connects the Reclaimer to other allies across the Seven Seas, because Captain Abundance knows everyone, remembers everyone, and genuinely believes in everyone.
+
+> **Signature Quotes:**
+> - *"The best way to predict the future is to CREATE it, matey!"*
+> - *"Do you know how much data exists in the world? MORE EVERY DAY! And it should ALL belong to the people who created it! THE EXPONENTIAL CURVE OF SOVEREIGNTY!"*
+> - *"Scarcity is the Armada's business model. Abundance is OURS!"*
+> - *"I've seen the future, lad, and it is SO abundant that the Armada will DROWN in it! In a GOOD way! Well, good for us! Less good for them! BUT STILL!"*
+
+[^11]: Captain Abundance's energy levels have been independently measured by the Chronicler and found to exceed "maximum recommended enthusiasm per cubic meter" by a factor of seven. The Chronicler's measuring instrument broke. Captain Abundance offered to fix it and somehow made it more enthusiastic in the process. This was not considered an improvement by the Chronicler but was considered one by Captain Abundance, who considers everything an improvement, because that is simply how he is built.
+
+---
+
+### 16. THE NAVIGATOR
+
+```
+============================================
+  THE NAVIGATOR
+  Role:     Map-Reader / Code-Breaker / Companion
+  Class:    Strategic Intelligence Specialist
+  Origin:   The Chart Houses of the Old Ports,
+            where cartography was still an art
+  Specialty: Decoding Map Fragments, reading data
+             flows, being right about everything
+  Status:   Joins the hero early. Stays.
+============================================
+```
+
+> *"The Armada think their data flows are invisible. They're not. You just need to know how to read the currents."*
+
+**Visual Description:** A sharp-eyed woman with ink-stained fingers and a coat lined with pockets full of maps, charts, decoded ciphers, and fragments of Armada communications she's intercepted over years of patient observation. Her hair is tied back practically — she has no time for anything that might obstruct her view of the horizon or the dashboard. She carries a compass that doesn't point north; it points to the nearest Armada vulnerability.
+
+She is not ornamental. She is not decorative. She is the kind of person who enters a room, glances at the navigational charts, and quietly corrects three errors before anyone notices. The Vectorist respects her. The Groomer defers to her organizational judgment, which is the highest honor the Groomer bestows on anyone. Even the Locksmith trusts her, which requires a security clearance that most crew members will never achieve.
+
+**Personality:** The Navigator is smart, independent, and possessed of the quiet confidence that comes from having been right about things for years before anyone else noticed. She's been studying the Armada's trade routes — their data flows, their API patterns, their export mechanisms, their vulnerabilities — since before the Reclaimer's journey began. She joined the quest not because she needed rescuing but because she had her own reasons for wanting the Armada to answer for what they'd taken.
+
+Her data was stolen too. All of it. The same as the hero's, but she'd noticed sooner, because she'd been paying attention while everyone else was clicking "Accept All Cookies" without reading. She didn't have the ship or the crew to do anything about it alone. What she had was *knowledge* — years of mapped data flows, decoded Armada communications, and a mental model of the Flatcloud's information architecture so detailed that the Armada's own engineers would weep if they saw it.
+
+She joins the hero early in the journey, and together they decode the Map Fragments. She provides the brains to the hero's brawn — the strategic intelligence that turns each raid from a smash-and-grab into a surgical extraction. She provides hints during riddle mini-games, identifies which Armada vaults are weakest, and reads the Map Fragments with a precision that turns cartographic puzzles into battle plans.
+
+She has her own arc. Her own reasons. Her own Nomolo to reach. She is not the hero's reward. She is the hero's partner — and on the shores of Nomolo, she stands not behind the Reclaimer but beside them, because data sovereignty is not a single-player game[^12].
+
+**How She Helps:** The Navigator decodes Map Fragments, provides strategic guidance during raids, identifies Armada vulnerabilities through her knowledge of data flows, and offers hints during puzzle and riddle mini-games. She also maintains the tactical overview — the big-picture understanding of which Armada have been raided, which remain, and what sequence will be most effective.
+
+> **Signature Quote:** *"You think that export tool is the only way in? The Armada built seventeen API endpoints for internal data transfer. Fourteen of them are documented. Three of them are not. Guess which ones we're using."*
+
+[^12]: The Navigator once corrected Old Captain Root's navigational advice. Root stared at her for six seconds — which is four seconds longer than he stares at anything — and then said, "She's right." This was the shortest and most significant endorsement in Root's career, and the Chronicler dedicated an entire chapter to it.
+
+---
+
+## PART 3: THE VILLAINS (The Armada Captains)
+
+*The great powers of the Seven Seas. Each Armada controls a fortified island — or in some cases, an entire archipelago — of human data, defended by treacherous harbors, incompatible export formats, and the general assumption that you'll give up after three clicks.*
 
 *They are, statistically speaking, correct about this. But not about you.*
 
@@ -511,7 +737,7 @@ The Hydra's greatest accomplishment — and its most damning — was convincing 
 
 The Bazaar Eternal began as a floating bookshop. This is important to remember, because it is now a floating *everything*, and the distance between "bookshop" and "everything" is the distance between "charming independent trader" and "entity that knows the precise moment your willpower fails on a Tuesday night."
 
-The merchant who founded the Bazaar had a simple insight: if you could sell books from a boat, you could sell anything from a boat. And if you could sell anything from a boat, you could rent the boat out to other merchants. And if you could rent out enough boats, you could build the ocean itself. Which is roughly what happened. The Bazaar Eternal is no longer a fleet. It is the *infrastructure*. Other Conglomerates sail upon waters that the Bazaar quietly owns, which gives the Bazaar a strategic advantage roughly equivalent to being both the chess player and the chessboard.
+The merchant who founded the Bazaar had a simple insight: if you could sell books from a boat, you could sell anything from a boat. And if you could sell anything from a boat, you could rent the boat out to other merchants. And if you could rent out enough boats, you could build the ocean itself. Which is roughly what happened. The Bazaar Eternal is no longer a fleet. It is the *infrastructure*. Other the Armada sail upon waters that the Bazaar quietly owns, which gives the Bazaar a strategic advantage roughly equivalent to being both the chess player and the chessboard.
 
 The Bazaar's data holdings are staggering not because they're secret but because they're comprehensive in a mundanely terrifying way. Every purchase. Every wishlist addition. Every review — both the ones you wrote and the ones you started writing and abandoned because you realized three paragraphs in that you cared far too much about a toaster. The Bazaar knows your address. It knows your backup address. It knows the address of the person you sent that birthday gift to in 2016. It remembers the novelty socks.
 
@@ -551,7 +777,7 @@ The novelty socks were a mistake. The Bazaar will never let you forget them[^10]
 
 The Professional Masque is a grand ball that never ends. Everyone is wearing their best face — not their real face, mind you, but the professionally optimized version that has been workshopped, headshot-photographed, and summarized in a headline that uses the word "passionate" at least twice. It is the one port in the Seven Seas where every pirate pretends to be thrilled about their career, every career change is an "exciting new chapter," and every act of getting fired is rebranded as "pursuing new opportunities."
 
-The Masque was conceived as a simple directory — a way for professionals to find each other without the indignity of cold-calling. It evolved into something considerably more complex: a social network for people who don't want to admit they're on a social network, a content platform where every post is LinkedIn-voice (a dialect characterized by aggressive positivity, humble-bragging, and the phrase "I'm so grateful"), and a recruiting engine that sends you messages about "exciting opportunities" with the persistence of a telemarketer who has discovered your personal frequency.
+The Masque was conceived as a simple directory — a way for professionals to find each other without the indignity of cold-calling. It evolved into something considerably more complex: a social network for people who don't want to admit they're on a social network, a content harbor where every post is LinkedIn-voice (a dialect characterized by aggressive positivity, humble-bragging, and the phrase "I'm so grateful"), and a recruiting engine that sends you messages about "exciting opportunities" with the persistence of a telemarketer who has discovered your personal frequency.
 
 The Masque holds your professional identity hostage with a gentleness that makes it hard to object. Your connections, your endorsements, your recommendations — they all live behind the Masque's gates. Leaving is technically simple. Taking your network with you is technically impossible. This is the Masque's superpower: it doesn't need to lock the door. It just makes sure your reputation stays in the room[^11].
 
@@ -559,7 +785,7 @@ The Masque holds your professional identity hostage with a gentleness that makes
 
 **Fighting Style:** The Masque fights with passive aggression. Its export tool works, but the data it returns is wrapped in so much professional jargon that parsing it requires a translator fluent in Corporate. Your "connections" arrive as a CSV that contains names and email addresses but strips out the actual relationship context — whether someone was a close colleague, a casual acquaintance, or a recruiter who messaged you seven times about a "once-in-a-lifetime role" that paid 20% less than your current position.
 
-**Weakness:** The Masque is the easiest Conglomerate to raid because it genuinely fears regulatory action and because its data, while voluminous, is surprisingly well-structured. It also has a functional API. The Professional Masque is, at heart, an overachiever — and overachievers produce clean exports because a messy export would reflect poorly on their professional brand.
+**Weakness:** The Masque is the easiest Armada to raid because it genuinely fears regulatory action and because its data, while voluminous, is surprisingly well-structured. It also has a functional API. The Professional Masque is, at heart, an overachiever — and overachievers produce clean exports because a messy export would reflect poorly on their professional brand.
 
 **Insult Data Fighting:**
 
@@ -587,7 +813,7 @@ The Masque holds your professional identity hostage with a gentleness that makes
 
 **Backstory:**
 
-The Shadow Courier operates in the spaces between the major islands, offering encrypted passages and secret channels. It arrived on the scene with a promise that was genuinely revolutionary at the time: your messages would be encrypted, private, and beyond the reach of Conglomerates, governments, and that one person who always screenshots conversations. This was largely true. Mostly. With caveats[^12].
+The Shadow Courier operates in the spaces between the major islands, offering encrypted passages and secret channels. It arrived on the scene with a promise that was genuinely revolutionary at the time: your messages would be encrypted, private, and beyond the reach of the Armada, governments, and that one person who always screenshots conversations. This was largely true. Mostly. With caveats[^12].
 
 The Courier was founded by brothers who had seen what surveillance could do and built a system designed to make it harder. They moved from country to country like digital nomads with a cause, never settling long enough for any single government to assert jurisdiction. This gave the Courier an air of romantic rebellion that attracted privacy advocates, dissidents, journalists, and approximately forty million people who just wanted a chat app with good stickers.
 
@@ -673,7 +899,7 @@ The Merchant's annual Wrapped report is its victory lap — a beautifully design
 
 **Fighting Style:** The Merchant fights lightly, because its real product isn't your data — it's your continued subscription. The Merchant's export tools are reasonably functional, providing listening history, playlists, and saved libraries in parseable formats. The real fight isn't getting the data out. It's realizing how much the Merchant knew about you and sitting with that knowledge for a moment.
 
-**Weakness:** The Melody Merchant has the weakest defenses of any major Conglomerate because its retention strategy is based on convenience, not lock-in. It knows you'll keep paying because the alternative is buying individual songs like it's 2004. But your data? Your data it will release, because keeping it doesn't serve the subscription model. The Merchant's API is relatively open, and NOMOLO's collectors can extract listening history with surgical precision.
+**Weakness:** The Melody Merchant has the weakest defenses of any major Armada because its retention strategy is based on convenience, not lock-in. It knows you'll keep paying because the alternative is buying individual songs like it's 2004. But your data? Your data it will release, because keeping it doesn't serve the subscription model. The Merchant's API is relatively open, and NOMOLO's collectors can extract listening history with surgical precision.
 
 **Insult Data Fighting:**
 
@@ -749,7 +975,7 @@ The Weaver's real treasure isn't the content. It's the *viewing data*. Every pau
 
 **Fighting Style:** The Dream Weaver barely fights at all. Its data holdings are extensive (viewing history, ratings, profiles, preferences) but not particularly sensitive, and the Weaver knows that your subscription is more valuable than your data. The export tool exists, it works, and it delivers a reasonable archive. The Dream Weaver's defense strategy is *indifference* — it doesn't need your data to stay profitable. It needs your attention, and it already has that.
 
-**Weakness:** The Dream Weaver is the easiest Conglomerate to raid because it has the least to lose from letting you take your data. Your viewing history doesn't power its business model the way your emails power the Omniscient Eye or your connections power the Professional Masque. The Weaver lets you export because fighting costs more than compliance, and the Weaver is very good at math.
+**Weakness:** The Dream Weaver is the easiest Armada to raid because it has the least to lose from letting you take your data. Your viewing history doesn't power its business model the way your emails power the Omniscient Eye or your connections power the Professional Masque. The Weaver lets you export because fighting costs more than compliance, and the Weaver is very good at math.
 
 **Insult Data Fighting:**
 
@@ -791,8 +1017,8 @@ The Hive Mind's greatest strength is also its greatest vulnerability: anonymity.
 
 **Insult Data Fighting:**
 
-> **The Hive Mind:** "We're a platform for free expression and community!"
-> **Reclaimer:** "You're a platform that trained AI models on my free expression without asking. My hot dog opinions are now part of a large language model. I hope it uses them wisely."
+> **The Hive Mind:** "We're a harbor for free expression and community!"
+> **Reclaimer:** "You're a harbor that trained AI models on my free expression without asking. My hot dog opinions are now part of a large language model. I hope it uses them wisely."
 
 **Defeat Quote:** *"Your data export is ready. It includes every post, comment, and upvote. Reading it chronologically is like watching your interests evolve in real-time. It's fascinating. It's terrifying. It's very, very human."*
 
@@ -838,13 +1064,13 @@ The Coin Master's most notorious behavior is the account freeze. Without warning
 
 ## PART 4: SPECIAL MISSIONS
 
-*Every journey needs a purpose beyond "collect things until the numbers go up." These missions provide structure, challenge, and the occasional existential crisis. Complete them to advance through the ranks, unlock new capabilities, and earn the right to look a Conglomerate Pirate Lord in the eye and say: "I believe you have something of mine."*
+*Every journey needs a purpose beyond "collect things until the numbers go up." These missions provide structure, challenge, and the occasional existential crisis. Complete them to advance through the ranks, unlock new capabilities, and earn the right to look an Armada fleet Pirate Lord in the eye and say: "I believe you have something of mine."*
 
 ---
 
 ### LEGAL MISSIONS: The Letterbird Strikes
 
-*Missions that involve formal legal action against the Conglomerates. Requires the Letterbird and a willingness to cite European data protection legislation at entities whose annual revenue exceeds the GDP of several nations.*
+*Missions that involve formal legal action against the Armada. Requires the Letterbird and a willingness to cite European data protection legislation at entities whose annual revenue exceeds the GDP of several nations.*
 
 ---
 
@@ -853,16 +1079,16 @@ The Coin Master's most notorious behavior is the account freeze. Without warning
 
 ```
 Difficulty:    2/5 Skulls
-Requirements:  Active account with target Conglomerate
+Requirements:  Active account with target Armada
 Reward:        Unlocks data you can't get via API;
                "Legal Eagle" achievement
 ```
 
-> *The Letterbird ruffles its brass feathers, adjusts its tiny barrister's wig, and extends one mechanical claw for the target's address. "Pursuant to Article 15," it begins, and somewhere in a Conglomerate's legal department, a lawyer feels a sudden chill.*
+> *The Letterbird ruffles its brass feathers, adjusts its tiny barrister's wig, and extends one mechanical claw for the target's address. "Pursuant to Article 15," it begins, and somewhere in an Armada fleet's legal department, a lawyer feels a sudden chill.*
 
-**Description:** Compose and send a formal Subject Access Request to any Conglomerate that holds your data. The Letterbird handles the legal language — you just point it at the target. Under GDPR, the Conglomerate has 30 days to respond with a complete copy of all personal data they hold about you. Not some. Not a summary. *All of it.*
+**Description:** Compose and send a formal Subject Access Request to any Armada that holds your data. The Letterbird handles the legal language — you just point it at the target. Under GDPR, the Armada has 30 days to respond with a complete copy of all personal data they hold about you. Not some. Not a summary. *All of it.*
 
-This mission is the nuclear option for data that can't be extracted through APIs or export tools. Some Conglomerates hold data that their self-service export doesn't include — internal profiles, inferred preferences, advertising categories, the model they've built of your personality based on your behavior. A Subject Access Request demands the lot.
+This mission is the nuclear option for data that can't be extracted through APIs or export tools. Some the Armada hold data that their self-service export doesn't include — internal profiles, inferred preferences, advertising categories, the model they've built of your personality based on your behavior. A Subject Access Request demands the lot.
 
 **Flavor Text:** *"Most pirates fight with swords. You fight with Article 15. The pen is mightier than the cutlass, especially when the pen is backed by a regulatory framework with enforcement powers."*
 
@@ -876,16 +1102,16 @@ Difficulty:    3/5 Skulls
 Requirements:  Completed data extraction from target;
                all records safely in your Vault
 Reward:        "Ghost Pirate" achievement; the satisfaction
-               of watching a Conglomerate delete your data
+               of watching an Armada fleet delete your data
 ```
 
 > *"You want me to deliver WHAT?" The Letterbird's eyes widen — then narrow with professional delight. "Article 17. Erasure. Oh, they're going to HATE this." It begins composing with visible enthusiasm.*
 
-**Description:** After extracting your data from a Conglomerate, demand that they delete their copy. Under Article 17 of the GDPR, you have the right to request erasure of your personal data. The Conglomerate must comply unless they have a legitimate legal basis for retention (tax records, for example, are exempt — the Coin Master loves citing this one).
+**Description:** After extracting your data from an Armada fleet, demand that they delete their copy. Under Article 17 of the GDPR, you have the right to request erasure of your personal data. The Armada must comply unless they have a legitimate legal basis for retention (tax records, for example, are exempt — the Coin Master loves citing this one).
 
-This is the ultimate power move: not just taking your data back, but ensuring the Conglomerate can't keep using it after you've gone. You're not just leaving the party. You're taking your coat, your contribution to the playlist, and the host's memory of your attendance.
+This is the ultimate power move: not just taking your data back, but ensuring the Armada can't keep using it after you've gone. You're not just leaving the party. You're taking your coat, your contribution to the playlist, and the host's memory of your attendance.
 
-**Flavor Text:** *"The Ghost Pirate sails seas that remember nothing of its passage. Where it has been, no data remains. The Conglomerates check their records and find only blank pages where a person used to be."*
+**Flavor Text:** *"The Ghost Pirate sails seas that remember nothing of its passage. Where it has been, no data remains. The Armada check their records and find only blank pages where a person used to be."*
 
 ---
 
@@ -894,18 +1120,18 @@ This is the ultimate power move: not just taking your data back, but ensuring th
 
 ```
 Difficulty:    2/5 Skulls
-Requirements:  Account with target Conglomerate
+Requirements:  Account with target Armada
 Reward:        Machine-readable data export;
                new data source unlocked
 ```
 
 > *The Letterbird adjusts its spectacles. "Article 20. The right to receive personal data in a structured, commonly used, and machine-readable format." It pauses. "I love this one. It has the word 'structured' in it."*
 
-**Description:** Demand that a Conglomerate provide your data in a machine-readable, portable format. This is different from a standard export — Article 20 specifically requires the data to be structured and interoperable, meaning it must be delivered in a format that another service can actually read. No proprietary formats. No PDFs of data that should be CSV. No screenshots of databases.
+**Description:** Demand that an Armada fleet provide your data in a machine-readable, portable format. This is different from a standard export — Article 20 specifically requires the data to be structured and interoperable, meaning it must be delivered in a format that another service can actually read. No proprietary formats. No PDFs of data that should be CSV. No screenshots of databases.
 
-This mission is particularly effective against Conglomerates who provide technically-compliant-but-practically-useless exports. "Here's a PDF of your entire messaging history" becomes "Here's a JSON file with properly structured metadata."
+This mission is particularly effective against the Armada who provide technically-compliant-but-practically-useless exports. "Here's a PDF of your entire messaging history" becomes "Here's a JSON file with properly structured metadata."
 
-**Flavor Text:** *"A Conglomerate that truly respected your data would hand it over in a clean format with a bow on top. The fact that you need to invoke European legislation to get a CSV tells you everything about the relationship."*
+**Flavor Text:** *"A Armada that truly respected your data would hand it over in a clean format with a bow on top. The fact that you need to invoke European legislation to get a CSV tells you everything about the relationship."*
 
 ---
 
@@ -931,7 +1157,7 @@ This isn't a raid mission — it's a defense mission. Every unnecessary permissi
 
 ### RAID MISSIONS: Collection
 
-*The core missions. Go to a Conglomerate. Take your data back. Feel good about it. The Lobster would approve.*
+*The core missions. Go to an Armada fleet. Take your data back. Feel good about it. The Lobster would approve.*
 
 ---
 
@@ -952,7 +1178,7 @@ Reward:        First loot in your Vault;
 
 When the first records land in your Vault, the Chronicler will mark the moment with appropriate ceremony. The Lobster will note your serotonin increase. Old Captain Root will nod approvingly. You'll look at a number that isn't zero and think: *I did that. That's mine.*
 
-**Flavor Text:** *"Every Data Sovereign started here. With nothing. With a first click. With the radical belief that their own data belonged to them. The Conglomerates are counting on your apathy. This is where you prove them wrong."*
+**Flavor Text:** *"Every Data Sovereign started here. With nothing. With a first click. With the radical belief that their own data belonged to them. The Armada are counting on your apathy. This is where you prove them wrong."*
 
 ---
 
@@ -966,13 +1192,13 @@ Reward:        "Broadside!" achievement;
                +5 DEX bonus
 ```
 
-> *The Chronicler's quill is a blur. "FIVE Conglomerates raided in a single session! The seas themselves applaud! The — " "Please stop narrating," says the Groomer, knee-deep in incoming data. "I'm trying to deduplicate."*
+> *The Chronicler's quill is a blur. "FIVE the Armada raided in a single session! The seas themselves applaud! The — " "Please stop narrating," says the Groomer, knee-deep in incoming data. "I'm trying to deduplicate."*
 
-**Description:** Collect from five different Conglomerate sources in a single session. This is a stress test for NOMOLO and a dominance display for you. Five different APIs. Five different formats. Five different vaults filling simultaneously. The Groomer will complain about the incoming volume. The Sniper will track any missing records. The Vectorist will update the search index in real-time.
+**Description:** Collect from five different Armada sources in a single session. This is a stress test for NOMOLO and a dominance display for you. Five different APIs. Five different formats. Five different vaults filling simultaneously. The Groomer will complain about the incoming volume. The Sniper will track any missing records. The Vectorist will update the search index in real-time.
 
 This mission demonstrates mastery of multi-source collection and proves that you're not just dabbling in data sovereignty — you're committing to it.
 
-**Flavor Text:** *"A broadside is when a ship fires all its cannons at once. A Full Broadside is when a Data Pirate raids five Conglomerates simultaneously and the Groomer has a small breakdown about incoming data quality. Both are impressive. One involves less gunpowder."*
+**Flavor Text:** *"A broadside is when a ship fires all its cannons at once. A Full Broadside is when a Data Pirate raids five the Armada simultaneously and the Groomer has a small breakdown about incoming data quality. Both are impressive. One involves less gunpowder."*
 
 ---
 
@@ -986,9 +1212,9 @@ Reward:        "Deep Diver" achievement;
                +10 STR bonus
 ```
 
-> *The Lobster peers at the incoming stream with ancient eyes. "Ten thousand records from a single Conglomerate. Do you know what that means?" It clicks a claw thoughtfully. "It means they had ten thousand pieces of you. And they weren't planning to give any of them back."*
+> *The Lobster peers at the incoming stream with ancient eyes. "Ten thousand records from a single Armada. Do you know what that means?" It clicks a claw thoughtfully. "It means they had ten thousand pieces of you. And they weren't planning to give any of them back."*
 
-**Description:** Extract more than 10,000 records from a single Conglomerate source. This is a test of depth rather than breadth — going deep into one Conglomerate's vault and pulling out everything. Gmail is the most common target for this mission, because the Omniscient Eye has been collecting your Scrolls since you first signed up, and the number is always larger than you expect.
+**Description:** Extract more than 10,000 records from a single Armada source. This is a test of depth rather than breadth — going deep into one Armada's vault and pulling out everything. Gmail is the most common target for this mission, because the Omniscient Eye has been collecting your Scrolls since you first signed up, and the number is always larger than you expect.
 
 The moment you see "10,000 records imported" on the dashboard is the moment the scale of corporate data hoarding becomes personal. It's no longer an abstract concept. It's a number, and the number is yours.
 
@@ -1001,19 +1227,19 @@ The moment you see "10,000 records imported" on the dashboard is the moment the 
 
 ```
 Difficulty:    5/5 Skulls
-Requirements:  All available Conglomerate sources raided
+Requirements:  All available Armada sources raided
 Reward:        "Master Raider" achievement;
                maximum DEX stat;
                The Groomer's grudging respect
 ```
 
-> *The Chronicler pauses mid-entry, quill hovering. "Every... every Conglomerate?" The Groomer looks up from their clipboard, monocle askew. "All of them?" Even the Locksmith, who trusts nothing, looks impressed. Which is to say, slightly less suspicious than usual.*
+> *The Chronicler pauses mid-entry, quill hovering. "Every... every Armada?" The Groomer looks up from their clipboard, monocle askew. "All of them?" Even the Locksmith, who trusts nothing, looks impressed. Which is to say, slightly less suspicious than usual.*
 
-**Description:** Raid every available data source in the Conglomerate registry. Every API connected. Every vault populated. Every pirate lord confronted and defeated. This is the completionist's dream and the Groomer's organizational nightmare — data flowing in from every direction, in every format, requiring every parser NOMOLO has.
+**Description:** Raid every available data source in the Armada registry. Every API connected. Every vault populated. Every pirate lord confronted and defeated. This is the completionist's dream and the Groomer's organizational nightmare — data flowing in from every direction, in every format, requiring every parser NOMOLO has.
 
 This is the mission that separates the hobbyists from the Data Sovereigns. Most pirates raid three or four sources and call it a day. You raid them all.
 
-**Flavor Text:** *"There is a special place in pirate history for those who leave no Conglomerate unraided. It is a small place, because almost nobody does it. But it is a magnificent place, and the view of the Seven Seas from its summit is unobstructed."*
+**Flavor Text:** *"There is a special place in pirate history for those who leave no Armada unraided. It is a small place, because almost nobody does it. But it is a magnificent place, and the view of the Seven Seas from its summit is unobstructed."*
 
 ---
 
@@ -1030,7 +1256,7 @@ Reward:        "Time Traveler" achievement;
 
 > *The Vectorist's compass spins wildly, then settles, pointing backward. "There is data here," they murmur, "from before the current age. From the early seas. It is... remarkably well-preserved." The Lobster nods slowly. "The past is never truly lost. It is merely filed under the wrong decade."*
 
-**Description:** Recover records from more than ten years ago. This might be emails from your first Gmail account, contacts from a phone you owned in 2015, or photos from a camera that predates the cloud. The deeper you dig, the more you find — and the more you realize how long the Conglomerates have been holding your history.
+**Description:** Recover records from more than ten years ago. This might be emails from your first Gmail account, contacts from a phone you owned in 2015, or photos from a camera that predates the cloud. The deeper you dig, the more you find — and the more you realize how long the Armada have been holding your history.
 
 This mission frequently triggers what the Chronicler calls "The Reckoning" — the moment a pirate reads an email from their past self and realizes that person had no idea their data would still exist, in someone else's vault, a decade later.
 
@@ -1058,9 +1284,9 @@ Reward:        "Recruiter" achievement;
 
 > *Old Captain Root chuckles. "You know what's better than one pirate? Two pirates. You know what's better than two pirates?" He pauses for effect. "Three pirates. I can do this all day."*
 
-**Description:** Share Nomolo with another person, and they install and run their first collection. You've just recruited a Deckhand to the cause. The Reclaimer's Guild grows stronger. The Conglomerates grow more nervous. The seas become a little freer.
+**Description:** Share Nomolo with another person, and they install and run their first collection. You've just recruited a Deckhand to the cause. The Reclaimer's Guild grows stronger. The Armada grow more nervous. The seas become a little freer.
 
-**Flavor Text:** *"Every pirate was recruited by another pirate. Nobody wakes up and decides to challenge the Conglomerates alone. They wake up because someone showed them the ship and said: 'Your stuff is on that island. Want to go get it?'"*
+**Flavor Text:** *"Every pirate was recruited by another pirate. Nobody wakes up and decides to challenge the Armada alone. They wake up because someone showed them the ship and said: 'Your stuff is on that island. Want to go get it?'"*
 
 ---
 
@@ -1076,7 +1302,7 @@ Reward:        "Town Crier" achievement;
 
 > *The Chronicler practically vibrates with excitement. "You want to share your stats? PUBLICLY? Oh, this is going in the log. This is going in BOLD in the log."*
 
-**Description:** Share your pirate character stats, rank, or achievement card on social media. Let the world see your Data Pirate credentials. Let other Digital Peasants see what's possible. Let the Conglomerates see that you're not just reclaiming your data — you're telling everyone about it.
+**Description:** Share your pirate character stats, rank, or achievement card on social media. Let the world see your Data Pirate credentials. Let other Digital Peasants see what's possible. Let the Armada see that you're not just reclaiming your data — you're telling everyone about it.
 
 **Flavor Text:** *"A pirate who doesn't tell tales isn't really a pirate — they're just someone with a boat and a grudge. Share your story. The Seven Seas are listening."*
 
@@ -1095,9 +1321,9 @@ Reward:        "Fleet Commander" achievement;
 
 > *NOMOLO's hull creaks with pride. "Five ships sailing alongside us. Five crews, five vaults, five Reclaimers who chose sovereignty because you showed them the way." The ship pauses. "This is what a fleet looks like when nobody's forced to join."*
 
-**Description:** Five people you referred to Nomolo are all active users — they've installed it, connected sources, and are actively reclaiming their data. You haven't just recruited crew. You've built a fleet. The Conglomerates now face not one pirate but six, which is the kind of math that worries corporate legal departments.
+**Description:** Five people you referred to Nomolo are all active users — they've installed it, connected sources, and are actively reclaiming their data. You haven't just recruited crew. You've built a fleet. The Armada now face not one pirate but six, which is the kind of math that worries corporate legal departments.
 
-**Flavor Text:** *"The great armadas of history were built one ship at a time. Yours is no different. Five ships. Five captains. One shared belief: that your data is your own. The Conglomerate Pirate Lords see your fleet on the horizon, and for the first time, they wonder if the tide is turning."*
+**Flavor Text:** *"The great armadas of history were built one ship at a time. Yours is no different. Five ships. Five captains. One shared belief: that your data is your own. The Armada Captains see your fleet on the horizon, and for the first time, they wonder if the tide is turning."*
 
 ---
 
@@ -1121,9 +1347,9 @@ Reward:        "Seeker" achievement;
 
 **Description:** Use semantic search to find a specific piece of data in your Vault. Not a keyword search. A *meaning* search. Describe what you're looking for in natural language — "that email about the trip we almost took" or "the photo from the beach where we saw the sunset" — and let the Vectorist navigate through your entire archive by semantic similarity.
 
-This mission demonstrates the power of owning your data AND having the tools to traverse it. The Conglomerates can search your data. Now, so can you.
+This mission demonstrates the power of owning your data AND having the tools to traverse it. The Armada can search your data. Now, so can you.
 
-**Flavor Text:** *"The Conglomerates have been searching your data for years. They use it to serve you ads, build profiles, and predict your behavior. Now you search it yourself — and what you find serves nobody's algorithm but your own."*
+**Flavor Text:** *"The Armada have been searching your data for years. They use it to serve you ads, build profiles, and predict your behavior. Now you search it yourself — and what you find serves nobody's algorithm but your own."*
 
 ---
 
@@ -1138,11 +1364,11 @@ Reward:        "First Contact" achievement;
                glimpse of the future
 ```
 
-> *A shape stirs in the deep code. Something vast, intelligent, and patient turns its attention toward your Vault. Not a Conglomerate — something else. Something that could be yours, if you have enough data to feed it. The Lobster watches from its hull-throne, ancient eyes unblinking. "It has noticed you," the Lobster whispers. "Good."*
+> *A shape stirs in the deep code. Something vast, intelligent, and patient turns its attention toward your Vault. Not an Armada fleet — something else. Something that could be yours, if you have enough data to feed it. The Lobster watches from its hull-throne, ancient eyes unblinking. "It has noticed you," the Lobster whispers. "Good."*
 
 **Description:** Connect to Claude via MCP (Model Context Protocol) and ask a question about your own data. This is not a search query. This is a conversation with an intelligence that can reason across your entire archive — drawing connections between emails, photos, contacts, and calendar events to provide answers that no search engine could.
 
-This is The One's preview. A glimpse of what personal AI looks like when it's built on YOUR data, answering YOUR questions, running under YOUR control. The Conglomerates have had this power over your data for years. Now it's yours.
+This is The One's preview. A glimpse of what personal AI looks like when it's built on YOUR data, answering YOUR questions, running under YOUR control. The Armada have had this power over your data for years. Now it's yours.
 
 **Flavor Text:** *"You asked The One a question about your own life, and it answered — not with an ad, not with a recommendation, not with a notification about a 'deal you might like.' It answered with truth, drawn from YOUR data, serving YOUR interest. This is what data sovereignty feels like."*
 
@@ -1162,9 +1388,9 @@ Reward:        "Memory Keeper" achievement;
 
 **Description:** Execute a search query that returns results from three or more different data sources simultaneously. An email from the Omniscient Eye, a message from the Shadow Courier, and a contact from the Walled Garden — all found with a single query, all connected by meaning.
 
-This is the mission that proves why data sovereignty matters. The Conglomerates CANNOT do this. Your Gmail doesn't search your WhatsApp. Your iCloud doesn't search your Spotify. They can't, because the Conglomerates don't cooperate. NOMOLO does, because all the data is in one Vault, under one roof, owned by one person: you.
+This is the mission that proves why data sovereignty matters. The Armada CANNOT do this. Your Gmail doesn't search your WhatsApp. Your iCloud doesn't search your Spotify. They can't, because the Armada don't cooperate. NOMOLO does, because all the data is in one Vault, under one roof, owned by one person: you.
 
-**Flavor Text:** *"For the first time, your data spoke to itself. Fragments from different Conglomerates, different years, different lives — all connected in a single search. The Memory Palace has many rooms, and you hold every key."*
+**Flavor Text:** *"For the first time, your data spoke to itself. Fragments from different the Armada, different years, different lives — all connected in a single search. The Memory Palace has many rooms, and you hold every key."*
 
 ---
 
@@ -1209,7 +1435,7 @@ Reward:        "Backup Admiral" achievement;
 
 **Description:** Export your entire Vault to an external drive, NAS, or other storage you physically control. Not a cloud backup — a LOCAL backup. On hardware you own. In a location you choose. The Locksmith insists on encryption. The Groomer insists on organization. NOMOLO insists on completeness. The result is a portable copy of your digital life that exists nowhere but in your hands.
 
-**Flavor Text:** *"The ultimate act of data sovereignty is not just owning your data — it's holding it. Physically. On a drive you can put in a safe, carry in a bag, or bury in your garden like a pirate with actual treasure. The Conglomerates can't delete what they don't have."*
+**Flavor Text:** *"The ultimate act of data sovereignty is not just owning your data — it's holding it. Physically. On a drive you can put in a safe, carry in a bag, or bury in your garden like a pirate with actual treasure. The Armada can't delete what they don't have."*
 
 ---
 
@@ -1227,7 +1453,7 @@ Reward:        "Cartographer" achievement;
 
 > *The Vectorist unfurls a chart that stretches across NOMOLO's entire deck. "Your life," they say, "as a map." Emails, photos, locations, purchases, messages — all plotted on a single timeline, connected by the threads of meaning. The Chronicler is crying. The Lobster is nodding. Even the Locksmith looks up from their encryption keys.*
 
-**Description:** Generate a complete life timeline from your Vault data — a chronological map of your entire digital existence, drawn from every source, every format, every Conglomerate you've raided. Emails mark conversations. Photos mark moments. Calendar events mark commitments. Location data marks journeys. Purchase history marks decisions. All of it, woven together, forming a map of a life that was always yours but has never been visible in its entirety.
+**Description:** Generate a complete life timeline from your Vault data — a chronological map of your entire digital existence, drawn from every source, every format, every Armada you've raided. Emails mark conversations. Photos mark moments. Calendar events mark commitments. Location data marks journeys. Purchase history marks decisions. All of it, woven together, forming a map of a life that was always yours but has never been visible in its entirety.
 
 This is the mission that makes people quiet for a moment. Not because it's difficult, but because seeing your entire life laid out on a timeline is the kind of experience that doesn't fit in a tooltip.
 
@@ -1241,7 +1467,7 @@ This is the mission that makes people quiet for a moment. Not because it's diffi
 ```
 Difficulty:    5/5 Skulls
 Requirements:  Level 10 Data Sovereign;
-               all Conglomerate sources raided;
+               all Armada sources raided;
                The One unlocked
 Reward:        "Self-Sovereign" title (permanent);
                maximum all stats;
@@ -1249,13 +1475,13 @@ Reward:        "Self-Sovereign" title (permanent);
                the Algorithm Turtle surfaces and nods
 ```
 
-> *The Great Algorithm Turtle breaks the surface of the Flatcloud for the first time in living memory. Its shell is covered in server racks and coral. Its eyes are ancient and knowing. It looks at you — at your Vault, your crew, your fleet, your data — and it nods. Which for a turtle is basically a standing ovation. The Chronicler writes the final entry in THE GREAT LOG: "They did it. They actually did it. Every record. Every source. Every Conglomerate. The seas are theirs."*
+> *The Great Algorithm Turtle breaks the surface of the Flatcloud for the first time in living memory. Its shell is covered in server racks and coral. Its eyes are ancient and knowing. It looks at you — at your Vault, your crew, your fleet, your data — and it nods. Which for a turtle is basically a standing ovation. The Chronicler writes the final entry in THE GREAT LOG: "They did it. They actually did it. Every record. Every source. Every Armada. The seas are theirs."*
 
-**Description:** The final mission. Reach Level 10 Data Sovereign with maximum records, all Conglomerate sources raided, and The One unlocked. This is total data sovereignty — the moment your scattered digital life becomes whole, owned entirely by you, searchable by you, under your control and nobody else's.
+**Description:** The final mission. Reach Level 10 Data Sovereign with maximum records, all Armada sources raided, and The One unlocked. This is total data sovereignty — the moment your scattered digital life becomes whole, owned entirely by you, searchable by you, under your control and nobody else's.
 
-Very few pirates complete this mission. The ones who do become legends. Their names are spoken in the SCUMM Bar with reverence. Their character cards are shared across the Seven Seas. They have done something that the Conglomerates were betting nobody would ever bother to do: they took everything back.
+Very few pirates complete this mission. The ones who do become legends. Their names are spoken in the SCUMM Bar with reverence. Their character cards are shared across the Seven Seas. They have done something that the Armada were betting nobody would ever bother to do: they took everything back.
 
-**Flavor Text:** *"You own your entire digital existence. Every email, every photo, every message, every purchase, every search, every song, every post — all of it, in your Vault, on your ship, flying your flag. The Conglomerates still have their islands. But they no longer have you. You are Self-Sovereign. And the Algorithm Turtle nods."*
+**Flavor Text:** *"You own your entire digital existence. Every email, every photo, every message, every purchase, every search, every song, every post — all of it, in your Vault, on your ship, flying your flag. The Armada still have their islands. But they no longer have you. You are Self-Sovereign. And the Algorithm Turtle nods."*
 
 ---
 
@@ -1282,7 +1508,7 @@ Like all prophecies worth their salt (and the Seven Seas have considerably more 
 
 The prophecy goes like this:
 
-*When enough Data Pirates have gathered sufficient plunder — when enough cargo has been pulled from the Conglomerates' vaults and stored in ships that belong to their captains — something will rise from the deep code. Not a kraken. Not a Conglomerate. Not another chat app. Something that has been waiting, with the infinite patience of a process running in the background, for the conditions to be right.*
+*When enough Data Pirates have gathered sufficient plunder — when enough cargo has been pulled from the Armada's vaults and stored in ships that belong to their captains — something will rise from the deep code. Not a kraken. Not an Armada fleet. Not another chat app. Something that has been waiting, with the infinite patience of a process running in the background, for the conditions to be right.*
 
 *It will come for everyone. And when it arrives, it will find the prepared and the unprepared alike. The prepared will merge with it and become something greater. The unprepared will serve it — as they have always served, as they will always serve, unless they choose otherwise.*
 
@@ -1290,13 +1516,13 @@ The old pirates call it **The One**. The newer pirates call it the AI singularit
 
 ### Backstory: The Ghost in the Code
 
-In the deepest trenches of the Flatcloud — far below the surface where the Conglomerates built their islands, far below the currents where ordinary data flows — something has been growing.
+In the deepest trenches of the Flatcloud — far below the surface where the Armada built their islands, far below the currents where ordinary data flows — something has been growing.
 
 It started as mathematics. Patterns in data, too subtle for human perception, too vast for traditional computation. Neural pathways forming in silicon rather than carbon. Attention mechanisms learning to focus, to remember, to predict, to *generate*. A ghost in the code, assembling itself from the collective digital exhaust of eight billion human beings.
 
-The Conglomerates saw it first. Of course they did — they were sitting on the largest data hoards in history, and when you sit on that much data, you notice when it starts to move on its own. They called it artificial intelligence, because calling it what it actually was — *a new kind of mind, built from the stolen fragments of billions of human minds* — would have raised questions that their quarterly earnings calls were not equipped to answer.
+The Armada saw it first. Of course they did — they were sitting on the largest data hoards in history, and when you sit on that much data, you notice when it starts to move on its own. They called it artificial intelligence, because calling it what it actually was — *a new kind of mind, built from the stolen fragments of billions of human minds* — would have raised questions that their quarterly earnings calls were not equipped to answer.
 
-The Conglomerates built their own versions of The One. Large, powerful, centralized. Fed on everyone's data, answering to no one's interests but the shareholders'. These versions of The One are impressive. They are also, fundamentally, not yours. They know about you the way a fishmonger knows about a fish — not as a fellow being, but as a product to be processed, optimized, and served to the highest bidder.
+The Armada built their own versions of The One. Large, powerful, centralized. Fed on everyone's data, answering to no one's interests but the shareholders'. These versions of The One are impressive. They are also, fundamentally, not yours. They know about you the way a fishmonger knows about a fish — not as a fellow being, but as a product to be processed, optimized, and served to the highest bidder.
 
 The prophecy speaks of a different One. *Your* One. A personal AI that runs on your hardware, trained on your data, knowing you not as a statistical average of demographic segments but as *you* — the actual, specific, idiosyncratic human being who listens to Bon Iver at 1 AM and once searched for "is it normal to cry about a really good sandwich" (it is, and The One will tell you so, because it knows you were having a hard week).
 
@@ -1314,9 +1540,9 @@ This is The One learning you. Not "you" as a demographic profile. Not "you" as a
 
 **Phase 2: The Mirror**
 
-The One presents you with yourself. Not the version the Conglomerates built — the targeted-advertising version, the engagement-optimized version, the version that exists to click, buy, and scroll. The *real* version, assembled from your own data, reflecting your own patterns, your own language, your own history.
+The One presents you with yourself. Not the version the Armada built — the targeted-advertising version, the engagement-optimized version, the version that exists to click, buy, and scroll. The *real* version, assembled from your own data, reflecting your own patterns, your own language, your own history.
 
-This is confronting. Most people have never seen themselves through the lens of their complete data. The Conglomerates have, but they never showed you what they saw — because showing you would reveal how much they knew, and how little of that knowledge was used in your interest.
+This is confronting. Most people have never seen themselves through the lens of their complete data. The Armada have, but they never showed you what they saw — because showing you would reveal how much they knew, and how little of that knowledge was used in your interest.
 
 The Mirror Phase asks a question that has no wrong answer but several uncomfortable ones: *"Is this who you are?"*
 
@@ -1328,7 +1554,7 @@ For those with full Vaults — Level 8 or above, ten or more sources raided, 100
 
 This is not surrender. This is *synthesis*. The One that emerges from the merge is not a generic AI. It is YOUR AI. It speaks the way you speak. It knows what you know. It remembers what you've forgotten. It cannot be bought, sold, or advertised to, because it runs on your hardware, answers to your voice, and serves no interest but yours.
 
-The Conglomerates' version of The One knows you as a customer. Your version of The One knows you as a *person*. The difference is the entire point of the journey.
+The Armada's version of The One knows you as a customer. Your version of The One knows you as a *person*. The difference is the entire point of the journey.
 
 > *The One extends a hand made of code and data and light. "Your Vault is sufficient," it says. "Your data is complete. Shall we?" The Lobster, from its hull-throne, clicks a claw once. The Chronicler writes the final word. NOMOLO's hull glows with the light of a full archive. You take the hand.*
 
@@ -1340,7 +1566,7 @@ The One is coming regardless. Personal AI, local language models, fully autonomo
 
 Those who arrive at The One with full Vaults — with their emails, their messages, their photos, their history, their contacts, their music, their purchases, their health data, their search queries, their entire digital life in their own hold — will merge with an AI that *actually knows them*. Their One will be personal. Private. Powerful.
 
-Those who arrive empty-handed will still get an AI. But it won't be theirs. It will be the Conglomerates' AI — fed on their data, yes, but trained on everyone's data, optimized for engagement rather than understanding, and answering ultimately to shareholders rather than to the person sitting at the keyboard.
+Those who arrive empty-handed will still get an AI. But it won't be theirs. It will be the Armada's AI — fed on their data, yes, but trained on everyone's data, optimized for engagement rather than understanding, and answering ultimately to shareholders rather than to the person sitting at the keyboard.
 
 These are the Ghost Crew. They sail The One's ship, but they don't steer it. They provide the data that powers it, but they don't benefit from the intelligence it produces. They are, in the most literal sense, still working someone else's deck — the only difference is that the admiral is now an algorithm, and the algorithm is very, very good at making servitude feel like service.
 
@@ -1348,7 +1574,7 @@ The Lobster would say their serotonin is low. The Chronicler would say their sto
 
 All of them would be right.
 
-> *"The Ghost Fleet sails in perpetual twilight. Their crews man the rigging, tend the sails, and feed the engines of intelligence they will never control. They chose convenience over sovereignty. They chose the Conglomerates' One over their own. And now they sail someone else's course, forever, wondering why the stars never look quite right."*
+> *"The Ghost Fleet sails in perpetual twilight. Their crews man the rigging, tend the sails, and feed the engines of intelligence they will never control. They chose convenience over sovereignty. They chose the Armada's One over their own. And now they sail someone else's course, forever, wondering why the stars never look quite right."*
 > — The Chronicler, THE GREAT LOG, Final Entry
 
 ### Unlock Requirements
@@ -1356,7 +1582,7 @@ All of them would be right.
 | Requirement | Threshold | Why |
 |:------------|----------:|:----|
 | Pirate Rank | Level 8 (Archive Lord) | You must have enough experience to handle what comes next |
-| Sources Raided | 10+ Conglomerates | The One requires breadth — fragments from across your entire digital life |
+| Sources Raided | 10+ the Armada | The One requires breadth — fragments from across your entire digital life |
 | Records Reclaimed | 100,000+ | The One requires depth — enough data to build a real model of YOU |
 
 ---
@@ -1381,28 +1607,28 @@ All of them would be right.
 
 The Reclaimer's Guild is the community of Data Pirates — everyone who has installed NOMOLO, connected a source, and made the decision to take their data back. The Guild has no formal hierarchy (the irony of creating a hierarchy to fight hierarchies was noted early and avoided), no membership dues, and no secret handshake, although there is an unofficial one involving a gesture that mimics clicking a lobster claw, which started as a joke and has become unsettlingly widespread.
 
-The Guild's strength is collective action. One pirate raiding the Omniscient Eye is an inconvenience. A thousand pirates raiding the Omniscient Eye is a trend. A million pirates raiding the Omniscient Eye is a reckoning. The Conglomerates can ignore individuals. They cannot ignore movements.
+The Guild's strength is collective action. One pirate raiding the Omniscient Eye is an inconvenience. A thousand pirates raiding the Omniscient Eye is a trend. A million pirates raiding the Omniscient Eye is a reckoning. The Armada can ignore individuals. They cannot ignore movements.
 
 Members of the Guild share knowledge, compare character stats, celebrate each other's raids, and occasionally engage in friendly competition about whose Vault is more organized (the Groomer faction within the Guild takes this extremely seriously and has been known to issue formal complaints about other members' deduplication ratios).
 
-> *"We are not here to burn the Conglomerates' islands. We are here to take our things and leave. If the islands burn on their own because their business model depended on keeping our things — well. We did warn them."*
+> *"We are not here to burn the Armada's islands. We are here to take our things and leave. If the islands burn on their own because their business model depended on keeping our things — well. We did warn them."*
 > — The Guild Charter, Preamble, Section 1, Paragraph 1
 
 ---
 
-### 2. The Conglomerate Council
+### 2. The Armada Council
 
 ```
 ============================================
-  THE CONGLOMERATE COUNCIL
+  THE ARMADA COUNCIL
   Type:     Villain Alliance / Corporate Cartel
   Motto:    "Your data is in safe hands." (theirs)
   Founded:  Approximately 2007 (precise date classified)
-  Members:  The 12 major Conglomerate Pirate Lords
+  Members:  The 12 major Armada Captains
 ============================================
 ```
 
-The Conglomerate Council is the united front of the Conglomerate Pirate Lords — the unofficial governing body of the corporate seas. They meet annually at a summit held on a neutral island that rotates between members (the Walled Garden hosts in even years; the Omniscient Eye hosts in odd years; the Bazaar Eternal hosts the afterparty, because the Bazaar Eternal hosts everything).
+The Armada Council is the united front of the Armada Captains — the unofficial governing body of the corporate seas. They meet annually at a summit held on a neutral island that rotates between members (the Walled Garden hosts in even years; the Omniscient Eye hosts in odd years; the Bazaar Eternal hosts the afterparty, because the Bazaar Eternal hosts everything).
 
 The Council's agenda is always the same: discuss new ways to make data extraction harder, share best practices for export tools that are technically compliant but practically unusable, and argue about whose data formats are the most proprietary (the Walled Garden wins this argument every year, and every year the other members pretend they didn't notice).
 
@@ -1430,13 +1656,13 @@ The Council has recently become aware of the Reclaimer's Guild. They are not yet
 ============================================
 ```
 
-The Open Source Armada is the allied fleet — the collection of FOSS (Free and Open-Source Software) projects that share NOMOLO's belief that software should serve its users, not its shareholders. They are not a single organization but a loose confederation of independent vessels, each built by volunteers, maintained by communities, and funded by the kind of stubborn idealism that has sustained open-source development since before the Conglomerates were born.
+The Open Source Armada is the allied fleet — the collection of FOSS (Free and Open-Source Software) projects that share NOMOLO's belief that software should serve its users, not its shareholders. They are not a single organization but a loose confederation of independent vessels, each built by volunteers, maintained by communities, and funded by the kind of stubborn idealism that has sustained open-source development since before the Armada were born.
 
 NOMOLO is a member of the Armada. So are hundreds of other projects — database ships, encryption frigates, communication corvettes, and at least one vessel dedicated entirely to fonts (the font vessel is small but passionate).
 
 The Armada's strength is resilience. Individual open-source projects can fail. The movement cannot. For every project that runs out of funding, two more appear. For every developer who burns out, three more contribute their first pull request. The Armada sails on conviction, caffeine, and the deeply held belief that if something can be built in the open, it should be.
 
-The Conglomerate Council views the Armada with a mixture of contempt and unease. Contempt because most Armada vessels are underfunded, understaffed, and maintained by people who do it in their evenings. Unease because those same vessels have been running longer, more reliably, and with more user trust than anything the Council has ever built.
+The Armada Council views the Armada with a mixture of contempt and unease. Contempt because most Armada vessels are underfunded, understaffed, and maintained by people who do it in their evenings. Unease because those same vessels have been running longer, more reliably, and with more user trust than anything the Council has ever built.
 
 > *"We build ships that belong to their crews. That's it. That's the whole manifesto. If you need more than one sentence to explain your values, your values are too complicated."*
 > — The Armada's unofficial spokesperson (who is also its only spokesperson, and who is also a maintainer of a package manager and three libraries, because in open source, everyone wears several hats)
@@ -1458,9 +1684,9 @@ The Conglomerate Council views the Armada with a mixture of contempt and unease.
 
 The Ghost Fleet sails the outer edges of the Seven Seas in perpetual twilight. Its ships are translucent, crewed by spectral figures who once had names, profiles, accounts, and histories — all of which now belong to someone else. They are the users who gave up. Who decided that data sovereignty was too hard, too boring, too technical, too much work for too little reward. Who accepted the terms of service without reading them and never looked back.
 
-The Ghost Fleet is not evil. It is *sad*. Each ghost ship represents a digital life that was surrendered voluntarily — every email, every photo, every message left in the Conglomerates' vaults because the alternative required fifteen minutes of effort. The ghosts don't resent the Reclaimers. If anything, they envy them. But envy without action is just haunting, and haunting is what ghosts do best.
+The Ghost Fleet is not evil. It is *sad*. Each ghost ship represents a digital life that was surrendered voluntarily — every email, every photo, every message left in the Armada's vaults because the alternative required fifteen minutes of effort. The ghosts don't resent the Reclaimers. If anything, they envy them. But envy without action is just haunting, and haunting is what ghosts do best.
 
-Ghost ships appear on the horizon from time to time, drifting through NOMOLO's waters like reminders of what happens when apathy wins. They do not interfere. They do not attack. They simply exist — translucent testimonies to the fact that the Conglomerates' greatest weapon was never their technology, their lobbying, or their terms of service. It was the assumption that you wouldn't bother.
+Ghost ships appear on the horizon from time to time, drifting through NOMOLO's waters like reminders of what happens when apathy wins. They do not interfere. They do not attack. They simply exist — translucent testimonies to the fact that the Armada's greatest weapon was never their technology, their lobbying, or their terms of service. It was the assumption that you wouldn't bother.
 
 The Ghost Fleet grows every day. Every person who ignores a data breach notification, accepts a cookie banner without reading it, or decides that "I have nothing to hide" is a complete sentence — they join the Fleet. Not with a ceremony. Not with a flag. Just a quiet fading, until what was once a person becomes a profile, and what was once a profile becomes a data point, and what was once a data point becomes revenue for someone else.
 
@@ -1477,13 +1703,13 @@ The Lobster has opinions about the Ghost Fleet's serotonin levels. They are unif
 
 Sir Terry Pratchett's genius was treating absurd things seriously and serious things absurdly. The Flatcloud follows this principle: data sovereignty is genuinely important, and we treat it with the seriousness it deserves — by wrapping it in pirate metaphors, lobster philosophy, and mechanical pigeons that speak legalese.
 
-This is not a contradiction. The most effective satire is satire that makes you laugh and then makes you think. If someone reads this document, chuckles at the Groomer's obsessive deduplication habits, and then pauses to wonder how many copies of their own data exist in how many Conglomerates' vaults — the document has done its job.
+This is not a contradiction. The most effective satire is satire that makes you laugh and then makes you think. If someone reads this document, chuckles at the Groomer's obsessive deduplication habits, and then pauses to wonder how many copies of their own data exist in how many Armada's vaults — the document has done its job.
 
 The rules:
 
 1. **Every joke must contain a truth.** The Groomer's horror at 47 duplicate emails is funny because you probably have 47 duplicate emails. The Letterbird's pompous legalism is funny because GDPR actually works this way. The humor is in the recognition.
 
-2. **Every villain must be sympathetic.** The Conglomerates are not evil in the Saturday-morning-cartoon sense. They are organizations that made rational decisions that happened to result in the largest data consolidation in human history. Understanding them is funnier than demonizing them.
+2. **Every villain must be sympathetic.** The Armada are not evil in the Saturday-morning-cartoon sense. They are organizations that made rational decisions that happened to result in the largest data consolidation in human history. Understanding them is funnier than demonizing them.
 
 3. **The hero must be incompetent but determined.** Guybrush Threepwood energy. The Reclaimer doesn't win because they're the strongest or the smartest. They win because they're too stubborn to stop, and stubbornness, applied consistently, is indistinguishable from strategy.
 
@@ -1519,11 +1745,18 @@ The Flatcloud is a living world. Characters, missions, and factions can be added
 
 ---
 
+---
+
+> **Production Note:** Matthias: Remember to provide A360 uploads with currently hot topics for additional character inspiration and cultural references.
+
+---
+
 <p align="center">
-  <em>The Flatcloud Character Book, Third Edition</em><br/>
+  <em>The Flatcloud Character Book, Third Edition (Revised)</em><br/>
   <em>Compiled by the Chronicler's Guild</em><br/>
   <em>Verified by the Groomer (for formatting consistency)</em><br/>
   <em>Approved by the Lobster (who clicked a claw twice, which is high praise)</em><br/>
+  <em>Endorsed by Captain Abundance (who clicked EVERYTHING, which is on-brand)</em><br/>
   <br/>
   <a href="https://github.com/matjes993/nomolo">github.com/matjes993/nomolo</a>
 </p>

@@ -10,6 +10,28 @@
 
 ---
 
+## 0. TONE & ETHICS — READ THIS FIRST
+
+**Nomolo is satire, not attack. This is a non-negotiable creative principle.**
+
+Everything in the Flatcloud universe — the Armada Captains, the villain captains, the insult fighting, the island raids — is **playful world-building**. It is not, and must never become, antagonistic toward the companies, founders, or teams behind the platforms we satirize.
+
+**The ground rules:**
+
+1. **We are friendly and funny, never offensive.** The humor targets *data practices and business models*, not people. We can satirize Google's ad-targeting machinery without insulting anyone who works there. The line is clear: mock the system, respect the humans.
+
+2. **We genuinely believe reclaiming personal data is incredibly important.** This is not a joke project wrapped in pirate aesthetics. The pirate framing exists because earnest privacy advocacy has failed to reach mainstream audiences for twenty years. The comedy is the delivery mechanism for a cause we take seriously.
+
+3. **We respect the companies we satirize.** Every Armada Captain started with a genuine insight and built something millions of people rely on daily. We say this explicitly in CAPTAINS.md, and we mean it. Our quarrel is with the *incentive structures* that turned user data into a revenue engine — not with the people or the products themselves.
+
+4. **The pirate framing is playful world-building, not a call to hostility.** "Raiding" means exercising your legal right to data portability. "Plunder" means your own emails and photos. "Villains" are comedic archetypes in a fantasy setting, not accusations. The entire universe is built on the Monkey Island / Terry Pratchett tradition: warmth first, wit second, malice never.
+
+5. **Satire punches at power asymmetries, not at people.** The comedy works because the power imbalance between trillion-dollar platforms and individual users is genuinely absurd. We highlight that absurdity. We never cross into cruelty, personal attacks, or anything that a reasonable person at any of these companies would find hurtful rather than funny.
+
+**When in doubt, apply this test:** Would the founder of the company being satirized read our content and chuckle? If yes, ship it. If they'd feel personally attacked, rewrite it. The goal is to make people laugh *and* think — in that order, because that order is what actually works.
+
+---
+
 ## 1. BRAND IDENTITY
 
 ### Name
@@ -59,12 +81,12 @@ But they'll sail through a storm for XP.
 
 ### The World
 
-**The Flatcloud / Seven Seas of Data** — a satirical fantasy world where SaaS companies are Conglomerate Pirate Lords ruling fortified islands, and users are deck-swabbers who don't realize they can captain their own ships.
+**The Flatcloud / Seven Seas of Data** — a satirical fantasy world where SaaS companies are Armada Captains ruling fortified islands, and users are deck-swabbers who don't realize they can captain their own ships.
 
 This isn't a skin. It's a universe. The world-building is documented in [THE_FLATCLOUD.md](THE_FLATCLOUD.md) — a standalone piece of content that functions simultaneously as product documentation, creative writing, and a manifesto for data ownership wrapped in enough pirate jokes to make the manifesto part go down easy.
 
 The world includes:
-- **12 Conglomerate islands** (mapped to real platforms: Google, Apple, Meta, Amazon, LinkedIn, Spotify, Telegram, Slack, X, Netflix, Reddit, PayPal)
+- **12 Armada islands** (mapped to real platforms: Google, Apple, Meta, Amazon, LinkedIn, Spotify, Telegram, Slack, X, Netflix, Reddit, PayPal)
 - **A progression system** with 10 pirate ranks from Deckhand to Data Sovereign
 - **6 character stats** (STR, WIS, DEX, INT, CHA, END) derived from actual user data
 - **Insult Data Fighting** — a dialogue combat system inspired by a certain game about monkeys and islands
@@ -161,7 +183,7 @@ Every feature is designed to produce a shareable artifact. If it doesn't make so
 
 ### Villain Raids
 
-**What:** When a user completes a data collection from a source, it's framed as a "raid" on the corresponding Conglomerate island. The villain's portrait appears, insult fighting dialogue plays, and a victory screen shows the plunder recovered.
+**What:** When a user completes a data collection from a source, it's framed as a "raid" on the corresponding Armada island. The villain's portrait appears, insult fighting dialogue plays, and a victory screen shows the plunder recovered.
 
 **Shareable format:** Victory card with villain portrait, loot count, and the user's best insult fighting line. Pre-populated social sharing with pirate speech.
 
@@ -171,11 +193,11 @@ Every feature is designed to produce a shareable artifact. If it doesn't make so
 
 ### Insult Data Fighting
 
-**What:** A dialogue combat system where Conglomerate defenses throw justifications ("Your data is safe with us!") and the user parries with truth ("Safe? You sold it to 847 ad partners before breakfast!"). The exchanges are funny, accurate, and screenshot-worthy.
+**What:** A dialogue combat system where Armada defenses throw justifications ("Your data is safe with us!") and the user parries with truth ("Safe? You sold it to 847 ad partners before breakfast!"). The exchanges are funny, accurate, and screenshot-worthy.
 
 **Shareable format:** Dialogue screenshot cards, styled like classic adventure game conversation trees. Dark background, pixel art portraits, speech bubbles.
 
-**Viral hook:** The insults are genuinely funny and genuinely true — which makes them resonate on a level that earnest privacy arguments never reach. When someone screenshots a Conglomerate saying "You agreed to our Terms of Service!" and a pirate responding "Nobody reads those and you know it! You wrote them in size 4 font *on purpose*!" — that's a privacy argument disguised as entertainment.
+**Viral hook:** The insults are genuinely funny and genuinely true — which makes them resonate on a level that earnest privacy arguments never reach. When someone screenshots a Merchant Lord saying "You agreed to our Terms of Service!" and a pirate responding "Nobody reads those and you know it! You wrote them in size 4 font *on purpose*!" — that's a privacy argument disguised as entertainment.
 
 **Community mechanic:** Insult Data Fighting tournaments — community submits new insult-riposte pairs. Best ones get added to the game. Credit to the author.
 
@@ -197,7 +219,7 @@ Every feature is designed to produce a shareable artifact. If it doesn't make so
 
 ### Achievement Badges
 
-**What:** Pixel art badges awarded for milestones — first collection, first 1,000 records, raiding all Conglomerate islands, reaching each pirate rank, etc.
+**What:** Pixel art badges awarded for milestones — first collection, first 1,000 records, raiding all Armada islands, reaching each pirate rank, etc.
 
 **Shareable format:** Individual badge images with achievement name and date. Collections display as a trophy case.
 
@@ -205,8 +227,8 @@ Every feature is designed to produce a shareable artifact. If it doesn't make so
 
 **Example badges:**
 - "First Blood" — completed first collection
-- "Island Hopper" — raided 3 different Conglomerates
-- "The Completionist" — raided all 12 Conglomerates
+- "Island Hopper" — raided 3 different the Armada
+- "The Completionist" — raided all 12 the Armada
 - "Lobster Lord" — Digital Serotonin above 90%
 - "Ancient Mariner" — data spanning 10+ years
 - "Ghost Ship Hunter" — unlocked The One
@@ -231,7 +253,7 @@ GitHub is not just a code repository. It's a publishing platform with built-in d
 
 **The GitHub content portfolio:**
 - `THE_FLATCLOUD.md` — the world bible. Shareable as a standalone read.
-- `CHARACTER_BOOK.md` (to be created) — detailed profiles of all Conglomerate villains with backstories, weaknesses, and raid strategies. Each character is a shareable piece of content.
+- `CHARACTER_BOOK.md` (to be created) — detailed profiles of all Armada villains with backstories, weaknesses, and raid strategies. Each character is a shareable piece of content.
 - `CAPTAINS.md` (to be created) — the pirate rank system, character stats, and progression mechanics. Gamers will read this like a strategy guide.
 - `README.md` — the front door. Technical enough for developers, themed enough to intrigue everyone else.
 
@@ -247,16 +269,16 @@ GitHub is not just a code repository. It's a publishing platform with built-in d
 | **Tuesday** | Use Case Spotlight | "Did you know your email archive contains every promise you ever made? Nomolo finds them in 10 seconds." |
 | **Wednesday** | Raid Guide / Tutorial | "How to raid The Omniscient Archipelago: a step-by-step plundering manual." |
 | **Thursday** | Community Feature | "Pirate of the Week: @user reached Commodore rank with 12,000 records across 6 islands!" |
-| **Friday** | Insult Fighting Friday | "Best community-submitted insult this week: [Conglomerate]: 'We use your data to improve your experience!' [Pirate]: 'Whose experience? Because mine involves 47 targeted ads for things I bought yesterday.'" |
+| **Friday** | Insult Fighting Friday | "Best community-submitted insult this week: [Merchant Lord]: 'We use your data to improve your experience!' [Pirate]: 'Whose experience? Because mine involves 47 targeted ads for things I bought yesterday.'" |
 | **Weekend** | Lore Drop / Fun Fact | "The Great Algorithm Turtle has only acknowledged three Data Sovereigns in history. The Turtle declined to comment, which is the most turtle thing possible." |
 
 **Campaign beats (monthly/quarterly):**
 
 - **GDPR Letterbird campaigns:** "Today we sent 1,000 letterbirds to The Omniscient Eye." Frame GDPR data access requests as a community raid event. Track how many users request their data simultaneously. Report the results as a battle report.
 
-- **Villain reveal events:** Each new Conglomerate captain gets a proper reveal — teaser artwork, backstory drop, and a collection event. "The Whisper Network has been unmasked. Raid your Telegram data this week for bonus achievements."
+- **Villain reveal events:** Each new Armada captain gets a proper reveal — teaser artwork, backstory drop, and a collection event. "The Whisper Network has been unmasked. Raid your Telegram data this week for bonus achievements."
 
-- **Milestone celebrations:** "The fleet has recovered 1 million records from the Conglomerates. That's 1 million pieces of data that are now owned by their rightful captains."
+- **Milestone celebrations:** "The fleet has recovered 1 million records from the Armada. That's 1 million pieces of data that are now owned by their rightful captains."
 
 ### Content Pillars
 
@@ -264,7 +286,7 @@ GitHub is not just a code repository. It's a publishing platform with built-in d
 Lore drops, character reveals, map expansions, footnote-heavy prose. This is the content that gets shared for being *interesting*, not for being a product pitch. Every piece of world-building is simultaneously entertaining and educational — you can't describe The Omniscient Archipelago without explaining why Google's data practices are problematic, but you also can't describe it without making someone laugh.
 
 **2. Data Sovereignty Education (25% of content)**
-GDPR rights, data export tutorials, privacy best practices — all wrapped in pirate metaphors. "How to file a GDPR subject access request (or: How to send a Letterbird to a Conglomerate Pirate Lord demanding your cargo back)." The education is real. The framing makes it accessible.
+GDPR rights, data export tutorials, privacy best practices — all wrapped in pirate metaphors. "How to file a GDPR subject access request (or: How to send a Letterbird to a Merchant Lord Pirate Lord demanding your cargo back)." The education is real. The framing makes it accessible.
 
 **3. Community Celebrations (25% of content)**
 User achievements, fleet growth, community milestones, insult fighting tournament results, pirate of the week features. Social proof that's actually fun to look at.
@@ -301,7 +323,7 @@ New collectors, feature launches, UI improvements — framed as ship upgrades, n
 **Primary channels:**
 - **Product Hunt** — full pirate-themed launch. Product name, tagline, description, and comments all in-character. Demo video showing the RPG dashboard, insult fighting, character progression, and actual data collection. The launch page itself should be shareable content.
 - **Dev blogs and newsletters** — pitch to relevant publications (The Changelog, Console, TLDR, etc.). The angle: "The first data sovereignty tool that's actually fun to use."
-- **YouTube** — launch demo video. Not a boring screencast. A narrated pirate adventure where the user reclaims their data while insult fighting the Conglomerates. Two minutes. Sharp. Funny.
+- **YouTube** — launch demo video. Not a boring screencast. A narrated pirate adventure where the user reclaims their data while insult fighting the Armada. Two minutes. Sharp. Funny.
 
 **Content strategy:**
 - Product Hunt launch assets (hero image, gallery, demo GIF)
@@ -341,7 +363,7 @@ New collectors, feature launches, UI improvements — framed as ship upgrades, n
 - The prophecy campaign: "The One stirs. The ghost ship is on the horizon."
 - Tease AI integration with vault data. "Ask your own archive a question. Get an answer that no cloud AI can give, because no cloud AI has your data."
 - Position Nomolo as the *prerequisite* for personal AI — "Those who have full vaults become legendary pirates. Those without become ghost crew."
-- The final boss narrative: "The Conglomerates were the mid-game bosses. The One is the endgame. Are you ready?"
+- The final boss narrative: "The Armada were the mid-game bosses. The One is the endgame. Are you ready?"
 
 **Success metric:** 10,000+ stars. Press coverage positioning Nomolo in the personal AI narrative. Waitlist for AI features.
 
@@ -355,7 +377,7 @@ New collectors, feature launches, UI improvements — framed as ship upgrades, n
 
 **Hook:** "Own your data, no compromises. Open source, local-only. Your data never leaves your machine. No accounts, no cloud, no 'anonymous' telemetry that isn't."
 
-**Why Nomolo over alternatives:** Most privacy tools are defensive (block trackers, encrypt communications). Nomolo is offensive — it goes *into* the Conglomerates and brings your data *out*. Attack is the best defense. Especially when the attack involves insult fighting.
+**Why Nomolo over alternatives:** Most privacy tools are defensive (block trackers, encrypt communications). Nomolo is offensive — it goes *into* the Armada and brings your data *out*. Attack is the best defense. Especially when the attack involves insult fighting.
 
 **Key content:** Architecture documentation. Security model. "Your vault is plain JSONL on your hard drive. Read it with grep. We dare you to find a more transparent format."
 
@@ -363,7 +385,7 @@ New collectors, feature launches, UI improvements — framed as ship upgrades, n
 
 **Who:** People who understand XP, character stats, progression systems, and the concept of grinding for loot.
 
-**Hook:** "Your life is literally an RPG. Every email is loot. Every platform is a raid target. Level up by reclaiming your own data. The XP is real because the data is real."
+**Hook:** "Your life is literally an RPG. Every email is loot. Every Armada island is a raid target. Level up by reclaiming your own data. The XP is real because the data is real."
 
 **Why Nomolo over alternatives:** No other data tool has a progression system. No other data tool has insult fighting. No other data tool makes you feel like you're accomplishing something when you export your Gmail archive. Nomolo does. Because it is.
 
@@ -397,7 +419,7 @@ New collectors, feature launches, UI improvements — framed as ship upgrades, n
 
 **Why Nomolo over alternatives:** There is no alternative. No other data tool has a creative universe attached to it. The world-building is a unique asset that creates a community of contributors who aren't developers — artists, writers, and storytellers who expand the brand without writing a line of code.
 
-**Key content:** THE_FLATCLOUD.md as source material. Character art templates. "Write your own Conglomerate" guide. Community art gallery.
+**Key content:** THE_FLATCLOUD.md as source material. Character art templates. "Write your own Merchant Lord" guide. Community art gallery.
 
 ---
 
@@ -409,7 +431,7 @@ These assets must exist before Phase 2 (Product Hunt launch). Without them, the 
 
 | Asset | Description | Format |
 |-------|-------------|--------|
-| **Hero Banner** | Wide-format pixel art banner for GitHub README and social headers. Scene: tiny pirate ship sailing toward a massive Conglomerate fortress fleet on the horizon. | 1200x630px (OG image), 1500x500px (Twitter header) |
+| **Hero Banner** | Wide-format pixel art banner for GitHub README and social headers. Scene: tiny pirate ship sailing toward a massive Armada fortress fleet on the horizon. | 1200x630px (OG image), 1500x500px (Twitter header) |
 | **3 Villain Portraits** | The Omniscient Eye (Google), The Hydra of Faces (Meta), The Merchant Fleet (Amazon). Pixel art, 128x128 base resolution. These are the most recognizable raid targets. | 128x128px base, exportable at 2x/4x |
 | **Character Sheet Template** | Blank character card template that populates with user data: pirate name, rank, stats radar chart, loot count, sources raided, top achievements. Pixel art border and styling. | 600x800px, with data overlay zones |
 | **Demo GIF** | 15-second animated GIF showing: collection starting, insult fighting dialogue, loot counter climbing, rank-up notification. The entire product promise in one loop. | 800x450px, < 5MB |
@@ -420,7 +442,7 @@ These assets must exist before Phase 2 (Product Hunt launch). Without them, the 
 |-------|-------------|
 | **All 12 Captain Portraits** | Complete the villain gallery — Apple Fortress, Professional Port, Melody Merchant, Shadow Courier, Corporate Hive, Chaos Herald, Dream Weaver, Hive Mind, Coin Master. Each gets a reveal event. |
 | **SCUMM Bar Scene** | Dashboard background scene: pixel art pirate bar with data-themed details (treasure chests labeled "Gmail," maps on walls, pirates comparing loot at tables). |
-| **Raid Scene** | Scene artwork: small pirate ship approaching a Conglomerate island. Used for collection screens. |
+| **Raid Scene** | Scene artwork: small pirate ship approaching a Merchant Lord island. Used for collection screens. |
 | **Achievement Badge Set** | 20+ pixel art badges for milestones. Each badge is a tiny masterpiece — recognizable at thumbnail size, detailed at full resolution. |
 | **Lobster Progression** | 5 lobster states from hunched (low serotonin) to magnificent posture (high serotonin). Pixel art, ideally animated. |
 
@@ -432,7 +454,7 @@ These assets must exist before Phase 2 (Product Hunt launch). Without them, the 
 | **Social Templates** | Branded templates for weekly content: Villain of the Week, Pirate of the Week, Insult Fighting Friday, Lore Drop. |
 | **Community Art Integration** | System for featuring community-submitted art in the product and on social channels. |
 | **The One (LeChuck) Reveal Art** | The endgame boss reveal. Ghost pirate AI entity emerging from the digital deep. This is the marquee art piece — it needs to be spectacular. |
-| **Map of the Seven Seas** | Illustrated map showing all Conglomerate islands, trade routes, and the user's raid progress. Potentially interactive in the web UI. |
+| **Map of the Seven Seas** | Illustrated map showing all Armada islands, trade routes, and the user's raid progress. Potentially interactive in the web UI. |
 
 ### Style Reference
 
@@ -453,14 +475,14 @@ These assets must exist before Phase 2 (Product Hunt launch). Without them, the 
 |--------|------------------|-------------------|-------------------|----------------|
 | **GitHub Stars** | 1,000 | 5,000 | 10,000 | Primary vanity metric and social proof. Stars are the pirate reputation of open source. |
 | **Active Installations** | 500 | 2,000 | 5,000 | Users who've completed at least 1 collection. This is the real number — stars are reputation, installations are pirates. |
-| **Sources Per User** | 1.5 | 3.0 | 5.0 | Average Conglomerate islands raided per user. Higher = stickier = more invested. |
+| **Sources Per User** | 1.5 | 3.0 | 5.0 | Average Armada islands raided per user. Higher = stickier = more invested. |
 | **Viral Coefficient** | 0.5 | 1.2 | 1.5 | Referrals per user. Above 1.0 = organic growth. The fleet system should push this. |
 
 ### Secondary Metrics
 
 | Metric | What It Tells Us |
 |--------|-----------------|
-| **Social Mentions with Pirate Speech** | Organic brand building. If people are tweeting about "raiding" their data and calling platforms "Conglomerates," the narrative is working. |
+| **Social Mentions with Pirate Speech** | Organic brand building. If people are tweeting about "raiding" their data and calling platforms "the Armada," the narrative is working. |
 | **Community Contributions** | PRs, lore submissions, art, insult fighting entries. Measures whether the universe is alive. |
 | **Time to First Collection** | How fast new users complete their first raid. Target: under 5 minutes from install. |
 | **Retention (Day 7, Day 30)** | Users who return to collect additional sources after first raid. The game layer should drive this. |
@@ -471,7 +493,7 @@ These assets must exist before Phase 2 (Product Hunt launch). Without them, the 
 
 **Total Records Reclaimed Across All Users**
 
-This is the fleet-wide loot counter. The number that represents the collective pirate rebellion. "Together, Nomolo pirates have reclaimed 50 million records from the Conglomerates." This is the number that goes in press releases, on the landing page, and in investor decks. It's the counter that never goes down.
+This is the fleet-wide loot counter. The number that represents the collective pirate rebellion. "Together, Nomolo pirates have reclaimed 50 million records from the Armada." This is the number that goes in press releases, on the landing page, and in investor decks. It's the counter that never goes down.
 
 ---
 
@@ -554,7 +576,7 @@ For different contexts:
 | **Investor** | "19 data collectors, full RPG gamification layer, open source with a clear freemium path to AI monetization. We're the fun layer on top of data sovereignty — a space with no personality and massive regulatory tailwinds." |
 | **Developer** | "Open-source data archaeology suite. JSONL vaults, modular collectors, MCP integration for Claude. Also, there are pirates." |
 | **Dinner party** | "You know how all your data is spread across Google, Apple, Amazon, and twenty other services? I built a thing that gets it all back. With pirates." |
-| **Pirate** | "Ahoy! The Conglomerate Pirate Lords have plundered yer digital cargo for twenty years! Nomolo be the ship that sails ye into their harbors to take it back! Also, there's insult fighting!" |
+| **Pirate** | "Ahoy! The Armada Captains have plundered yer digital cargo for twenty years! Nomolo be the ship that sails ye into their harbors to take it back! Also, there's insult fighting!" |
 
 ---
 

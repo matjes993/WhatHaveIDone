@@ -13,6 +13,7 @@
     --bg-card-hover: rgba(20, 20, 55, 0.85);
     --bg-glass: rgba(255, 255, 255, 0.03);
     --bg-glass-hover: rgba(255, 255, 255, 0.06);
+    --bg-surface: rgba(15, 15, 42, 0.6);
 
     /* Accent colors */
     --accent-cyan: #00d4ff;
@@ -324,6 +325,16 @@ a:hover {
     width: 20px;
     height: 20px;
     flex-shrink: 0;
+}
+
+.sidebar__icon--emoji {
+    font-size: 18px;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .sidebar__footer {
@@ -3026,258 +3037,359 @@ a:hover {
     transition: width 1.5s ease !important;
 }
 
-/* ═══════════════ RECORDS BROWSER ═══════════════ */
+/* ═══════════════ PLUNDER PAGE (Records Browser) ═══════════════ */
 
-.records {
+.plunder-page {
     max-width: 960px;
     margin: 0 auto;
     padding: 32px 24px;
-}
-
-.records__header {
-    margin-bottom: 24px;
-}
-
-.records__title-row {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.records__title {
-    font-family: var(--font-heading);
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0;
-}
-
-.records__total {
-    font-size: 14px;
-    color: var(--text-muted);
-}
-
-.records__controls {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.records__search-wrap {
-    flex: 1;
     position: relative;
 }
 
-.records__search-icon {
+/* --- Header: Treasure Chest --- */
+
+.plunder-header {
+    margin-bottom: 28px;
+}
+
+.plunder-header__chest {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.plunder-header__icon {
+    font-size: 40px;
+    line-height: 1;
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.3));
+}
+
+.plunder-header__title {
+    font-family: 'Press Start 2P', var(--font-heading);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-gold);
+    margin: 0 0 4px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.plunder-header__subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* --- Spyglass Search Bar --- */
+
+.plunder-search {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.plunder-search__icon {
     position: absolute;
     left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    width: 16px;
-    height: 16px;
-    color: var(--text-muted);
+    font-size: 18px;
     pointer-events: none;
 }
 
-.records__search {
+.plunder-search__input {
     width: 100%;
-    padding: 10px 14px 10px 40px;
-    background: var(--bg-surface);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 10px;
+    padding: 12px 16px 12px 46px;
+    background: rgba(15, 15, 42, 0.6);
+    border: 2px solid rgba(255, 215, 0, 0.12);
+    border-radius: 24px;
     color: var(--text-primary);
     font-size: 14px;
     font-family: inherit;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
 }
 
-.records__search:focus {
-    border-color: rgba(0, 212, 255, 0.3);
+.plunder-search__input:focus {
+    border-color: rgba(255, 215, 0, 0.4);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
 }
 
-.records__search::placeholder {
+.plunder-search__input::placeholder {
     color: rgba(255, 255, 255, 0.25);
 }
 
-.records__sort {
-    padding: 10px 14px;
-    background: var(--bg-surface);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 10px;
+/* --- Sort Dropdown --- */
+
+.plunder-sort {
+    margin-bottom: 16px;
+}
+
+.plunder-sort__select {
+    padding: 8px 14px;
+    background: rgba(15, 15, 42, 0.6);
+    border: 1px solid rgba(255, 215, 0, 0.12);
+    border-radius: 8px;
     color: var(--text-primary);
     font-size: 13px;
     font-family: inherit;
     cursor: pointer;
     outline: none;
-    min-width: 140px;
+    min-width: 180px;
 }
 
-.records__sort option {
+.plunder-sort__select option {
     background: #1a1a2e;
 }
 
-.records__filters {
+/* --- Loot Type Filter Badges --- */
+
+.plunder-filters {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
+    padding-bottom: 4px;
 }
 
-.records__filter {
-    padding: 6px 14px;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
+.plunder-filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(15, 15, 42, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
     color: var(--text-muted);
     font-size: 13px;
     font-family: inherit;
     cursor: pointer;
     transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    image-rendering: pixelated;
 }
 
-.records__filter:hover {
-    border-color: rgba(255, 255, 255, 0.15);
+.plunder-filter:hover {
+    border-color: rgba(255, 215, 0, 0.25);
     color: var(--text-primary);
+    background: rgba(20, 20, 55, 0.8);
 }
 
-.records__filter--active {
-    background: rgba(0, 212, 255, 0.1);
-    border-color: rgba(0, 212, 255, 0.3);
-    color: var(--accent-cyan);
+.plunder-filter--active {
+    background: rgba(255, 215, 0, 0.08);
+    border-color: rgba(255, 215, 0, 0.4);
+    color: var(--accent-gold);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.15), inset 0 0 8px rgba(255, 215, 0, 0.05);
 }
 
-.records__filter-count {
-    font-size: 11px;
-    opacity: 0.6;
+.plunder-filter__emoji {
+    font-size: 16px;
+    line-height: 1;
 }
 
-/* Record list */
-
-.records__list {
-    min-height: 200px;
+.plunder-filter__label {
+    font-size: 12px;
 }
 
-.records__loading {
+.plunder-filter__count {
+    font-size: 10px;
+    opacity: 0.5;
+    margin-left: 2px;
+}
+
+/* --- Loading State --- */
+
+.plunder-loading {
     text-align: center;
     padding: 60px 20px;
     color: var(--text-muted);
     font-size: 14px;
 }
 
-.records__empty {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-muted);
+.plunder-loading__icon {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 12px;
+    animation: floatBob 2s ease-in-out infinite;
 }
 
-.records__empty-title {
+@keyframes floatBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* --- Record List --- */
+
+.plunder-list {
+    min-height: 200px;
+}
+
+/* --- Empty State --- */
+
+.plunder-empty {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.plunder-empty__chest {
+    font-size: 56px;
+    margin-bottom: 16px;
+    filter: grayscale(0.3);
+}
+
+.plunder-empty__title {
+    font-family: var(--font-heading);
     font-size: 16px;
     color: var(--text-primary);
     margin: 0 0 8px;
 }
 
-.records__empty-sub {
+.plunder-empty__sub {
     font-size: 13px;
-    margin: 0;
+    color: var(--text-muted);
+    margin: 0 0 20px;
 }
 
-.record-item {
+.plunder-empty__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    color: var(--accent-gold);
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.plunder-empty__btn:hover {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.1));
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
+}
+
+/* --- Plunder Item (Record Card) --- */
+
+.plunder-item {
     display: flex;
     gap: 14px;
     padding: 14px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    cursor: pointer;
-    transition: background 0.15s;
-}
-
-.record-item:hover {
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.record-item__source {
-    flex-shrink: 0;
-    width: 36px;
-    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: 8px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    background: rgba(15, 15, 42, 0.3);
+}
+
+.plunder-item:hover {
+    background: rgba(255, 215, 0, 0.03);
+    border-color: rgba(255, 215, 0, 0.12);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 8px rgba(255, 215, 0, 0.05);
+}
+
+.plunder-item__emoji {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
-    background: var(--bg-surface);
+    font-size: 24px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
 }
 
-.record-item__source--gmail { background: rgba(234, 67, 53, 0.15); color: #ea4335; }
-.record-item__source--contacts { background: rgba(0, 212, 255, 0.1); color: #00d4ff; }
-.record-item__source--calendar { background: rgba(66, 133, 244, 0.15); color: #4285f4; }
-.record-item__source--browser { background: rgba(0, 255, 136, 0.1); color: #00ff88; }
-.record-item__source--bookmarks { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
-.record-item__source--photos { background: rgba(156, 39, 176, 0.15); color: #9c27b0; }
-.record-item__source--messages { background: rgba(76, 175, 80, 0.15); color: #4caf50; }
-.record-item__source--notes { background: rgba(255, 152, 0, 0.15); color: #ff9800; }
-.record-item__source--whatsapp { background: rgba(37, 211, 102, 0.15); color: #25d366; }
-.record-item__source--telegram { background: rgba(0, 136, 204, 0.15); color: #0088cc; }
-.record-item__source--slack { background: rgba(74, 21, 75, 0.15); color: #e01e5a; }
-
-.record-item__body {
+.plunder-item__body {
     flex: 1;
     min-width: 0;
 }
 
-.record-item__title {
+.plunder-item__title {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--text-primary);
     margin: 0 0 3px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding-right: 120px;
 }
 
-.record-item__meta {
-    display: flex;
-    gap: 8px;
+.plunder-item__subtitle {
     font-size: 12px;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     margin-bottom: 4px;
-}
-
-.record-item__meta span {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.record-item__preview {
+.plunder-item__preview {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(255, 255, 255, 0.3);
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.4;
+    font-style: italic;
 }
 
-/* Pagination */
+.plunder-item__right {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
 
-.records__pagination {
+.plunder-item__villain {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.plunder-item:hover .plunder-item__villain {
+    opacity: 1;
+}
+
+.plunder-item__date {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+/* --- Pagination: Ship's Log Page Turner --- */
+
+.plunder-pagination {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 16px;
-    padding: 20px 0;
+    padding: 24px 0;
     margin-top: 8px;
+    border-top: 1px solid rgba(255, 215, 0, 0.08);
 }
 
-.records__page-btn {
-    padding: 8px 16px;
-    background: var(--bg-surface);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+.plunder-pagination__btn {
+    padding: 8px 18px;
+    background: rgba(15, 15, 42, 0.6);
+    border: 1px solid rgba(255, 215, 0, 0.15);
     border-radius: 8px;
     color: var(--text-primary);
     font-size: 13px;
@@ -3286,23 +3398,25 @@ a:hover {
     transition: all 0.2s;
 }
 
-.records__page-btn:hover:not(:disabled) {
-    border-color: rgba(0, 212, 255, 0.3);
+.plunder-pagination__btn:hover:not(:disabled) {
+    border-color: rgba(255, 215, 0, 0.4);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.1);
 }
 
-.records__page-btn:disabled {
+.plunder-pagination__btn:disabled {
     opacity: 0.3;
     cursor: not-allowed;
 }
 
-.records__page-info {
+.plunder-pagination__info {
     font-size: 13px;
     color: var(--text-muted);
+    font-family: var(--font-heading);
 }
 
-/* Record detail modal */
+/* --- Record Detail Modal: The Parchment Scroll --- */
 
-.record-detail {
+.plunder-detail {
     position: fixed;
     inset: 0;
     z-index: 1000;
@@ -3311,100 +3425,182 @@ a:hover {
     justify-content: center;
 }
 
-.record-detail__backdrop {
+.plunder-detail__backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(8px);
 }
 
-.record-detail__content {
+.plunder-detail__scroll {
     position: relative;
     width: 90%;
-    max-width: 640px;
-    max-height: 80vh;
+    max-width: 680px;
+    max-height: 85vh;
     overflow-y: auto;
-    background: var(--bg-card);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 28px 24px;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+    /* Parchment feel */
+    background: linear-gradient(170deg, #2a2218 0%, #1e1a14 40%, #1a1610 100%);
+    border: 3px solid rgba(255, 215, 0, 0.2);
+    border-radius: 4px;
+    padding: 32px 28px;
+    box-shadow:
+        0 24px 80px rgba(0, 0, 0, 0.6),
+        inset 0 0 60px rgba(139, 109, 56, 0.06),
+        0 0 30px rgba(255, 215, 0, 0.05);
 }
 
-.record-detail__close {
+.plunder-detail__close {
     position: absolute;
     top: 12px;
     right: 12px;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 20px;
+    background: rgba(139, 69, 19, 0.4);
+    border: 2px solid rgba(255, 215, 0, 0.2);
+    color: var(--accent-gold);
+    font-size: 16px;
     cursor: pointer;
     width: 32px;
     height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    font-weight: bold;
 }
 
-.record-detail__close:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary);
+.plunder-detail__close:hover {
+    background: rgba(139, 69, 19, 0.6);
+    border-color: rgba(255, 215, 0, 0.5);
+    transform: scale(1.1);
 }
 
-.record-detail__source-tag {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
-    background: rgba(0, 212, 255, 0.1);
-    color: var(--accent-cyan);
+.plunder-detail__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
-.record-detail__title {
+.plunder-detail__emoji {
+    font-size: 32px;
+    line-height: 1;
+}
+
+.plunder-detail__header-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.plunder-detail__title {
     font-family: var(--font-heading);
     font-size: 18px;
     font-weight: 600;
-    color: var(--text-primary);
-    margin: 0 0 8px;
-    padding-right: 30px;
+    color: #e8d5a3;
+    margin: 0 0 4px;
+    padding-right: 36px;
+    word-break: break-word;
 }
 
-.record-detail__meta {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-bottom: 16px;
-    line-height: 1.6;
-}
-
-.record-detail__body {
+.plunder-detail__subtitle {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.75);
-    line-height: 1.6;
+    color: rgba(232, 213, 163, 0.6);
+    margin: 0;
+}
+
+.plunder-detail__raided {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    letter-spacing: 0.3px;
+}
+
+.plunder-detail__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 12px;
+    color: rgba(232, 213, 163, 0.5);
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.08);
+}
+
+.plunder-detail__meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.plunder-detail__meta-label {
+    font-weight: 600;
+    color: rgba(232, 213, 163, 0.7);
+}
+
+.plunder-detail__body {
+    font-size: 14px;
+    color: rgba(232, 213, 163, 0.8);
+    line-height: 1.7;
     white-space: pre-wrap;
     word-break: break-word;
     max-height: 400px;
     overflow-y: auto;
     padding: 16px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 215, 0, 0.06);
+    font-family: Georgia, 'Times New Roman', serif;
 }
 
-/* Footer */
+.plunder-detail__raw {
+    margin-top: 16px;
+}
 
-.records__footer {
+.plunder-detail__raw-toggle {
+    background: none;
+    border: 1px solid rgba(255, 215, 0, 0.12);
+    border-radius: 6px;
+    color: rgba(232, 213, 163, 0.4);
+    font-size: 11px;
+    font-family: inherit;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.plunder-detail__raw-toggle:hover {
+    color: rgba(232, 213, 163, 0.7);
+    border-color: rgba(255, 215, 0, 0.25);
+}
+
+.plunder-detail__raw-content {
+    margin-top: 8px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 215, 0, 0.06);
+    font-family: 'SF Mono', monospace;
+    font-size: 11px;
+    color: rgba(232, 213, 163, 0.5);
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* --- Footer --- */
+
+.plunder-footer {
     display: flex;
     justify-content: center;
     padding: 24px 0 8px;
 }
 
-.records__open-folder {
+.plunder-footer__btn {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -3419,229 +3615,857 @@ a:hover {
     transition: all 0.2s;
 }
 
-.records__open-folder:hover {
-    border-color: rgba(255, 255, 255, 0.15);
+.plunder-footer__btn:hover {
+    border-color: rgba(255, 215, 0, 0.2);
     color: var(--text-primary);
 }
 
-/* ═══════════════ SOURCES PAGE ═══════════════ */
+/* --- Mobile Responsive --- */
 
-.sources-page {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 32px 24px;
+@media (max-width: 640px) {
+    .plunder-page {
+        padding: 20px 16px;
+    }
+
+    .plunder-header__icon {
+        font-size: 32px;
+    }
+
+    .plunder-header__title {
+        font-size: 16px;
+    }
+
+    .plunder-item__title {
+        padding-right: 80px;
+    }
+
+    .plunder-item__villain {
+        font-size: 9px;
+        padding: 1px 6px;
+    }
+
+    .plunder-filters {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .plunder-filters::-webkit-scrollbar {
+        display: none;
+    }
+
+    .plunder-filter {
+        flex-shrink: 0;
+    }
+
+    .plunder-detail__scroll {
+        width: 95%;
+        padding: 20px 16px;
+    }
 }
 
-.sources-page__header {
+/* ═══════════════ SOURCES / RAID MAP PAGE ═══════════════ */
+
+/* --- Raid Page Layout --- */
+.raid-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.raid-page__header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 }
 
-.sources-page__title {
-    font-family: var(--font-heading);
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0 0 4px;
+.raid-page__title {
+    font-family: 'Press Start 2P', var(--font-heading);
+    font-size: 20px;
+    color: var(--accent-gold);
+    margin: 0 0 6px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
 }
 
-.sources-page__subtitle {
-    font-size: 14px;
+.raid-page__subtitle {
+    font-size: 13px;
     color: var(--text-muted);
     margin: 0;
 }
 
-.sources-page__rescan {
+.raid-page__actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.raid-page__raid-all {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 100, 50, 0.15));
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    border-radius: 8px;
+    color: var(--accent-gold);
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Press Start 2P', monospace;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.raid-page__raid-all:hover {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 100, 50, 0.3));
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.2), inset 0 0 15px rgba(255, 215, 0, 0.05);
+    transform: translateY(-1px);
+}
+
+.raid-page__scan {
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 10px 18px;
     background: var(--bg-card);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    border-radius: 8px;
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
     transition: all 0.2s;
 }
 
-.sources-page__rescan:hover {
+.raid-page__scan:hover {
     border-color: rgba(0, 212, 255, 0.3);
-    color: var(--accent-blue);
+    color: var(--accent-cyan);
     background: var(--bg-card-hover);
 }
 
-.sources-section {
-    margin-bottom: 32px;
-}
-
-.sources-section__title {
-    font-family: var(--font-heading);
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0 0 16px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.sources-subsection__title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 20px 0 4px;
-}
-
-.sources-subsection__desc {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.3);
-    margin: 0 0 12px;
-}
-
-.sources-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 10px;
-    margin-bottom: 8px;
-}
-
-.source-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    background: var(--bg-card);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 10px;
-    transition: all 0.2s;
-}
-
-.source-card--connected {
-    border-color: rgba(0, 255, 136, 0.15);
-}
-
-.source-card--available {
-    cursor: pointer;
-    opacity: 0.6;
-}
-
-.source-card--available:hover {
-    opacity: 1;
-    border-color: rgba(0, 212, 255, 0.2);
-    background: rgba(255, 255, 255, 0.03);
-}
-
-.source-card__icon {
-    font-size: 20px;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.03);
-}
-
-.source-card__info {
-    flex: 1;
-    min-width: 0;
-}
-
-.source-card__name {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-primary);
-}
-
-.source-card__count {
-    display: block;
-    font-size: 12px;
-    color: var(--text-muted);
-}
-
-.source-card__action {
-    display: block;
-    font-size: 12px;
-    color: var(--accent-cyan);
-}
-
-.source-card__status {
-    flex-shrink: 0;
-}
-
-.source-card__status--ok {
-    color: var(--accent-green);
-    font-size: 16px;
-}
-
-.source-card__updated {
-    display: block;
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.25);
-    margin-top: 1px;
-}
-
-.source-card__refresh {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 6px;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-right: 8px;
-}
-
-.source-card__refresh:hover {
-    border-color: rgba(0, 212, 255, 0.3);
-    color: var(--accent-blue);
-    background: rgba(0, 212, 255, 0.05);
-}
-
-.sources-page__actions {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.sources-page__update-all {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(168, 85, 247, 0.15));
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    border-radius: 10px;
-    color: var(--accent-blue);
-    font-size: 14px;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.sources-page__update-all:hover {
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.25), rgba(168, 85, 247, 0.25));
-    border-color: rgba(0, 212, 255, 0.5);
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
-}
-
-.sources-page__footer {
+.raid-page__footer {
     display: flex;
     justify-content: center;
     padding: 24px 0 8px;
+}
+
+/* --- The Raid Map (Ocean Container) --- */
+.raid-map {
+    position: relative;
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(0, 50, 80, 0.4) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 80%, rgba(0, 40, 70, 0.3) 0%, transparent 60%),
+        linear-gradient(180deg, #060d1a 0%, #0a1628 30%, #0d1f3c 60%, #081425 100%);
+    border-radius: 16px;
+    border: 2px solid rgba(255, 215, 0, 0.15);
+    padding: 60px 32px 60px;
+    overflow: hidden;
+    min-height: 500px;
+    box-shadow:
+        inset 0 0 60px rgba(0, 30, 60, 0.5),
+        0 4px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Wave animations */
+.raid-map__wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 40px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.raid-map__wave--top {
+    top: 0;
+    background: linear-gradient(180deg,
+        rgba(0, 100, 150, 0.12) 0%,
+        transparent 100%);
+    animation: waveShimmer 6s ease-in-out infinite;
+}
+
+.raid-map__wave--bottom {
+    bottom: 0;
+    background: linear-gradient(0deg,
+        rgba(0, 80, 130, 0.12) 0%,
+        transparent 100%);
+    animation: waveShimmer 6s ease-in-out infinite reverse;
+}
+
+@keyframes waveShimmer {
+    0%, 100% { opacity: 0.4; transform: translateX(0); }
+    25% { opacity: 0.7; transform: translateX(10px); }
+    50% { opacity: 0.5; transform: translateX(-5px); }
+    75% { opacity: 0.8; transform: translateX(5px); }
+}
+
+/* Compass Rose */
+.raid-map__compass {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.raid-map__compass-ring {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    border-radius: 50%;
+}
+
+.raid-map__compass-n,
+.raid-map__compass-e,
+.raid-map__compass-s,
+.raid-map__compass-w {
+    position: absolute;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--accent-gold);
+}
+
+.raid-map__compass-n { top: 4px; left: 50%; transform: translateX(-50%); }
+.raid-map__compass-e { right: 4px; top: 50%; transform: translateY(-50%); }
+.raid-map__compass-s { bottom: 4px; left: 50%; transform: translateX(-50%); }
+.raid-map__compass-w { left: 4px; top: 50%; transform: translateY(-50%); }
+
+.raid-map__compass-needle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(180deg, #e50914 50%, #ccc 50%);
+    transform: translate(-50%, -50%);
+}
+
+/* Ship indicator */
+.raid-map__ship {
+    position: absolute;
+    bottom: 24px;
+    right: 32px;
+    font-size: 32px;
+    opacity: 0.6;
+    animation: shipBob 4s ease-in-out infinite;
+    z-index: 2;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+}
+
+@keyframes shipBob {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+/* --- Island Grid --- */
+.raid-map__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    position: relative;
+    z-index: 3;
+}
+
+/* --- Individual Island Cards --- */
+.raid-island {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 16px 16px;
+    background:
+        radial-gradient(ellipse at center bottom, rgba(34, 80, 50, 0.3) 0%, transparent 70%),
+        var(--bg-card);
+    border: 2px solid rgba(255, 255, 255, 0.06);
+    border-radius: 40% 50% 45% 55% / 50% 45% 55% 50%;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    text-align: center;
+    min-height: 200px;
+    justify-content: center;
+    gap: 6px;
+}
+
+.raid-island:hover {
+    transform: translateY(-8px);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.5),
+        0 0 30px color-mix(in srgb, var(--villain-color, #00d4ff) 20%, transparent),
+        inset 0 0 20px rgba(255, 255, 255, 0.02);
+    border-color: color-mix(in srgb, var(--villain-color, #00d4ff) 40%, transparent);
+}
+
+.raid-island:hover::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 10%;
+    right: 10%;
+    height: 16px;
+    background: radial-gradient(ellipse, rgba(0, 150, 200, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: waterRipple 1.5s ease-in-out infinite;
+}
+
+@keyframes waterRipple {
+    0%, 100% { transform: scaleX(1); opacity: 0.5; }
+    50% { transform: scaleX(1.2); opacity: 0.8; }
+}
+
+/* Island States */
+.raid-island--uncharted {
+    background:
+        radial-gradient(ellipse at center, rgba(30, 30, 50, 0.6) 0%, transparent 70%),
+        var(--bg-card);
+    border-color: rgba(255, 255, 255, 0.04);
+    filter: saturate(0.3) brightness(0.7);
+}
+
+.raid-island--uncharted:hover {
+    filter: saturate(0.6) brightness(0.85);
+}
+
+.raid-island--uncharted::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(ellipse at center, rgba(100, 100, 140, 0.15) 0%, transparent 60%);
+    animation: fogDrift 8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes fogDrift {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+.raid-island--raided {
+    background:
+        radial-gradient(ellipse at center bottom, color-mix(in srgb, var(--villain-color, #00d4ff) 10%, transparent) 0%, transparent 70%),
+        var(--bg-card);
+    border-color: color-mix(in srgb, var(--villain-color, #00d4ff) 25%, transparent);
+}
+
+.raid-island--defeated {
+    background:
+        radial-gradient(ellipse at center, rgba(255, 215, 0, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at center bottom, color-mix(in srgb, var(--villain-color, #ffd700) 10%, transparent) 0%, transparent 70%),
+        var(--bg-card);
+    border-color: rgba(255, 215, 0, 0.3);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.08);
+}
+
+.raid-island--defeated::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: conic-gradient(from 0deg, transparent, rgba(255, 215, 0, 0.1), transparent, rgba(255, 215, 0, 0.05), transparent);
+    animation: goldenSparkle 4s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes goldenSparkle {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Island Status Badge */
+.raid-island__status {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* Island Emoji (Villain Icon) */
+.raid-island__emoji {
+    font-size: 48px;
+    line-height: 1;
+    margin-bottom: 4px;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+    transition: transform 0.3s;
+}
+
+.raid-island:hover .raid-island__emoji {
+    transform: scale(1.1);
+}
+
+.raid-island__mystery {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 36px;
+    color: rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 20px rgba(100, 100, 150, 0.3);
+}
+
+/* Island Name */
+.raid-island__name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--text-primary);
+    line-height: 1.4;
+    max-width: 160px;
+    word-wrap: break-word;
+}
+
+.raid-island--uncharted .raid-island__name {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* Island Subtitle (company) */
+.raid-island__subtitle {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: -2px;
+}
+
+/* Loot Count Badge */
+.raid-island__loot {
+    font-size: 12px;
+    color: var(--accent-gold);
+    font-weight: 600;
+    margin-top: 4px;
+    padding: 2px 10px;
+    background: rgba(255, 215, 0, 0.08);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 215, 0, 0.15);
+}
+
+/* Map Fragment Indicator */
+.raid-island__fragment {
+    font-size: 16px;
+    opacity: 0.2;
+    filter: grayscale(1);
+    transition: all 0.3s;
+    margin-top: 4px;
+}
+
+.raid-island__fragment--collected {
+    opacity: 0.9;
+    filter: grayscale(0);
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* Raid Action Text */
+.raid-island__action {
+    font-size: 11px;
+    color: var(--accent-cyan);
+    font-weight: 600;
+    margin-top: 6px;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: all 0.3s;
+}
+
+.raid-island:hover .raid-island__action {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.raid-island--defeated .raid-island__action {
+    color: var(--accent-gold);
+}
+
+/* --- Raid Briefing Panel --- */
+.raid-briefing {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.raid-briefing__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.raid-briefing--open .raid-briefing__backdrop {
+    opacity: 1;
+}
+
+.raid-briefing__panel {
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
+    background:
+        linear-gradient(180deg, rgba(15, 15, 42, 0.98) 0%, rgba(10, 10, 26, 0.99) 100%);
+    border: 2px solid rgba(255, 215, 0, 0.2);
+    border-bottom: none;
+    border-radius: 16px 16px 0 0;
+    padding: 32px;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow:
+        0 -10px 60px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 215, 0, 0.1);
+    /* Pixel border effect */
+    image-rendering: pixelated;
+}
+
+.raid-briefing--open .raid-briefing__panel {
+    transform: translateY(0);
+}
+
+.raid-briefing__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-size: 24px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.raid-briefing__close:hover {
+    color: var(--accent-gold);
+    border-color: rgba(255, 215, 0, 0.3);
+}
+
+/* Briefing Header */
+.raid-briefing__header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.raid-briefing__portrait {
+    width: 96px;
+    height: 96px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s;
+}
+
+.raid-briefing__portrait-emoji {
+    font-size: 56px;
+    line-height: 1;
+}
+
+.raid-briefing__identity {
+    flex: 1;
+}
+
+.raid-briefing__name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: var(--accent-gold);
+    margin: 0 0 8px;
+    line-height: 1.4;
+}
+
+.raid-briefing__tagline {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 8px;
+    font-style: italic;
+}
+
+.raid-briefing__status-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.raid-briefing__status-badge--uncharted {
+    background: rgba(100, 100, 140, 0.2);
+    color: rgba(180, 180, 200, 0.8);
+    border: 1px solid rgba(100, 100, 140, 0.3);
+}
+
+.raid-briefing__status-badge--raided {
+    background: rgba(0, 212, 255, 0.1);
+    color: var(--accent-cyan);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.raid-briefing__status-badge--defeated {
+    background: rgba(255, 215, 0, 0.1);
+    color: var(--accent-gold);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+/* Briefing Description */
+.raid-briefing__description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0 0 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Briefing Sections */
+.raid-briefing__section {
+    margin-bottom: 20px;
+}
+
+.raid-briefing__section-title {
+    font-family: var(--font-heading);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 10px;
+}
+
+/* Loot Type Badges */
+.raid-briefing__loot-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.raid-briefing__loot-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Map Fragment in Briefing */
+.raid-briefing__fragment {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    opacity: 0.5;
+    filter: grayscale(0.5);
+}
+
+.raid-briefing__fragment--collected {
+    opacity: 1;
+    filter: none;
+    border-color: rgba(255, 215, 0, 0.15);
+    background: rgba(255, 215, 0, 0.03);
+}
+
+.raid-briefing__fragment-emoji {
+    font-size: 28px;
+    flex-shrink: 0;
+}
+
+.raid-briefing__fragment-info strong {
+    display: block;
+    font-size: 13px;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.raid-briefing__fragment-info p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Raid Stats */
+.raid-briefing__stats {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.raid-briefing__stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Briefing Actions */
+.raid-briefing__actions {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    text-align: center;
+}
+
+.raid-briefing__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 40px;
+    background: linear-gradient(135deg, rgba(255, 100, 50, 0.25), rgba(255, 215, 0, 0.2));
+    border: 2px solid rgba(255, 215, 0, 0.4);
+    border-radius: 10px;
+    color: var(--accent-gold);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    animation: ctaPulse 3s ease-in-out infinite;
+}
+
+.raid-briefing__cta:hover {
+    background: linear-gradient(135deg, rgba(255, 100, 50, 0.4), rgba(255, 215, 0, 0.35));
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+@keyframes ctaPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.1); }
+    50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.15); }
+}
+
+.raid-briefing__options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 16px;
+}
+
+.raid-briefing__option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.raid-briefing__option input[type="checkbox"] {
+    accent-color: var(--accent-gold);
+}
+
+.raid-briefing__quiz-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.raid-briefing__quiz-btn:hover {
+    border-color: rgba(0, 212, 255, 0.3);
+    color: var(--accent-cyan);
+}
+
+/* --- Legacy source-card classes (kept for backward compat) --- */
+.sources-page { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+.sources-page__header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; }
+.sources-page__title { font-family: var(--font-heading); font-size: 24px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px; }
+.sources-page__subtitle { font-size: 14px; color: var(--text-muted); margin: 0; }
+.sources-page__actions { display: flex; gap: 10px; align-items: center; }
+.sources-page__footer { display: flex; justify-content: center; padding: 24px 0 8px; }
+
+/* --- Mobile Responsive --- */
+@media (max-width: 768px) {
+    .raid-page__header {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .raid-map {
+        padding: 40px 16px 40px;
+    }
+
+    .raid-map__grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 14px;
+    }
+
+    .raid-island {
+        min-height: 170px;
+        padding: 16px 12px 12px;
+    }
+
+    .raid-island__emoji {
+        font-size: 36px;
+    }
+
+    .raid-island__name {
+        font-size: 8px;
+    }
+
+    .raid-map__compass { display: none; }
+    .raid-map__ship { font-size: 24px; }
+
+    .raid-briefing__panel {
+        padding: 20px;
+    }
+
+    .raid-briefing__header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .raid-briefing__cta {
+        font-size: 10px;
+        padding: 12px 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .raid-map__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .raid-island {
+        min-height: 150px;
+    }
+
+    .raid-page__title {
+        font-size: 14px;
+    }
 }
 
 /* ═══════════════ SETTINGS PAGE ═══════════════ */
@@ -3801,6 +4625,31 @@ a:hover {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.2);
     margin-top: 40px;
+}
+
+/* LLM Settings form elements */
+.llm-select, .llm-input {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.llm-select:focus, .llm-input:focus {
+    border-color: rgba(0, 212, 255, 0.4);
+}
+.llm-select option {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+.llm-status-icon {
+    display: inline-block;
+    margin-right: 4px;
 }
 
 /* ═══════════════ RPG DASHBOARD ═══════════════ */
@@ -4188,6 +5037,27 @@ a:hover {
 .rpg__villain-raid-btn:hover {
     background: rgba(0, 212, 255, 0.15);
     border-color: rgba(0, 212, 255, 0.4);
+}
+
+.rpg__villain-portrait {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.rpg__villain-icon:has(.rpg__villain-portrait) {
+    width: 48px;
+    height: 48px;
+    background: transparent;
+}
+
+.rpg__villain-island {
+    display: block;
+    font-size: 11px;
+    color: var(--accent-cyan);
+    opacity: 0.7;
+    font-style: italic;
 }
 
 /* ═══════════════ THE ONE — FINAL BOSS ═══════════════ */
@@ -5248,6 +6118,285 @@ h1, h2 {
     padding-bottom: 80px;
 }
 
+/* ── Villain Riddle System ────────────────────────────────────────────── */
+
+.riddle-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.riddle-box {
+    position: relative;
+    max-width: 560px;
+    width: 90%;
+    background: var(--mi-ocean, #0a1628);
+    border: 3px double var(--mi-sand, #c8a86e);
+    border-radius: 4px;
+    padding: 28px 24px 24px;
+    color: var(--mi-sail, #e8dcc8);
+    box-shadow:
+        0 0 40px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(0, 212, 255, 0.08);
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.riddle-box__header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.riddle-box__portrait {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    background: var(--mi-sky, #1a2a4a);
+    border: 2px solid var(--mi-sand, #c8a86e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    line-height: 1;
+}
+
+.riddle-box__villain-info {
+    flex: 1;
+}
+
+.riddle-box__villain-name {
+    font-family: var(--font-heading, 'Georgia', serif);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent-cyan, #00d4ff);
+}
+
+.riddle-box__villain-company {
+    font-size: 12px;
+    color: var(--text-muted, #888);
+    margin-top: 2px;
+}
+
+.riddle-box__intro {
+    font-size: 13px;
+    font-style: italic;
+    color: var(--text-secondary, #aaa);
+    margin-bottom: 18px;
+    line-height: 1.5;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 2px solid var(--mi-sand, #c8a86e);
+}
+
+.riddle-box__question {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    color: var(--text-primary, #fff);
+}
+
+.riddle-box__options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.riddle-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-glass, rgba(255, 255, 255, 0.04));
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
+    border-radius: 6px;
+    color: var(--text-primary, #fff);
+    font-size: 13px;
+    font-family: var(--font-body, sans-serif);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    line-height: 1.4;
+}
+
+.riddle-option__label {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent-cyan, #00d4ff);
+}
+
+.riddle-option:hover:not(.riddle-option--answered) {
+    background: var(--bg-glass-hover, rgba(255, 255, 255, 0.08));
+    border-color: var(--accent-cyan, #00d4ff);
+    transform: translateX(4px);
+}
+
+.riddle-option--correct {
+    background: rgba(0, 255, 136, 0.12) !important;
+    border-color: var(--accent-green, #00ff88) !important;
+    box-shadow: 0 0 16px rgba(0, 255, 136, 0.15);
+    animation: riddle-correct-glow 0.6s ease;
+}
+
+.riddle-option--correct .riddle-option__label {
+    background: var(--accent-green, #00ff88);
+    color: #000;
+}
+
+.riddle-option--wrong {
+    background: rgba(255, 107, 157, 0.12) !important;
+    border-color: var(--accent-pink, #ff6b9d) !important;
+    animation: riddle-wrong-shake 0.4s ease;
+}
+
+.riddle-option--wrong .riddle-option__label {
+    background: var(--accent-pink, #ff6b9d);
+    color: #000;
+}
+
+.riddle-option--answered {
+    cursor: default;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.riddle-option--correct.riddle-option--answered,
+.riddle-option--wrong.riddle-option--answered {
+    opacity: 1;
+}
+
+@keyframes riddle-correct-glow {
+    0% { box-shadow: 0 0 0 rgba(0, 255, 136, 0); transform: scale(1); }
+    50% { box-shadow: 0 0 24px rgba(0, 255, 136, 0.3); transform: scale(1.02); }
+    100% { box-shadow: 0 0 16px rgba(0, 255, 136, 0.15); transform: scale(1); }
+}
+
+@keyframes riddle-wrong-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
+.riddle-explanation {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: rgba(0, 212, 255, 0.06);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-cyan, #00d4ff);
+    font-size: 13px;
+    color: var(--text-secondary, #ccc);
+    line-height: 1.5;
+    animation: fadeIn 0.4s ease;
+}
+
+.riddle-villain-reaction {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--mi-sand, #c8a86e);
+    line-height: 1.4;
+    animation: fadeIn 0.5s ease 0.2s both;
+}
+
+.riddle-box__actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.riddle-box__btn {
+    padding: 10px 20px;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1));
+    border-radius: 6px;
+    background: var(--bg-glass, rgba(255, 255, 255, 0.04));
+    color: var(--text-primary, #fff);
+    font-size: 13px;
+    font-family: var(--font-body, sans-serif);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.riddle-box__btn:hover {
+    background: var(--bg-glass-hover, rgba(255, 255, 255, 0.08));
+    border-color: var(--accent-cyan, #00d4ff);
+}
+
+.riddle-box__btn--primary {
+    background: linear-gradient(135deg, var(--accent-purple, #a855f7), var(--accent-cyan, #00d4ff));
+    border: none;
+    font-weight: 600;
+}
+
+.riddle-box__btn--primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.riddle-box__skip {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: none;
+    border: none;
+    color: var(--text-muted, #666);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: color 0.2s;
+}
+
+.riddle-box__skip:hover {
+    color: var(--text-secondary, #aaa);
+}
+
+.riddle-score {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted, #888);
+    margin-top: 12px;
+}
+
+.riddle-score__correct {
+    color: var(--accent-green, #00ff88);
+    font-weight: 600;
+}
+
+.riddle-score__wrong {
+    color: var(--accent-pink, #ff6b9d);
+    font-weight: 600;
+}
+
 /* ── Responsive: verb bar stacks on mobile ────────────────────────────── */
 
 @media (max-width: 768px) {
@@ -5267,6 +6416,13 @@ h1, h2 {
         flex-direction: column;
         align-items: center;
         text-align: center;
+    }
+    .riddle-box {
+        width: 95%;
+        padding: 20px 16px 16px;
+    }
+    .riddle-box__actions {
+        flex-direction: column;
     }
 }
 

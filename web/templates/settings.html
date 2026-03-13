@@ -16,19 +16,19 @@
                 <span class="setting-row__label jargon" data-rpg="Vault Location" data-real="Vault Location">Vault Location</span>
                 <span class="setting-row__value">{{ vault_root }}</span>
             </div>
-            <button class="setting-row__action" onclick="NomoloBridge.openVaultFolder()">Open in Finder</button>
+            <button class="setting-row__action jargon" data-rpg="Open the hold" data-real="Open in Finder" onclick="NomoloBridge.openVaultFolder()">Open the hold</button>
         </div>
 
         <div class="setting-row">
             <div class="setting-row__info">
-                <span class="setting-row__label jargon" data-rpg="Total Booty" data-real="Total Records">Total Booty</span>
+                <span class="setting-row__label jargon" data-rpg="Total Booty" data-real="Total Records" title="Pieces of treasure in your vault">Total Booty</span>
                 <span class="setting-row__value">{{ "{:,}".format(total_records) }}</span>
             </div>
         </div>
 
         <div class="setting-row">
             <div class="setting-row__info">
-                <span class="setting-row__label jargon" data-rpg="Islands Plundered" data-real="Connected Sources">Islands Plundered</span>
+                <span class="setting-row__label jargon" data-rpg="Islands Plundered" data-real="Connected Sources" title="Islands you've successfully raided">Islands Plundered</span>
                 <span class="setting-row__value">{{ source_count }}</span>
             </div>
         </div>
@@ -54,7 +54,7 @@
                 <span class="setting-row__label jargon" data-rpg="Re-raid all local harbors" data-real="Re-scan all local sources">Re-raid all local harbors</span>
                 <span class="setting-row__desc jargon" data-rpg="Plunder all Mac harbors again (Contacts, Calendar, Messages, etc.)" data-real="Re-collect data from all Mac sources (Contacts, Calendar, Messages, etc.)">Plunder all Mac harbors again (Contacts, Calendar, Messages, etc.)</span>
             </div>
-            <button class="setting-row__action" onclick="NomoloBridge.rescanSources()">Scan the Horizon</button>
+            <button class="setting-row__action jargon" data-rpg="Scan the Horizon" data-real="Rescan" onclick="NomoloBridge.rescanSources()">Scan the Horizon</button>
         </div>
 
         <div class="setting-row">
@@ -62,7 +62,7 @@
                 <span class="setting-row__label jargon" data-rpg="Restart the voyage" data-real="Reset welcome journey">Restart the voyage</span>
                 <span class="setting-row__desc jargon" data-rpg="Show the onboarding tale again next time ye visit" data-real="Show the onboarding flow again next time you visit">Show the onboarding tale again next time ye visit</span>
             </div>
-            <button class="setting-row__action setting-row__action--subtle" onclick="NomoloBridge.resetJourney()">Reset</button>
+            <button class="setting-row__action setting-row__action--subtle jargon" data-rpg="Weigh anchor" data-real="Reset" onclick="NomoloBridge.resetJourney()">Weigh anchor</button>
         </div>
     </section>
 
@@ -73,9 +73,59 @@
         <div class="setting-row">
             <div class="setting-row__info">
                 <span class="setting-row__label jargon" data-rpg="Letter of Marque" data-real="Google Credentials">Letter of Marque</span>
-                <span class="setting-row__value" id="google-creds-status">Charting course...</span>
+                <span class="setting-row__value" id="google-creds-status"><span class="jargon" data-rpg="Adjusting the ship's wheel..." data-real="Loading...">Adjusting the ship's wheel...</span></span>
             </div>
             <button class="setting-row__action" id="google-creds-btn" onclick="NomoloBridge.openExpertModal()">Setup</button>
+        </div>
+    </section>
+
+    <!-- LLM API Keys -->
+    <section class="settings-section">
+        <h2 class="settings-section__title jargon" data-rpg="Arcane Scrolls" data-real="LLM API Keys">Arcane Scrolls</h2>
+
+        <div class="setting-row">
+            <div class="setting-row__info">
+                <span class="setting-row__label jargon" data-rpg="Oracle Status" data-real="Token Status">Oracle Status</span>
+                <span class="setting-row__value" id="llm-token-status">
+                    <span class="jargon" data-rpg="Consulting the stars..." data-real="Loading...">Consulting the stars...</span>
+                </span>
+            </div>
+            <button class="setting-row__action" id="llm-token-toggle-btn" onclick="NomoloBridge.toggleLLMForm()">Configure</button>
+        </div>
+
+        <div id="llm-token-form" style="display: none; padding: 12px 0;">
+            <div class="setting-row" style="border-bottom: none;">
+                <div class="setting-row__info" style="width: 100%;">
+                    <label class="setting-row__label jargon" data-rpg="Choose yer Oracle" data-real="Select Provider" for="llm-provider" style="margin-bottom: 6px;">Choose yer Oracle</label>
+                    <select id="llm-provider" class="llm-select" onchange="NomoloBridge.onLLMProviderChange()">
+                        <option value="openai">OpenAI</option>
+                        <option value="anthropic">Anthropic (Claude)</option>
+                        <option value="custom">Custom / Local</option>
+                    </select>
+                </div>
+            </div>
+            <div class="setting-row" style="border-bottom: none;">
+                <div class="setting-row__info" style="width: 100%;">
+                    <label class="setting-row__label jargon" data-rpg="Secret Incantation" data-real="API Key" for="llm-token" style="margin-bottom: 6px;">Secret Incantation</label>
+                    <input type="password" id="llm-token" class="llm-input" placeholder="sk-... or your API key" autocomplete="off">
+                </div>
+            </div>
+            <div class="setting-row" style="border-bottom: none;">
+                <div class="setting-row__info" style="width: 100%;">
+                    <label class="setting-row__label jargon" data-rpg="Oracle's Port" data-real="API Endpoint" for="llm-endpoint" style="margin-bottom: 6px;">Oracle's Port</label>
+                    <input type="text" id="llm-endpoint" class="llm-input" placeholder="https://api.openai.com">
+                </div>
+            </div>
+            <div class="setting-row" style="border-bottom: none;">
+                <div class="setting-row__info" style="width: 100%;">
+                    <label class="setting-row__label jargon" data-rpg="Oracle's Tongue" data-real="Model" for="llm-model" style="margin-bottom: 6px;">Oracle's Tongue</label>
+                    <input type="text" id="llm-model" class="llm-input" placeholder="gpt-4o">
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px; padding-top: 8px;">
+                <button class="setting-row__action jargon" data-rpg="Seal the Scroll" data-real="Save" onclick="NomoloBridge.saveLLMToken()">Seal the Scroll</button>
+                <button class="setting-row__action setting-row__action--danger jargon" data-rpg="Burn the Scroll" data-real="Delete" id="llm-delete-btn" style="display: none;" onclick="NomoloBridge.deleteLLMToken()">Burn the Scroll</button>
+            </div>
         </div>
     </section>
 
@@ -88,17 +138,18 @@
                 <span class="setting-row__label jargon" data-rpg="Scuttle the voyage log" data-real="Clear journey state">Scuttle the voyage log</span>
                 <span class="setting-row__desc jargon" data-rpg="Removes saved voyage progress (does not scuttle any plunder)" data-real="Removes saved journey progress (does not delete any data)">Removes saved voyage progress (does not scuttle any plunder)</span>
             </div>
-            <button class="setting-row__action setting-row__action--danger" onclick="NomoloBridge.clearJourneyState(); NomoloBridge.toast('Voyage log scuttled!', 'success')">Scuttle</button>
+            <button class="setting-row__action setting-row__action--danger jargon" data-rpg="Scuttle" data-real="Clear" onclick="NomoloBridge.clearJourneyState(); var jm = localStorage.getItem('nomolo_jargon_mode') || 'rpg'; NomoloBridge.toast(jm === 'rpg' ? 'Voyage log scuttled!' : 'Journey state cleared', 'success')">Scuttle</button>
         </div>
     </section>
 
-    <p class="settings-page__version">Nomolo v0.1.0 — Sails locally. Open to all pirates.</p>
+    <p class="settings-page__version jargon" data-rpg="Nomolo v0.1.0 — Sails locally. Open to all pirates. &ldquo;The code is more what you'd call guidelines than actual rules.&rdquo;" data-real="Nomolo v0.1.0 — Runs locally. Open source.">Nomolo v0.1.0 — Sails locally. Open to all pirates. &ldquo;The code is more what you'd call guidelines than actual rules.&rdquo;</p>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
+    const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
     // Check Google credentials status
     try {
         const resp = await fetch('/api/credentials/status');
@@ -106,14 +157,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         const statusEl = document.getElementById('google-creds-status');
         const btnEl = document.getElementById('google-creds-btn');
         if (data.credentials) {
-            statusEl.textContent = 'Boarded!';
+            statusEl.textContent = jM === 'rpg' ? 'Aboard!' : 'Connected';
             statusEl.style.color = 'var(--accent-green)';
             btnEl.textContent = 'Manage';
         } else {
-            statusEl.textContent = 'No letter of marque found';
+            statusEl.textContent = jM === 'rpg' ? 'No letter of marque found' : 'Not configured';
             btnEl.textContent = 'Setup';
         }
     } catch {}
+
+    // Load LLM token status
+    NomoloBridge.initLLMSettings();
 });
 </script>
 {% endblock %}

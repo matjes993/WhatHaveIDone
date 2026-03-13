@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Three-Headed Monkey -->
+  <!-- Tail -->
+  <path d="M100 230 Q130 230 145 210 Q160 190 155 170 Q150 155 140 160" fill="none" stroke="#8b5a2a" stroke-width="6" stroke-linecap="round"/>
+  <!-- Body -->
+  <ellipse cx="100" cy="210" rx="35" ry="40" fill="#a06830"/>
+  <!-- Belly -->
+  <ellipse cx="100" cy="215" rx="22" ry="28" fill="#c8a060"/>
+  <!-- Legs -->
+  <path d="M75 240 Q70 265 65 275 Q60 280 70 282 L82 280 Q85 275 82 260 L85 240" fill="#8b5a2a"/>
+  <path d="M115 240 Q120 265 125 275 Q130 280 122 282 L110 280 Q108 275 110 260 L108 240" fill="#8b5a2a"/>
+  <!-- Arms -->
+  <path d="M65 195 Q50 200 42 215 Q38 222 45 222 L50 218" fill="#8b5a2a"/>
+  <path d="M135 195 Q150 200 158 215 Q162 222 155 222 L150 218" fill="#8b5a2a"/>
+  <!-- Banana in hand -->
+  <path d="M42 215 Q38 200 44 190 Q48 185 50 190" fill="#f0d848" stroke="#d4b830" stroke-width="1"/>
+  <!-- HEAD 1 (left) -->
+  <ellipse cx="68" cy="140" rx="25" ry="28" fill="#a06830"/>
+  <ellipse cx="68" cy="148" rx="14" ry="12" fill="#c8a060"/>
+  <!-- Eyes -->
+  <circle cx="60" cy="135" r="6" fill="white"/>
+  <circle cx="76" cy="135" r="6" fill="white"/>
+  <circle cx="61" cy="136" r="3" fill="#2a1a08"/>
+  <circle cx="77" cy="136" r="3" fill="#2a1a08"/>
+  <!-- Ears -->
+  <circle cx="44" cy="132" r="8" fill="#c8885a"/>
+  <circle cx="44" cy="132" r="4" fill="#e8a878"/>
+  <!-- Mouth (happy) -->
+  <path d="M58 150 Q68 158 78 150" fill="none" stroke="#5a3010" stroke-width="2"/>
+  <!-- Nose -->
+  <ellipse cx="68" cy="144" rx="4" ry="3" fill="#8b5020"/>
+
+  <!-- HEAD 2 (center, slightly higher) -->
+  <ellipse cx="100" cy="128" rx="26" ry="30" fill="#a06830"/>
+  <ellipse cx="100" cy="137" rx="15" ry="13" fill="#c8a060"/>
+  <!-- Eyes (surprised) -->
+  <circle cx="92" cy="122" r="7" fill="white"/>
+  <circle cx="108" cy="122" r="7" fill="white"/>
+  <circle cx="93" cy="122" r="3.5" fill="#2a1a08"/>
+  <circle cx="109" cy="122" r="3.5" fill="#2a1a08"/>
+  <!-- Ears -->
+  <ellipse cx="75" cy="118" rx="6" ry="8" fill="#c8885a"/>
+  <ellipse cx="75" cy="118" rx="3" ry="5" fill="#e8a878"/>
+  <ellipse cx="125" cy="118" rx="6" ry="8" fill="#c8885a"/>
+  <ellipse cx="125" cy="118" rx="3" ry="5" fill="#e8a878"/>
+  <!-- Mouth (open/surprised) -->
+  <ellipse cx="100" cy="142" rx="6" ry="5" fill="#5a3010"/>
+  <!-- Nose -->
+  <ellipse cx="100" cy="133" rx="5" ry="3" fill="#8b5020"/>
+  <!-- Tuft of hair -->
+  <path d="M95 98 Q100 88 105 98 Q108 90 112 100" fill="#8b5a2a"/>
+
+  <!-- HEAD 3 (right) -->
+  <ellipse cx="132" cy="140" rx="25" ry="28" fill="#a06830"/>
+  <ellipse cx="132" cy="148" rx="14" ry="12" fill="#c8a060"/>
+  <!-- Eyes (mischievous, one winking) -->
+  <circle cx="124" cy="135" r="6" fill="white"/>
+  <circle cx="140" cy="135" r="6" fill="white"/>
+  <circle cx="125" cy="136" r="3" fill="#2a1a08"/>
+  <!-- Winking eye -->
+  <path d="M135 136 Q140 133 145 136" fill="none" stroke="#2a1a08" stroke-width="2"/>
+  <!-- Ears -->
+  <circle cx="156" cy="132" r="8" fill="#c8885a"/>
+  <circle cx="156" cy="132" r="4" fill="#e8a878"/>
+  <!-- Mouth (grinning) -->
+  <path d="M122 150 Q132 160 142 150" fill="#5a3010"/>
+  <path d="M124 150 Q132 153 140 150" fill="white"/>
+  <!-- Nose -->
+  <ellipse cx="132" cy="144" rx="4" ry="3" fill="#8b5020"/>
+</svg>

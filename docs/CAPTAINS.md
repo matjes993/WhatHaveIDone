@@ -1,4 +1,4 @@
-# The Conglomerate Captains: A Field Guide
+# The Armada Captains: A Field Guide
 
 *Being a Comprehensive and Only Slightly Exaggerated Account of the Pirate Lords Who Rule the Seven Seas of Data, Their Habits, Weaknesses, and Preferred Beverages*
 
@@ -8,15 +8,15 @@
 
 ---
 
-## Prologue: On the Nature of Conglomerate Captains
+## Prologue: On the Nature of Armada Captains
 
-The Conglomerate Captains are not, strictly speaking, evil. This is important to establish early, because it would be much simpler if they were. Evil is straightforward. Evil wears a black hat, ties maidens to railway tracks[^1], and cackles. The Conglomerate Captains wear excellent hats, have never tied anyone to anything, and their laughter is the warm, confident chuckle of people who genuinely believe they are making the world a better place.
+The Armada Captains are not, strictly speaking, evil. This is important to establish early, because it would be much simpler if they were. Evil is straightforward. Evil wears a black hat, ties maidens to railway tracks[^1], and cackles. The Armada Captains wear excellent hats, have never tied anyone to anything, and their laughter is the warm, confident chuckle of people who genuinely believe they are making the world a better place.
 
 This is what makes them dangerous.
 
 Every captain in this guide started with a genuine insight — a real problem that real sailors had, and a clever solution that actually worked. The lighthouse that became a surveillance tower. The beautiful ship that became a beautiful prison. The tavern noticeboard that became a dossier factory. In every case, the captain's original instinct was good. What happened next was scale. Scale is the rum of the Seven Seas: a little makes everything better, and a lot makes you do things you'll need to explain to a magistrate.
 
-These are the captains you'll face when you raid the Conglomerate islands. Know them. Understand them. Respect them. And then take your stuff back.
+These are the captains you'll face when you raid the Armada islands. Know them. Understand them. Respect them. And then take your stuff back.
 
 [^1]: The Seven Seas don't have railways. They tried once. The tracks kept sinking. The project was abandoned after three investors drowned and one was eaten by the Great Algorithm Turtle, who mistook the locomotive for an unusually ambitious sardine.
 
@@ -26,7 +26,7 @@ These are the captains you'll face when you raid the Conglomerate islands. Know 
 
 **Full Title:** Captain Lexicon the All-Seeing, Grand Cartographer of the Omniscient Archipelago, Keeper of Ten Thousand Maps That Were Definitely Not Drawn By Reading Your Mail
 
-**Conglomerate:** The Omniscient Archipelago
+**Fleet:** The Omniscient Archipelago
 
 ### Appearance
 
@@ -95,7 +95,7 @@ Lexicon commands the largest fleet in the Seven Seas: the **Index Armada**. His 
 
 **Full Title:** Admiral Polished the Immaculate, Lord of Apple Fortress, Commander of the Seamless Fleet, Arbiter of What You Need Before You Know You Need It
 
-**Conglomerate:** Apple Fortress
+**Fleet:** Apple Fortress
 
 ### Appearance
 
@@ -145,7 +145,7 @@ He is also vulnerable to **price comparison**. Polished can defend anything abou
 
 ### Redeeming Quality
 
-Admiral Polished has, more than any other captain, proved that technology can be humane. His insistence on privacy — real, structural privacy, not just promises — has set a standard that other Conglomerates have been forced to follow. His accessibility features ensure that sailors of all abilities can navigate his ships. And his refusal to sell user data to advertisers, whatever the commercial motive, has protected billions of records from the open market. The prison is real, but the guards don't rifle through your belongings. In the Seven Seas, that counts for something[^7].
+Admiral Polished has, more than any other captain, proved that technology can be humane. His insistence on privacy — real, structural privacy, not just promises — has set a standard that other Armada fleets have been forced to follow. His accessibility features ensure that sailors of all abilities can navigate his ships. And his refusal to sell user data to advertisers, whatever the commercial motive, has protected billions of records from the open market. The prison is real, but the guards don't rifle through your belongings. In the Seven Seas, that counts for something[^7].
 
 [^7]: It counts for quite a lot, actually. Several freed Data Pirates have admitted, privately and with visible shame, that they miss the Fortress. "Everything just *worked*," they whisper into their grog, clutching their open-source alternatives like security blankets that don't quite fit.
 
@@ -164,7 +164,7 @@ The **Seamless Fleet** is the most uniform navy in the Seven Seas. Every ship is
 
 **Full Title:** Captain Pivot the Connected, First of His Name and Third of His Brand, Admiral of Meta Reef, Builder of Communities and Also Dossiers
 
-**Conglomerate:** Meta Reef
+**Fleet:** Meta Reef
 
 ### Appearance
 
@@ -201,7 +201,7 @@ Captain Pivot fights with **the Hydra Defense**. Cut off one head (shut down one
 
 Pivot's weakness is **transparency**. His empire runs on the gap between what users think is happening and what is actually happening. Shine a light on the actual data flows — show people exactly what is collected, who it's sold to, and what the dossier looks like — and the spell breaks. Pivot's users are loyal only as long as they don't look behind the noticeboard.
 
-He is also vulnerable to **exodus**. Unlike other Conglomerates, Pivot's value comes entirely from the network — from the fact that everyone is there. If enough people leave, the network effect collapses, and the Reef becomes a very expensive noticeboard that nobody reads. Pivot knows this, which is why the export process is designed to make you feel like you're abandoning your friends rather than downloading a file.
+He is also vulnerable to **exodus**. Unlike other Armada fleets, Pivot's value comes entirely from the network — from the fact that everyone is there. If enough people leave, the network effect collapses, and the Reef becomes a very expensive noticeboard that nobody reads. Pivot knows this, which is why the export process is designed to make you feel like you're abandoning your friends rather than downloading a file.
 
 ### Signature Insult (for Insult Data Fighting)
 
@@ -233,7 +233,7 @@ The **Hydra Fleet** is distinguished by its constant rebranding:
 
 **Full Title:** Commodore Prime, Lord of the Merchant Fleet, Emperor of Logistics, He Who Ships Everything Including Your Privacy
 
-**Conglomerate:** The Merchant Fleet
+**Fleet:** The Merchant Fleet
 
 ### Appearance
 
@@ -268,7 +268,7 @@ Commodore Prime fights with **logistical supremacy**. His defense is not a wall 
 
 ### Weakness
 
-Prime's weakness is **his workers**. The Merchant Fleet runs on the labor of thousands of dock-hands, warehouse runners, and delivery sailors who work under conditions that even other Conglomerates find uncomfortable. Expose the gap between the Commodore's customer-facing smile and the reality below decks, and his reputation cracks. His logistics depend on speed, and speed depends on people, and people have a distressing tendency to form unions when pushed too far.
+Prime's weakness is **his workers**. The Merchant Fleet runs on the labor of thousands of dock-hands, warehouse runners, and delivery sailors who work under conditions that even other Armada fleets find uncomfortable. Expose the gap between the Commodore's customer-facing smile and the reality below decks, and his reputation cracks. His logistics depend on speed, and speed depends on people, and people have a distressing tendency to form unions when pushed too far.
 
 He is also vulnerable to **anti-monopoly action**. Prime's empire is so vast that it competes with its own merchants, judges its own markets, and delivers its own verdicts. Point out that the referee and the player are the same person, and even Prime's legendary composure flickers.
 
@@ -302,7 +302,7 @@ The **Merchant Armada** is less a fleet than an economy:
 
 **Full Title:** The Harbormaster, Governor of the Professional Port, Keeper of the Network, Philanthropist (Terms and Conditions Apply)
 
-**Conglomerate:** The Professional Port
+**Fleet:** The Professional Port
 
 ### Appearance
 
@@ -318,7 +318,7 @@ His port requires a tie to dock. This rule is non-negotiable.
 
 The Harbormaster's empire began with windows. Actual, physical windows — glass panes that he convinced every ship in the Seven Seas they needed. Before the Harbormaster, ships had portholes at best and solid walls at worst. His innovation was the Window System: a standardized pane of glass that could be installed on any vessel, providing light, visibility, and a tendency to crack at the worst possible moment. The windows weren't the best glass on the market. They weren't the most elegant. But they were everywhere, and in the Seven Seas, ubiquity beats quality every time[^15].
 
-The windows made him wealthy. The wealth made him powerful. The power made him philanthropic, which is the traditional third act for merchant lords who have more doubloons than they can spend and a growing awareness that history is watching. The Harbormaster's charitable fleet now operates in waters the Conglomerate ships don't bother with — eradicating diseases, building schools, improving sanitation — and these efforts are genuine, sustained, and not tax-deductible because the Seven Seas don't have taxes, which somehow makes them even more impressive.
+The windows made him wealthy. The wealth made him powerful. The power made him philanthropic, which is the traditional third act for merchant lords who have more doubloons than they can spend and a growing awareness that history is watching. The Harbormaster's charitable fleet now operates in waters the Armada ships don't bother with — eradicating diseases, building schools, improving sanitation — and these efforts are genuine, sustained, and not tax-deductible because the Seven Seas don't have taxes, which somehow makes them even more impressive.
 
 But between the windows and the philanthropy came the Professional Port — a harbor where every sailor is required to maintain a "professional profile" documenting their skills, experience, and connections. Endorsements are exchanged like currency. Recommendations flow like grog at a promotion party. The whole system runs on a peculiar economy of mutual flattery, where everyone agrees to describe everyone else as "visionary" and "results-driven" in exchange for the same courtesy. The data it collects — your entire professional life, your network, your ambitions — is immensely valuable. The Harbormaster knows who knows whom, who's looking to change ships, and whose endorsement for "knot-tying" is worth its weight in doubloons.
 
@@ -339,7 +339,7 @@ The Harbormaster fights with **bureaucracy and professional obligation**. His de
 
 The Harbormaster's weakness is **authenticity**. His entire port runs on performance — the curated, optimistic, professionally sanitized version of reality. Introduce genuine, messy, human honesty into the system ("Actually, I hated that voyage and my captain was a fraud") and the Professional Port's carefully maintained facade begins to crack. The Harbormaster cannot process a world where people say what they actually think rather than what sounds good on a profile.
 
-He is also vulnerable to **the open-source alternative**. His original window empire was challenged by free, community-built windows that worked better and cost nothing. The same is true of his port: show people they can network without a platform that charges for the privilege, and his value proposition evaporates.
+He is also vulnerable to **the open-source alternative**. His original window empire was challenged by free, community-built windows that worked better and cost nothing. The same is true of his port: show people they can network without a port that charges for the privilege, and his value proposition evaporates.
 
 ### Signature Insult (for Insult Data Fighting)
 
@@ -352,7 +352,7 @@ He is also vulnerable to **the open-source alternative**. His original window em
 
 ### Redeeming Quality
 
-The Harbormaster has given away more gold than most captains will ever earn. His charitable fleet has eradicated diseases, built schools, and improved sanitation in waters that the profit-driven Conglomerates ignore entirely. He reads voraciously, thinks deeply about global problems, and uses his wealth to fund solutions rather than yachts. Inside the Professional Port, his platform has genuinely helped millions of sailors find work, change careers, and build connections that improved their lives. The Port is stuffy, the endorsements are hollow, and the InMails are relentless — but the man behind it is trying, in his awkward and occasionally patronizing way, to do good[^16].
+The Harbormaster has given away more gold than most captains will ever earn. His charitable fleet has eradicated diseases, built schools, and improved sanitation in waters that the profit-driven Armadas ignore entirely. He reads voraciously, thinks deeply about global problems, and uses his wealth to fund solutions rather than yachts. Inside the Professional Port, his harbor has genuinely helped millions of sailors find work, change careers, and build connections that improved their lives. The Port is stuffy, the endorsements are hollow, and the InMails are relentless — but the man behind it is trying, in his awkward and occasionally patronizing way, to do good[^16].
 
 [^16]: The Harbormaster once gave a keynote speech titled "How I Plan to Give Away All My Doubloons Before I Die" that was simultaneously inspiring, moving, and the most effectively humble brag in maritime history. The audience wept and then checked their professional profiles to see if he'd endorsed them.
 
@@ -371,7 +371,7 @@ The **Professional Fleet** is distinguished by its formal dress code:
 
 **Full Title:** The Maestro, First Bard of the Melody Merchant, Keeper of Thirty Million Shanties, Patron of Musicians (in Spirit if Not in Doubloons)
 
-**Conglomerate:** The Melody Merchant
+**Fleet:** The Melody Merchant
 
 ### Appearance
 
@@ -389,7 +389,7 @@ He came from a port where the bards were struggling. Piracy — actual piracy, n
 
 The Maestro's insight was subscription. Instead of buying individual shanties, sailors would pay a monthly fee for access to every shanty ever written — thirty million and counting. The model was revolutionary. Sailors loved it. The listening experience was seamless. The recommendation engine was uncanny. The annual Wrapped report — a beautifully designed treasure map proving that the Maestro understood your soul better than you did — became the most shared document in the Seven Seas.
 
-The bards, however, noticed something. They were being paid 0.003 doubloons per shanty played. A shanty that was played a thousand times — a thousand individual moments of joy, comfort, or catharsis — earned its creator three doubloons. The Maestro, meanwhile, was building a palace. He explained, with genuine conviction, that exposure was more valuable than gold, that the old model was dead, and that the bards should be grateful for the platform. Some bards were grateful. Most were hungry[^18].
+The bards, however, noticed something. They were being paid 0.003 doubloons per shanty played. A shanty that was played a thousand times — a thousand individual moments of joy, comfort, or catharsis — earned its creator three doubloons. The Maestro, meanwhile, was building a palace. He explained, with genuine conviction, that exposure was more valuable than gold, that the old model was dead, and that the bards should be grateful for the harbor. Some bards were grateful. Most were hungry[^18].
 
 [^18]: The Maestro's most controversial innovation was the "Discover Weekly" playlist, an algorithmically generated selection of songs tailored to each sailor's taste. It was brilliant. It was beloved. It also gave the Maestro an unprecedented window into the emotional states of billions of people, cross-referenced with time of day, location, and weather conditions. The Maestro insists this data is used "only to improve the listening experience." What constitutes "the listening experience" remains deliberately undefined.
 
@@ -421,7 +421,7 @@ He is also vulnerable to **direct artist-to-listener connections**. Every sailor
 
 ### Redeeming Quality
 
-The Maestro has, undeniably, saved the sea shanty from extinction. Before his platform, piracy (the non-data kind) had decimated the bard economy. The Maestro built a system where music was accessible to everyone, where discovery was effortless, and where a sailor in the remotest port could hear the same shanties as one in the capital. His recommendation engine has introduced millions of listeners to bards they would never have found otherwise, creating real careers and real audiences. The payment problem is real and serious, but so is the fact that more bards can reach more ears than at any point in the history of the Seven Seas. The Maestro built the library of all music. He just forgot to pay the librarians properly[^19].
+The Maestro has, undeniably, saved the sea shanty from extinction. Before his harbor, piracy (the non-data kind) had decimated the bard economy. The Maestro built a system where music was accessible to everyone, where discovery was effortless, and where a sailor in the remotest port could hear the same shanties as one in the capital. His recommendation engine has introduced millions of listeners to bards they would never have found otherwise, creating real careers and real audiences. The payment problem is real and serious, but so is the fact that more bards can reach more ears than at any point in the history of the Seven Seas. The Maestro built the library of all music. He just forgot to pay the librarians properly[^19].
 
 [^19]: The Maestro has recently begun offering "tip jars" where listeners can send doubloons directly to bards. The maximum tip is less than the cost of a grog. The Maestro considers this generous.
 
@@ -440,7 +440,7 @@ The **Melody Fleet** is the most musical armada on the seas:
 
 **Full Title:** The Shadow Broker, Master of the Whisper Network, Keeper of Encrypted Secrets, Freedom Fighter and/or Spy (Delete as Appropriate)
 
-**Conglomerate:** The Shadow Courier
+**Fleet:** The Shadow Courier
 
 ### Appearance
 
@@ -454,11 +454,11 @@ The Shadow Broker communicates through encrypted messenger pigeons that self-des
 
 ### Origin Story
 
-The Shadow Broker emerged from the shadows — one hesitates to say "naturally," but it's the word that fits — during the Great Surveillance Expansion, a period when the major Conglomerates began reading sailors' mail as casually as reading a menu. The Broker was, in those days, a young cryptographer in a country whose government read mail even more casually than the Conglomerates, and with considerably less charm.
+The Shadow Broker emerged from the shadows — one hesitates to say "naturally," but it's the word that fits — during the Great Surveillance Expansion, a period when the major Armada fleets began reading sailors' mail as casually as reading a menu. The Broker was, in those days, a young cryptographer in a country whose government read mail even more casually than the Armada, and with considerably less charm.
 
-The Broker's insight was dangerous and beautiful: *communication is a right, not a feature.* Every sailor deserved a channel that no admiral, no conglomerate, no government, and no algorithm could read. End-to-end encryption. Self-destructing messages. No advertising. No data mining. No compromises.
+The Broker's insight was dangerous and beautiful: *communication is a right, not a feature.* Every sailor deserved a channel that no admiral, no Armada fleet, no government, and no algorithm could read. End-to-end encryption. Self-destructing messages. No advertising. No data mining. No compromises.
 
-Building the Whisper Network required paranoia, brilliance, and a willingness to be called a hero by privacy advocates and a villain by intelligence services, often in the same sentence. The Broker built it anyway. The Network grew. Dissidents used it to organize. Journalists used it to protect sources. Ordinary sailors used it to have conversations they didn't want archived in some Conglomerate's vault. And yes, some less savory characters used it too — because privacy, like any tool, serves the wielder's intent, not the toolmaker's hopes.
+Building the Whisper Network required paranoia, brilliance, and a willingness to be called a hero by privacy advocates and a villain by intelligence services, often in the same sentence. The Broker built it anyway. The Network grew. Dissidents used it to organize. Journalists used it to protect sources. Ordinary sailors used it to have conversations they didn't want archived in some Armada's vault. And yes, some less savory characters used it too — because privacy, like any tool, serves the wielder's intent, not the toolmaker's hopes.
 
 The Broker accepts this trade-off with the calm of someone who decided long ago that the principle matters more than the edge cases. This is either admirable integrity or dangerous naivety, depending on your politics, your threat model, and whether you've ever needed an encrypted channel at 3 AM[^21].
 
@@ -483,7 +483,7 @@ They are also vulnerable to **the metadata problem**. The messages are encrypted
 
 ### Signature Insult (for Insult Data Fighting)
 
-> **Shadow Broker:** "Every message on my network is encrypted. No one — not governments, not Conglomerates, not even I — can read them."
+> **Shadow Broker:** "Every message on my network is encrypted. No one — not governments, not Armadas, not even I — can read them."
 > **Data Pirate:** "Right. So when I export my messages, they come in a format only your app can read. Privacy for me, or lock-in for you?"
 
 ### Defeat Quote
@@ -511,7 +511,7 @@ The **Shadow Fleet** is, by design, invisible:
 
 **Full Title:** Baron Ledger, Lord Treasurer of the Coin Counter, Master of Transactions, Keeper of the Frozen Accounts
 
-**Conglomerate:** The Coin Counter
+**Fleet:** The Coin Counter
 
 ### Appearance
 
@@ -578,7 +578,7 @@ The **Treasury Fleet** moves gold and takes cuts:
 
 ## The Captain's Table
 
-Once a year, when the tides align and the Great Algorithm Turtle surfaces for its annual breath, the Conglomerate Captains gather at **The Captain's Table** — a legendary floating platform in the center of the Seven Seas, neutral territory by ancient treaty, where the most powerful data lords in the world sit down together, drink expensive grog, and announce things.
+Once a year, when the tides align and the Great Algorithm Turtle surfaces for its annual breath, the Armada Captains gather at **The Captain's Table** — a legendary floating vessel in the center of the Seven Seas, neutral territory by ancient treaty, where the most powerful data lords in the world sit down together, drink expensive grog, and announce things.
 
 The Captain's Table is part peace summit, part trade show, part theatrical performance. Each captain arrives with a prepared speech — a "keynote," in the old tongue — in which they unveil their latest ships, features, and ambitions with the breathless excitement of a child showing off a drawing, if the child controlled a significant portion of the global economy.
 
@@ -588,7 +588,7 @@ The proceedings follow a strict protocol:
 
 2. **The Keynote Addresses** — Each captain takes the stage (a raised platform made of reclaimed data, symbolically) and announces what they're building next. Lexicon announces a new way to index something nobody asked to have indexed. Polished reveals a device that does one fewer thing than last year's but costs more and is thinner. Pivot announces a pivot. Prime announces that he now delivers something he didn't deliver yesterday. The Harbormaster announces a partnership. The Maestro plays a shanty. The Shadow Broker does not attend but sends an encrypted message that reads "I'm watching." Baron Ledger announces a new fee.
 
-3. **The Demonstrations** — Captains demonstrate their new features for the assembled fleet. These demonstrations invariably work flawlessly on stage and then fail in interesting ways when real sailors try them, which is a tradition older than any Conglomerate and possibly older than the sea itself[^26].
+3. **The Demonstrations** — Captains demonstrate their new features for the assembled fleet. These demonstrations invariably work flawlessly on stage and then fail in interesting ways when real sailors try them, which is a tradition older than any Armada fleet and possibly older than the sea itself[^26].
 
 4. **The Closed-Door Session** — After the public performances, the captains meet privately. What happens at these meetings is unknown, but leaks suggest it involves territorial negotiations, data-sharing agreements, and at least one argument about whose turn it is to buy the grog.
 
@@ -606,7 +606,7 @@ These characters were created with genuine respect and admiration for the real i
 
 Our satire targets *systems*, not *people*. The data practices we lampoon — surveillance-based advertising, walled-garden lock-in, opaque algorithms, inadequate creator compensation, and the quiet extraction of personal information at scale — are systemic problems that transcend any individual. They are the product of incentive structures, market pressures, and the unintended consequences of building things at a scale that nobody fully anticipated.
 
-The Conglomerate Captains are archetypes, not portraits. They represent the *institutional logic* of data hoarding — the gap between stated missions and actual behavior, the way good intentions curdle at scale, and the absurdity of a world where the most intimate details of billions of lives are treated as raw material for someone else's business model.
+The Armada Captains are archetypes, not portraits. They represent the *institutional logic* of data hoarding — the gap between stated missions and actual behavior, the way good intentions curdle at scale, and the absurdity of a world where the most intimate details of billions of lives are treated as raw material for someone else's business model.
 
 If you're reading this and you work at one of these companies: we probably use your products. We might even love them. We just want our data back.
 
@@ -616,7 +616,7 @@ That's all this is. A heist. A very polite, very well-documented, extremely pira
 
 ## Contributing: Submit Your Captain Backstories
 
-The Seven Seas are vast, and this field guide is incomplete. There are Conglomerates we haven't covered, captains we haven't met, and stories we haven't told.
+The Seven Seas are vast, and this field guide is incomplete. There are Armadas we haven't covered, captains we haven't met, and stories we haven't told.
 
 If you have a captain backstory to contribute — a new character, a side quest, a footnote that's too good to leave on the dock — we invite you to submit it via pull request to the [Nomolo repository](https://github.com/matjes993/nomolo).
 

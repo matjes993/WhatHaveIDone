@@ -64,12 +64,16 @@ from web.rpg import (
     POWER_UPS, load_earned_powerups, save_earned_powerup,
     get_all_powerups, check_easter_eggs,
     get_level_dialogue, get_memory_state, MEMORY_DIALOGUE,
+    VILLAIN_REGISTRY, MAP_FRAGMENTS, VAULT_DIR_TO_VILLAIN, LOOT_TYPES, VAULT_DIR_TO_LOOT,
+    get_full_character_registry,
 )
 from web.dialogues import (
     get_dialogue as dialogues_get_dialogue,
     get_random_quip,
     get_insult_fight,
     get_encounter,
+    get_villain_riddle,
+    check_riddle_answer,
     list_characters as dialogues_list_characters,
 )
 
@@ -1003,6 +1007,12 @@ async def api_rpg_dashboard():
     return JSONResponse(rpg)
 
 
+@app.get("/api/characters")
+async def api_characters():
+    """Full character registry merged from VILLAIN_REGISTRY + Cowork character data."""
+    return JSONResponse(get_full_character_registry())
+
+
 @app.post("/api/collect/{source}")
 async def api_collect(source: str):
     """Trigger a collection (runs in background)."""
@@ -1211,17 +1221,91 @@ async def sources_page(request: Request):
         {"id": "health", "name": "Apple Health", "category": "import", "icon": "heart", "vault": "Health"},
     ]
 
-    # Mark which are collected
+    # Mark which are collected and attach villain/loot metadata
     for source in all_sources:
         vault_name = source["vault"]
         source["collected"] = vault_name in collected
         source["records"] = collected.get(vault_name, 0)
         source["last_updated"] = collected_times.get(vault_name, "")
+        # Attach villain info
+        villain_id = VAULT_DIR_TO_VILLAIN.get(vault_name, "")
+        source["villain_id"] = villain_id
+        if villain_id and villain_id in VILLAIN_REGISTRY:
+            v = VILLAIN_REGISTRY[villain_id]
+            source["villain_name"] = v["name"]
+            source["villain_company"] = v["company"]
+            source["villain_color"] = v["color"]
+            source["villain_icon"] = v["icon"]
+            source["villain_tagline"] = v.get("tagline", "")
+            source["villain_description"] = v.get("description", "")
+        else:
+            source["villain_name"] = source["name"]
+            source["villain_company"] = ""
+            source["villain_color"] = "#444"
+            source["villain_icon"] = ""
+            source["villain_tagline"] = ""
+            source["villain_description"] = ""
+        # Attach loot type info
+        loot_id = VAULT_DIR_TO_LOOT.get(vault_name, "")
+        source["loot_type"] = loot_id
+        if loot_id and loot_id in LOOT_TYPES:
+            source["loot_emoji"] = LOOT_TYPES[loot_id]["emoji"]
+            source["loot_name"] = LOOT_TYPES[loot_id]["name"]
+        else:
+            source["loot_emoji"] = "\U0001f4dc"
+            source["loot_name"] = "Loot"
+
+    # Build villain islands: group sources by villain for the raid map
+    villain_islands = {}
+    for source in all_sources:
+        vid = source["villain_id"]
+        if not vid:
+            continue
+        if vid not in villain_islands:
+            v = VILLAIN_REGISTRY.get(vid, {})
+            frag = MAP_FRAGMENTS.get(vid, {})
+            villain_islands[vid] = {
+                "id": vid,
+                "name": v.get("name", "Unknown"),
+                "company": v.get("company", ""),
+                "color": v.get("color", "#444"),
+                "icon": v.get("icon", "?"),
+                "tagline": v.get("tagline", ""),
+                "description": v.get("description", ""),
+                "fragment_name": frag.get("name", ""),
+                "fragment_desc": frag.get("description", ""),
+                "fragment_emoji": frag.get("emoji", ""),
+                "sources": [],
+                "total_loot": 0,
+                "raided": False,
+                "all_raided": True,
+            }
+        island = villain_islands[vid]
+        island["sources"].append(source)
+        island["total_loot"] += source["records"]
+        if source["collected"]:
+            island["raided"] = True
+        else:
+            island["all_raided"] = False
+
+    # Determine status for each island
+    for vid, island in villain_islands.items():
+        if island["raided"] and island["all_raided"]:
+            island["status"] = "defeated"
+        elif island["raided"]:
+            island["status"] = "raided"
+        else:
+            island["status"] = "uncharted"
+
+    # Sort islands: defeated first, then raided, then uncharted
+    status_order = {"defeated": 0, "raided": 1, "uncharted": 2}
+    sorted_islands = sorted(villain_islands.values(), key=lambda x: (status_order.get(x["status"], 3), x["name"]))
 
     return templates.TemplateResponse("sources.html", {
         "request": request,
         "page": "sources",
         "sources": all_sources,
+        "islands": sorted_islands,
         "collected_count": len(collected),
         "total_sources": len(all_sources),
         "vault_root": vault_root,
@@ -1328,7 +1412,8 @@ async def api_records(
 
 
 async def _search_records(query, vault_root, config, source, page, per_page, sort):
-    """Search records using the hybrid search engine."""
+    """Search records — tries hybrid (chromadb+BM25), falls back to BM25, then to text scan."""
+    # Strategy 1: Hybrid search (requires chromadb)
     try:
         from core.search_engine import hybrid_search
         from core.vectordb import get_client
@@ -1336,7 +1421,6 @@ async def _search_records(query, vault_root, config, source, page, per_page, sor
         chroma_client = get_client(vault_root)
         collections = None
         if source:
-            # Map vault name to collection name
             col = source.lower().replace(" ", "_")
             col = "".join(c if c.isalnum() or c == "_" else "_" for c in col)
             if len(col) < 3:
@@ -1347,134 +1431,321 @@ async def _search_records(query, vault_root, config, source, page, per_page, sor
         sort_by = sort_map.get(sort, "relevance")
 
         results = hybrid_search(
-            query=query,
-            vault_root=vault_root,
-            chroma_client=chroma_client,
-            config=config,
-            n_results=per_page * page,  # Fetch enough for pagination
-            collections=collections,
-            sort_by=sort_by,
+            query=query, vault_root=vault_root, chroma_client=chroma_client,
+            config=config, n_results=per_page * page,
+            collections=collections, sort_by=sort_by,
         )
+        return _paginate_search_results(results, query, page, per_page)
+    except Exception as e1:
+        logger.info("🔭 Hybrid spyglass unavailable (%s), trying BM25...", e1)
 
-        total = len(results)
-        start = (page - 1) * per_page
-        page_results = results[start:start + per_page]
+    # Strategy 2: BM25 only (requires indexed FTS5 db)
+    try:
+        from core.search_engine import bm25_search
+        db_path = os.path.join(vault_root, ".searchdb", "search.db")
+        if os.path.exists(db_path):
+            col_filter = None
+            if source:
+                col = source.lower().replace(" ", "_")
+                col = "".join(c if c.isalnum() or c == "_" else "_" for c in col)
+                if len(col) < 3:
+                    col = col + "___"
+                col_filter = [col]
+            results = bm25_search(db_path, query, n_results=per_page * page, collection_filter=col_filter)
+            formatted = []
+            for r in results:
+                meta = r.get("metadata", {})
+                formatted.append({
+                    "entry_id": r.get("entry_id", ""),
+                    "collection": r.get("collection", ""),
+                    "source": r.get("source", ""),
+                    "metadata": meta,
+                    "snippet": meta.get("subject", "") or meta.get("title", ""),
+                    "combined_score": abs(r.get("bm25_score", 0)),
+                })
+            return _paginate_search_results(formatted, query, page, per_page)
+    except Exception as e2:
+        logger.info("🔭 BM25 spyglass unavailable (%s), falling back to text scan...", e2)
 
-        formatted = []
-        for r in page_results:
-            meta = r.get("metadata", {})
-            source_name = r.get("collection", r.get("source", ""))
-            title = meta.get("subject") or meta.get("title") or meta.get("name") or ""
-            from_val = meta.get("from") or ""
-            date_val = meta.get("date") or ""
-            preview = (r.get("snippet", "") or "")[:200]
-            # Strip HTML from preview
-            if preview:
-                preview = re.sub(r'<[^>]+>', '', preview)
-            formatted.append({
-                "id": r.get("entry_id", ""),
-                "source": source_name,
-                "title": title[:120],
-                "from": from_val[:80],
-                "date": date_val,
-                "preview": preview,
-                "score": round(r.get("combined_score", 0), 3),
-            })
+    # Strategy 3: Simple text scan over vault JSONL files (always works)
+    return await _text_search_records(query, vault_root, source, page, per_page, sort)
 
-        return JSONResponse({
-            "records": formatted,
-            "total": total,
-            "page": page,
-            "per_page": per_page,
-            "pages": (total + per_page - 1) // per_page,
-            "query": query,
+
+async def _text_search_records(query, vault_root, source, page, per_page, sort):
+    """Brute-force text search over vault JSONL files. Slow but always works."""
+    from core.vault import read_all_entries
+    query_lower = query.lower()
+    query_terms = query_lower.split()
+    matches = []
+
+    vault_dirs = []
+    if source:
+        vault_path = os.path.join(vault_root, source)
+        if os.path.isdir(vault_path):
+            vault_dirs = [(source, vault_path)]
+    else:
+        if os.path.isdir(vault_root):
+            for name in sorted(os.listdir(vault_root)):
+                vault_path = os.path.join(vault_root, name)
+                if os.path.isdir(vault_path) and not name.startswith("."):
+                    vault_dirs.append((name, vault_path))
+
+    for vault_name, vault_path in vault_dirs:
+        try:
+            for entry in read_all_entries(vault_path):
+                # Search across all string values in the entry
+                text_blob = " ".join(
+                    str(v) for v in entry.values()
+                    if isinstance(v, (str, int, float))
+                ).lower()
+                # All query terms must appear (AND search)
+                if all(term in text_blob for term in query_terms):
+                    entry["_source"] = vault_name
+                    matches.append(entry)
+                    if len(matches) >= per_page * page + 100:
+                        break  # Don't scan entire vault if we have enough
+        except Exception as e:
+            logger.warning("🏴‍☠️ Couldn't search vault %s: %s", vault_name, e)
+            continue
+
+    total = len(matches)
+
+    # Sort
+    def get_date_key(e):
+        for k in ("date", "timestamp", "created_at", "sent_at", "time"):
+            v = e.get(k)
+            if v:
+                return str(v)
+        return ""
+
+    if sort == "newest":
+        matches.sort(key=get_date_key, reverse=True)
+    elif sort == "oldest":
+        matches.sort(key=get_date_key)
+
+    start = (page - 1) * per_page
+    end = start + per_page
+    page_entries = matches[start:end]
+    results = [_format_record(e) for e in page_entries]
+
+    return JSONResponse({
+        "records": results,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "pages": (total + per_page - 1) // per_page,
+        "query": query,
+    })
+
+
+def _paginate_search_results(results, query, page, per_page):
+    """Format and paginate search engine results with enriched metadata."""
+    total = len(results)
+    start = (page - 1) * per_page
+    page_results = results[start:start + per_page]
+
+    formatted = []
+    for r in page_results:
+        meta = r.get("metadata", {})
+        source_name = r.get("collection", r.get("source", ""))
+        title = meta.get("subject") or meta.get("title") or meta.get("name") or ""
+        from_val = meta.get("from") or ""
+        date_val = meta.get("date") or meta.get("date_str") or ""
+        preview = (r.get("snippet", "") or "")[:200]
+        if preview:
+            preview = re.sub(r'<[^>]+>', '', preview)
+            preview = re.sub(r'\s+', ' ', preview).strip()
+
+        # Enrich with villain/loot metadata
+        loot_id = VAULT_DIR_TO_LOOT.get(source_name, "scroll")
+        loot_info = LOOT_TYPES.get(loot_id, {"name": "Item", "emoji": "\U0001f4e6"})
+        villain_id = VAULT_DIR_TO_VILLAIN.get(source_name, "")
+        villain_info = VILLAIN_REGISTRY.get(villain_id, {})
+
+        # Clean sender name
+        subtitle = ""
+        if from_val:
+            subtitle = "From: " + _extract_sender_name(from_val)
+
+        # Format date
+        date_formatted = ""
+        if date_val:
+            try:
+                clean = re.sub(r'\.\d+', '', str(date_val))
+                clean = re.sub(r'Z$', '+00:00', clean)
+                dt = datetime.fromisoformat(clean)
+                date_formatted = dt.strftime("%B %d, %Y")
+            except Exception:
+                date_formatted = date_val[:10] if len(date_val) >= 10 else date_val
+
+        formatted.append({
+            "id": r.get("entry_id", ""),
+            "source": source_name,
+            "source_label": loot_info["name"] + "s",
+            "source_emoji": loot_info["emoji"],
+            "title": title[:120],
+            "subtitle": subtitle[:120],
+            "preview": preview[:200],
+            "date": date_val,
+            "date_formatted": date_formatted,
+            "villain_id": villain_id,
+            "villain_name": villain_info.get("name", ""),
+            "villain_company": villain_info.get("company", ""),
+            "villain_icon": villain_info.get("icon", ""),
+            "villain_color": villain_info.get("color", "#444"),
+            "score": round(r.get("combined_score", 0), 3),
         })
-    except Exception as e:
-        logger.warning("🏴‍☠️ Blimey! The search spyglass cracked: %s — falling back to browse", e)
-        return JSONResponse({
-            "records": [],
-            "total": 0,
-            "page": 1,
-            "per_page": per_page,
-            "pages": 0,
-            "query": query,
-            "error": str(e),
-        })
+
+    return JSONResponse({
+        "records": formatted,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "pages": (total + per_page - 1) // per_page,
+        "query": query,
+    })
+
+
+def _extract_sender_name(raw_from: str) -> str:
+    """Extract a clean sender name from a raw email 'From' field.
+
+    'Sarah Johnson <sarah@example.com>' -> 'Sarah Johnson'
+    '<sarah@example.com>' -> 'sarah@example.com'
+    'sarah@example.com' -> 'sarah@example.com'
+    """
+    if not raw_from:
+        return ""
+    m = re.match(r'^"?([^"<]+)"?\s*<', raw_from)
+    if m:
+        return m.group(1).strip()
+    m = re.match(r'^<(.+)>$', raw_from.strip())
+    if m:
+        return m.group(1)
+    return raw_from.strip()
+
+
+def _extract_domain(url: str) -> str:
+    """Extract a clean domain from a URL."""
+    if not url:
+        return ""
+    try:
+        from urllib.parse import urlparse
+        parsed = urlparse(url)
+        host = parsed.hostname or ""
+        if host.startswith("www."):
+            host = host[4:]
+        return host
+    except Exception:
+        return ""
 
 
 def _format_record(entry):
     """Format a vault entry for the records API response.
 
-    Handles source-specific fields for Contacts, Gmail, Browser, Calendar,
-    Bookmarks, and Photos. Falls back to generic extraction for unknown sources.
+    Comprehensive source-specific parsing for all supported data types.
+    Returns a rich structure with source metadata, villain info, and clean
+    human-readable fields.
     """
     source = entry.pop("_source", "")
     source_lower = source.lower()
     entry_type = entry.get("type", "")
 
     title = ""
-    from_field = ""
+    subtitle = ""
     date = ""
     preview = ""
 
-    # --- Contacts ---
-    if "contact" in source_lower or entry_type == "contact":
-        title = entry.get("name", "") or "Unknown Contact"
-        from_field = entry.get("organization") or entry.get("job_title") or ""
-        date = str(entry.get("updated_at") or entry.get("created_at") or "")
-        # Preview: show phone/email if available, otherwise organization
-        parts = []
-        if entry.get("job_title"):
-            parts.append(entry["job_title"])
-        if entry.get("organization"):
-            parts.append(entry["organization"])
-        preview = " — ".join(parts) if parts else ""
-
-    # --- Gmail ---
-    elif "gmail" in source_lower:
+    # --- Gmail / Email / Mail ---
+    if "gmail" in source_lower or ("mail" in source_lower and "contact" not in source_lower) or entry_type == "email":
         title = entry.get("subject", "") or "No Subject"
-        from_field = entry.get("from") or ""
-        date = str(entry.get("date") or "")
-        body = entry.get("body_raw") or ""
+        raw_from = entry.get("from") or ""
+        subtitle = "From: " + _extract_sender_name(raw_from) if raw_from else ""
+        date = str(entry.get("date") or entry.get("sent_at") or "")
+        body = entry.get("body_raw") or entry.get("body") or entry.get("content") or ""
         if body:
-            preview = re.sub(r'<[^>]+>', '', body)[:200].strip()
+            preview = re.sub(r'<[^>]+>', '', body).strip()
+            preview = re.sub(r'\s+', ' ', preview)[:150]
 
-    # --- Browser ---
-    elif "browser" in source_lower:
-        title = entry.get("title", "") or "Untitled Page"
-        from_field = entry.get("domain") or ""
-        date = str(entry.get("last_visit") or "")
-        preview = entry.get("url") or ""
+    # --- Contacts ---
+    elif "contact" in source_lower or entry_type == "contact":
+        name_parts = []
+        for k in ("name", "display_name", "full_name"):
+            if entry.get(k):
+                name_parts.append(entry[k])
+                break
+        if not name_parts:
+            first = entry.get("first_name") or entry.get("given_name") or ""
+            last = entry.get("last_name") or entry.get("family_name") or ""
+            combined = f"{first} {last}".strip()
+            name_parts.append(combined or "Unknown Contact")
+        title = name_parts[0]
+        subtitle = entry.get("organization") or entry.get("company") or entry.get("job_title") or ""
+        date = str(entry.get("updated_at") or entry.get("created_at") or "")
+        parts = []
+        for k in ("phone", "phone_number", "mobile"):
+            if entry.get(k):
+                parts.append(entry[k])
+                break
+        for k in ("email", "email_address"):
+            if entry.get(k):
+                parts.append(entry[k])
+                break
+        if entry.get("job_title") and entry.get("organization"):
+            parts.append(f"{entry['job_title']} at {entry['organization']}")
+        elif entry.get("job_title"):
+            parts.append(entry["job_title"])
+        preview = " · ".join(parts)
 
     # --- Calendar ---
-    elif "calendar" in source_lower or entry_type == "event":
-        title = entry.get("title", "") or "Untitled Event"
-        from_field = entry.get("calendar") or ""
-        date = str(entry.get("start_date") or "")
-        desc = entry.get("description") or ""
+    elif "calendar" in source_lower or entry_type in ("event", "calendar"):
+        title = entry.get("title") or entry.get("summary") or "Untitled Event"
+        cal_name = entry.get("calendar") or entry.get("calendar_name") or ""
+        location = entry.get("location") or ""
+        subtitle_parts = []
+        if cal_name:
+            subtitle_parts.append(cal_name)
+        if location:
+            subtitle_parts.append(location)
+        subtitle = " · ".join(subtitle_parts)
+        date = str(entry.get("start_date") or entry.get("start") or entry.get("date") or "")
+        start = entry.get("start_date") or entry.get("start") or ""
+        end = entry.get("end_date") or entry.get("end") or ""
+        desc = entry.get("description") or entry.get("notes") or ""
+        parts = []
+        if start and end:
+            parts.append(f"{start} — {end}")
         if desc:
-            preview = desc[:200]
-        else:
-            # Build time range preview
-            start = entry.get("start_date") or ""
-            end = entry.get("end_date") or ""
-            if start and end:
-                preview = f"{start} — {end}"
+            clean_desc = re.sub(r'<[^>]+>', '', desc).strip()[:150]
+            parts.append(clean_desc)
+        preview = " | ".join(parts) if parts else ""
+
+    # --- Browser / Chrome / Safari ---
+    elif "browser" in source_lower or "safari" in source_lower or "chrome" in source_lower:
+        title = entry.get("title", "") or "Untitled Page"
+        url = entry.get("url") or ""
+        subtitle = _extract_domain(url)
+        date = str(entry.get("last_visit") or entry.get("visit_time") or entry.get("date") or "")
+        visit_count = entry.get("visit_count") or entry.get("visits")
+        if visit_count and int(visit_count) > 1:
+            preview = f"Visited {visit_count} times"
+        elif url:
+            preview = url[:150]
 
     # --- Bookmarks ---
     elif "bookmark" in source_lower or entry_type == "bookmark":
-        title = entry.get("name", "") or "Untitled Bookmark"
-        from_field = entry.get("folder") or ""
-        date = str(entry.get("date_added") or "")
-        preview = entry.get("url") or ""
+        title = entry.get("name") or entry.get("title") or "Untitled Bookmark"
+        folder = entry.get("folder") or entry.get("folder_path") or ""
+        url = entry.get("url") or ""
+        subtitle = folder if folder else _extract_domain(url)
+        date = str(entry.get("date_added") or entry.get("created_at") or entry.get("date") or "")
+        preview = _extract_domain(url) if folder else url[:150]
 
     # --- Photos ---
-    elif "photo" in source_lower or entry_type == "photo":
-        photo_date = str(entry.get("date") or "")
-        title = entry.get("filename") or (f"Photo from {photo_date}" if photo_date else "Photo")
-        from_field = ""
+    elif "photo" in source_lower or entry_type in ("photo", "image", "video"):
+        photo_date = str(entry.get("date") or entry.get("taken_at") or entry.get("created_at") or "")
+        title = entry.get("filename") or entry.get("title") or (f"Photo from {photo_date}" if photo_date else "Photo")
+        subtitle = entry.get("album") or entry.get("album_name") or ""
         date = photo_date
-        # Build dimensions/duration preview
         parts = []
         w = entry.get("width")
         h = entry.get("height")
@@ -1482,10 +1753,215 @@ def _format_record(entry):
             parts.append(f"{w}x{h}")
         dur = entry.get("duration")
         if dur:
-            parts.append(f"{dur}s")
-        if entry.get("has_location"):
+            parts.append(f"{dur}s video")
+        if entry.get("has_location") or entry.get("latitude"):
             parts.append("has location")
+        if entry.get("camera") or entry.get("camera_model"):
+            parts.append(entry.get("camera") or entry.get("camera_model"))
         preview = " · ".join(parts)
+
+    # --- Messages / iMessage ---
+    elif "message" in source_lower or "imessage" in source_lower or entry_type == "message":
+        sender = entry.get("sender") or entry.get("from") or entry.get("contact") or ""
+        title = _extract_sender_name(sender) or entry.get("contact_name") or sender or "Unknown"
+        subtitle = entry.get("chat_name") or entry.get("group_name") or ""
+        date = str(entry.get("date") or entry.get("sent_at") or entry.get("timestamp") or "")
+        body = entry.get("body") or entry.get("text") or entry.get("content") or ""
+        if body:
+            preview = re.sub(r'<[^>]+>', '', body).strip()
+            preview = re.sub(r'\s+', ' ', preview)[:100]
+
+    # --- WhatsApp ---
+    elif "whatsapp" in source_lower:
+        sender = entry.get("sender") or entry.get("from") or entry.get("author") or ""
+        title = _extract_sender_name(sender) or "Unknown"
+        group = entry.get("group_name") or entry.get("chat_name") or entry.get("chat") or ""
+        subtitle = group if group else ""
+        date = str(entry.get("date") or entry.get("timestamp") or "")
+        body = entry.get("body") or entry.get("text") or entry.get("message") or entry.get("content") or ""
+        if body:
+            preview = re.sub(r'\s+', ' ', body.strip())[:100]
+
+    # --- Telegram ---
+    elif "telegram" in source_lower:
+        sender = entry.get("sender") or entry.get("from") or entry.get("author") or ""
+        title = _extract_sender_name(sender) or "Unknown"
+        chat = entry.get("chat_name") or entry.get("chat") or entry.get("channel") or ""
+        subtitle = chat if chat else ""
+        date = str(entry.get("date") or entry.get("timestamp") or "")
+        body = entry.get("body") or entry.get("text") or entry.get("message") or entry.get("content") or ""
+        if body:
+            preview = re.sub(r'\s+', ' ', body.strip())[:100]
+
+    # --- YouTube ---
+    elif "youtube" in source_lower:
+        title = entry.get("title") or entry.get("video_title") or "Untitled Video"
+        subtitle = entry.get("channel") or entry.get("channel_name") or entry.get("uploader") or ""
+        date = str(entry.get("date") or entry.get("watch_date") or entry.get("time") or "")
+        desc = entry.get("description") or ""
+        if desc:
+            preview = desc[:150]
+        elif entry.get("url"):
+            preview = entry["url"]
+
+    # --- Spotify / Music ---
+    elif "spotify" in source_lower or "music" in source_lower:
+        title = entry.get("track") or entry.get("title") or entry.get("name") or "Unknown Track"
+        artist = entry.get("artist") or entry.get("artist_name") or ""
+        album = entry.get("album") or entry.get("album_name") or ""
+        subtitle_parts = []
+        if artist:
+            subtitle_parts.append(artist)
+        if album:
+            subtitle_parts.append(album)
+        subtitle = " — ".join(subtitle_parts)
+        date = str(entry.get("played_at") or entry.get("date") or entry.get("timestamp") or "")
+
+    # --- Notes ---
+    elif "note" in source_lower or entry_type == "note":
+        title = entry.get("title") or entry.get("name") or ""
+        if not title:
+            body = entry.get("body") or entry.get("content") or entry.get("text") or ""
+            if body:
+                first_line = body.strip().split("\n")[0]
+                title = re.sub(r'<[^>]+>', '', first_line)[:80] or "Untitled Note"
+            else:
+                title = "Untitled Note"
+        subtitle = entry.get("folder") or ""
+        date = str(entry.get("modified_at") or entry.get("created_at") or entry.get("date") or "")
+        body = entry.get("body") or entry.get("content") or entry.get("text") or ""
+        if body:
+            clean = re.sub(r'<[^>]+>', '', body).strip()
+            clean = re.sub(r'\s+', ' ', clean)
+            if title and clean.startswith(title):
+                clean = clean[len(title):].strip()
+            preview = clean[:150]
+
+    # --- Finance / PayPal ---
+    elif "finance" in source_lower or "paypal" in source_lower or entry_type in ("transaction", "payment"):
+        title = entry.get("description") or entry.get("title") or entry.get("merchant") or "Transaction"
+        amount = entry.get("amount") or entry.get("total") or ""
+        currency = entry.get("currency") or ""
+        merchant = entry.get("merchant") or entry.get("vendor") or ""
+        subtitle_parts = []
+        if amount:
+            subtitle_parts.append(f"{currency} {amount}".strip() if currency else str(amount))
+        if merchant and merchant != title:
+            subtitle_parts.append(merchant)
+        subtitle = " · ".join(subtitle_parts)
+        date = str(entry.get("date") or entry.get("transaction_date") or entry.get("timestamp") or "")
+        status = entry.get("status") or ""
+        if status:
+            preview = f"Status: {status}"
+
+    # --- Shopping / Amazon ---
+    elif "amazon" in source_lower or "shopping" in source_lower or entry_type in ("order", "purchase"):
+        title = entry.get("item_name") or entry.get("title") or entry.get("product") or "Order"
+        price = entry.get("price") or entry.get("amount") or entry.get("total") or ""
+        subtitle = f"${price}" if price else ""
+        date = str(entry.get("order_date") or entry.get("date") or entry.get("purchase_date") or "")
+        order_id = entry.get("order_id") or ""
+        if order_id:
+            preview = f"Order #{order_id}"
+
+    # --- Health ---
+    elif "health" in source_lower or entry_type == "health":
+        metric = entry.get("type") or entry.get("metric") or entry.get("name") or "Health Metric"
+        title = metric
+        value = entry.get("value") or entry.get("quantity") or ""
+        unit = entry.get("unit") or ""
+        subtitle = f"{value} {unit}".strip() if value else ""
+        date = str(entry.get("date") or entry.get("start_date") or entry.get("timestamp") or "")
+        source_device = entry.get("source_name") or entry.get("device") or ""
+        if source_device:
+            preview = f"Source: {source_device}"
+
+    # --- Maps / Location ---
+    elif "map" in source_lower or "location" in source_lower or entry_type == "location":
+        title = entry.get("name") or entry.get("place_name") or entry.get("address") or "Unknown Place"
+        subtitle = entry.get("address") or entry.get("location") or ""
+        if subtitle == title:
+            subtitle = ""
+        date = str(entry.get("date") or entry.get("visit_date") or entry.get("timestamp") or "")
+        lat = entry.get("latitude") or entry.get("lat")
+        lng = entry.get("longitude") or entry.get("lng") or entry.get("lon")
+        if lat and lng:
+            preview = f"Coordinates: {lat}, {lng}"
+
+    # --- LinkedIn ---
+    elif "linkedin" in source_lower:
+        title = entry.get("name") or entry.get("title") or entry.get("connection_name") or "LinkedIn Item"
+        subtitle = entry.get("company") or entry.get("headline") or entry.get("position") or ""
+        date = str(entry.get("date") or entry.get("connected_on") or entry.get("timestamp") or "")
+        content = entry.get("content") or entry.get("body") or entry.get("description") or ""
+        if content:
+            preview = re.sub(r'<[^>]+>', '', content).strip()[:150]
+
+    # --- Podcasts ---
+    elif "podcast" in source_lower:
+        title = entry.get("episode_title") or entry.get("title") or "Unknown Episode"
+        subtitle = entry.get("podcast_name") or entry.get("show") or entry.get("channel") or ""
+        date = str(entry.get("date") or entry.get("played_at") or entry.get("published_at") or "")
+        desc = entry.get("description") or ""
+        if desc:
+            preview = re.sub(r'<[^>]+>', '', desc).strip()[:150]
+
+    # --- Facebook / Instagram ---
+    elif "facebook" in source_lower or "instagram" in source_lower:
+        title = entry.get("title") or entry.get("text") or entry.get("caption") or ""
+        if not title:
+            body = entry.get("body") or entry.get("content") or entry.get("description") or ""
+            title = (re.sub(r'<[^>]+>', '', body).strip()[:80] or "Post") if body else "Post"
+        subtitle = entry.get("author") or entry.get("from") or ""
+        date = str(entry.get("date") or entry.get("timestamp") or entry.get("created_at") or "")
+        body = entry.get("body") or entry.get("content") or entry.get("description") or entry.get("text") or ""
+        if body and body != title:
+            preview = re.sub(r'<[^>]+>', '', body).strip()
+            preview = re.sub(r'\s+', ' ', preview)[:150]
+
+    # --- Slack ---
+    elif "slack" in source_lower:
+        sender = entry.get("sender") or entry.get("from") or entry.get("user") or ""
+        title = _extract_sender_name(sender) or "Unknown"
+        channel = entry.get("channel") or entry.get("channel_name") or ""
+        subtitle = f"#{channel}" if channel else ""
+        date = str(entry.get("date") or entry.get("timestamp") or entry.get("ts") or "")
+        body = entry.get("body") or entry.get("text") or entry.get("content") or ""
+        if body:
+            preview = re.sub(r'\s+', ' ', body.strip())[:100]
+
+    # --- Twitter / X ---
+    elif "twitter" in source_lower:
+        body = entry.get("text") or entry.get("body") or entry.get("content") or ""
+        title = (body[:80] + "..." if len(body) > 80 else body) if body else "Tweet"
+        subtitle = entry.get("author") or entry.get("from") or entry.get("username") or ""
+        date = str(entry.get("date") or entry.get("timestamp") or entry.get("created_at") or "")
+        preview = body[:150] if body and body != title else ""
+
+    # --- Reddit ---
+    elif "reddit" in source_lower:
+        title = entry.get("title") or entry.get("text", "")[:80] or "Reddit Post"
+        sub = entry.get("subreddit") or ""
+        subtitle = f"r/{sub}" if sub else (entry.get("author") or "")
+        date = str(entry.get("date") or entry.get("timestamp") or entry.get("created_at") or "")
+        body = entry.get("body") or entry.get("selftext") or entry.get("content") or ""
+        if body:
+            preview = re.sub(r'\s+', ' ', body.strip())[:150]
+
+    # --- Netflix ---
+    elif "netflix" in source_lower:
+        title = entry.get("title") or entry.get("name") or "Unknown Title"
+        subtitle = entry.get("series") or entry.get("show") or ""
+        date = str(entry.get("date") or entry.get("watch_date") or entry.get("timestamp") or "")
+
+    # --- Books ---
+    elif "book" in source_lower or entry_type == "book":
+        title = entry.get("title") or entry.get("name") or "Unknown Book"
+        subtitle = entry.get("author") or entry.get("authors") or ""
+        date = str(entry.get("date") or entry.get("read_date") or entry.get("finished_at") or "")
+        rating = entry.get("rating") or entry.get("my_rating") or ""
+        if rating:
+            preview = f"Rating: {rating}/5"
 
     # --- Fallback for unknown sources ---
     else:
@@ -1496,26 +1972,55 @@ def _format_record(entry):
             or entry.get("url", "")[:80]
             or "Untitled"
         )
-        from_field = entry.get("from") or entry.get("sender") or entry.get("author") or ""
+        raw_from = entry.get("from") or entry.get("sender") or entry.get("author") or ""
+        subtitle = _extract_sender_name(raw_from) if raw_from else ""
         for k in ("date", "timestamp", "created_at", "sent_at", "time"):
             if entry.get(k):
                 date = str(entry[k])
                 break
-        for k in ("body_raw", "body", "content", "description"):
+        for k in ("body_raw", "body", "content", "description", "text"):
             v = entry.get(k)
             if v and isinstance(v, str) and len(v) > 10:
-                preview = re.sub(r'<[^>]+>', '', v)[:200]
+                preview = re.sub(r'<[^>]+>', '', v)
+                preview = re.sub(r'\s+', ' ', preview).strip()[:150]
                 break
         if not preview and entry.get("url"):
-            preview = entry["url"]
+            preview = entry["url"][:150]
+
+    # --- Build enriched response with villain/loot metadata ---
+    loot_id = VAULT_DIR_TO_LOOT.get(source, "scroll")
+    loot_info = LOOT_TYPES.get(loot_id, {"name": "Item", "emoji": "\U0001f4e6"})
+    villain_id = VAULT_DIR_TO_VILLAIN.get(source, "")
+    villain_info = VILLAIN_REGISTRY.get(villain_id, {})
+
+    # Format a human-readable date
+    date_formatted = ""
+    if date:
+        try:
+            # Try ISO format first, then common formats
+            clean = re.sub(r'\.\d+', '', str(date))  # strip microseconds
+            clean = re.sub(r'Z$', '+00:00', clean)    # Z -> offset
+            dt = datetime.fromisoformat(clean)
+            date_formatted = dt.strftime("%B %d, %Y")
+        except Exception:
+            date_formatted = date[:10] if len(date) >= 10 else date
 
     return {
         "id": entry.get("id", ""),
         "source": source,
+        "source_label": loot_info["name"] + "s",
+        "source_emoji": loot_info["emoji"],
         "title": (title or "Untitled")[:120],
-        "from": (from_field or "")[:80],
+        "subtitle": (subtitle or "")[:120],
+        "preview": (preview or "")[:200],
         "date": date,
-        "preview": preview,
+        "date_formatted": date_formatted,
+        "villain_id": villain_id,
+        "villain_name": villain_info.get("name", ""),
+        "villain_company": villain_info.get("company", ""),
+        "villain_icon": villain_info.get("icon", ""),
+        "villain_color": villain_info.get("color", "#444"),
+        "raw": entry,
     }
 
 
@@ -1575,6 +2080,130 @@ async def api_save_setting(request: Request):
 
 
 # ---------------------------------------------------------------------------
+# LLM Token Management
+# ---------------------------------------------------------------------------
+
+import getpass
+import hashlib
+import platform
+import base64
+
+_LLM_TOKENS_FILE = os.path.join(os.path.expanduser("~"), ".nomolo", "llm_tokens.json")
+
+# Try to use Fernet for real encryption; fall back to base64 if unavailable
+try:
+    from cryptography.fernet import Fernet
+    _HAS_FERNET = True
+except ImportError:
+    _HAS_FERNET = False
+    logger.warning("cryptography package not installed — LLM tokens will use base64 encoding (not encrypted). Install with: pip install cryptography")
+
+
+def _get_llm_fernet_key() -> bytes:
+    """Derive a deterministic Fernet key from machine identity + a local salt."""
+    salt_path = os.path.join(os.path.expanduser("~"), ".nomolo", ".token_salt")
+    os.makedirs(os.path.dirname(salt_path), exist_ok=True)
+    if os.path.exists(salt_path):
+        with open(salt_path, "rb") as f:
+            salt = f.read()
+    else:
+        salt = os.urandom(16)
+        with open(salt_path, "wb") as f:
+            f.write(salt)
+    identity = f"{platform.node()}:{getpass.getuser()}".encode()
+    key_material = hashlib.sha256(identity + salt).digest()
+    return base64.urlsafe_b64encode(key_material)
+
+
+def _encrypt_token(token: str) -> str:
+    if _HAS_FERNET:
+        f = Fernet(_get_llm_fernet_key())
+        return f.encrypt(token.encode()).decode()
+    else:
+        return base64.b64encode(token.encode()).decode()
+
+
+def _decrypt_token(encrypted: str) -> str:
+    if _HAS_FERNET:
+        f = Fernet(_get_llm_fernet_key())
+        return f.decrypt(encrypted.encode()).decode()
+    else:
+        return base64.b64decode(encrypted.encode()).decode()
+
+
+def _load_llm_tokens() -> dict:
+    if os.path.exists(_LLM_TOKENS_FILE):
+        try:
+            with open(_LLM_TOKENS_FILE, "r") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+
+def _save_llm_tokens(data: dict):
+    os.makedirs(os.path.dirname(_LLM_TOKENS_FILE), exist_ok=True)
+    with open(_LLM_TOKENS_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+@app.post("/api/settings/llm-token")
+async def api_save_llm_token(request: Request):
+    """Save an encrypted LLM API token."""
+    try:
+        body = await request.json()
+        provider = body.get("provider", "openai")
+        token = body.get("token", "").strip()
+        endpoint = body.get("endpoint", "").strip()
+        model = body.get("model", "").strip()
+
+        if not token:
+            return JSONResponse({"ok": False, "error": "Token is required"}, status_code=400)
+
+        data = {
+            "provider": provider,
+            "token_encrypted": _encrypt_token(token),
+            "endpoint": endpoint,
+            "model": model,
+        }
+        _save_llm_tokens(data)
+        return JSONResponse({"ok": True})
+    except Exception as e:
+        logger.exception("Failed to save LLM token")
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.get("/api/settings/llm-token")
+async def api_get_llm_token():
+    """Return provider name + masked token (last 4 chars). Never exposes the full token."""
+    data = _load_llm_tokens()
+    if not data or "token_encrypted" not in data:
+        return JSONResponse({"provider": None, "masked_token": None})
+    try:
+        decrypted = _decrypt_token(data["token_encrypted"])
+        masked = decrypted[-4:] if len(decrypted) >= 4 else "****"
+    except Exception:
+        masked = "????"
+    return JSONResponse({
+        "provider": data.get("provider"),
+        "masked_token": masked,
+        "endpoint": data.get("endpoint", ""),
+        "model": data.get("model", ""),
+    })
+
+
+@app.delete("/api/settings/llm-token")
+async def api_delete_llm_token():
+    """Remove the stored LLM token."""
+    try:
+        if os.path.exists(_LLM_TOKENS_FILE):
+            os.remove(_LLM_TOKENS_FILE)
+        return JSONResponse({"ok": True})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+# ---------------------------------------------------------------------------
 # Power-Ups & Social Sharing APIs
 # ---------------------------------------------------------------------------
 
@@ -1604,7 +2233,7 @@ async def api_share_card():
                 f"\U0001F3F4\u200D\u2620\uFE0F I'm a Level {rpg['level']['level']} "
                 f"{rpg['level']['title']} in the Seven Seas of Data! "
                 f"{rpg['total_records']:,} records reclaimed from "
-                f"{villains_raided} Conglomerates. My data, my rules. "
+                f"{villains_raided} Armada fleets. My data, my rules. "
                 f"Join the crew: https://nomolo.app #DataPiracy #Nomolo"
             ),
             "linkedin": (
@@ -1895,7 +2524,7 @@ async def api_mini_game():
     if not os.path.isdir(vault_root):
         return JSONResponse({
             "error": "not_enough_data",
-            "message": "Your vault is empty. Raid some Conglomerates first!",
+            "message": "Your vault is empty. Raid the Armada first!",
         })
 
     try:
@@ -2062,6 +2691,61 @@ async def api_dialogue(character: str, context: str = "random"):
     return JSONResponse(result)
 
 
+# ---------------------------------------------------------------------------
+# Riddle API — Villain trivia / quiz system
+# ---------------------------------------------------------------------------
+
+@app.get("/api/riddle/{villain_id}")
+async def api_get_riddle(villain_id: str, seen: str = ""):
+    """Return a random riddle for the specified villain, excluding seen indices.
+
+    Query params:
+        seen — comma-separated list of already-seen riddle indices (e.g. "0,2,4").
+    """
+    exclude = []
+    if seen:
+        try:
+            exclude = [int(x.strip()) for x in seen.split(",") if x.strip()]
+        except ValueError:
+            pass
+
+    riddle = get_villain_riddle(villain_id, exclude_indices=exclude or None)
+    if not riddle:
+        return JSONResponse(
+            {"error": True, "message": f"No riddles available for '{villain_id}'."},
+            status_code=404,
+        )
+
+    return JSONResponse(riddle)
+
+
+@app.post("/api/riddle/{villain_id}/answer")
+async def api_answer_riddle(villain_id: str, request: Request):
+    """Check a riddle answer and return the result with explanation.
+
+    Body JSON:
+        { "riddle_index": int, "answer": int }
+    """
+    body = await request.json()
+    riddle_index = body.get("riddle_index")
+    answer = body.get("answer")
+
+    if riddle_index is None or answer is None:
+        return JSONResponse(
+            {"error": True, "message": "Missing riddle_index or answer."},
+            status_code=400,
+        )
+
+    result = check_riddle_answer(villain_id, riddle_index, answer)
+    if not result:
+        return JSONResponse(
+            {"error": True, "message": f"Invalid villain or riddle index."},
+            status_code=404,
+        )
+
+    return JSONResponse(result)
+
+
 @app.exception_handler(StarletteHTTPException)
 async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
     """Handle HTTP exceptions — pirate-themed 404 for missing pages."""
@@ -2071,7 +2755,7 @@ async def custom_http_exception_handler(request: Request, exc: StarletteHTTPExce
             content={"detail": exc.detail},
             status_code=exc.status_code,
         )
-    return custom_404_handler(request, exc)
+    return await custom_404_handler(request, exc)
 
 
 async def custom_404_handler(request: Request, exc):

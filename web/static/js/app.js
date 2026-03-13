@@ -160,7 +160,8 @@ const NomoloBridge = (() => {
                 total_records: data.sources.reduce((sum, s) => sum + s.record_count, 0),
             });
         } catch (e) {
-            toast('Man overboard! The scan failed. Refresh and try again.', 'error');
+            const jE = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            toast(jE === 'rpg' ? 'Man overboard! The scan failed. Refresh and try again.' : 'Scan failed. Please refresh and try again.', 'error');
             console.error('[Nomolo] 🏴‍☠️ Arrr! The spyglass cracked during REST scan:', e);
         }
     }
@@ -446,10 +447,11 @@ const NomoloBridge = (() => {
                 explanation.textContent = question.explanation;
                 container.appendChild(explanation);
 
+                const jQ = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
                 if (selected === correct) {
-                    toast('Victory! Ye be a true pirate of knowledge!', 'success');
+                    toast(jQ === 'rpg' ? 'Victory! Ye be a true pirate of knowledge!' : 'Correct! Well done!', 'success');
                 } else {
-                    toast('Not quite, Captain! Even the best pirates miss sometimes.', 'info');
+                    toast(jQ === 'rpg' ? 'Not quite, Captain! Even the best pirates miss sometimes.' : 'Not quite! Better luck next time.', 'info');
                 }
             });
         });
@@ -523,7 +525,8 @@ const NomoloBridge = (() => {
 
             if (result.success) {
                 nerdLog(`Google auth successful for ${source}!`, 'success');
-                toast('Boarded! Commencing the raid...', 'success');
+                const jA = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+                toast(jA === 'rpg' ? 'Boarded! Commencing the raid...' : 'Authenticated! Starting collection...', 'success');
                 // Now retry the collection
                 triggerCollect(source);
             } else {
@@ -558,7 +561,8 @@ const NomoloBridge = (() => {
     }
 
     function triggerSync() {
-        toast('The fleet is still being assembled! Use the CLI for now: nomolo collect <source>', 'info');
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        toast(jM === 'rpg' ? 'The fleet is still being assembled! Use the CLI for now: nomolo collect <source>' : 'This feature is coming soon. Use the CLI for now: nomolo collect <source>', 'info');
     }
 
     // ── Animated Number Counter ───────────────────────────────────────
@@ -673,6 +677,37 @@ const NomoloBridge = (() => {
         div.textContent = text;
         return div.innerHTML;
     }
+
+    // Varied pirate celebrations for success toasts
+    const PIRATE_CELEBRATIONS = [
+        'Yo ho ho! Plunder secured!',
+        'The treasure is ours! To the vault!',
+        'Another victory for the Reclaimer! The Chronicler is scribbling furiously.',
+        'The Armada weeps! Your vault grows heavier!',
+        'Success! The Groomer is already sorting the new loot.',
+        'Shiver me timbers! That went smoother than a greased anchor.',
+        'Victory! Even Guybrush Threepwood would be impressed.',
+        'The loot is aboard! The SCUMM Bar is serving celebratory grog.',
+    ];
+
+    function pirateToast(fallbackMsg, type) {
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        if (jM === 'rpg') {
+            toast(PIRATE_CELEBRATIONS[Math.floor(Math.random() * PIRATE_CELEBRATIONS.length)], type);
+        } else {
+            toast(fallbackMsg, type);
+        }
+    }
+
+    // Rotating pirate search placeholders
+    const SEARCH_PLACEHOLDERS_RPG = [
+        'Search the seas, Captain...',
+        'What treasure do ye seek?',
+        'Describe the loot ye\'re after...',
+        'The Vectorist awaits yer query...',
+        'Name yer prize, Reclaimer...',
+        'Which scroll calls to ye?',
+    ];
 
     function getSourceIconSVG(iconName) {
         const icons = {
@@ -872,7 +907,16 @@ const NomoloBridge = (() => {
             updateText(found);
             await sleep(2000);
 
-            // Phase 2: Collect
+            // Phase 2: Villain riddle before collection
+            updateText('An Armada captain approaches...');
+            await sleep(1000);
+
+            // Wrap the collection in a riddle callback
+            await new Promise((resolve) => {
+                startVillainRiddle('omniscient_eye', resolve);
+            });
+
+            // Phase 3: Collect
             updateText('Plundering yer history...');
             nerdLog('Starting collection...', 'info');
             _collectionStartTime = performance.now();
@@ -904,7 +948,7 @@ const NomoloBridge = (() => {
 
             await sleep(2000);
 
-            // Phase 3: Transition to done screen
+            // Phase 4: Transition to done screen
             transitionToDone(total);
 
         } catch (e) {
@@ -1352,11 +1396,60 @@ const NomoloBridge = (() => {
         line.appendChild(cursor);
     }
 
-    // ── Records Browser ───────────────────────────────────────────────
+    // ── Records Browser (Plunder Page) ──────────────────────────────
+
+    // Vault-to-emoji/label mapping for filter badges
+    const VAULT_LOOT_MAP = {
+        'Gmail_Primary': { emoji: '\u{1F4DC}', rpg: 'Scrolls', real: 'Emails' },
+        'Mail': { emoji: '\u{1F4DC}', rpg: 'Scrolls', real: 'Emails' },
+        'Contacts': { emoji: '\u{1F517}', rpg: 'Soul Bonds', real: 'Contacts' },
+        'Contacts_Google': { emoji: '\u{1F517}', rpg: 'Soul Bonds', real: 'Contacts' },
+        'Calendar': { emoji: '\u{1F48E}', rpg: 'Time Crystals', real: 'Events' },
+        'Calendar_Google': { emoji: '\u{1F48E}', rpg: 'Time Crystals', real: 'Events' },
+        'Browser': { emoji: '\u{1F463}', rpg: 'Footprints', real: 'Browser History' },
+        'Safari': { emoji: '\u{1F463}', rpg: 'Footprints', real: 'Browser History' },
+        'Bookmarks': { emoji: '\u{1F4CD}', rpg: 'Waypoints', real: 'Bookmarks' },
+        'Photos': { emoji: '\u{1F52E}', rpg: 'Memory Shards', real: 'Photos' },
+        'Messages': { emoji: '\u{1F4AC}', rpg: 'Whispers', real: 'Messages' },
+        'WhatsApp': { emoji: '\u{1F4AC}', rpg: 'Whispers', real: 'WhatsApp' },
+        'Telegram': { emoji: '\u{1F4AC}', rpg: 'Whispers', real: 'Telegram' },
+        'Slack': { emoji: '\u{1F4AC}', rpg: 'Whispers', real: 'Slack' },
+        'Notes': { emoji: '\u{1F4DD}', rpg: 'Manuscripts', real: 'Notes' },
+        'YouTube': { emoji: '\u{1F3AC}', rpg: 'Visions', real: 'YouTube' },
+        'Netflix': { emoji: '\u{1F3AC}', rpg: 'Visions', real: 'Netflix' },
+        'Spotify': { emoji: '\u{1F3B5}', rpg: 'Echoes', real: 'Spotify' },
+        'Music': { emoji: '\u{1F3B5}', rpg: 'Echoes', real: 'Music' },
+        'Finance': { emoji: '\u{1FA99}', rpg: 'Coins', real: 'Finance' },
+        'PayPal': { emoji: '\u{1FA99}', rpg: 'Coins', real: 'PayPal' },
+        'Amazon': { emoji: '\u{1FA99}', rpg: 'Coins', real: 'Amazon' },
+        'Shopping': { emoji: '\u{1FA99}', rpg: 'Coins', real: 'Shopping' },
+        'Twitter': { emoji: '\u{1F4E3}', rpg: 'Proclamations', real: 'Twitter' },
+        'Reddit': { emoji: '\u{1F4E3}', rpg: 'Proclamations', real: 'Reddit' },
+        'Facebook': { emoji: '\u{1F4E3}', rpg: 'Proclamations', real: 'Facebook' },
+        'Instagram': { emoji: '\u{1F4E3}', rpg: 'Proclamations', real: 'Instagram' },
+        'Health': { emoji: '\u2764\uFE0F', rpg: 'Life Force', real: 'Health' },
+        'LinkedIn': { emoji: '\u{1F517}', rpg: 'Soul Bonds', real: 'LinkedIn' },
+        'Maps': { emoji: '\u{1F463}', rpg: 'Footprints', real: 'Maps' },
+    };
 
     function initRecords() {
         const searchInput = document.getElementById('records-search');
         const sortSelect = document.getElementById('records-sort');
+
+        // Rotating pirate search placeholders
+        if (searchInput) {
+            const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            if (jM === 'rpg') {
+                let phIdx = Math.floor(Math.random() * SEARCH_PLACEHOLDERS_RPG.length);
+                searchInput.placeholder = SEARCH_PLACEHOLDERS_RPG[phIdx];
+                searchInput.addEventListener('focus', () => {
+                    phIdx = (phIdx + 1) % SEARCH_PLACEHOLDERS_RPG.length;
+                    searchInput.placeholder = SEARCH_PLACEHOLDERS_RPG[phIdx];
+                });
+            } else {
+                searchInput.placeholder = 'Search records...';
+            }
+        }
 
         if (searchInput) {
             let debounceTimer;
@@ -1378,13 +1471,31 @@ const NomoloBridge = (() => {
             });
         }
 
+        // Populate filter badge emojis and labels from the loot map
+        _initFilterBadges();
+
         loadRecords();
     }
 
+    function _initFilterBadges() {
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        document.querySelectorAll('.plunder-filter__emoji[data-vault]').forEach(el => {
+            const vault = el.dataset.vault;
+            const info = VAULT_LOOT_MAP[vault];
+            el.textContent = info ? info.emoji : '\u{1F4E6}';
+        });
+        document.querySelectorAll('.plunder-filter__label[data-vault-label]').forEach(el => {
+            const vault = el.dataset.vaultLabel;
+            const info = VAULT_LOOT_MAP[vault];
+            if (info) {
+                el.textContent = jM === 'rpg' ? info.rpg : info.real;
+            }
+        });
+    }
+
     function filterRecords(btn) {
-        // Update active filter
-        document.querySelectorAll('.records__filter').forEach(f => f.classList.remove('records__filter--active'));
-        btn.classList.add('records__filter--active');
+        document.querySelectorAll('.plunder-filter').forEach(f => f.classList.remove('plunder-filter--active'));
+        btn.classList.add('plunder-filter--active');
 
         _recordsSource = btn.dataset.source || '';
         _recordsPage = 1;
@@ -1395,7 +1506,11 @@ const NomoloBridge = (() => {
         const listEl = document.getElementById('records-list');
         if (!listEl) return;
 
-        listEl.innerHTML = '<div class="records__loading">Unfurling the maps...</div>';
+        const jMode = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        const loadMsg = _recordsQuery
+            ? (jMode === 'rpg' ? 'Sending the parrot to look...' : 'Searching...')
+            : (jMode === 'rpg' ? 'Unfurling the treasure maps...' : 'Loading records...');
+        listEl.innerHTML = '<div class="plunder-loading"><span class="plunder-loading__icon">\u{1F5FA}\uFE0F</span>' + loadMsg + '</div>';
 
         const params = new URLSearchParams({
             page: _recordsPage,
@@ -1411,7 +1526,9 @@ const NomoloBridge = (() => {
             _recordsData = data;
             renderRecords(data);
         } catch (e) {
-            listEl.innerHTML = '<div class="records__empty"><p class="records__empty-title">Kraken attack! Failed to load the plunder</p><p class="records__empty-sub">' + e.message + '</p></div>';
+            const jErr = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            const errTitle = jErr === 'rpg' ? 'A kraken has severed the communication lines!' : 'Failed to load records';
+            listEl.innerHTML = '<div class="plunder-empty"><div class="plunder-empty__chest">\u{1F419}</div><p class="plunder-empty__title">' + errTitle + '</p><p class="plunder-empty__sub">' + escapeHtml(e.message) + '</p></div>';
         }
     }
 
@@ -1419,32 +1536,67 @@ const NomoloBridge = (() => {
         const listEl = document.getElementById('records-list');
         if (!listEl) return;
 
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+
         if (!data.records || data.records.length === 0) {
-            listEl.innerHTML = '<div class="records__empty"><p class="records__empty-title">The seas are empty here, Captain</p><p class="records__empty-sub">' + (_recordsQuery ? 'Try different bearings, Captain' : 'Plunder some data first!') + '</p></div>';
+            let emptyTitle, emptySub, emptyChest;
+            if (_recordsQuery) {
+                emptyChest = '\u{1F99C}';
+                emptyTitle = jM === 'rpg' ? 'The parrot came back empty-clawed' : 'No results found';
+                emptySub = jM === 'rpg' ? 'Try different waters, Captain?' : 'Try a different search term';
+            } else {
+                emptyChest = '\u{1F4E6}';
+                emptyTitle = jM === 'rpg' ? 'The chest is empty, Captain!' : 'No records yet';
+                emptySub = jM === 'rpg' ? 'Time to raid the Armada!' : 'Import some data to get started';
+            }
+            let emptyHtml = '<div class="plunder-empty">';
+            emptyHtml += '<div class="plunder-empty__chest">' + emptyChest + '</div>';
+            emptyHtml += '<p class="plunder-empty__title">' + emptyTitle + '</p>';
+            emptyHtml += '<p class="plunder-empty__sub">' + emptySub + '</p>';
+            if (!_recordsQuery) {
+                const btnLabel = jM === 'rpg' ? 'Set Sail for Raid Targets \u2192' : 'Import Data \u2192';
+                emptyHtml += '<a href="/sources" class="plunder-empty__btn">' + btnLabel + '</a>';
+            }
+            emptyHtml += '</div>';
+            listEl.innerHTML = emptyHtml;
             updatePagination(data);
             return;
         }
 
         // Update total display
         const totalEl = document.getElementById('records-total');
-        if (totalEl) totalEl.textContent = data.total.toLocaleString() + ' pieces of loot';
+        if (totalEl) totalEl.textContent = data.total.toLocaleString();
 
         let html = '';
         for (const record of data.records) {
-            const sourceClass = getSourceClass(record.source);
-            const sourceLabel = getSourceLabel(record.source);
-            const dateStr = formatRecordDate(record.date);
+            const emoji = record.source_emoji || getSourceLabel(record.source);
+            const pirateDate = formatPirateDate(record.date);
+            const realDate = record.date_formatted || formatRecordDate(record.date);
 
-            html += '<div class="record-item" onclick="NomoloBridge.showRecordDetail(' + JSON.stringify(JSON.stringify(record)) + ')">';
-            html += '<div class="record-item__source record-item__source--' + sourceClass + '">' + sourceLabel + '</div>';
-            html += '<div class="record-item__body">';
-            html += '<div class="record-item__title">' + escapeHtml(record.title || 'Untitled') + '</div>';
-            html += '<div class="record-item__meta">';
-            if (record.from) html += '<span>' + escapeHtml(record.from) + '</span>';
-            if (dateStr) html += '<span>' + dateStr + '</span>';
+            // Villain badge
+            let villainBadge = '';
+            if (record.villain_name) {
+                const vName = jM === 'rpg' ? record.villain_name : (record.villain_company || record.villain_name);
+                const vColor = record.villain_color || '#444';
+                villainBadge = '<span class="plunder-item__villain" style="background:' + vColor + '22;color:' + vColor + ';border:1px solid ' + vColor + '44">'
+                    + (record.villain_icon ? record.villain_icon + ' ' : '') + escapeHtml(vName) + '</span>';
+            }
+
+            // Date with pirate jargon toggle
+            const dateDisplay = jM === 'rpg' ? pirateDate : realDate;
+
+            html += '<div class="plunder-item" onclick="NomoloBridge.showRecordDetail(' + JSON.stringify(JSON.stringify(record)) + ')">';
+            html += '<div class="plunder-item__emoji">' + emoji + '</div>';
+            html += '<div class="plunder-item__body">';
+            html += '<div class="plunder-item__title">' + escapeHtml(record.title || (jM === 'rpg' ? 'Uncharted Scroll' : 'Untitled')) + '</div>';
+            if (record.subtitle) html += '<div class="plunder-item__subtitle">' + escapeHtml(record.subtitle) + '</div>';
+            if (record.preview) html += '<p class="plunder-item__preview">"' + escapeHtml(record.preview) + '"</p>';
             html += '</div>';
-            if (record.preview) html += '<p class="record-item__preview">' + escapeHtml(record.preview) + '</p>';
-            html += '</div></div>';
+            html += '<div class="plunder-item__right">';
+            if (villainBadge) html += villainBadge;
+            if (dateDisplay) html += '<span class="plunder-item__date" title="' + escapeHtml(record.date_formatted || record.date || '') + '">' + dateDisplay + '</span>';
+            html += '</div>';
+            html += '</div>';
         }
 
         listEl.innerHTML = html;
@@ -1467,7 +1619,10 @@ const NomoloBridge = (() => {
         paginationEl.style.display = 'flex';
         if (prevBtn) prevBtn.disabled = data.page <= 1;
         if (nextBtn) nextBtn.disabled = data.page >= data.pages;
-        if (infoEl) infoEl.textContent = 'Chart ' + data.page + ' of ' + data.pages;
+        const jargonMode = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        if (infoEl) infoEl.textContent = jargonMode === 'rpg'
+            ? 'Chart ' + data.page + ' of ' + data.pages + ' \u2014 steady as she goes'
+            : 'Page ' + data.page + ' of ' + data.pages;
     }
 
     function recordsPage(direction) {
@@ -1482,19 +1637,60 @@ const NomoloBridge = (() => {
         const content = document.getElementById('record-detail-content');
         if (!modal || !content) return;
 
-        const sourceLabel = getSourceLabel(record.source);
-        const dateStr = formatRecordDate(record.date);
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        const emoji = record.source_emoji || getSourceLabel(record.source);
+        const pirateDate = formatPirateDate(record.date);
+        const realDate = record.date_formatted || formatRecordDate(record.date);
 
-        let html = '<button class="record-detail__close" onclick="NomoloBridge.closeRecordDetail()">&times;</button>';
-        html += '<div class="record-detail__source-tag">' + escapeHtml(record.source.replace(/_/g, ' ')) + '</div>';
-        html += '<h2 class="record-detail__title">' + escapeHtml(record.title || 'Untitled') + '</h2>';
-        html += '<div class="record-detail__meta">';
-        if (record.from) html += '<strong>From:</strong> ' + escapeHtml(record.from) + '<br>';
-        if (dateStr) html += '<strong>Date:</strong> ' + dateStr + '<br>';
-        if (record.score) html += '<strong>Relevance:</strong> ' + record.score;
+        let html = '<button class="plunder-detail__close" onclick="NomoloBridge.closeRecordDetail()">\u2716</button>';
+
+        // Header: emoji + title + subtitle
+        html += '<div class="plunder-detail__header">';
+        html += '<span class="plunder-detail__emoji">' + emoji + '</span>';
+        html += '<div class="plunder-detail__header-text">';
+        html += '<h2 class="plunder-detail__title">' + escapeHtml(record.title || (jM === 'rpg' ? 'Uncharted Scroll' : 'Untitled')) + '</h2>';
+        if (record.subtitle) html += '<p class="plunder-detail__subtitle">' + escapeHtml(record.subtitle) + '</p>';
+        html += '</div></div>';
+
+        // "Raided from" villain badge
+        if (record.villain_name) {
+            const vName = jM === 'rpg' ? record.villain_name : (record.villain_company || record.villain_name);
+            const vColor = record.villain_color || '#444';
+            const raidLabel = jM === 'rpg' ? 'Raided from:' : 'Source:';
+            html += '<div class="plunder-detail__raided" style="background:' + vColor + '15;color:' + vColor + ';border:1px solid ' + vColor + '33">';
+            html += (record.villain_icon ? record.villain_icon + ' ' : '') + raidLabel + ' ' + escapeHtml(vName);
+            html += '</div>';
+        }
+
+        // Metadata
+        html += '<div class="plunder-detail__meta">';
+        const dateLabel = jM === 'rpg' ? 'Charted' : 'Date';
+        const dateVal = jM === 'rpg' ? pirateDate : realDate;
+        if (dateVal) {
+            html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">' + dateLabel + ':</span> ' + dateVal + '</span>';
+        }
+        const sourceLabel = jM === 'rpg' ? (record.source_label || record.source) : record.source.replace(/_/g, ' ');
+        html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">' + (jM === 'rpg' ? 'Type' : 'Source') + ':</span> ' + escapeHtml(sourceLabel) + '</span>';
+        if (record.id) {
+            html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">ID:</span> ' + escapeHtml(String(record.id).substring(0, 12)) + '</span>';
+        }
+        if (record.score) {
+            const scoreLabel = jM === 'rpg' ? 'Treasure quality' : 'Relevance';
+            html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">' + scoreLabel + ':</span> ' + record.score + '</span>';
+        }
         html += '</div>';
+
+        // Body content
         if (record.preview) {
-            html += '<div class="record-detail__body">' + escapeHtml(record.preview) + '</div>';
+            html += '<div class="plunder-detail__body">' + escapeHtml(record.preview) + '</div>';
+        }
+
+        // Raw data toggle
+        if (record.raw && Object.keys(record.raw).length > 0) {
+            html += '<div class="plunder-detail__raw">';
+            html += '<button class="plunder-detail__raw-toggle" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">' + (jM === 'rpg' ? 'Inspect the artifact' : 'Show raw data') + '</button>';
+            html += '<div class="plunder-detail__raw-content" style="display:none">' + escapeHtml(JSON.stringify(record.raw, null, 2)) + '</div>';
+            html += '</div>';
         }
 
         content.innerHTML = html;
@@ -1524,18 +1720,64 @@ const NomoloBridge = (() => {
 
     function getSourceLabel(source) {
         const s = (source || '').toLowerCase();
-        if (s.includes('gmail')) return 'GM';
-        if (s.includes('contact')) return 'CO';
-        if (s.includes('calendar')) return 'CA';
-        if (s.includes('browser')) return 'BR';
-        if (s.includes('bookmark')) return 'BK';
-        if (s.includes('photo')) return 'PH';
-        if (s.includes('message') || s.includes('imessage')) return 'MS';
-        if (s.includes('note')) return 'NT';
-        if (s.includes('whatsapp')) return 'WA';
-        if (s.includes('telegram')) return 'TG';
-        if (s.includes('slack')) return 'SL';
-        return source ? source.substring(0, 2).toUpperCase() : '??';
+        if (s.includes('gmail') || s.includes('mail')) return '\u{1F4DC}';
+        if (s.includes('contact')) return '\u{1F517}';
+        if (s.includes('calendar')) return '\u{1F48E}';
+        if (s.includes('browser') || s.includes('safari')) return '\u{1F463}';
+        if (s.includes('bookmark')) return '\u{1F4CD}';
+        if (s.includes('photo')) return '\u{1F52E}';
+        if (s.includes('message') || s.includes('imessage')) return '\u{1F4AC}';
+        if (s.includes('note')) return '\u{1F4DD}';
+        if (s.includes('whatsapp')) return '\u{1F4AC}';
+        if (s.includes('telegram')) return '\u{1F4AC}';
+        if (s.includes('slack')) return '\u{1F4AC}';
+        if (s.includes('youtube')) return '\u{1F3AC}';
+        if (s.includes('spotify') || s.includes('music')) return '\u{1F3B5}';
+        if (s.includes('linkedin')) return '\u{1F517}';
+        if (s.includes('facebook') || s.includes('instagram')) return '\u{1F4E3}';
+        if (s.includes('twitter')) return '\u{1F4E3}';
+        if (s.includes('reddit')) return '\u{1F4E3}';
+        if (s.includes('netflix')) return '\u{1F3AC}';
+        if (s.includes('paypal') || s.includes('finance')) return '\u{1FA99}';
+        if (s.includes('amazon') || s.includes('shopping')) return '\u{1FA99}';
+        if (s.includes('health')) return '\u2764\uFE0F';
+        if (s.includes('map')) return '\u{1F463}';
+        return '\u{1F4E6}';
+    }
+
+    /**
+     * Pirate-themed relative date formatting.
+     * < 1 hour: "moments ago"
+     * < 1 day: "earlier today"
+     * < 7 days: "X tides ago"
+     * < 30 days: "X moons ago"
+     * < 365 days: "X seasons past"
+     * > 1 year: "from the age of [year]"
+     */
+    function formatPirateDate(dateStr) {
+        if (!dateStr) return '';
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr.substring(0, 10);
+            const now = new Date();
+            const diffMs = now - d;
+            const diffHours = diffMs / (1000 * 60 * 60);
+            const diffDays = Math.floor(diffHours / 24);
+
+            if (diffHours < 0) return 'from the future';
+            if (diffHours < 1) return 'moments ago';
+            if (diffDays === 0) return 'earlier today';
+            if (diffDays === 1) return '1 tide ago';
+            if (diffDays < 7) return diffDays + ' tides ago';
+            const diffWeeks = Math.floor(diffDays / 7);
+            if (diffDays < 30) return diffWeeks === 1 ? 'a fortnight past' : diffWeeks + ' moons ago';
+            const diffMonths = Math.floor(diffDays / 30);
+            if (diffDays < 365) return diffMonths + (diffMonths === 1 ? ' moon ago' : ' moons ago');
+            const year = d.getFullYear();
+            return 'from the age of ' + year;
+        } catch {
+            return dateStr.substring(0, 10);
+        }
     }
 
     function formatRecordDate(dateStr) {
@@ -1556,29 +1798,36 @@ const NomoloBridge = (() => {
     }
 
     async function openVaultFolder() {
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
         try {
             await fetch('/api/open-vault-folder', { method: 'POST' });
-            toast('Opening the treasure chest...', 'info');
+            toast(jM === 'rpg' ? 'Opening the treasure chest...' : 'Opening folder...', 'info');
         } catch (e) {
-            toast('Man overboard! Could not open the chest: ' + e.message, 'error');
+            toast(jM === 'rpg' ? 'Man overboard! Could not open the chest: ' + e.message : 'Could not open folder: ' + e.message, 'error');
         }
     }
 
     async function rescanSources() {
-        toast('Scanning the horizon for loot...', 'info');
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        toast(jM === 'rpg' ? 'Scanning the horizon with the spyglass...' : 'Scanning sources...', 'info');
         try {
             const resp = await fetch('/api/collect/local', { method: 'POST' });
             const data = await resp.json();
             const count = data.total_records || 0;
-            toast(count > 0 ? `Plundered ${count.toLocaleString()} pieces of loot!` : 'Horizon clear — no new plunder found', 'success');
+            if (count > 0) {
+                pirateToast(`Collected ${count.toLocaleString()} records`, 'success');
+            } else {
+                toast(jM === 'rpg' ? 'Horizon clear \u2014 no new plunder found' : 'No new records found', 'success');
+            }
             setTimeout(() => window.location.reload(), 1500);
         } catch (e) {
-            toast('Man overboard! Scan failed: ' + e.message, 'error');
+            toast(jM === 'rpg' ? 'A kraken has severed the communication lines! ' + e.message : 'Scan failed: ' + e.message, 'error');
         }
     }
 
     async function collectSource(sourceId) {
-        toast(`Raiding ${sourceId}...`, 'info');
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        toast(jM === 'rpg' ? `Raiding ${sourceId}...` : `Collecting ${sourceId}...`, 'info');
         try {
             const resp = await fetch(`/api/collect/${sourceId}`, { method: 'POST' });
             const data = await resp.json();
@@ -1589,18 +1838,18 @@ const NomoloBridge = (() => {
                     const status = await statusResp.json();
                     if (status.status === 'completed') {
                         clearInterval(pollInterval);
-                        toast(`Plunder secured! ${sourceId}: ${(status.records || 0).toLocaleString()} pieces of loot`, 'success');
+                        pirateToast(`${sourceId}: ${(status.records || 0).toLocaleString()} records collected`, 'success');
                         setTimeout(() => window.location.reload(), 1500);
                     } else if (status.status === 'error') {
                         clearInterval(pollInterval);
-                        toast(`Kraken attack! ${sourceId}: ${status.message}`, 'error');
+                        toast(jM === 'rpg' ? `Kraken attack! ${sourceId}: ${status.message}` : `Error collecting ${sourceId}: ${status.message}`, 'error');
                     } else if (status.status === 'needs_auth') {
                         clearInterval(pollInterval);
-                        toast(`${sourceId} needs a boarding pass — opening the gangplank...`, 'info');
+                        toast(jM === 'rpg' ? `${sourceId} needs a boarding pass \u2014 opening the gangplank...` : `${sourceId} needs authentication \u2014 opening login...`, 'info');
                         if (status.auth_url) window.open(status.auth_url, '_blank');
                     } else if (status.status === 'needs_file') {
                         clearInterval(pollInterval);
-                        toast(`${sourceId} requires stolen cargo. Check yer orders, Captain.`, 'info');
+                        toast(jM === 'rpg' ? `${sourceId} requires stolen cargo. Check yer orders, Captain.` : `${sourceId} requires a file upload. Check settings.`, 'info');
                     } else if (status.status === 'needs_setup') {
                         clearInterval(pollInterval);
                         toast(`${sourceId}: ${status.message}`, 'info');
@@ -1608,14 +1857,15 @@ const NomoloBridge = (() => {
                 }, 1000);
             }
         } catch (e) {
-            toast(`Kraken attack! Raid failed: ${e.message}`, 'error');
+            toast(jM === 'rpg' ? `Kraken attack! Raid failed: ${e.message}` : `Collection failed: ${e.message}`, 'error');
         }
     }
 
     // ── Update All Sources ───────────────────────────────────────────
 
     async function updateAllSources() {
-        toast('Raiding all islands...', 'info');
+        const jU = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        toast(jU === 'rpg' ? 'Raiding all islands...' : 'Collecting all sources...', 'info');
         try {
             // Collect local sources
             const localResp = await fetch('/api/collect/local', { method: 'POST' });
@@ -1626,37 +1876,146 @@ const NomoloBridge = (() => {
             const browserData = await browserResp.json();
 
             const totalNew = (localData.total_records || 0) + (browserData.records || 0);
-            toast('Plunder secured! ' + totalNew.toLocaleString() + ' pieces of loot refreshed', 'success');
+            pirateToast(totalNew.toLocaleString() + ' records refreshed', 'success');
             setTimeout(() => window.location.reload(), 2000);
         } catch (e) {
-            toast('Kraken attack! Raid failed: ' + e.message, 'error');
+            const jR = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            toast(jR === 'rpg' ? 'A kraken has severed the communication lines! ' + e.message : 'Collection failed: ' + e.message, 'error');
         }
     }
 
     // ── Settings ──────────────────────────────────────────────────────
 
     async function saveSetting(key, value) {
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
         try {
             await fetch('/api/settings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ [key]: value }),
             });
-            toast('Orders stashed, Captain!', 'success');
+            toast(jM === 'rpg' ? 'Orders stashed, Captain!' : 'Setting saved', 'success');
         } catch (e) {
-            toast('Man overboard! Failed to stash: ' + e.message, 'error');
+            toast(jM === 'rpg' ? 'Man overboard! Failed to stash: ' + e.message : 'Failed to save: ' + e.message, 'error');
         }
     }
 
     function resetJourney() {
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
         clearJourneyState();
-        toast('Voyage reset — visit /welcome to set sail again', 'success');
+        toast(jM === 'rpg' ? 'Voyage reset \u2014 visit /welcome to set sail again' : 'Journey reset \u2014 visit /welcome to restart', 'success');
+    }
+
+    // ── LLM Token Management ──────────────────────────────────────────
+
+    const LLM_DEFAULTS = {
+        openai: { endpoint: 'https://api.openai.com', model: 'gpt-4o' },
+        anthropic: { endpoint: 'https://api.anthropic.com', model: 'claude-sonnet-4-20250514' },
+        custom: { endpoint: 'http://localhost:11434', model: '' },
+    };
+
+    async function initLLMSettings() {
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        try {
+            const resp = await fetch('/api/settings/llm-token');
+            const data = await resp.json();
+            const statusEl = document.getElementById('llm-token-status');
+            const deleteBtn = document.getElementById('llm-delete-btn');
+            if (data.provider && data.masked_token) {
+                const providerLabel = data.provider.charAt(0).toUpperCase() + data.provider.slice(1);
+                const icon = '<span class="llm-status-icon" style="color: var(--accent-green);">&#10003;</span>';
+                statusEl.innerHTML = jM === 'rpg'
+                    ? `${icon}Oracle bound (${providerLabel}) — ····${data.masked_token}`
+                    : `${icon}Connected (${providerLabel}) — ····${data.masked_token}`;
+                if (deleteBtn) deleteBtn.style.display = '';
+                // Pre-fill form
+                const providerEl = document.getElementById('llm-provider');
+                if (providerEl) providerEl.value = data.provider;
+                const endpointEl = document.getElementById('llm-endpoint');
+                if (endpointEl) endpointEl.value = data.endpoint || '';
+                const modelEl = document.getElementById('llm-model');
+                if (modelEl) modelEl.value = data.model || '';
+            } else {
+                const icon = '<span class="llm-status-icon" style="color: var(--text-muted);">&#9760;</span>';
+                statusEl.innerHTML = jM === 'rpg'
+                    ? `${icon}No oracle bound`
+                    : `${icon}Not configured`;
+                if (deleteBtn) deleteBtn.style.display = 'none';
+            }
+        } catch {
+            const statusEl = document.getElementById('llm-token-status');
+            if (statusEl) statusEl.textContent = 'Error loading status';
+        }
+    }
+
+    function toggleLLMForm() {
+        const form = document.getElementById('llm-token-form');
+        if (form) form.style.display = form.style.display === 'none' ? '' : 'none';
+    }
+
+    function onLLMProviderChange() {
+        const provider = document.getElementById('llm-provider').value;
+        const defaults = LLM_DEFAULTS[provider] || LLM_DEFAULTS.custom;
+        document.getElementById('llm-endpoint').value = defaults.endpoint;
+        document.getElementById('llm-model').value = defaults.model;
+    }
+
+    async function saveLLMToken() {
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        const provider = document.getElementById('llm-provider').value;
+        const token = document.getElementById('llm-token').value.trim();
+        const endpoint = document.getElementById('llm-endpoint').value.trim();
+        const model = document.getElementById('llm-model').value.trim();
+
+        if (!token) {
+            toast(jM === 'rpg' ? 'Ye need a secret incantation, Captain!' : 'Please enter an API key', 'error');
+            return;
+        }
+
+        try {
+            const resp = await fetch('/api/settings/llm-token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ provider, token, endpoint, model }),
+            });
+            const data = await resp.json();
+            if (data.ok) {
+                toast(jM === 'rpg' ? 'The scroll is sealed! Oracle bound.' : 'API key saved securely.', 'success');
+                document.getElementById('llm-token').value = '';
+                toggleLLMForm();
+                initLLMSettings();
+            } else {
+                toast(data.error || 'Failed to save', 'error');
+            }
+        } catch (e) {
+            toast(jM === 'rpg' ? 'The scroll crumbled! ' + e.message : 'Failed to save: ' + e.message, 'error');
+        }
+    }
+
+    async function deleteLLMToken() {
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        if (!confirm(jM === 'rpg' ? 'Burn the scroll? This cannot be undone!' : 'Delete the API key? This cannot be undone.')) return;
+
+        try {
+            const resp = await fetch('/api/settings/llm-token', { method: 'DELETE' });
+            const data = await resp.json();
+            if (data.ok) {
+                toast(jM === 'rpg' ? 'The scroll is ash. Oracle unbound.' : 'API key deleted.', 'success');
+                toggleLLMForm();
+                initLLMSettings();
+            } else {
+                toast(data.error || 'Failed to delete', 'error');
+            }
+        } catch (e) {
+            toast(jM === 'rpg' ? 'Failed to burn the scroll! ' + e.message : 'Failed to delete: ' + e.message, 'error');
+        }
     }
 
     // ── Jargon Toggle ─────────────────────────────────────────────────
 
-    // The jargon map for dynamic content (loaded from JARGON_MAP in rpg.py)
+    // The jargon map for dynamic content (mirrors JARGON_MAP in rpg.py)
     const JARGON_MAP = {
+        // Data types
         "Scroll": "Email", "Scrolls": "Emails",
         "Soul Bond": "Contact", "Soul Bonds": "Contacts",
         "Time Crystal": "Calendar Event", "Time Crystals": "Calendar Events",
@@ -1664,31 +2023,104 @@ const NomoloBridge = (() => {
         "Memory Shard": "Photo/Video", "Memory Shards": "Photos/Videos",
         "Echo": "Music Track", "Echoes": "Music Tracks",
         "Coin": "Financial Record", "Coins": "Financial Records",
+        "Gold Coin": "Financial Record", "Gold Coins": "Financial Records",
+        "Marketplace Receipt": "Shopping Record", "Marketplace Receipts": "Shopping Records",
         "Whisper": "Chat Message", "Whispers": "Chat Messages",
         "Manuscript": "Note", "Manuscripts": "Notes",
+        "Whisper Page": "Note", "Whisper Pages": "Notes",
         "Vision": "Video", "Visions": "Videos",
-        "Life Force": "Health Data",
+        "Oracle Recording": "Podcast", "Oracle Recordings": "Podcasts",
+        "Life Force": "Health Data", "Life Essence": "Health Data",
         "Footprint": "Location/Browser Data", "Footprints": "Location/Browser Data",
         "Waypoint": "Bookmark", "Waypoints": "Bookmarks",
         "Proclamation": "Social Post", "Proclamations": "Social Posts",
-        "Conglomerate": "Company", "Conglomerates": "Companies",
-        "The Flatcloud": "The Cloud", "Flatcloud": "Cloud",
-        "Raid": "Import", "raid": "import",
+        "Shadow Message": "Chat Message", "Shadow Messages": "Chat Messages",
+        // UI elements
+        "SCUMM Bar": "Dashboard", "The SCUMM Bar": "The Dashboard",
+        "Loot Log": "Records", "Raid Targets": "Sources",
+        "Ship's Helm": "Settings", "Captain's Quarters": "Profile",
+        "Loot Inventory": "Data Inventory", "Treasure Hold": "Data Storage",
+        "Raiding Orders": "Collection", "Here Be Dragons": "Danger Zone",
+        "Memory Tavern": "Data Quiz", "The Armada": "Your Sources",
+        "Plundered Islands": "Connected", "Uncharted Waters": "Available",
+        // Actions
+        "Raid": "Import", "raid": "import", "Raid All": "Collect All",
+        "Raided": "Imported", "raided": "imported",
+        "Plunder": "Download", "plunder": "download",
+        "Board their ship": "Connect", "Cast off": "Disconnect",
+        "Scan the horizon": "Refresh", "Scan the Horizon": "Refresh",
+        "Stash": "Save", "Scuttle": "Delete",
+        "Patch the hull": "Update", "Load the cannons": "Upload",
+        "Search the seas": "Search", "Search the Seas": "Search",
+        "Chart the course": "Navigate",
+        "Click to plunder": "Click to collect",
+        "Begin the Raid": "Start Collection",
+        // Nouns
         "Loot": "Records", "loot": "records",
+        "Booty": "Total", "Treasure": "Files",
+        "pieces of loot": "records", "pieces of plunder": "records",
         "Vault": "Archive", "vault": "archive",
-        "Reclaimer": "User",
-        "The Omniscient Eye": "Google",
-        "The Walled Garden": "Apple",
-        "The Hydra of Faces": "Meta",
-        "The Melody Merchant": "Spotify",
-        "The Bazaar Eternal": "Amazon",
-        "The Professional Masque": "LinkedIn",
-        "The Shadow Courier": "Telegram",
-        "The Corporate Hive": "Slack",
-        "The Chaos Herald": "X / Twitter",
-        "The Dream Weaver": "Netflix",
-        "The Hive Mind": "Reddit",
-        "The Coin Master": "PayPal",
+        "Armada": "Company", "Armada fleet": "Company", "Armada fleets": "Companies",
+        "The Flatcloud": "The Cloud", "Flatcloud": "Cloud",
+        "Reclaimer": "User", "Seven Seas of Data": "The Internet",
+        "Island of Nomolo": "Digital Sovereignty", "Map Fragment": "Data Source",
+        "The One": "Personal AI",
+        "Letter of Marque": "Google Credentials",
+        "Total Booty": "Total Records",
+        "Islands Plundered": "Connected Sources",
+        "Local Harbors": "Mac Sources", "Captured Cargo": "Import Files",
+        // Entities
+        "The Omniscient Eye": "Google", "The Walled Garden": "Apple",
+        "The Hydra of Faces": "Meta", "The Melody Merchant": "Spotify",
+        "The Bazaar Eternal": "Amazon", "The Professional Masque": "LinkedIn",
+        "The Shadow Courier": "Telegram", "The Corporate Hive": "Slack",
+        "The Chaos Herald": "X / Twitter", "The Dream Weaver": "Netflix",
+        "The Hive Mind": "Reddit", "The Coin Master": "PayPal",
+        "The Merchant Fleet": "Amazon", "The Professional Port": "Microsoft",
+        "The Bard's Guild": "Spotify/YouTube", "The Shadow Broker": "Telegram/Signal",
+        "The Coin Counter": "PayPal",
+        // Captain names
+        "Captain Lexicon": "Google (Captain)", "Admiral Polished": "Apple (Admiral)",
+        "Captain Pivot": "Meta (Captain)", "Commodore Prime": "Amazon (Commodore)",
+        "The Harbormaster": "Microsoft/LinkedIn", "The Maestro": "Spotify/YouTube",
+        "Baron Ledger": "PayPal",
+        // Pirate-world locations & things
+        "the Omniscient Archipelago": "Google's platform",
+        "the Fortress Marketplace": "the App Store", "Fortress Marketplace": "App Store",
+        "the Reef": "Facebook/Meta's platform",
+        "the Scroll Archives": "Gmail", "Scroll Archives": "Gmail",
+        "the Listening Parrot": "Alexa", "Listening Parrot": "Alexa",
+        "the Great Logbook Scandal": "the Cambridge Analytica scandal",
+        "the Glass Panes": "Windows", "Glass Panes": "Windows",
+        "the Spyglass": "Chrome / Google Analytics",
+        "the Bard's Stage": "YouTube", "Bard's Stage": "YouTube",
+        "the Hydra's Whisper Channel": "WhatsApp",
+        "the Scuttled Ships Registry": "killedbygoogle.com",
+        "the Pirate's Code": "GDPR", "Pirate's Code": "GDPR",
+        "the Data Protection Treaty": "GDPR",
+        "Secret Dispatches": "Secret Chats (Telegram)",
+        "harbor dispatches": "InMails", "harbor messages": "InMails",
+        // States
+        "Aboard": "Connected", "Adrift": "Disconnected",
+        "Battle-ready": "Active", "In dry dock": "Inactive",
+        "Defeated": "Fully Imported", "Uncharted": "Available",
+        // Fun phrases
+        "Yo ho ho!": "Success!", "Kraken attack!": "Error!",
+        "Man overboard!": "Warning!", "Batten down!": "Close",
+        "Aye!": "OK", "Belay that!": "Cancel",
+        "Yer": "Your", "yer": "your", "ye": "you", "Captain": "User",
+        // Loading / empty / error phrases
+        "Polishing the brass at the SCUMM Bar...": "Loading dashboard...",
+        "Unfurling the treasure maps...": "Loading records...",
+        "Scanning the horizon with the spyglass...": "Loading sources...",
+        "Adjusting the ship's wheel...": "Loading settings...",
+        "Sending the parrot to look...": "Searching...",
+        "The hold is empty, Captain. Time to raid the Armada!": "No records yet. Time to import from some companies!",
+        "No islands on the chart yet. The seven seas await!": "No sources connected yet.",
+        "The parrot came back empty-clawed. Try different waters?": "No results found. Try a different search?",
+        "A kraken has severed the communication lines!": "Network error!",
+        "The ship's engine room is on fire!": "Server error!",
+        "The messenger pigeon got lost. Sending another...": "Request timed out. Retrying...",
     };
 
     function initJargonToggle() {
@@ -1836,7 +2268,7 @@ const NomoloBridge = (() => {
     const PIRATE_GREETINGS = [
         "Ahoy, Captain! Welcome back to the SCUMM Bar. Your vault awaits.",
         "A good pirate always checks their inventory before setting sail.",
-        "The Conglomerates grow nervous. They can smell a raid coming.",
+        "The Armada grows nervous. They can smell a raid coming.",
         "Your data doesn't belong in their holds. Time to take it back.",
         "I once knew a pirate who didn't back up their vault. We don't talk about what happened.",
         "Remember: it's not piracy if you're stealing your own stuff back.",
@@ -2170,6 +2602,233 @@ const NomoloBridge = (() => {
         closeDialogue();
     }
 
+    // ── Villain Riddle System ──────────────────────────────────────
+
+    /**
+     * Get seen riddle indices for a villain from sessionStorage.
+     */
+    function _getSeenRiddles(villainId) {
+        try {
+            const data = JSON.parse(sessionStorage.getItem('nomolo_riddles_seen') || '{}');
+            return data[villainId] || [];
+        } catch { return []; }
+    }
+
+    /**
+     * Mark a riddle index as seen for a villain.
+     */
+    function _markRiddleSeen(villainId, index) {
+        try {
+            const data = JSON.parse(sessionStorage.getItem('nomolo_riddles_seen') || '{}');
+            if (!data[villainId]) data[villainId] = [];
+            if (!data[villainId].includes(index)) data[villainId].push(index);
+            sessionStorage.setItem('nomolo_riddles_seen', JSON.stringify(data));
+        } catch { /* sessionStorage unavailable */ }
+    }
+
+    /**
+     * Get/update riddle stats (right/wrong per villain).
+     */
+    function _getRiddleStats() {
+        try {
+            return JSON.parse(sessionStorage.getItem('nomolo_riddle_stats') || '{}');
+        } catch { return {}; }
+    }
+
+    function _updateRiddleStats(villainId, correct) {
+        try {
+            const stats = _getRiddleStats();
+            if (!stats[villainId]) stats[villainId] = { right: 0, wrong: 0 };
+            if (correct) stats[villainId].right++;
+            else stats[villainId].wrong++;
+            sessionStorage.setItem('nomolo_riddle_stats', JSON.stringify(stats));
+        } catch { /* sessionStorage unavailable */ }
+    }
+
+    /**
+     * Start a villain riddle encounter.
+     * Fetches a riddle, shows it in overlay UI, calls onComplete when done.
+     */
+    async function startVillainRiddle(villainId, onComplete) {
+        const seen = _getSeenRiddles(villainId);
+        const seenParam = seen.length > 0 ? seen.join(',') : '';
+
+        try {
+            const resp = await fetch(`/api/riddle/${encodeURIComponent(villainId)}?seen=${seenParam}`);
+            const data = await resp.json();
+
+            if (data.error) {
+                // No riddles available — proceed directly
+                if (onComplete) onComplete();
+                return;
+            }
+
+            _showRiddleUI(villainId, data, onComplete);
+        } catch (e) {
+            console.warn('[Nomolo] Riddle fetch failed:', e);
+            if (onComplete) onComplete();
+        }
+    }
+
+    /**
+     * Render the riddle overlay UI.
+     */
+    function _showRiddleUI(villainId, riddle, onComplete) {
+        playSound('dialogue_open');
+
+        const overlay = document.createElement('div');
+        overlay.className = 'riddle-overlay';
+
+        const stats = _getRiddleStats();
+        const villainStats = stats[villainId] || { right: 0, wrong: 0 };
+
+        const optionsHtml = riddle.options.map((opt, i) => {
+            const label = String.fromCharCode(65 + i); // A, B, C, D
+            return `<button class="riddle-option" data-index="${i}">
+                <span class="riddle-option__label">${label}</span>
+                <span>${_escapeRiddleHtml(opt)}</span>
+            </button>`;
+        }).join('');
+
+        overlay.innerHTML = `
+            <div class="riddle-box">
+                <button class="riddle-box__skip" onclick="this.closest('.riddle-overlay').remove()">Skip to raid &rarr;</button>
+                <div class="riddle-box__header">
+                    <div class="riddle-box__portrait">${riddle.portrait}</div>
+                    <div class="riddle-box__villain-info">
+                        <div class="riddle-box__villain-name">${_escapeRiddleHtml(riddle.villain_name)}</div>
+                        <div class="riddle-box__villain-company">${_escapeRiddleHtml(riddle.company)}</div>
+                    </div>
+                </div>
+                <div class="riddle-box__intro">${_escapeRiddleHtml(riddle.intro)}</div>
+                <div class="riddle-box__question">${_escapeRiddleHtml(riddle.question)}</div>
+                <div class="riddle-box__options">${optionsHtml}</div>
+                <div class="riddle-result"></div>
+                <div class="riddle-score">
+                    Score: <span class="riddle-score__correct">${villainStats.right} right</span> /
+                    <span class="riddle-score__wrong">${villainStats.wrong} wrong</span>
+                </div>
+            </div>
+        `;
+
+        // Handle skip button — also fires onComplete
+        const skipBtn = overlay.querySelector('.riddle-box__skip');
+        skipBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playSound('dialogue_close');
+            overlay.remove();
+            if (onComplete) onComplete();
+        });
+
+        // Handle option clicks
+        const optionBtns = overlay.querySelectorAll('.riddle-option');
+        optionBtns.forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const answerIndex = parseInt(btn.dataset.index);
+
+                // Disable all options
+                optionBtns.forEach(b => b.classList.add('riddle-option--answered'));
+
+                // Check answer via API
+                try {
+                    const resp = await fetch(`/api/riddle/${encodeURIComponent(villainId)}/answer`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            riddle_index: riddle.riddle_index,
+                            answer: answerIndex,
+                        }),
+                    });
+                    const result = await resp.json();
+
+                    // Mark seen and update stats
+                    _markRiddleSeen(villainId, riddle.riddle_index);
+                    _updateRiddleStats(villainId, result.correct);
+
+                    // Show result on options
+                    if (result.correct) {
+                        btn.classList.add('riddle-option--correct');
+                        playSound('insult_win');
+                    } else {
+                        btn.classList.add('riddle-option--wrong');
+                        // Highlight the correct one
+                        optionBtns[result.correct_answer]?.classList.remove('riddle-option--answered');
+                        optionBtns[result.correct_answer]?.classList.add('riddle-option--correct');
+                    }
+
+                    // Show explanation and villain reaction
+                    _showRiddleResult(overlay, result, villainId, onComplete);
+
+                    // Update score display
+                    const updatedStats = _getRiddleStats();
+                    const vs = updatedStats[villainId] || { right: 0, wrong: 0 };
+                    const scoreEl = overlay.querySelector('.riddle-score');
+                    if (scoreEl) {
+                        scoreEl.innerHTML = `Score: <span class="riddle-score__correct">${vs.right} right</span> / <span class="riddle-score__wrong">${vs.wrong} wrong</span>`;
+                    }
+
+                } catch (err) {
+                    console.warn('[Nomolo] Riddle answer check failed:', err);
+                    overlay.remove();
+                    if (onComplete) onComplete();
+                }
+            });
+        });
+
+        document.body.appendChild(overlay);
+    }
+
+    /**
+     * Show the result section after answering a riddle.
+     */
+    function _showRiddleResult(overlay, result, villainId, onComplete) {
+        const resultEl = overlay.querySelector('.riddle-result');
+        if (!resultEl) return;
+
+        resultEl.innerHTML = `
+            <div class="riddle-explanation">${_escapeRiddleHtml(result.explanation)}</div>
+            <div class="riddle-villain-reaction">${_escapeRiddleHtml(result.portrait)} ${_escapeRiddleHtml(result.villain_reaction)}</div>
+            <div class="riddle-box__actions">
+                <button class="riddle-box__btn" data-action="another">Ask another riddle</button>
+                <button class="riddle-box__btn riddle-box__btn--primary" data-action="proceed">Proceed to raid</button>
+            </div>
+        `;
+
+        // Handle action buttons
+        const anotherBtn = resultEl.querySelector('[data-action="another"]');
+        const proceedBtn = resultEl.querySelector('[data-action="proceed"]');
+
+        if (anotherBtn) {
+            anotherBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                playSound('dialogue_close');
+                overlay.remove();
+                // Start another riddle for the same villain
+                startVillainRiddle(villainId, onComplete);
+            });
+        }
+
+        if (proceedBtn) {
+            proceedBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                playSound('dialogue_close');
+                overlay.remove();
+                if (onComplete) onComplete();
+            });
+        }
+    }
+
+    /**
+     * Simple HTML escaper for riddle content.
+     */
+    function _escapeRiddleHtml(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
     // ── Social Sharing System ──────────────────────────────────────
 
     async function shareToSocial(platform) {
@@ -2189,7 +2848,8 @@ const NomoloBridge = (() => {
             } else if (platform === 'clipboard') {
                 try {
                     await navigator.clipboard.writeText(card.share_text.clipboard);
-                    toast('Stats copied to clipboard! Paste anywhere.', 'success');
+                    const jC = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+                    toast(jC === 'rpg' ? 'Voyage stats copied to clipboard! Spread the word, Captain.' : 'Stats copied to clipboard!', 'success');
                     claimPowerup('town_crier');
                 } catch (e) {
                     // Fallback: select text
@@ -2204,7 +2864,8 @@ const NomoloBridge = (() => {
                 }
             }
         } catch (e) {
-            toast('Could not generate share card: ' + e.message, 'error');
+            const jSh = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            toast(jSh === 'rpg' ? 'The carrier pigeon crashed! ' + e.message : 'Could not generate share card: ' + e.message, 'error');
         }
     }
 
@@ -2252,7 +2913,7 @@ const NomoloBridge = (() => {
                         <span>END ${card.stats.END}</span>
                     </div>
                     <div class="share-card__footer">
-                        <span>${card.villains_raided} Conglomerates raided</span>
+                        <span>${card.villains_raided} Armada fleets raided</span>
                         <span>${card.earned_powerups} Power-Ups</span>
                     </div>
                     <div class="share-card__actions">
@@ -2709,6 +3370,12 @@ const NomoloBridge = (() => {
         initJargonToggle,
         toggleJargon,
         applyJargon,
+        // LLM token management
+        initLLMSettings,
+        toggleLLMForm,
+        onLLMProviderChange,
+        saveLLMToken,
+        deleteLLMToken,
         // Monkey Island interactive features
         showDialogue,
         showMemoryDialogue,
@@ -2716,6 +3383,7 @@ const NomoloBridge = (() => {
         initPirateGreeting,
         startInsultFight,
         skipInsultFight,
+        startVillainRiddle,
         initVerbBar,
         playSound,
         // Memory recovery system

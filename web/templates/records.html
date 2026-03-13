@@ -2,60 +2,76 @@
 {% block title %}Loot Log{% endblock %}
 
 {% block content %}
-<div class="records">
-    <header class="records__header">
-        <div class="records__title-row">
-            <h1 class="records__title jargon" data-rpg="Yer Plunder" data-real="Your Records">Yer Plunder</h1>
-            <span class="records__total" id="records-total">{{ "{:,}".format(total_records) }} <span class="jargon" data-rpg="pieces of loot" data-real="records">pieces of loot</span></span>
+<div class="plunder-page">
+    <header class="plunder-header">
+        <div class="plunder-header__chest">
+            <span class="plunder-header__icon">🏴‍☠️💰</span>
+            <div>
+                <h1 class="plunder-header__title jargon" data-rpg="Yer Plunder" data-real="Your Records">Yer Plunder</h1>
+                <p class="plunder-header__subtitle" id="plunder-subtitle">
+                    <span id="records-total" title="Pieces of treasure in your vault">{{ "{:,}".format(total_records) }}</span>
+                    <span class="jargon" data-rpg="pieces of treasure" data-real="records">pieces of treasure</span>
+                    <span class="jargon" data-rpg="from {{ vaults|length }} islands" data-real="from {{ vaults|length }} sources">from {{ vaults|length }} islands</span>
+                </p>
+            </div>
         </div>
 
-        <div class="records__controls">
-            <div class="records__search-wrap">
-                <svg class="records__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" class="records__search" id="records-search" placeholder="Search the seas, Captain..." autocomplete="off">
-            </div>
+        <div class="plunder-search">
+            <span class="plunder-search__icon">🔭</span>
+            <input type="text" class="plunder-search__input" id="records-search" placeholder="Scan the horizon, Captain..." autocomplete="off" title="Type yer query and the Vectorist will navigate the semantic seas">
+        </div>
 
-            <select class="records__sort" id="records-sort">
-                <option value="newest">Freshest plunder first</option>
-                <option value="oldest">Oldest treasures first</option>
-                <option value="relevance">Most prized booty</option>
+        <div class="plunder-sort">
+            <select class="plunder-sort__select" id="records-sort">
+                <option value="newest" class="jargon" data-rpg="Newest Plunder First" data-real="Newest First">Newest Plunder First</option>
+                <option value="oldest" class="jargon" data-rpg="Oldest Relics First" data-real="Oldest First">Oldest Relics First</option>
+                <option value="relevance" class="jargon" data-rpg="Biggest Haul" data-real="Most Relevant">Biggest Haul</option>
             </select>
         </div>
 
-        <div class="records__filters" id="records-filters">
-            <button class="records__filter records__filter--active" data-source="" onclick="NomoloBridge.filterRecords(this)">
-                All
+        <div class="plunder-filters" id="records-filters">
+            <button class="plunder-filter plunder-filter--active" data-source="" onclick="NomoloBridge.filterRecords(this)">
+                <span class="plunder-filter__emoji">⚓</span>
+                <span class="plunder-filter__label jargon" data-rpg="All Plunder" data-real="All Records">All Plunder</span>
             </button>
             {% for vault_name, count in vaults.items()|sort %}
-            <button class="records__filter" data-source="{{ vault_name }}" onclick="NomoloBridge.filterRecords(this)">
-                {{ vault_name.replace('_', ' ') }}
-                <span class="records__filter-count">{{ "{:,}".format(count) }}</span>
+            <button class="plunder-filter" data-source="{{ vault_name }}" onclick="NomoloBridge.filterRecords(this)">
+                <span class="plunder-filter__emoji" data-vault="{{ vault_name }}"></span>
+                <span class="plunder-filter__label" data-vault-label="{{ vault_name }}">{{ vault_name.replace('_', ' ') }}</span>
+                <span class="plunder-filter__count">{{ "{:,}".format(count) }}</span>
             </button>
             {% endfor %}
         </div>
     </header>
 
-    <div class="records__list" id="records-list">
-        <div class="records__loading" id="records-loading">Unfurling the maps...</div>
-    </div>
-
-    <div class="records__pagination" id="records-pagination" style="display:none">
-        <button class="records__page-btn" id="records-prev" onclick="NomoloBridge.recordsPage('prev')">&#8592; Sail back</button>
-        <span class="records__page-info" id="records-page-info"></span>
-        <button class="records__page-btn" id="records-next" onclick="NomoloBridge.recordsPage('next')">Sail on &#8594;</button>
-    </div>
-
-    <!-- Record Detail Modal -->
-    <div class="record-detail" id="record-detail" style="display:none">
-        <div class="record-detail__backdrop" onclick="NomoloBridge.closeRecordDetail()"></div>
-        <div class="record-detail__content" id="record-detail-content">
+    <div class="plunder-list" id="records-list">
+        <div class="plunder-loading" id="records-loading">
+            <span class="plunder-loading__icon">🗺️</span>
+            <span class="jargon" data-rpg="Unfurling the treasure maps..." data-real="Loading records...">Unfurling the treasure maps...</span>
         </div>
     </div>
 
-    <div class="records__footer">
-        <button class="records__open-folder" onclick="NomoloBridge.openVaultFolder()">
+    <div class="plunder-pagination" id="records-pagination" style="display:none">
+        <button class="plunder-pagination__btn" id="records-prev" onclick="NomoloBridge.recordsPage('prev')">
+            <span class="jargon" data-rpg="← Previous Waters" data-real="← Previous">← Previous Waters</span>
+        </button>
+        <span class="plunder-pagination__info" id="records-page-info"></span>
+        <button class="plunder-pagination__btn" id="records-next" onclick="NomoloBridge.recordsPage('next')">
+            <span class="jargon" data-rpg="Next Waters →" data-real="Next →">Next Waters →</span>
+        </button>
+    </div>
+
+    <!-- Record Detail Modal — The Scroll -->
+    <div class="plunder-detail" id="record-detail" style="display:none">
+        <div class="plunder-detail__backdrop" onclick="NomoloBridge.closeRecordDetail()"></div>
+        <div class="plunder-detail__scroll" id="record-detail-content">
+        </div>
+    </div>
+
+    <div class="plunder-footer">
+        <button class="plunder-footer__btn" onclick="NomoloBridge.openVaultFolder()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-            Open the treasure chest
+            <span class="jargon" data-rpg="Open the treasure chest" data-real="Open in Finder">Open the treasure chest</span>
         </button>
     </div>
 </div>
