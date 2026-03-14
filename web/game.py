@@ -402,7 +402,11 @@ def _extract_date(entry: dict) -> Optional[datetime]:
             continue
         if isinstance(val, (int, float)):
             try:
-                return datetime.fromtimestamp(val, tz=timezone.utc)
+                dt = datetime.fromtimestamp(val, tz=timezone.utc)
+                # Reject dates before 1990 — likely epoch defaults or bad data
+                if dt.year < 1990:
+                    continue
+                return dt
             except (ValueError, OSError):
                 continue
         if isinstance(val, str):
@@ -430,6 +434,9 @@ def _extract_date(entry: dict) -> Optional[datetime]:
                 # Normalize naive datetimes to UTC
                 if dt.tzinfo is None:
                     dt = dt.replace(tzinfo=timezone.utc)
+                # Reject dates before 1990 — likely epoch defaults or bad data
+                if dt.year < 1990:
+                    continue
                 return dt
     return None
 
@@ -692,7 +699,7 @@ def _generate_vault_facts(
     source_name: str,
     total_entries: int,
 ) -> list[dict]:
-    """Generate 3-5 fun fact questions from sampled entries for one vault."""
+    """Generate engaging Over/Under, More/Less, Before/After quiz questions."""
     facts: list[dict] = []
 
     dates: list[datetime] = []
@@ -714,141 +721,161 @@ def _generate_vault_facts(
         if sender:
             senders.append(sender)
 
-    # --- Fact: busiest year ---
-    if years:
-        year_counts = Counter(years)
-        if len(year_counts) >= 2:
-            busiest_year = year_counts.most_common(1)[0][0]
-            options = _make_year_options(busiest_year, list(year_counts.keys()))
-            correct_idx = options.index(str(busiest_year))
-            facts.append(FunFact(
-                question=f"Which year did you have the most {source_name} activity?",
-                options=options,
-                correct_index=correct_idx,
-                fun_response=f"You were on fire in {busiest_year}! "
-                             f"We found ~{year_counts[busiest_year]} records from that year.",
-                source=source_name,
-                category="frequency",
-            ).to_dict())
-
-    # --- Fact: busiest day of week ---
     _DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    if weekdays:
-        day_counts = Counter(weekdays)
-        busiest_day = day_counts.most_common(1)[0][0]
-        day_options = random.sample(_DAY_NAMES, min(4, len(_DAY_NAMES)))
-        if _DAY_NAMES[busiest_day] not in day_options:
-            day_options[random.randint(0, len(day_options) - 1)] = _DAY_NAMES[busiest_day]
-        random.shuffle(day_options)
-        facts.append(FunFact(
-            question=f"What day of the week are you most active in {source_name}?",
-            options=day_options,
-            correct_index=day_options.index(_DAY_NAMES[busiest_day]),
-            fun_response=f"Looks like {_DAY_NAMES[busiest_day]} is your power day!",
-            source=source_name,
-            category="timing",
-        ).to_dict())
-
-    # --- Fact: top sender / contact ---
-    if senders and len(set(senders)) >= 2:
-        sender_counts = Counter(senders)
-        top_sender = sender_counts.most_common(1)[0][0]
-        other_senders = [s for s, _ in sender_counts.most_common(10) if s != top_sender]
-        options = [top_sender]
-        options.extend(random.sample(other_senders, min(3, len(other_senders))))
-        while len(options) < 4:
-            options.append(f"Someone #{len(options) + 1}")
-        random.shuffle(options)
-        facts.append(FunFact(
-            question=f"Who appears most frequently in your {source_name} data?",
-            options=options,
-            correct_index=options.index(top_sender),
-            fun_response=f"{top_sender} is your #1! They appeared "
-                         f"{sender_counts[top_sender]} times in our sample.",
-            source=source_name,
-            category="people",
-        ).to_dict())
-
-    # --- Fact: total unique contacts ---
-    if senders:
-        unique_count = len(set(senders))
-        # Extrapolate from sample to total
-        extrapolated = int(unique_count * (total_entries / max(len(samples), 1)))
-        correct = str(extrapolated)
-        wrong = _make_numeric_options(extrapolated)
-        options = [correct] + wrong[:3]
-        random.shuffle(options)
-        facts.append(FunFact(
-            question=f"Approximately how many unique people are in your {source_name} data?",
-            options=options,
-            correct_index=options.index(correct),
-            fun_response=f"Your {source_name} connects you to roughly {extrapolated:,} people!",
-            source=source_name,
-            category="people",
-        ).to_dict())
-
-    # --- Fact: earliest record ---
-    if dates:
-        earliest = min(dates)
-        formatted = earliest.strftime("%B %Y")
-        all_years = sorted(set(d.year for d in dates))
-        year_options = [formatted]
-        for y in all_years:
-            candidate = f"January {y}"
-            if candidate != formatted and len(year_options) < 4:
-                year_options.append(candidate)
-        while len(year_options) < 4:
-            fake_year = earliest.year + random.randint(-3, 5)
-            candidate = f"June {fake_year}"
-            if candidate not in year_options:
-                year_options.append(candidate)
-        random.shuffle(year_options)
-        facts.append(FunFact(
-            question=f"When is the earliest record in your {source_name} archive?",
-            options=year_options,
-            correct_index=year_options.index(formatted),
-            fun_response=f"Your {source_name} history goes all the way back to {formatted}!",
-            source=source_name,
-            category="milestone",
-        ).to_dict())
-
-    # --- Fact: busiest month ---
     _MONTH_NAMES = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December",
     ]
-    if months and len(set(months)) >= 2:
-        month_counts = Counter(months)
-        busiest_month = month_counts.most_common(1)[0][0]
-        month_options = random.sample(_MONTH_NAMES, min(4, len(_MONTH_NAMES)))
-        if _MONTH_NAMES[busiest_month - 1] not in month_options:
-            month_options[random.randint(0, len(month_options) - 1)] = _MONTH_NAMES[busiest_month - 1]
-        random.shuffle(month_options)
+
+    # --- OVER / UNDER: total records ---
+    if total_entries > 10:
+        # Pick a round threshold near the real count
+        thresholds = [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000]
+        nearby = [t for t in thresholds if 0.3 * total_entries < t < 3 * total_entries]
+        if nearby:
+            threshold = random.choice(nearby)
+            is_over = total_entries >= threshold
+            facts.append(FunFact(
+                question=f"Over or under {threshold:,} records in {source_name}?",
+                options=["Over", "Under"],
+                correct_index=0 if is_over else 1,
+                fun_response=f"You have {total_entries:,} records! "
+                             f"{'Way over' if total_entries > threshold * 1.5 else 'Just over' if is_over else 'Under'} the line.",
+                source=source_name,
+                category="over_under",
+            ).to_dict())
+
+    # --- MORE / LESS: weekday vs weekend ---
+    if weekdays and len(weekdays) >= 20:
+        weekday_count = sum(1 for d in weekdays if d < 5)
+        weekend_count = sum(1 for d in weekdays if d >= 5)
+        # Normalize per-day (5 weekdays vs 2 weekend days)
+        weekday_rate = weekday_count / 5
+        weekend_rate = weekend_count / 2 if weekend_count > 0 else 0
+        more_active = "weekdays" if weekday_rate > weekend_rate else "weekends"
+        ratio = max(weekday_rate, weekend_rate) / max(min(weekday_rate, weekend_rate), 1)
         facts.append(FunFact(
-            question=f"Which month were you most active in {source_name}?",
-            options=month_options,
-            correct_index=month_options.index(_MONTH_NAMES[busiest_month - 1]),
-            fun_response=f"{_MONTH_NAMES[busiest_month - 1]} was your peak month!",
+            question=f"Are you more active on weekdays or weekends in {source_name}?",
+            options=["Weekdays", "Weekends"],
+            correct_index=0 if more_active == "weekdays" else 1,
+            fun_response=f"You're a {more_active} {'warrior' if more_active == 'weekdays' else 'explorer'}! "
+                         f"About {ratio:.1f}x more active per day.",
             source=source_name,
-            category="timing",
+            category="more_less",
         ).to_dict())
 
-    # --- Fact: busiest hour ---
-    if hours and len(set(hours)) >= 3:
-        hour_counts = Counter(hours)
-        busiest_hour = hour_counts.most_common(1)[0][0]
-        hour_label = f"{busiest_hour}:00"
-        wrong_hours = [f"{h}:00" for h in random.sample(range(24), min(6, 24)) if h != busiest_hour]
-        options = [hour_label] + wrong_hours[:3]
-        random.shuffle(options)
+    # --- MORE / LESS: morning vs night ---
+    if hours and len(hours) >= 20:
+        morning = sum(1 for h in hours if 6 <= h < 12)
+        afternoon = sum(1 for h in hours if 12 <= h < 18)
+        evening = sum(1 for h in hours if 18 <= h < 24)
+        night = sum(1 for h in hours if 0 <= h < 6)
+        periods = {"Morning (6am-noon)": morning, "Afternoon (noon-6pm)": afternoon,
+                    "Evening (6pm-midnight)": evening, "Night owl (midnight-6am)": night}
+        top_period = max(periods, key=periods.get)
+        runner_up = sorted(periods.items(), key=lambda x: -x[1])[1][0]
         facts.append(FunFact(
-            question=f"What hour of the day are you most active in {source_name}?",
-            options=options,
-            correct_index=options.index(hour_label),
-            fun_response=f"You're a {hour_label} warrior! That's your peak hour.",
+            question=f"When are you more active in {source_name}?",
+            options=[top_period, runner_up],
+            correct_index=0,
+            fun_response=f"You're a {top_period.split('(')[0].strip().lower()} person! "
+                         f"{periods[top_period]} records vs {periods[runner_up]}.",
             source=source_name,
-            category="timing",
+            category="more_less",
         ).to_dict())
+
+    # --- MORE / LESS: first half vs second half of year ---
+    if months and len(months) >= 20:
+        first_half = sum(1 for m in months if m <= 6)
+        second_half = sum(1 for m in months if m > 6)
+        if first_half != second_half:
+            facts.append(FunFact(
+                question=f"More {source_name} activity in Jan-Jun or Jul-Dec?",
+                options=["January — June", "July — December"],
+                correct_index=0 if first_half > second_half else 1,
+                fun_response=f"{'First' if first_half > second_half else 'Second'} half wins! "
+                             f"{first_half} vs {second_half} records.",
+                source=source_name,
+                category="more_less",
+            ).to_dict())
+
+    # --- BEFORE / AFTER: earliest record vs a reference year ---
+    if dates:
+        earliest = min(dates)
+        ref_years = [2015, 2018, 2020, 2022]
+        ref = random.choice([y for y in ref_years if abs(y - earliest.year) <= 5] or ref_years)
+        is_before = earliest.year < ref
+        facts.append(FunFact(
+            question=f"Did your {source_name} history start before or after {ref}?",
+            options=[f"Before {ref}", f"After {ref}"],
+            correct_index=0 if is_before else 1,
+            fun_response=f"Your earliest {source_name} record is from {earliest.strftime('%B %Y')}!",
+            source=source_name,
+            category="before_after",
+        ).to_dict())
+
+    # --- MORE / LESS: two contacts head-to-head ---
+    if senders and len(set(senders)) >= 4:
+        sender_counts = Counter(senders)
+        top_senders = sender_counts.most_common(6)
+        if len(top_senders) >= 2:
+            # Pick two senders that are close in count for an interesting question
+            pairs = []
+            for i in range(len(top_senders)):
+                for j in range(i + 1, len(top_senders)):
+                    pairs.append((top_senders[i], top_senders[j]))
+            pair = random.choice(pairs[:5])
+            name_a, count_a = pair[0]
+            name_b, count_b = pair[1]
+            winner = name_a if count_a >= count_b else name_b
+            facts.append(FunFact(
+                question=f"Who appears more in your {source_name}: {name_a} or {name_b}?",
+                options=[name_a, name_b],
+                correct_index=0 if winner == name_a else 1,
+                fun_response=f"{winner} wins! {count_a} vs {count_b} appearances.",
+                source=source_name,
+                category="more_less",
+            ).to_dict())
+
+    # --- OVER / UNDER: unique people ---
+    if senders:
+        unique_count = len(set(senders))
+        extrapolated = int(unique_count * (total_entries / max(len(samples), 1)))
+        if extrapolated > 5:
+            # Pick a round number near the actual count
+            thresholds = [10, 25, 50, 100, 250, 500, 1000]
+            nearby = [t for t in thresholds if 0.4 * extrapolated < t < 2.5 * extrapolated]
+            if nearby:
+                threshold = random.choice(nearby)
+                is_over = extrapolated >= threshold
+                facts.append(FunFact(
+                    question=f"Over or under {threshold} unique people in your {source_name}?",
+                    options=["Over", "Under"],
+                    correct_index=0 if is_over else 1,
+                    fun_response=f"About {extrapolated:,} unique {'people' if extrapolated != 1 else 'person'}! "
+                                 f"{'Quite the crew' if extrapolated > 100 else 'A tight circle'}.",
+                    source=source_name,
+                    category="over_under",
+                ).to_dict())
+
+    # --- OVER / UNDER: busiest year count ---
+    if years and len(set(years)) >= 2:
+        year_counts = Counter(years)
+        busiest_year, busiest_count = year_counts.most_common(1)[0]
+        thresholds = [25, 50, 100, 250, 500, 1000]
+        nearby = [t for t in thresholds if 0.3 * busiest_count < t < 3 * busiest_count]
+        if nearby:
+            threshold = random.choice(nearby)
+            is_over = busiest_count >= threshold
+            facts.append(FunFact(
+                question=f"Your busiest year in {source_name} ({busiest_year}): over or under {threshold} records?",
+                options=["Over", "Under"],
+                correct_index=0 if is_over else 1,
+                fun_response=f"{busiest_year} had {busiest_count:,} records! "
+                             f"{'A legendary year' if busiest_count > 1000 else 'Solid haul'}.",
+                source=source_name,
+                category="over_under",
+            ).to_dict())
 
     # Return 3-5 facts max per vault
     random.shuffle(facts)

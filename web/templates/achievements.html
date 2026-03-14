@@ -3,10 +3,10 @@
 
 {% block content %}
 <div class="achievements-page">
-    <header class="dashboard__header">
-        <div class="dashboard__greeting">
-            <h1 class="dashboard__title jargon" data-rpg="Power-Up Gallery" data-real="Achievement Showcase">Power-Up Gallery</h1>
-            <p class="dashboard__subtitle">
+    <header class="achievements-page__header">
+        <div class="achievements-page__greeting">
+            <h1 class="achievements-page__title jargon" data-rpg="Power-Up Gallery" data-real="Achievement Showcase">Power-Up Gallery</h1>
+            <p class="achievements-page__subtitle">
                 {{ achievements|selectattr('unlocked')|list|length }} of {{ achievements|length }}
                 <span class="jargon" data-rpg="unlocked" data-real="unlocked">unlocked</span>
             </p>

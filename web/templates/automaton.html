@@ -55,12 +55,25 @@
                     <div class="automaton__welcome-icon">&#x1F916;</div>
                     <h3 class="jargon" data-rpg="The Automaton awaits yer orders, Captain." data-real="Ask me anything about your data.">The Automaton awaits yer orders, Captain.</h3>
                     <p class="jargon" data-rpg="Query yer plundered data &mdash; scrolls, soul bonds, time crystals, all of it." data-real="Search across your emails, contacts, calendar, and more.">Query yer plundered data &mdash; scrolls, soul bonds, time crystals, all of it.</p>
+                    <div class="automaton__suggestions" id="automaton-suggestions">
+                        <button class="automaton__suggestion" onclick="NomoloBridge.useSuggestion(this)" data-query="What did I browse most this week?">&#x1F50D; What did I browse most?</button>
+                        <button class="automaton__suggestion" onclick="NomoloBridge.useSuggestion(this)" data-query="Show my oldest records">&#x1F4DC; My oldest records</button>
+                        <button class="automaton__suggestion" onclick="NomoloBridge.useSuggestion(this)" data-query="Summarize my calendar events">&#x1F4C5; Summarize my calendar</button>
+                        <button class="automaton__suggestion" onclick="NomoloBridge.useSuggestion(this)" data-query="Who are my top contacts?">&#x1F465; My top contacts</button>
+                    </div>
+                    <div class="automaton__llm-warning" id="automaton-llm-warning" style="display:none">
+                        <span>&#x26A0;&#xFE0F;</span>
+                        <span class="jargon" data-rpg="The Automaton needs an Oracle to speak. Set one up in the Ship's Helm." data-real="No LLM configured. Set up an API key in Settings.">The Automaton needs an Oracle to speak. Set one up in the Ship's Helm.</span>
+                        <a href="/settings" class="jargon" data-rpg="Configure Oracle" data-real="Go to Settings">Configure Oracle</a>
+                    </div>
                 </div>
             </div>
             <div class="automaton__sources" id="automaton-sources" style="display:none"></div>
             <form class="automaton__input" onsubmit="NomoloBridge.sendChat(event)">
                 <input type="text" class="automaton__field" id="automaton-query"
-                    placeholder="Ask The Automaton..." autocomplete="off" />
+                    placeholder="Ask The Automaton..." autocomplete="off"
+                    data-rpg-placeholder="Ask The Automaton..."
+                    data-real-placeholder="Ask about your data..." />
                 <button type="submit" class="automaton__send" id="automaton-send">&#x27A4;</button>
             </form>
         </div>
@@ -84,8 +97,35 @@
 
 {% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     NomoloBridge.initChat();
+
+    // Check if LLM is configured, show warning if not
+    try {
+        const resp = await fetch('/api/chat/status');
+        const data = await resp.json();
+        const warning = document.getElementById('automaton-llm-warning');
+        const suggestions = document.getElementById('automaton-suggestions');
+        if (warning && !data.llm_configured) {
+            warning.style.display = 'flex';
+            if (suggestions) suggestions.style.display = 'none';
+        }
+    } catch (e) {}
+
+    // Suggestion button handler
+    if (!NomoloBridge.useSuggestion) {
+        NomoloBridge.useSuggestion = function(btn) {
+            const query = btn.getAttribute('data-query');
+            const input = document.getElementById('automaton-query');
+            if (input && query) {
+                input.value = query;
+                input.focus();
+                // Auto-submit
+                const form = input.closest('form');
+                if (form) form.dispatchEvent(new Event('submit', { cancelable: true }));
+            }
+        };
+    }
 });
 </script>
 {% endblock %}

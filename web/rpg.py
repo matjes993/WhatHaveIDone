@@ -1115,6 +1115,7 @@ def get_all_powerups(earned_ids=None):
             entry["display_name"] = "???"
             entry["display_emoji"] = "\u2753"
             entry["display_description"] = "A hidden power-up. Keep exploring to discover it."
+            entry.pop("how_to_earn", None)
         else:
             entry["display_name"] = entry["name"]
             entry["display_emoji"] = entry["emoji"]

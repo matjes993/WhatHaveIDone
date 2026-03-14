@@ -8,9 +8,9 @@
         <div>
             <h1 class="aliases-page__title jargon" data-rpg="Many Faces" data-real="Your Identities">Many Faces</h1>
             <p class="aliases-page__subtitle jargon"
-               data-rpg="Your identities across the seas &mdash; {{ total_aliases }} known faces"
-               data-real="Your identities across platforms &mdash; {{ total_aliases }} known identities">
-                Your identities across the seas &mdash; {{ total_aliases }} known faces
+               data-rpg="Your identities across the seas &mdash; {{ total_aliases }} known {{ 'face' if total_aliases == 1 else 'faces' }}"
+               data-real="Your identities across platforms &mdash; {{ total_aliases }} known {{ 'identity' if total_aliases == 1 else 'identities' }}">
+                Your identities across the seas &mdash; {{ total_aliases }} known {{ 'face' if total_aliases == 1 else 'faces' }}
             </p>
         </div>
     </header>
@@ -117,7 +117,7 @@
     </div>
     {% endif %}
 
-    <!-- Empty State -->
+    <!-- Empty State (no aliases at all) -->
     {% if total_aliases == 0 %}
     <div class="aliases-page__empty">
         <div class="aliases-page__empty-icon">&#x1F3AD;</div>
@@ -132,6 +132,20 @@
             &#x2694; Set Sail for the Raid Map
         </a>
     </div>
+    {% else %}
+    <!-- Hint to collect more if sections are sparse -->
+    {% if not email_aliases and not org_aliases %}
+    <div class="aliases-page__hint">
+        <p class="jargon"
+           data-rpg="&#x1F4E7; Raid the Omniscient Eye to uncover yer signal flags and guild affiliations."
+           data-real="&#x1F4E7; Connect Gmail or Contacts to discover your email addresses and organizations.">
+            &#x1F4E7; Raid the Omniscient Eye to uncover yer signal flags and guild affiliations.
+        </p>
+        <a href="/sources" class="aliases-page__hint-link jargon"
+           data-rpg="Visit the Life Map"
+           data-real="Go to Sources">Visit the Life Map</a>
+    </div>
+    {% endif %}
     {% endif %}
 
     <!-- Footer -->
@@ -390,6 +404,34 @@
 .aliases-page__empty-cta:hover {
     background: rgba(255, 215, 0, 0.08);
     border-color: rgba(255, 215, 0, 0.5);
+}
+
+/* ── Hint ──────────────────────────────────────────────────────────── */
+
+.aliases-page__hint {
+    text-align: center;
+    padding: 20px 24px;
+    margin-top: 8px;
+    background: var(--bg-glass);
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+}
+
+.aliases-page__hint p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 8px;
+}
+
+.aliases-page__hint-link {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-cyan);
+    text-decoration: none;
+}
+
+.aliases-page__hint-link:hover {
+    text-decoration: underline;
 }
 
 /* ── Footer ────────────────────────────────────────────────────────── */

@@ -712,7 +712,6 @@ async def api_credentials_status():
             "contacts-google": token_contacts,
             "calendar": token_calendar,
         },
-        "vault_path": vault_root,
         "existing_records": vault_counts,
     })
 
@@ -2875,24 +2874,30 @@ def _read_random_vault_entries(vault_root, count=20):
 
 
 def _generate_mini_game_question(entries):
-    """Generate a quiz question from vault entries. Returns dict or None."""
+    """Generate an engaging Over/Under, More/Less, or Before/After quiz question."""
     if len(entries) < 4:
         return None
 
-    # Categorize entries by type
-    email_entries = [e for e in entries if e.get("_source_dir", "").startswith("Gmail")
-                     or e.get("_source_dir", "") == "Mail"]
     dated_entries = [e for e in entries if e.get("date")]
     all_with_source = [e for e in entries if e.get("from") or e.get("sender")]
 
+    # Count entries by source
+    source_counts = {}
+    for e in entries:
+        src = e.get("_source_dir", "Unknown")
+        source_counts[src] = source_counts.get(src, 0) + 1
+
     question_types = []
-    if len(all_with_source) >= 4:
-        question_types.append("who_sent_this")
-    if len(dated_entries) >= 4:
-        question_types.append("when_was_this")
-        question_types.append("which_came_first")
-    if len(entries) >= 4:
-        question_types.append("how_many")
+    if len(source_counts) >= 2:
+        question_types.append("more_less_sources")
+    if len(dated_entries) >= 10:
+        question_types.append("before_after")
+        question_types.append("over_under_year")
+        question_types.append("more_less_time")
+    if len(all_with_source) >= 6:
+        question_types.append("more_less_people")
+    if len(entries) >= 20:
+        question_types.append("over_under_total")
 
     if not question_types:
         return None
@@ -2900,169 +2905,195 @@ def _generate_mini_game_question(entries):
     qtype = random.choice(question_types)
 
     try:
-        if qtype == "who_sent_this" and len(all_with_source) >= 4:
-            return _q_who_sent_this(all_with_source)
-        elif qtype == "when_was_this" and len(dated_entries) >= 4:
-            return _q_when_was_this(dated_entries)
-        elif qtype == "which_came_first" and len(dated_entries) >= 2:
-            return _q_which_came_first(dated_entries)
-        elif qtype == "how_many":
-            return _q_how_many(entries)
+        if qtype == "more_less_sources" and len(source_counts) >= 2:
+            return _q_more_less_sources(source_counts)
+        elif qtype == "before_after" and len(dated_entries) >= 2:
+            return _q_before_after(dated_entries)
+        elif qtype == "over_under_year" and len(dated_entries) >= 10:
+            return _q_over_under_year(dated_entries)
+        elif qtype == "more_less_time" and len(dated_entries) >= 10:
+            return _q_more_less_time(dated_entries)
+        elif qtype == "more_less_people" and len(all_with_source) >= 6:
+            return _q_more_less_people(all_with_source)
+        elif qtype == "over_under_total":
+            return _q_over_under_total(entries, source_counts)
     except Exception:
         pass
 
     return None
 
 
-def _q_who_sent_this(entries):
-    """'Who sent this?' — show subject, guess sender."""
-    target = random.choice(entries)
-    sender = target.get("from") or target.get("sender") or ""
-    subject = target.get("subject") or target.get("title") or target.get("name") or ""
-
-    if not sender or not subject:
+def _q_more_less_sources(source_counts):
+    """'More or Less' — which source has more records?"""
+    items = sorted(source_counts.items(), key=lambda x: -x[1])
+    if len(items) < 2:
         return None
-
-    # Build distractors from other senders
-    other_senders = list({
-        e.get("from") or e.get("sender") or ""
-        for e in entries
-        if (e.get("from") or e.get("sender") or "") != sender
-        and (e.get("from") or e.get("sender") or "")
-    })
-
-    if len(other_senders) < 3:
+    # Pick two sources for comparison
+    pairs = [(items[i], items[j]) for i in range(min(4, len(items)))
+             for j in range(i + 1, min(5, len(items)))]
+    if not pairs:
         return None
-
-    distractors = random.sample(other_senders, 3)
-    options = distractors + [sender]
-    random.shuffle(options)
-    correct = options.index(sender)
+    (src_a, count_a), (src_b, count_b) = random.choice(pairs)
+    name_a = src_a.replace("_", " ")
+    name_b = src_b.replace("_", " ")
+    winner = name_a if count_a >= count_b else name_b
 
     return {
-        "type": "who_sent_this",
-        "question": f"Who sent you a message with the subject '{subject[:80]}'?",
-        "options": options,
-        "correct": correct,
-        "flavor_correct": "Your memory is sharper than a cutlass! +5 WIS",
-        "flavor_wrong": "Even the best pirates forget a face now and then.",
-        "reward_stat": "WIS",
+        "type": "more_less",
+        "question": f"Which has more records: {name_a} or {name_b}?",
+        "options": [name_a, name_b],
+        "correct": 0 if winner == name_a else 1,
+        "flavor_correct": f"Aye! {winner} has more loot. {count_a:,} vs {count_b:,}. +5 INT",
+        "flavor_wrong": f"The answer was {winner}! {count_a:,} vs {count_b:,}.",
+        "reward_stat": "INT",
         "reward_amount": 5,
     }
 
 
-def _q_when_was_this(entries):
-    """'When was this?' — show a record, guess the year."""
-    target = random.choice(entries)
-    date_str = target.get("date", "")
-    title = target.get("subject") or target.get("title") or target.get("name") or ""
-
-    if not date_str or not title:
-        return None
-
-    try:
-        year = int(date_str[:4])
-    except (ValueError, IndexError):
-        return None
-
-    # Generate plausible wrong years
-    wrong_years = list({y for y in [year - 2, year - 1, year + 1, year + 2] if 2000 <= y <= 2030} - {year})
-    if len(wrong_years) < 3:
-        wrong_years = [year - 3, year - 1, year + 1]
-
-    distractors = random.sample(wrong_years, min(3, len(wrong_years)))
-    while len(distractors) < 3:
-        distractors.append(year + len(distractors) + 1)
-
-    options = [str(y) for y in distractors] + [str(year)]
-    random.shuffle(options)
-    correct = options.index(str(year))
-
-    return {
-        "type": "when_was_this",
-        "question": f"What year was '{title[:80]}' from?",
-        "options": options,
-        "correct": correct,
-        "flavor_correct": "Time is but a river, and you remember every bend! +5 WIS",
-        "flavor_wrong": "The years blur together when you've sailed as many seas as you have.",
-        "reward_stat": "WIS",
-        "reward_amount": 5,
-    }
-
-
-def _q_which_came_first(entries):
-    """'Which came first?' — show 2 records, pick the earlier one."""
-    pair = random.sample(entries, 2)
+def _q_before_after(dated_entries):
+    """'Before or After' — did your data start before or after a reference year?"""
     dates = []
-    for e in pair:
+    for e in dated_entries:
         try:
-            dates.append(e["date"][:10])
-        except (KeyError, TypeError):
-            return None
-
-    if dates[0] == dates[1]:
+            d = e["date"][:10]
+            if d and d[:4].isdigit():
+                dates.append(int(d[:4]))
+        except (KeyError, TypeError, ValueError):
+            continue
+    if not dates:
         return None
-
-    titles = [
-        e.get("subject") or e.get("title") or e.get("name") or "Unknown"
-        for e in pair
-    ]
-
-    first_idx = 0 if dates[0] < dates[1] else 1
-
-    options = [f"'{titles[0][:60]}'", f"'{titles[1][:60]}'"]
-    correct = first_idx
+    earliest = min(dates)
+    ref_options = [y for y in [2012, 2015, 2018, 2020, 2022] if abs(y - earliest) <= 6]
+    if not ref_options:
+        ref_options = [2020]
+    ref = random.choice(ref_options)
+    is_before = earliest < ref
 
     return {
-        "type": "which_came_first",
-        "question": "Which of these happened first?",
-        "options": options,
-        "correct": correct,
-        "flavor_correct": "A true archaeologist knows the layers! +5 INT",
-        "flavor_wrong": "The sands of time are tricky. Don't feel bad.",
+        "type": "before_after",
+        "question": f"Did your earliest record come before or after {ref}?",
+        "options": [f"Before {ref}", f"After {ref}"],
+        "correct": 0 if is_before else 1,
+        "flavor_correct": f"Sharp memory! Your oldest record is from {earliest}. +5 WIS",
+        "flavor_wrong": f"It was actually {earliest}. The seas of time are deep.",
+        "reward_stat": "WIS",
+        "reward_amount": 5,
+    }
+
+
+def _q_over_under_year(dated_entries):
+    """'Over or Under' — records in your busiest year."""
+    years = []
+    for e in dated_entries:
+        try:
+            y = int(e["date"][:4])
+            if y >= 1990:
+                years.append(y)
+        except (KeyError, TypeError, ValueError):
+            continue
+    if not years:
+        return None
+    year_counts = Counter(years)
+    busiest_year, busiest_count = year_counts.most_common(1)[0]
+    thresholds = [25, 50, 100, 250, 500, 1000]
+    nearby = [t for t in thresholds if 0.3 * busiest_count < t < 3 * busiest_count]
+    if not nearby:
+        return None
+    threshold = random.choice(nearby)
+    is_over = busiest_count >= threshold
+
+    return {
+        "type": "over_under",
+        "question": f"Your busiest year ({busiest_year}): over or under {threshold} records?",
+        "options": ["Over", "Under"],
+        "correct": 0 if is_over else 1,
+        "flavor_correct": f"Nailed it! {busiest_year} had {busiest_count:,} records. +5 INT",
+        "flavor_wrong": f"It was {busiest_count:,}! {'More' if is_over else 'Less'} than ye thought.",
         "reward_stat": "INT",
         "reward_amount": 5,
     }
 
 
-def _q_how_many(entries):
-    """'How many?' — count records from a source."""
-    sources = {}
-    for e in entries:
-        src = e.get("_source_dir", "Unknown")
-        sources[src] = sources.get(src, 0) + 1
-
-    if not sources:
+def _q_more_less_time(dated_entries):
+    """'More or Less' — weekday vs weekend activity."""
+    weekdays = []
+    for e in dated_entries:
+        try:
+            from datetime import datetime as _dt
+            d = _dt.fromisoformat(e["date"][:10])
+            weekdays.append(d.weekday())
+        except (KeyError, TypeError, ValueError):
+            continue
+    if len(weekdays) < 10:
         return None
-
-    source = random.choice(list(sources.keys()))
-    real_count = sources[source]
-
-    # Generate plausible wrong answers
-    wrong = list({
-        max(0, real_count + offset)
-        for offset in [-5, -3, -1, 2, 4, 7]
-    } - {real_count})
-
-    if len(wrong) < 3:
-        wrong = [real_count + 1, real_count + 3, max(0, real_count - 2)]
-
-    distractors = random.sample(wrong, min(3, len(wrong)))
-    while len(distractors) < 3:
-        distractors.append(real_count + len(distractors) + 5)
-
-    options = [str(d) for d in distractors] + [str(real_count)]
-    random.shuffle(options)
-    correct = options.index(str(real_count))
+    wd = sum(1 for d in weekdays if d < 5)
+    we = sum(1 for d in weekdays if d >= 5)
+    wd_rate = wd / 5
+    we_rate = we / 2 if we > 0 else 0
+    more_active = "Weekdays" if wd_rate > we_rate else "Weekends"
 
     return {
-        "type": "how_many",
-        "question": f"How many records do you have from {source.replace('_', ' ')}?",
-        "options": options,
-        "correct": correct,
-        "flavor_correct": "You know your vault like the back of your hook hand! +5 INT",
-        "flavor_wrong": "A pirate should always know the size of their treasure hoard.",
-        "reward_stat": "INT",
+        "type": "more_less",
+        "question": "Are you more active on weekdays or weekends?",
+        "options": ["Weekdays", "Weekends"],
+        "correct": 0 if more_active == "Weekdays" else 1,
+        "flavor_correct": f"Correct! You're a {more_active.lower()} pirate. +5 CHA",
+        "flavor_wrong": f"Surprise! You're actually more active on {more_active.lower()}.",
+        "reward_stat": "CHA",
+        "reward_amount": 5,
+    }
+
+
+def _q_more_less_people(entries):
+    """'More or Less' — head-to-head contact comparison."""
+    sender_counts = Counter()
+    for e in entries:
+        s = e.get("from") or e.get("sender") or ""
+        if s:
+            if "<" in s:
+                s = s.split("<")[0].strip()
+            if s:
+                sender_counts[s] += 1
+    top = sender_counts.most_common(6)
+    if len(top) < 2:
+        return None
+    # Pick two that are reasonably close for an interesting question
+    pairs = [(top[i], top[j]) for i in range(len(top)) for j in range(i + 1, len(top))]
+    (name_a, count_a), (name_b, count_b) = random.choice(pairs[:5])
+    winner = name_a if count_a >= count_b else name_b
+
+    return {
+        "type": "more_less",
+        "question": f"Who appears more in your data: {name_a} or {name_b}?",
+        "options": [name_a, name_b],
+        "correct": 0 if winner == name_a else 1,
+        "flavor_correct": f"Aye! {winner} leads {count_a} to {count_b}. +5 WIS",
+        "flavor_wrong": f"It was {winner}! {count_a} vs {count_b}.",
+        "reward_stat": "WIS",
+        "reward_amount": 5,
+    }
+
+
+def _q_over_under_total(entries, source_counts):
+    """'Over or Under' — total records across all sources."""
+    total = len(entries)
+    if total < 20:
+        return None
+    thresholds = [100, 500, 1000, 2500, 5000, 10000, 25000]
+    nearby = [t for t in thresholds if 0.3 * total < t < 3 * total]
+    if not nearby:
+        return None
+    threshold = random.choice(nearby)
+    is_over = total >= threshold
+
+    return {
+        "type": "over_under",
+        "question": f"Over or under {threshold:,} total records in your vault?",
+        "options": ["Over", "Under"],
+        "correct": 0 if is_over else 1,
+        "flavor_correct": f"You've got {total:,} records! {'Legendary hoard' if total > 10000 else 'Growing nicely'}. +5 STR",
+        "flavor_wrong": f"It's {total:,}! {'More' if is_over else 'Less'} than ye guessed.",
+        "reward_stat": "STR",
         "reward_amount": 5,
     }
 

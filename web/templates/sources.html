@@ -65,7 +65,7 @@ The Flatcloud rewards those who reclaim their data. All of it.
                             {{ island.name if island.status != 'uncharted' else '???' }}
                         </span>
                         {% if island.raided %}
-                        <span class="territory__record-count">{{ "{:,}".format(island.total_loot) }} <span class="jargon" data-rpg="scrolls" data-real="records">scrolls</span></span>
+                        <span class="territory__record-count">{{ "{:,}".format(island.total_loot) }} <span class="jargon" data-rpg="pieces of loot" data-real="records">pieces of loot</span></span>
                         {% endif %}
                     </div>
                 </div>
@@ -103,9 +103,9 @@ The Flatcloud rewards those who reclaim their data. All of it.
                     </span>
                     <button class="territory__cta" onclick="event.stopPropagation(); NomoloBridge.raidTerritory('{{ island.id }}')">
                         {% if island.raided %}
-                        <span class="jargon" data-rpg="Mhh, let's loot again" data-real="Re-collect">Mhh, let's loot again</span>
+                        <span class="jargon" data-rpg="Raid Again" data-real="Re-collect">Raid Again</span>
                         {% else %}
-                        <span class="jargon" data-rpg="Arrr &mdash; let's go loot!" data-real="Connect">Arrr &mdash; let's go loot!</span>
+                        <span class="jargon" data-rpg="Raid This Island" data-real="Connect">Raid This Island</span>
                         {% endif %}
                     </button>
                 </div>
@@ -139,7 +139,7 @@ The Flatcloud rewards those who reclaim their data. All of it.
                         {% endif %}
                         <button class="territory__source-btn" onclick="NomoloBridge.raidSource('{{ src.id }}')">
                             {% if src.collected %}
-                            <span class="jargon" data-rpg="Re-raid" data-real="Re-collect">Re-raid</span>
+                            <span class="jargon" data-rpg="Raid Again" data-real="Re-collect">Raid Again</span>
                             {% else %}
                             <span class="jargon" data-rpg="Loot" data-real="Collect">Loot</span>
                             {% endif %}

@@ -95,6 +95,21 @@ a:hover {
     color: var(--accent-green);
 }
 
+/* ── Focus Styles (Keyboard Accessibility) ────────────────────────────── */
+
+:focus-visible {
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 2px;
+}
+
 /* ── Scrollbar ─────────────────────────────────────────────────────────── */
 
 ::-webkit-scrollbar {
@@ -1579,6 +1594,28 @@ a:hover {
 
 .achievements-page {
     max-width: 1200px;
+}
+
+.achievements-page__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.achievements-page__title {
+    font-family: var(--font-heading);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.achievements-page__subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 4px 0 0;
 }
 
 .achievement-filters {
@@ -5767,6 +5804,34 @@ a:hover {
     margin: 0 0 16px;
 }
 
+.rpg__card-title-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    color: inherit;
+    margin: 0 0 16px;
+}
+
+.rpg__card-title-link .rpg__card-title {
+    margin: 0;
+}
+
+.rpg__card-title-arrow {
+    font-size: 14px;
+    color: var(--text-muted);
+    transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.rpg__card-title-link:hover .rpg__card-title,
+.rpg__card-title-link:hover .rpg__card-title-arrow {
+    color: var(--accent-cyan);
+}
+
+.rpg__card-title-link:hover .rpg__card-title-arrow {
+    transform: translateX(3px);
+}
+
 /* Character Stats */
 .rpg__stats {
     display: flex;
@@ -8095,6 +8160,53 @@ h1, h2 {
     margin: 0;
 }
 .automaton__welcome p { font-size: 13px; margin: 0; max-width: 320px; }
+
+.automaton__suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+    max-width: 440px;
+}
+
+.automaton__suggestion {
+    padding: 8px 14px;
+    background: var(--bg-glass);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.automaton__suggestion:hover {
+    background: rgba(0, 212, 255, 0.08);
+    border-color: rgba(0, 212, 255, 0.3);
+    color: var(--accent-cyan);
+}
+
+.automaton__llm-warning {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 16px;
+    background: rgba(255, 140, 66, 0.08);
+    border: 1px solid rgba(255, 140, 66, 0.2);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--accent-orange);
+}
+
+.automaton__llm-warning a {
+    color: var(--accent-orange);
+    text-decoration: underline;
+    font-weight: 600;
+    margin-left: auto;
+    white-space: nowrap;
+}
 
 /* Message bubbles */
 .automaton__msg {
