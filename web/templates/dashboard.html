@@ -232,6 +232,29 @@
     </div>
 
     <!-- SCUMM-style Verb Bar -->
+    <!-- The Automaton — RAG Chat -->
+    <div class="automaton-chat" id="automaton-chat">
+        <div class="automaton-chat__header">
+            <span class="automaton-chat__icon">&#x1F916;</span>
+            <h3 class="automaton-chat__title jargon" data-rpg="The Automaton" data-real="AI Assistant">The Automaton</h3>
+            <span class="automaton-chat__status" id="automaton-status"></span>
+            <button class="automaton-chat__toggle" onclick="NomoloBridge.toggleChat()" title="Toggle chat">&#x25BC;</button>
+        </div>
+        <div class="automaton-chat__body" id="automaton-body" style="display:none">
+            <div class="automaton-chat__messages" id="automaton-messages">
+                <div class="automaton-chat__welcome">
+                    <p class="jargon" data-rpg="Ask me anything about yer plundered data, Captain." data-real="Ask me anything about your archived data.">Ask me anything about yer plundered data, Captain.</p>
+                </div>
+            </div>
+            <div class="automaton-chat__sources" id="automaton-sources" style="display:none"></div>
+            <form class="automaton-chat__input" onsubmit="NomoloBridge.sendChat(event)">
+                <input type="text" id="automaton-query" class="automaton-chat__field"
+                    placeholder="Ask The Automaton..." autocomplete="off" />
+                <button type="submit" class="automaton-chat__send" id="automaton-send">&#x27A4;</button>
+            </form>
+        </div>
+    </div>
+
     <div class="verb-bar">
         <button class="verb-bar__btn" data-verb="scan">
             <span class="verb-bar__icon">&#x1F50D;</span>
@@ -271,6 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Memory-aware pirate greeting (once per session) + verb bar wiring
     NomoloBridge.initPirateGreeting();
     NomoloBridge.initVerbBar();
+    NomoloBridge.initChat();
 
     // Mini-game streak display
     const streakCount = document.getElementById('tavern-streak-count');

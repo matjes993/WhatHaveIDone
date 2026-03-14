@@ -76,6 +76,7 @@ from web.dialogues import (
     check_riddle_answer,
     list_characters as dialogues_list_characters,
 )
+from web.rag import rag_chat
 
 # ---------------------------------------------------------------------------
 # Config
@@ -2244,6 +2245,95 @@ async def api_delete_llm_token():
         return JSONResponse({"ok": True})
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+# ---------------------------------------------------------------------------
+# RAG Chat — The Automaton
+# ---------------------------------------------------------------------------
+
+
+@app.get("/api/chat/status")
+async def api_chat_status():
+    """Check if RAG chat is ready (LLM configured + vault indexed)."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+
+    llm_data = _load_llm_tokens()
+    llm_configured = bool(llm_data.get("token_encrypted"))
+
+    vault_has_data = _has_any_data(vault_root)
+
+    # Check if search index exists
+    fts_path = os.path.join(vault_root, ".searchdb", "fts.sqlite3")
+    vector_path = os.path.join(vault_root, ".vectordb")
+    index_ready = os.path.exists(fts_path) or os.path.isdir(vector_path)
+
+    return JSONResponse({
+        "chat_ready": llm_configured and vault_has_data,
+        "llm_configured": llm_configured,
+        "vault_has_data": vault_has_data,
+        "index_ready": index_ready,
+    })
+
+
+@app.post("/api/chat")
+async def api_chat(request: Request):
+    """RAG chat endpoint — ask The Automaton about your data."""
+    try:
+        body = await request.json()
+        query = (body.get("query") or "").strip()
+        history = body.get("history", [])
+
+        if not query:
+            return JSONResponse(
+                {"ok": False, "error": "No question provided"},
+                status_code=400,
+            )
+
+        # Load LLM config
+        llm_data = _load_llm_tokens()
+        if not llm_data.get("token_encrypted"):
+            return JSONResponse(
+                {"ok": False, "error": "No LLM token configured. Visit Ship's Helm to add your Arcane Scroll."},
+                status_code=400,
+            )
+
+        token = _decrypt_token(llm_data["token_encrypted"])
+        llm_config = {
+            "provider": llm_data.get("provider", "openai"),
+            "token": token,
+            "model": llm_data.get("model", ""),
+            "endpoint": llm_data.get("endpoint", ""),
+        }
+
+        # Get current level for memory tier
+        config = load_config()
+        vault_root = get_vault_root(config)
+        rpg = get_rpg_dashboard(vault_root)
+        level = rpg.get("level", {}).get("level", 5)
+
+        # Run RAG pipeline (in thread to avoid blocking)
+        import asyncio
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(
+            None,
+            lambda: rag_chat(
+                query=query,
+                vault_root=vault_root,
+                llm_config=llm_config,
+                level=level,
+                history=history,
+            ),
+        )
+
+        return JSONResponse({"ok": True, **result})
+
+    except Exception as e:
+        logger.error("RAG chat error: %s", e)
+        return JSONResponse(
+            {"ok": False, "error": str(e)},
+            status_code=500,
+        )
 
 
 # ---------------------------------------------------------------------------

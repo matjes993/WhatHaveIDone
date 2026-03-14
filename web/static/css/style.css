@@ -7443,3 +7443,214 @@ h1, h2 {
         padding: 6px 12px;
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE AUTOMATON — RAG CHAT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.automaton-chat {
+    background: linear-gradient(135deg, #1a2a3a 0%, #0d1b2a 100%);
+    border: 2px solid var(--mi-gold, #d4a843);
+    border-radius: 12px;
+    margin: 20px 0;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(212, 168, 67, 0.15);
+}
+
+.automaton-chat__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: linear-gradient(90deg, rgba(212, 168, 67, 0.1), transparent);
+    cursor: pointer;
+    user-select: none;
+}
+
+.automaton-chat__icon {
+    font-size: 24px;
+    filter: drop-shadow(0 0 6px rgba(212, 168, 67, 0.5));
+}
+
+.automaton-chat__title {
+    font-family: var(--font-adventure, 'Press Start 2P', monospace);
+    font-size: 11px;
+    color: var(--mi-gold, #d4a843);
+    margin: 0;
+    flex: 1;
+}
+
+.automaton-chat__status {
+    font-size: 16px;
+}
+
+.automaton-chat__toggle {
+    background: none;
+    border: none;
+    color: var(--mi-gold, #d4a843);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.automaton-chat__body {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(212, 168, 67, 0.2);
+}
+
+.automaton-chat__messages {
+    max-height: 320px;
+    min-height: 120px;
+    overflow-y: auto;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.automaton-chat__welcome {
+    text-align: center;
+    color: #8899aa;
+    font-size: 13px;
+    padding: 20px 0;
+    font-style: italic;
+}
+
+.automaton-chat__msg {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    animation: chatFadeIn 0.3s ease;
+}
+
+@keyframes chatFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.automaton-chat__msg-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.automaton-chat__msg-text {
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 85%;
+}
+
+.automaton-chat__msg--user .automaton-chat__msg-text {
+    background: rgba(212, 168, 67, 0.12);
+    color: #e8dcc8;
+    padding: 8px 12px;
+    border-radius: 12px 12px 2px 12px;
+    border: 1px solid rgba(212, 168, 67, 0.2);
+}
+
+.automaton-chat__msg--assistant .automaton-chat__msg-text {
+    background: rgba(100, 200, 255, 0.08);
+    color: #c8dce8;
+    padding: 8px 12px;
+    border-radius: 12px 12px 12px 2px;
+    border: 1px solid rgba(100, 200, 255, 0.15);
+}
+
+/* Memory tier visual effects on responses */
+.automaton-chat__msg--amnesia .automaton-chat__msg-text {
+    opacity: 0.7;
+    font-style: italic;
+    border-color: rgba(150, 150, 150, 0.2);
+}
+
+.automaton-chat__msg--crystal .automaton-chat__msg-text {
+    border-color: rgba(100, 200, 255, 0.35);
+    box-shadow: 0 0 8px rgba(100, 200, 255, 0.1);
+}
+
+.automaton-chat__msg--transcendent .automaton-chat__msg-text {
+    border-color: rgba(212, 168, 67, 0.4);
+    box-shadow: 0 0 12px rgba(212, 168, 67, 0.15);
+    background: linear-gradient(135deg, rgba(212, 168, 67, 0.08), rgba(100, 200, 255, 0.06));
+}
+
+.automaton-chat__sources {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    overflow-x: auto;
+    flex-wrap: wrap;
+}
+
+.automaton-chat__sources-label {
+    font-size: 11px;
+    color: #8899aa;
+    white-space: nowrap;
+}
+
+.automaton-chat__source-tag {
+    font-size: 10px;
+    color: var(--mi-gold, #d4a843);
+    background: rgba(212, 168, 67, 0.1);
+    border: 1px solid rgba(212, 168, 67, 0.2);
+    border-radius: 4px;
+    padding: 2px 6px;
+    white-space: nowrap;
+}
+
+.automaton-chat__input {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.automaton-chat__field {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(212, 168, 67, 0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #e8dcc8;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.automaton-chat__field:focus {
+    border-color: var(--mi-gold, #d4a843);
+    box-shadow: 0 0 8px rgba(212, 168, 67, 0.2);
+}
+
+.automaton-chat__field::placeholder {
+    color: #667788;
+}
+
+.automaton-chat__send {
+    background: var(--mi-gold, #d4a843);
+    color: #1a2a3a;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.automaton-chat__send:hover {
+    background: #e4b853;
+}
+
+.automaton-chat__send:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    .automaton-chat__messages { max-height: 240px; }
+    .automaton-chat__msg-text { max-width: 90%; font-size: 12px; }
+}

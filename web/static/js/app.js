@@ -3406,6 +3406,154 @@ const NomoloBridge = (() => {
         }
     }
 
+    // ── RAG Chat — The Automaton ──────────────────────────────────────
+
+    let _chatHistory = [];
+    let _chatReady = false;
+
+    function initChat() {
+        fetch('/api/chat/status')
+            .then(r => r.json())
+            .then(data => {
+                const statusEl = document.getElementById('automaton-status');
+                if (!statusEl) return;
+                _chatReady = data.chat_ready;
+                if (data.chat_ready) {
+                    statusEl.textContent = '\u2705';
+                    statusEl.title = 'Online — LLM connected';
+                } else if (!data.llm_configured) {
+                    statusEl.textContent = '\u{1F512}';
+                    statusEl.title = 'Add your API key in Settings';
+                } else {
+                    statusEl.textContent = '\u26A0\uFE0F';
+                    statusEl.title = 'Vault not indexed yet';
+                }
+            })
+            .catch(() => {});
+    }
+
+    function toggleChat() {
+        const body = document.getElementById('automaton-body');
+        const toggle = document.querySelector('.automaton-chat__toggle');
+        if (!body) return;
+        const showing = body.style.display !== 'none';
+        body.style.display = showing ? 'none' : 'flex';
+        if (toggle) toggle.textContent = showing ? '\u25BC' : '\u25B2';
+        if (!showing) {
+            const input = document.getElementById('automaton-query');
+            if (input) input.focus();
+        }
+    }
+
+    function sendChat(e) {
+        if (e) e.preventDefault();
+        const input = document.getElementById('automaton-query');
+        const query = (input ? input.value : '').trim();
+        if (!query) return;
+
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+
+        if (!_chatReady) {
+            toast(jM === 'rpg'
+                ? 'The Automaton needs an Arcane Scroll. Visit the Ship\'s Helm.'
+                : 'Configure your LLM API key in Settings first.', 'warning');
+            return;
+        }
+
+        // Add user message to UI
+        _appendChatMessage('user', query);
+        input.value = '';
+
+        // Show typing indicator
+        const typingId = _appendChatMessage('assistant', jM === 'rpg'
+            ? '\u2699\uFE0F Processing yer query, Captain...'
+            : '\u2699\uFE0F Searching your archive...');
+
+        // Disable input while processing
+        const sendBtn = document.getElementById('automaton-send');
+        if (sendBtn) sendBtn.disabled = true;
+        if (input) input.disabled = true;
+
+        fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, history: _chatHistory.slice(-6) }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            // Remove typing indicator
+            _removeChatMessage(typingId);
+
+            if (data.ok) {
+                _appendChatMessage('assistant', data.response, data.memory_tier);
+                _showSources(data.sources_cited);
+                _chatHistory.push({ role: 'user', content: query });
+                _chatHistory.push({ role: 'assistant', content: data.response });
+            } else {
+                _appendChatMessage('assistant', data.error || 'Something went wrong.');
+            }
+        })
+        .catch(err => {
+            _removeChatMessage(typingId);
+            _appendChatMessage('assistant', jM === 'rpg'
+                ? 'The Automaton\'s gears have jammed. Try again.'
+                : 'Failed to get a response. Try again.');
+        })
+        .finally(() => {
+            if (sendBtn) sendBtn.disabled = false;
+            if (input) { input.disabled = false; input.focus(); }
+        });
+    }
+
+    let _chatMsgId = 0;
+    function _appendChatMessage(role, text, memoryTier) {
+        const container = document.getElementById('automaton-messages');
+        if (!container) return null;
+
+        // Remove welcome message on first real message
+        const welcome = container.querySelector('.automaton-chat__welcome');
+        if (welcome) welcome.remove();
+
+        const id = 'chat-msg-' + (++_chatMsgId);
+        const div = document.createElement('div');
+        div.id = id;
+        div.className = 'automaton-chat__msg automaton-chat__msg--' + role;
+        if (memoryTier) div.classList.add('automaton-chat__msg--' + memoryTier);
+
+        const label = role === 'user' ? '\u{1F3F4}\u200D\u2620\uFE0F' : '\u{1F916}';
+        div.innerHTML = '<span class="automaton-chat__msg-icon">' + label + '</span>'
+            + '<div class="automaton-chat__msg-text">' + escapeHtml(text).replace(/\n/g, '<br>') + '</div>';
+
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+        return id;
+    }
+
+    function _removeChatMessage(id) {
+        if (!id) return;
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    function _showSources(sources) {
+        const el = document.getElementById('automaton-sources');
+        if (!el || !sources || sources.length === 0) {
+            if (el) el.style.display = 'none';
+            return;
+        }
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        let html = '<span class="automaton-chat__sources-label">'
+            + (jM === 'rpg' ? '\u{1F4DC} Sources raided:' : '\u{1F4C4} Sources:') + '</span> ';
+        for (const s of sources.slice(0, 3)) {
+            const label = s.subject || s.source || 'unknown';
+            html += '<span class="automaton-chat__source-tag">'
+                + escapeHtml(label.substring(0, 40))
+                + (s.date ? ' (' + s.date + ')' : '') + '</span>';
+        }
+        el.innerHTML = html;
+        el.style.display = 'flex';
+    }
+
     // ── Public API ────────────────────────────────────────────────────
 
     return {
@@ -3478,5 +3626,9 @@ const NomoloBridge = (() => {
         skipIntro,
         replayIntro,
         checkIntroRedirect,
+        // RAG Chat — The Automaton
+        initChat,
+        toggleChat,
+        sendChat,
     };
 })();
