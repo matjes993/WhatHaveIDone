@@ -10,4 +10,4 @@ gmail:
   scope: https://www.googleapis.com/auth/gmail.readonly
   token_file: token.json
 user_name: diebyme
-vault_root: vaults
+vault_root: /Users/mactthias/Documents/Nomolo-vaults

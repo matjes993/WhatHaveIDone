@@ -1607,6 +1607,9 @@ const NomoloBridge = (() => {
             html += '<div class="plunder-row" id="' + rowId + '" onclick="NomoloBridge.toggleRecordDetail(\'' + rowId + '\')">';
             html += '<span class="plunder-row__emoji">' + emoji + '</span>';
             html += '<span class="plunder-row__title">' + escapeHtml(record.title || (jM === 'rpg' ? 'Uncharted Scroll' : 'Untitled')) + '</span>';
+            if (record.vectorized) {
+                html += '<span class="plunder-row__rag" title="' + (jM === 'rpg' ? 'Charted — The Automaton can find this' : 'Indexed — searchable by AI') + '">\u{1F9ED}</span>';
+            }
             html += '<span class="plunder-row__source">' + escapeHtml(sourceTag) + '</span>';
             html += '<span class="plunder-row__date" title="' + escapeHtml(record.date_formatted || record.date || '') + '">' + (dateDisplay || '') + '</span>';
             html += '<span class="plunder-row__chevron">\u203A</span>';
@@ -2257,7 +2260,7 @@ const NomoloBridge = (() => {
             toggle.classList.toggle('jargon-toggle--real', mode === 'real');
         }
         if (label) {
-            label.textContent = mode === 'rpg' ? 'Flatcloud' : 'Real World';
+            label.textContent = mode === 'rpg' ? "I'm a Pirate" : 'Real World';
         }
 
         // Update all elements with data-rpg / data-real attributes

@@ -1528,8 +1528,15 @@ async def api_records(
     end = start + per_page
     page_entries = all_entries[start:end]
 
+    # Load vectorized IDs to flag which records are in ChromaDB
+    vectorized_ids = _get_vectorized_ids(vault_root)
+
     # Format for frontend
-    results = [_format_record(e) for e in page_entries]
+    results = []
+    for e in page_entries:
+        rec = _format_record(e)
+        rec["vectorized"] = e.get("id", "") in vectorized_ids
+        results.append(rec)
 
     return JSONResponse({
         "records": results,
@@ -1796,6 +1803,44 @@ def _extract_domain(url: str) -> str:
         return host
     except Exception:
         return ""
+
+
+# Cache vectorized IDs (refreshed once per server restart or on cache miss)
+_vectorized_ids_cache: dict = {"ids": None, "ts": 0}
+
+
+def _get_vectorized_ids(vault_root: str) -> set:
+    """Get set of all entry IDs that have been vectorized into ChromaDB."""
+    import time as _time
+    cache = _vectorized_ids_cache
+    # Refresh every 5 minutes
+    if cache["ids"] is not None and (_time.time() - cache["ts"]) < 300:
+        return cache["ids"]
+
+    ids = set()
+    try:
+        from core.vectordb import get_client
+        client = get_client(vault_root)
+        for col in client.list_collections():
+            try:
+                result = col.get(include=[])
+                ids.update(result.get("ids", []))
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    # Strip chunk suffixes (e.g., "abc123_chunk_0" → "abc123")
+    base_ids = set()
+    for eid in ids:
+        if "_chunk_" in eid:
+            base_ids.add(eid.rsplit("_chunk_", 1)[0])
+        else:
+            base_ids.add(eid)
+
+    cache["ids"] = base_ids
+    cache["ts"] = _time.time()
+    return base_ids
 
 
 def _format_record(entry):

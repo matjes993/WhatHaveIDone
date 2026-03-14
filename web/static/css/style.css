@@ -3426,6 +3426,16 @@ select:focus-visible {
     min-width: 70px;
     text-align: right;
 }
+.plunder-row__rag {
+    flex-shrink: 0;
+    font-size: 11px;
+    opacity: 0.5;
+    cursor: help;
+    transition: opacity var(--transition-fast);
+}
+.plunder-row:hover .plunder-row__rag {
+    opacity: 0.9;
+}
 .plunder-row__chevron {
     flex-shrink: 0;
     font-size: 16px;
