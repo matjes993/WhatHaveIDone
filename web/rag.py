@@ -70,13 +70,145 @@ def _get_memory_tier(level: int) -> str:
         return "transcendent"
 
 
+# ── Meta-question detection ────────────────────────────────────────────────
+
+_META_PATTERNS = {
+    "what's stored", "whats stored", "what is stored", "what data",
+    "what do you have", "what do you know", "what's here", "whats here",
+    "what is here", "show me everything", "what have you got",
+    "overview", "summary", "tell me about my data", "what's in",
+    "what sources", "how much data", "what kind of data", "what types",
+    "what info", "what information", "describe my data", "what records",
+}
+
+
+def _is_meta_question(query: str) -> bool:
+    """Detect if the query is about the vault itself rather than specific content."""
+    q = query.lower().strip().rstrip("?").strip()
+    return any(pat in q for pat in _META_PATTERNS)
+
+
+def _vault_overview(vault_root: str) -> list[dict]:
+    """Build a vault overview context: what sources exist, how many records each."""
+    try:
+        from core.vault import count_entries
+    except ImportError:
+        return []
+
+    overview_parts = []
+    if not os.path.isdir(vault_root):
+        return []
+
+    total = 0
+    for name in sorted(os.listdir(vault_root)):
+        vault_path = os.path.join(vault_root, name)
+        if not os.path.isdir(vault_path) or name.startswith("."):
+            continue
+        try:
+            result = count_entries(vault_path)
+            count = result[0] if isinstance(result, tuple) else result
+            if count > 0:
+                overview_parts.append(f"- {name}: {count:,} records")
+                total += count
+        except Exception:
+            continue
+
+    if not overview_parts:
+        return []
+
+    summary = (
+        f"The vault contains {total:,} records across {len(overview_parts)} data sources:\n"
+        + "\n".join(overview_parts)
+    )
+
+    # Also grab a few sample entries from each source for flavor
+    samples = []
+    try:
+        from core.vault import read_all_entries
+        for name in sorted(os.listdir(vault_root)):
+            vault_path = os.path.join(vault_root, name)
+            if not os.path.isdir(vault_path) or name.startswith("."):
+                continue
+            count = 0
+            for entry in read_all_entries(vault_path):
+                snippet = ""
+                for k in ("subject", "title", "body_clean", "body", "text", "name"):
+                    v = entry.get(k)
+                    if v and isinstance(v, str) and len(v) > 5:
+                        snippet = v[:200]
+                        break
+                if snippet:
+                    samples.append({
+                        "entry_id": entry.get("id", ""),
+                        "collection": name,
+                        "source": name,
+                        "combined_score": 1.0,
+                        "metadata": {
+                            "subject": entry.get("subject") or entry.get("title") or "",
+                            "from": entry.get("from") or entry.get("sender") or "",
+                            "date": str(entry.get("date") or ""),
+                        },
+                        "snippet": snippet,
+                    })
+                    count += 1
+                    if count >= 2:
+                        break
+    except Exception:
+        pass
+
+    # Put the overview as the first result
+    results = [{
+        "entry_id": "__vault_overview__",
+        "collection": "vault",
+        "source": "vault_overview",
+        "combined_score": 2.0,
+        "metadata": {"subject": "Vault Overview", "from": "", "date": ""},
+        "snippet": summary,
+    }]
+    results.extend(samples[:6])
+    return results
+
+
+# ── FTS index auto-build ───────────────────────────────────────────────────
+
+_fts_checked = False
+
+
+def _ensure_fts_index(vault_root: str) -> bool:
+    """Build the FTS index if it doesn't exist. Returns True if index is usable."""
+    global _fts_checked
+    db_path = os.path.join(vault_root, ".searchdb", "fts.sqlite3")
+
+    if os.path.exists(db_path):
+        _fts_checked = True
+        return True
+
+    if _fts_checked:
+        return False
+
+    _fts_checked = True
+    try:
+        logger.info("Building FTS index (first-time setup)...")
+        from core.search_engine import index_all
+        index_all(vault_root)
+        return os.path.exists(db_path)
+    except Exception as e:
+        logger.warning("Failed to build FTS index: %s", e)
+        return False
+
+
 # ── Context retrieval ───────────────────────────────────────────────────────
 
 def retrieve_context(query: str, vault_root: str, n_results: int = 8) -> list[dict]:
     """Search the vault and return relevant context chunks.
 
-    Tries: hybrid (chromadb+BM25) → BM25 → brute-force text scan.
+    For meta-questions ("what's stored here?"), returns a vault overview.
+    For content questions, tries: hybrid (chromadb+BM25) → BM25 → text scan.
     """
+    # Handle meta-questions with a vault overview
+    if _is_meta_question(query):
+        return _vault_overview(vault_root)
+
     results = []
 
     # Try hybrid search first
@@ -92,11 +224,11 @@ def retrieve_context(query: str, vault_root: str, n_results: int = 8) -> list[di
         )
     except Exception as e1:
         logger.warning("Hybrid search failed for RAG: %s", e1)
-        # Fallback to BM25
+        # Fallback to BM25 only
         try:
             from core.search_engine import bm25_search
-            db_path = os.path.join(vault_root, ".searchdb", "fts.sqlite3")
-            if os.path.exists(db_path):
+            if _ensure_fts_index(vault_root):
+                db_path = os.path.join(vault_root, ".searchdb", "fts.sqlite3")
                 results = bm25_search(db_path, query, n_results=n_results)
         except Exception as e2:
             logger.warning("BM25 fallback failed for RAG: %s", e2)
@@ -128,7 +260,6 @@ def _text_scan_vault(query: str, vault_root: str, n_results: int = 8) -> list[di
 
     query_terms = [t for t in query.lower().split() if t not in _STOP_WORDS]
     if not query_terms:
-        # If query was all stop words, use original terms
         query_terms = query.lower().split()
     matches = []
 
@@ -145,7 +276,6 @@ def _text_scan_vault(query: str, vault_root: str, n_results: int = 8) -> list[di
                     str(v) for v in entry.values()
                     if isinstance(v, (str, int, float))
                 ).lower()
-                # Score by how many query terms match (at least half must match)
                 hits = sum(1 for term in query_terms if term in text_blob)
                 min_required = max(1, len(query_terms) // 2)
                 if hits >= min_required:
@@ -175,7 +305,56 @@ def _text_scan_vault(query: str, vault_root: str, n_results: int = 8) -> list[di
             continue
 
     matches.sort(key=lambda m: m["combined_score"], reverse=True)
+
+    # If no keyword matches found, return a sample of vault data so the
+    # Automaton has *something* to talk about rather than "no data found"
+    if not matches:
+        return _sample_vault(vault_root, n_results)
+
     return matches[:n_results]
+
+
+def _sample_vault(vault_root: str, n_results: int = 6) -> list[dict]:
+    """Return a diverse sample of vault entries when search finds nothing."""
+    try:
+        from core.vault import read_all_entries
+    except ImportError:
+        return []
+
+    samples = []
+    for name in sorted(os.listdir(vault_root)):
+        vault_path = os.path.join(vault_root, name)
+        if not os.path.isdir(vault_path) or name.startswith("."):
+            continue
+        count = 0
+        try:
+            for entry in read_all_entries(vault_path):
+                snippet = ""
+                for k in ("body_clean", "body_raw", "body", "text", "subject", "title", "name"):
+                    v = entry.get(k)
+                    if v and isinstance(v, str) and len(v) > 10:
+                        snippet = v[:400]
+                        break
+                if snippet:
+                    samples.append({
+                        "entry_id": entry.get("id", ""),
+                        "collection": name,
+                        "source": name,
+                        "combined_score": 0.1,
+                        "metadata": {
+                            "subject": entry.get("subject") or entry.get("title") or "",
+                            "from": entry.get("from") or entry.get("sender") or "",
+                            "date": str(entry.get("date") or ""),
+                        },
+                        "snippet": snippet,
+                    })
+                    count += 1
+                    if count >= 2:
+                        break
+        except Exception:
+            continue
+
+    return samples[:n_results]
 
 
 def _format_context_for_prompt(results: list[dict], max_chars: int = 6000) -> str:

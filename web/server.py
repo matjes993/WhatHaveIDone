@@ -1133,6 +1133,159 @@ async def api_vault_stats():
     })
 
 
+# ---------------------------------------------------------------------------
+# Knowledge Graph API
+# ---------------------------------------------------------------------------
+
+
+def _get_knowledge_engine(vault_root: str):
+    """Get or create a KnowledgeEngine instance."""
+    try:
+        from core.knowledge import KnowledgeEngine
+        engine = KnowledgeEngine(vault_root)
+        return engine
+    except Exception as e:
+        logger.warning("Knowledge engine not available: %s", e)
+        return None
+
+
+@app.get("/api/knowledge/stats")
+async def api_knowledge_stats():
+    """Get knowledge graph statistics."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    engine = _get_knowledge_engine(vault_root)
+
+    if not engine:
+        return JSONResponse({"available": False, "message": "Knowledge graph not built yet"})
+
+    try:
+        from core.knowledge.schema import EntityType
+        stats = {
+            "available": True,
+            "people": engine.count_entities(EntityType.PERSON),
+            "organizations": engine.count_entities(EntityType.ORGANIZATION),
+            "places": engine.count_entities(EntityType.PLACE),
+            "events": engine.count_entities(EntityType.EVENT),
+            "total_entities": engine.count_entities(),
+            "total_relationships": engine.store.count_relationships(),
+            "open_hypotheses": len(engine.get_open_hypotheses(limit=100)),
+        }
+        return JSONResponse(stats)
+    except Exception as e:
+        return JSONResponse({"available": False, "message": str(e)})
+
+
+@app.get("/api/knowledge/people")
+async def api_knowledge_people(limit: int = 50, offset: int = 0):
+    """Find people in the knowledge graph."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    engine = _get_knowledge_engine(vault_root)
+
+    if not engine:
+        return JSONResponse({"people": [], "total": 0})
+
+    try:
+        from core.knowledge.schema import EntityType
+        people = engine.find_entities(EntityType.PERSON, limit=limit, offset=offset)
+        total = engine.count_entities(EntityType.PERSON)
+
+        results = []
+        for person in people:
+            connections = engine.get_connections(person.id)
+            name = person.get("name") or person.get("display_name") or person.get("email") or person.get("from") or person.id[:8]
+            results.append({
+                "id": person.id,
+                "name": name,
+                "type": person.type.value if hasattr(person.type, 'value') else str(person.type),
+                "properties": person.properties or {},
+                "created_at": person.created_at.isoformat() if person.created_at else None,
+                "connection_count": len(connections),
+            })
+
+        # Sort by connection count (most connected first)
+        results.sort(key=lambda p: -p["connection_count"])
+
+        return JSONResponse({"people": results, "total": total})
+    except Exception as e:
+        logger.warning("People query failed: %s", e)
+        return JSONResponse({"people": [], "total": 0, "error": str(e)})
+
+
+@app.get("/api/knowledge/connections/{entity_id}")
+async def api_knowledge_connections(entity_id: str):
+    """Get all connections for an entity."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    engine = _get_knowledge_engine(vault_root)
+
+    if not engine:
+        return JSONResponse({"connections": [], "entity": None})
+
+    try:
+        entity = engine.get_entity(entity_id)
+        if not entity:
+            return JSONResponse({"connections": [], "entity": None}, status_code=404)
+
+        connections = engine.get_connections(entity_id)
+        results = []
+        for conn in connections:
+            other = conn["entity"]
+            rel = conn["relationship"]
+            other_name = other.get("name") or other.get("email") or other.id[:8]
+            results.append({
+                "entity_id": other.id,
+                "name": other_name,
+                "type": other.type.value if hasattr(other.type, 'value') else str(other.type),
+                "relationship": rel.type.value if hasattr(rel.type, 'value') else str(rel.type),
+                "direction": conn["direction"],
+                "properties": rel.properties or {},
+            })
+
+        entity_name = entity.get("name") or entity.get("email") or entity.id[:8]
+        return JSONResponse({
+            "entity": {
+                "id": entity.id,
+                "name": entity_name,
+                "type": entity.type.value if hasattr(entity.type, 'value') else str(entity.type),
+            },
+            "connections": results,
+        })
+    except Exception as e:
+        return JSONResponse({"connections": [], "error": str(e)})
+
+
+@app.get("/api/knowledge/hypotheses")
+async def api_knowledge_hypotheses(limit: int = 20):
+    """Get open hypotheses (identity merges, data gaps, etc.)."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    engine = _get_knowledge_engine(vault_root)
+
+    if not engine:
+        return JSONResponse({"hypotheses": []})
+
+    try:
+        hypotheses = engine.get_open_hypotheses(limit=limit)
+        results = []
+        for h in hypotheses:
+            results.append({
+                "id": h.id,
+                "type": h.hypothesis_type.value,
+                "description": h.description,
+                "confidence": h.confidence,
+                "entity_ids": h.entity_ids,
+                "evidence": h.evidence,
+            })
+        return JSONResponse({"hypotheses": results})
+    except Exception as e:
+        return JSONResponse({"hypotheses": [], "error": str(e)})
+
+
+# ---------------------------------------------------------------------------
+
+
 @app.get("/timeline", response_class=HTMLResponse)
 async def timeline_page(request: Request):
     """Visual timeline of data coverage."""
