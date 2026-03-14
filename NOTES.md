@@ -1,5 +1,45 @@
 # Nomolo — Session Notes
 
+## Ideas & Concepts
+
+### Shared Vaults via VPS (Federated LLM Exchange)
+
+**Core idea:** Nomolo LLMs can create temporary shared vaults on VPS instances to exchange information with each other — LLM-to-LLM communication through ephemeral, purpose-built vaults. One LLM asks another for information, the exchange happens through a temporary shared vault on a VPS, and the result gets pulled back.
+
+**Hard rule:** An external LLM NEVER gets direct access to nomolo-core. The core stays behind the owner's Tailscale network. The core user accesses it through Tailscale — and any device on the Tailscale network can reach it, with permission.
+
+**Architecture sketch:**
+```
+┌─────────────────────────────────────┐
+│         Tailscale Network           │
+│                                     │
+│  [Phone] [Laptop] [Desktop]         │
+│      ↕       ↕        ↕             │
+│       nomolo-core (sovereign)       │
+│       NEVER exposed externally      │
+└──────────────┬──────────────────────┘
+               │ (outbound only)
+               ▼
+┌──────────────────────────────────┐
+│     VPS — Temporary Shared Vault │
+│  (created by nomolo, ephemeral)  │
+│                                  │
+│  [Your LLM] ←→ [Their LLM]      │
+│   exchange via shared vault      │
+│                                  │
+│  No direct core access. Ever.    │
+└──────────────────────────────────┘
+```
+
+**Key principles:**
+- nomolo-core is sovereign — lives on your Tailscale network, never exposed to the internet
+- All your devices on Tailscale can access the core (with permission)
+- External LLMs only see temporary shared vaults on VPS, never the core
+- VPS vaults are ephemeral — created for a purpose, destroyed after
+- Nomolo LLMs orchestrate the exchange, deciding what to share and what to withhold
+
+---
+
 ## 2026-03-14 (session 3, part 3): MCP Graph Tools + Deep Scanner + Query Benchmark
 
 ### What we built
