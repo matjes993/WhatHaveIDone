@@ -46,8 +46,16 @@
         <div class="rpg__card rpg__card--stats">
             <h2 class="rpg__card-title jargon" data-rpg="Character Stats" data-real="Data Overview" title="Your data sovereignty breakdown by category" data-rpg-title="Yer pirate stats across the Six Pillars" data-real-title="Your data coverage across six categories">Character Stats</h2>
             <div class="rpg__stats">
+                {% set stat_tooltips = {
+                    'STR': {'rpg': 'Plundering Power — total records plundered', 'real': 'Volume — total records collected'},
+                    'WIS': {'rpg': "Navigator's Eye — how well ye know yer data", 'real': 'Insight — search and query depth'},
+                    'DEX': {'rpg': 'Quick Fingers — how many islands raided', 'real': 'Breadth — number of sources connected'},
+                    'INT': {'rpg': 'Codebreaker — search and query skill', 'real': 'Search — search usage and accuracy'},
+                    'CHA': {'rpg': 'Crew Morale — how interesting yer archive', 'real': 'Richness — data variety and completeness'},
+                    'END': {'rpg': 'Sea Legs — how long ye have been sailing', 'real': 'History — time span of your data'}
+                } %}
                 {% for stat_name in ['STR', 'WIS', 'DEX', 'INT', 'CHA', 'END'] %}
-                <div class="rpg__stat">
+                <div class="rpg__stat" title="{{ stat_tooltips[stat_name].rpg }}" data-rpg-title="{{ stat_tooltips[stat_name].rpg }}" data-real-title="{{ stat_tooltips[stat_name].real }}">
                     <span class="rpg__stat-name">{{ stat_name }}</span>
                     <div class="rpg__stat-bar">
                         <div class="rpg__stat-bar-fill rpg__stat-bar-fill--{{ stat_name|lower }}" style="width: {{ rpg.stats[stat_name] }}%"></div>
@@ -93,7 +101,10 @@
 
         <!-- Power-Ups -->
         <div class="rpg__card rpg__card--powerups">
-            <h2 class="rpg__card-title jargon" data-rpg="Power-Ups" data-real="Achievements">Power-Ups</h2>
+            <a href="/achievements" class="rpg__card-title-link">
+                <h2 class="rpg__card-title jargon" data-rpg="Power-Ups" data-real="Achievements">Power-Ups</h2>
+                <span class="rpg__card-title-arrow">&rarr;</span>
+            </a>
             <div class="rpg__powerups-grid">
                 {% for pu in rpg.power_ups[:13] %}
                 <div class="rpg__powerup {% if pu.earned %}rpg__powerup--earned rpg__powerup--{{ pu.rarity }}{% else %}rpg__powerup--locked{% endif %}" title="{{ pu.display_description }}">

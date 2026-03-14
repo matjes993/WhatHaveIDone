@@ -26,6 +26,15 @@
 - **Hypotheses are the graph's curiosity engine**: Instead of only storing confirmed facts, track suspected connections and data gaps. This feeds gamification (quests to resolve mysteries) and makes the system actively smarter over time.
 - **Machine adaptivity should be automatic**: Don't force users to choose embedding models. Detect hardware, pick the right tier, let power users override. Re-embedding on upgrade is a one-time cost, not a migration nightmare, because the JSONL vault is the source of truth.
 
+## 2026-03-13 (session 3)
+
+- **Quiz questions should test intuition, not recall**: "Which year was X most active?" is trivia nobody cares about. "Over or under 5,000 browser records?" is a gut-check that creates surprise. Binary choices (Over/Under, More/Less, Before/After) feel fair (50/50) and every answer teaches something. The fun is in the reveal, not the question.
+- **Brand consistency is a full-time job**: Found 15+ places where plain English leaked through the pirate jargon system. Every new element needs both `data-rpg` and `data-real` attributes, plus placeholder variants for inputs. Created a jargon consistency test suite to catch future drift.
+- **Local-only apps still have security surface**: Even on localhost, APIs were leaking filesystem paths, easter egg conditions, and raw GPS coordinates. "Local only" doesn't mean "no security review."
+- **Empty states are the most important states**: A page with no data is the first thing most users see. If it doesn't guide them to the next action, they bounce. Every empty state needs a CTA.
+- **Test what you ship, not what you built**: The old test suite checked for elements that hadn't existed for 2 sessions (step-discover, knowledge-graph, connect-btn). Tests that don't match the current UI are worse than no tests — they give false confidence.
+- **Pitch decks crystallize thinking**: The "Memory Escape Velocity" framing and "Sovereign Jarvis" concept came from running the vision through NotebookLM. External tools that force you to articulate the vision are as valuable as building the product.
+
 ## 2026-03-13 (session 2)
 
 - **Don't split repos prematurely**: OpenClaw has 22 repos (many contributors, independent lifecycles). CLI-Anything has 1 repo (one team, full control). Nomolo is closer to CLI-Anything — one person + AI. Separate repos add coordination tax (dependency versioning, cross-repo PRs, interface freezing) without benefit until you actually have independent teams.

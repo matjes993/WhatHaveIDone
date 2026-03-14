@@ -2297,6 +2297,15 @@ const NomoloBridge = (() => {
             }
         });
 
+        // Update placeholder attributes for jargon-aware inputs
+        document.querySelectorAll('[data-rpg-placeholder]').forEach(el => {
+            if (mode === 'real') {
+                el.placeholder = el.getAttribute('data-real-placeholder') || '';
+            } else {
+                el.placeholder = el.getAttribute('data-rpg-placeholder') || '';
+            }
+        });
+
         // In real mode, hide the company subtitle (it's redundant when villain name IS the company)
         document.querySelectorAll('.rpg__villain-company.jargon').forEach(el => {
             if (mode === 'real') {

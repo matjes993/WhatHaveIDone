@@ -65,8 +65,8 @@
             </div>
 
             <h1 class="journey__headline">
-                Yer entire digital treasure hoard.<br>
-                <span class="journey__headline-accent">One click to plunder it all.</span>
+                <span class="jargon" data-rpg="Yer entire digital treasure hoard." data-real="Your entire digital life.">Yer entire digital treasure hoard.</span><br>
+                <span class="journey__headline-accent jargon" data-rpg="One click to plunder it all." data-real="One click to reclaim it all.">One click to plunder it all.</span>
             </h1>
 
             <button class="journey__begin-btn" id="begin-btn" onclick="NomoloBridge.beginJourney()">
@@ -74,7 +74,9 @@
                 <span class="journey__begin-glow"></span>
             </button>
 
-            <p class="journey__trust-text">
+            <p class="journey__trust-text jargon"
+                data-rpg="Local only. Open source. Yer plunder never leaves this ship."
+                data-real="Local only. Open source. Your data never leaves this machine.">
                 Local only. Open source. Yer plunder never leaves this ship.
             </p>
         </div>
@@ -91,18 +93,26 @@
     <!-- STEP 3: Done -->
     <section class="journey__step" id="step-done">
         <div class="journey__done-content">
-            <p class="journey__done-above">Yer treasure vault is ready, Captain</p>
+            <p class="journey__done-above jargon"
+                data-rpg="Yer treasure vault is ready, Captain"
+                data-real="Your archive is ready">Yer treasure vault is ready, Captain</p>
             <div class="journey__done-number" id="done-number">0</div>
-            <p class="journey__done-label">pieces of loot stashed aboard yer ship</p>
+            <p class="journey__done-label jargon"
+                data-rpg="pieces of loot stashed aboard yer ship"
+                data-real="records saved to your local archive">pieces of loot stashed aboard yer ship</p>
             <p class="journey__done-context" id="done-context"></p>
 
             <a href="/" class="journey__done-btn" onclick="NomoloBridge.clearJourneyState()">
-                Enter the SCUMM Bar <span>&rarr;</span>
+                <span class="jargon" data-rpg="Enter the SCUMM Bar" data-real="Go to Dashboard">Enter the SCUMM Bar</span> <span>&rarr;</span>
             </a>
 
             <div class="journey__done-links">
-                <a href="#" onclick="NomoloBridge.openFdaGuide(); return false;" id="done-fda-link" style="display:none">Unlock more hidden harbors</a>
-                <a href="#" onclick="NomoloBridge.openExpertModal(); return false;">Board the Omniscient Eye</a>
+                <a href="#" onclick="NomoloBridge.openFdaGuide(); return false;" id="done-fda-link" class="jargon" style="display:none"
+                    data-rpg="Unlock more hidden harbors"
+                    data-real="Unlock more local sources">Unlock more hidden harbors</a>
+                <a href="#" onclick="NomoloBridge.openExpertModal(); return false;" class="jargon"
+                    data-rpg="Board the Omniscient Eye"
+                    data-real="Connect Google APIs">Board the Omniscient Eye</a>
             </div>
         </div>
     </section>
@@ -151,7 +161,7 @@
                     <div class="fda-step__number">4</div>
                     <div class="fda-step__body">
                         <h3>Reopen Terminal & come back</h3>
-                        <p>Open Terminal again and run the same command you used to start Nomolo. Open <strong>localhost:8000/welcome</strong> in your browser — we'll automatically pick up where you left off and scan your newly unlocked sources.</p>
+                        <p>Open Terminal again and run the same command you used to start Nomolo. Open <strong>localhost:3000/welcome</strong> in your browser — we'll automatically pick up where you left off and scan your newly unlocked sources.</p>
                     </div>
                 </div>
             </div>
@@ -205,13 +215,13 @@
                     </div>
                     <div class="expert-source-row" data-source="contacts-google">
                         <div class="expert-source-row__icon">&#128101;</div>
-                        <div class="expert-source-row__name">Contacts</div>
+                        <div class="expert-source-row__name jargon" data-rpg="Soul Bonds" data-real="Contacts">Soul Bonds</div>
                         <div class="expert-source-row__status" id="expert-auth-contacts-google">Not boarded</div>
                         <button class="expert-source-row__btn" onclick="NomoloBridge.triggerExpertAuth('contacts-google')">Board</button>
                     </div>
                     <div class="expert-source-row" data-source="calendar">
                         <div class="expert-source-row__icon">&#128197;</div>
-                        <div class="expert-source-row__name">Calendar</div>
+                        <div class="expert-source-row__name jargon" data-rpg="Time Crystals" data-real="Calendar">Time Crystals</div>
                         <div class="expert-source-row__status" id="expert-auth-calendar">Not boarded</div>
                         <button class="expert-source-row__btn" onclick="NomoloBridge.triggerExpertAuth('calendar')">Board</button>
                     </div>
@@ -231,12 +241,12 @@
                         <div class="expert-collect-row__status" id="expert-collect-gmail">Awaiting orders</div>
                     </div>
                     <div class="expert-collect-row">
-                        <div class="expert-collect-row__name">Contacts</div>
+                        <div class="expert-collect-row__name jargon" data-rpg="Soul Bonds" data-real="Contacts">Soul Bonds</div>
                         <div class="expert-collect-row__bar"><div class="expert-collect-row__bar-fill" id="expert-bar-contacts-google"></div></div>
                         <div class="expert-collect-row__status" id="expert-collect-contacts-google">Awaiting orders</div>
                     </div>
                     <div class="expert-collect-row">
-                        <div class="expert-collect-row__name">Calendar</div>
+                        <div class="expert-collect-row__name jargon" data-rpg="Time Crystals" data-real="Calendar">Time Crystals</div>
                         <div class="expert-collect-row__bar"><div class="expert-collect-row__bar-fill" id="expert-bar-calendar"></div></div>
                         <div class="expert-collect-row__status" id="expert-collect-calendar">Awaiting orders</div>
                     </div>
