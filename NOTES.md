@@ -1,5 +1,41 @@
 # Nomolo — Session Notes
 
+## 2026-03-13 (session 2): Life Map + Aliases + Automaton Powers + Architecture
+
+### What we built
+- **Life Map** (replaces Sources/Raid Targets page) — vertical territory cards with inline expand, loot emoji indicators, progress bars, impact scores, category badges (Live/API/Import), relative timestamps, treasure summary bar
+- **Aliases page** ("Many Faces") — discovers user's identities across platforms by scanning Gmail/Contacts/Messages vault data. Groups by type (emails, names, orgs) with villain icons and usage counts
+- **Automaton Power Levels** — 4-level permission system in Settings (Cabin Boy/First Mate/Quartermaster/Captain). Saves to config.yaml, UI shows radio card grid
+- **Loot type fix** — new `star_chart` (⭐) type for bookmarks, `waypoint` (📍) reassigned to locations/maps. 14 total loot types
+- **Nav updates** — "Raid Targets" → "Life Map"/"Data Map", added "Many Faces"/"Identities" between Life Map and Loot Log
+
+### Architecture decisions
+- **One repo, clean separation** — decided against splitting into 3 repos (overhead > benefit at current scale). Instead: clean one-way dependency rule: `core/` ← `web/`, `core/` ← `mcp_server.py`, but `core/` never imports from `web/`
+- **Two-terminal workflow** — parallel Claude sessions using git worktrees: `Nomolo-core/` on `core/*` branches, `Nomolo-web/` on `web/*` branches
+- **Knowledge lifecycle layer** (planned) — `core/knowledge/` with linker, insights, normalizer, forgetter, graph modules. Sits between raw collection and query
+- **Entrance Door API** (parked, v2.0+) — concept for LLM-guarded query gateway to let others safely query your knowledge core. Needs knowledge layer first
+
+### Files created
+- `core/aliases.py` — alias extraction from vault data with caching
+- `web/templates/aliases.html` — aliases page template with inline CSS
+
+### Files modified
+- `web/rpg.py` — star_chart loot type, waypoint reassigned, jargon updates
+- `web/server.py` — Life Map computed fields, `/aliases` + `/api/aliases` routes, automaton_power_level
+- `web/templates/base.html` — nav: Life Map + Many Faces links
+- `web/templates/sources.html` — complete rewrite as territory cards
+- `web/templates/settings.html` — Automaton Powers section
+- `web/static/css/style.css` — ~400 lines of Life Map styles
+- `web/static/js/app.js` — saveAutomatonPower() function
+
+### What's next
+- Set up git worktrees for parallel core/web development
+- Build `core/knowledge/` layer (linker, insights, normalizer, forgetter)
+- Improve collector integration into `core/collectors/`
+- File upload UI for import-based collectors
+
+---
+
 ## 2026-03-13: Records Browser + Sources Page + New Collectors + UX Overhaul
 
 ### What we built

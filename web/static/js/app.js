@@ -754,6 +754,7 @@ const NomoloBridge = (() => {
     let _recordsQuery = '';
     let _recordsSort = 'newest';
     let _recordsData = null;
+    let _recordsMap = {};
 
     // ── Journey State Persistence ─────────────────────────────────────
 
@@ -1593,36 +1594,24 @@ const NomoloBridge = (() => {
         const totalEl = document.getElementById('records-total');
         if (totalEl) totalEl.textContent = data.total.toLocaleString();
 
+        _recordsMap = {};
         let html = '';
-        for (const record of data.records) {
+        for (let i = 0; i < data.records.length; i++) {
+            const record = data.records[i];
+            const rowId = 'plunder-row-' + i;
+            _recordsMap[rowId] = record;
             const emoji = record.source_emoji || getSourceLabel(record.source);
-            const pirateDate = formatPirateDate(record.date);
-            const realDate = record.date_formatted || formatRecordDate(record.date);
+            const dateDisplay = jM === 'rpg' ? formatPirateDate(record.date) : (record.date_formatted || formatRecordDate(record.date));
+            const sourceTag = record.source ? record.source.replace(/_/g, ' ') : '';
 
-            // Villain badge — RPG style with conglomerate color
-            let villainBadge = '';
-            if (record.villain_name) {
-                const vName = jM === 'rpg' ? record.villain_name : (record.villain_company || record.villain_name);
-                const vColor = record.villain_color || '#888';
-                villainBadge = '<span class="plunder-item__villain" style="background:' + vColor + '18;color:' + vColor + ';border:2px solid ' + vColor + '33">'
-                    + (record.villain_icon ? record.villain_icon + ' ' : '') + escapeHtml(vName) + '</span>';
-            }
-
-            // Date with pirate jargon toggle
-            const dateDisplay = jM === 'rpg' ? pirateDate : realDate;
-
-            html += '<div class="plunder-item" onclick="NomoloBridge.showRecordDetail(' + JSON.stringify(JSON.stringify(record)) + ')">';
-            html += '<div class="plunder-item__emoji">' + emoji + '</div>';
-            html += '<div class="plunder-item__body">';
-            html += '<div class="plunder-item__title">' + escapeHtml(record.title || (jM === 'rpg' ? 'Uncharted Scroll' : 'Untitled')) + '</div>';
-            if (record.subtitle) html += '<div class="plunder-item__subtitle">' + escapeHtml(record.subtitle) + '</div>';
-            if (record.preview) html += '<p class="plunder-item__preview">\u201C' + escapeHtml(record.preview) + '\u201D</p>';
+            html += '<div class="plunder-row" id="' + rowId + '" onclick="NomoloBridge.toggleRecordDetail(\'' + rowId + '\')">';
+            html += '<span class="plunder-row__emoji">' + emoji + '</span>';
+            html += '<span class="plunder-row__title">' + escapeHtml(record.title || (jM === 'rpg' ? 'Uncharted Scroll' : 'Untitled')) + '</span>';
+            html += '<span class="plunder-row__source">' + escapeHtml(sourceTag) + '</span>';
+            html += '<span class="plunder-row__date" title="' + escapeHtml(record.date_formatted || record.date || '') + '">' + (dateDisplay || '') + '</span>';
+            html += '<span class="plunder-row__chevron">\u203A</span>';
             html += '</div>';
-            html += '<div class="plunder-item__right">';
-            if (villainBadge) html += villainBadge;
-            if (dateDisplay) html += '<span class="plunder-item__date" title="' + escapeHtml(record.date_formatted || record.date || '') + '">' + dateDisplay + '</span>';
-            html += '</div>';
-            html += '</div>';
+            html += '<div class="plunder-expand" id="' + rowId + '-detail" style="display:none"></div>';
         }
 
         listEl.innerHTML = html;
@@ -1657,83 +1646,66 @@ const NomoloBridge = (() => {
         loadRecords();
     }
 
-    function showRecordDetail(recordJson) {
-        const record = JSON.parse(recordJson);
-        const modal = document.getElementById('record-detail');
-        const content = document.getElementById('record-detail-content');
-        if (!modal || !content) return;
+    function toggleRecordDetail(rowId) {
+        const detailEl = document.getElementById(rowId + '-detail');
+        const rowEl = document.getElementById(rowId);
+        if (!detailEl || !rowEl) return;
 
+        // If already open, close it
+        if (detailEl.style.display !== 'none') {
+            detailEl.style.display = 'none';
+            rowEl.classList.remove('plunder-row--open');
+            return;
+        }
+
+        // Close any other open detail
+        document.querySelectorAll('.plunder-expand').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.plunder-row--open').forEach(el => el.classList.remove('plunder-row--open'));
+
+        const record = _recordsMap[rowId];
         const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
         const emoji = record.source_emoji || getSourceLabel(record.source);
-        const pirateDate = formatPirateDate(record.date);
-        const realDate = record.date_formatted || formatRecordDate(record.date);
+        const dateVal = jM === 'rpg' ? formatPirateDate(record.date) : (record.date_formatted || formatRecordDate(record.date));
 
-        let html = '<button class="plunder-detail__close" onclick="NomoloBridge.closeRecordDetail()">x</button>';
+        let html = '<div class="plunder-expand__inner">';
 
-        // Header: emoji + title + subtitle
-        html += '<div class="plunder-detail__header">';
-        html += '<span class="plunder-detail__emoji">' + emoji + '</span>';
-        html += '<div class="plunder-detail__header-text">';
-        html += '<h2 class="plunder-detail__title">' + escapeHtml(record.title || (jM === 'rpg' ? 'Uncharted Scroll' : 'Untitled')) + '</h2>';
-        if (record.subtitle) html += '<p class="plunder-detail__subtitle">' + escapeHtml(record.subtitle) + '</p>';
-        html += '</div></div>';
-
-        // "Raided from" villain badge
+        // Subtitle + metadata row
+        html += '<div class="plunder-expand__meta">';
+        if (record.subtitle) html += '<span class="plunder-expand__tag">' + escapeHtml(record.subtitle) + '</span>';
+        if (dateVal) html += '<span class="plunder-expand__tag">' + dateVal + '</span>';
+        html += '<span class="plunder-expand__tag">' + emoji + ' ' + escapeHtml((record.source || '').replace(/_/g, ' ')) + '</span>';
         if (record.villain_name) {
             const vName = jM === 'rpg' ? record.villain_name : (record.villain_company || record.villain_name);
             const vColor = record.villain_color || '#888';
-            const raidLabel = jM === 'rpg' ? '\u2694\uFE0F Raided from' : 'Source:';
-            html += '<div class="plunder-detail__raided" style="background:' + vColor + '12;color:' + vColor + ';border:2px solid ' + vColor + '30">';
-            html += (record.villain_icon ? record.villain_icon + ' ' : '') + raidLabel + ' ' + escapeHtml(vName);
-            html += '</div>';
-        }
-
-        // Metadata sidebar
-        html += '<div class="plunder-detail__meta">';
-        const dateLabel = jM === 'rpg' ? 'Charted' : 'Date';
-        const dateVal = jM === 'rpg' ? pirateDate : realDate;
-        if (dateVal) {
-            html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">' + dateLabel + ':</span> ' + dateVal + '</span>';
-        }
-        const sourceLabel = jM === 'rpg' ? (record.source_label || record.source) : record.source.replace(/_/g, ' ');
-        html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">' + (jM === 'rpg' ? 'Loot type' : 'Source') + ':</span> ' + emoji + ' ' + escapeHtml(sourceLabel) + '</span>';
-        if (record.id) {
-            const idLabel = jM === 'rpg' ? 'Artifact' : 'ID';
-            html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">' + idLabel + ':</span> ' + escapeHtml(String(record.id).substring(0, 12)) + '</span>';
-        }
-        if (record.score) {
-            const scoreLabel = jM === 'rpg' ? 'Treasure quality' : 'Relevance';
-            html += '<span class="plunder-detail__meta-item"><span class="plunder-detail__meta-label">' + scoreLabel + ':</span> ' + record.score + '</span>';
+            html += '<span class="plunder-expand__tag" style="color:' + vColor + ';border-color:' + vColor + '44">'
+                + (record.villain_icon || '') + ' ' + escapeHtml(vName) + '</span>';
         }
         html += '</div>';
 
-        // Body content — the full inscription
+        // Body content
         const bodyText = record.body || record.preview || '';
         if (bodyText) {
-            // Convert newlines to <br>, escape HTML first
             const bodyHtml = escapeHtml(bodyText).replace(/\n/g, '<br>');
-            html += '<div class="plunder-detail__body">' + bodyHtml + '</div>';
+            html += '<div class="plunder-expand__body">' + bodyHtml + '</div>';
         }
 
-        // Raw data toggle — inspect the artifact
+        // Raw data toggle
         if (record.raw && Object.keys(record.raw).length > 0) {
-            html += '<div class="plunder-detail__raw">';
-            html += '<button class="plunder-detail__raw-toggle" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">' + (jM === 'rpg' ? '\u{1F50D} Inspect artifact' : 'Show raw data') + '</button>';
-            html += '<div class="plunder-detail__raw-content" style="display:none">' + escapeHtml(JSON.stringify(record.raw, null, 2)) + '</div>';
-            html += '</div>';
+            const rawId = rowId + '-raw';
+            html += '<button class="plunder-expand__raw-btn" onclick="event.stopPropagation();var el=document.getElementById(\'' + rawId + '\');el.style.display=el.style.display===\'none\'?\'block\':\'none\'">'
+                + (jM === 'rpg' ? '\u{1F50D} Inspect artifact' : 'Raw data') + '</button>';
+            html += '<pre class="plunder-expand__raw" id="' + rawId + '" style="display:none">' + escapeHtml(JSON.stringify(record.raw, null, 2)) + '</pre>';
         }
 
-        content.innerHTML = html;
-        modal.style.display = 'flex';
+        html += '</div>';
+        detailEl.innerHTML = html;
+        detailEl.style.display = '';
+        rowEl.classList.add('plunder-row--open');
+    }
 
-        // Close on Escape key
-        const escHandler = (e) => {
-            if (e.key === 'Escape') {
-                NomoloBridge.closeRecordDetail();
-                document.removeEventListener('keydown', escHandler);
-            }
-        };
-        document.addEventListener('keydown', escHandler);
+    // Keep modal functions for backwards compat but redirect to inline
+    function showRecordDetail(recordJson) {
+        // Legacy — not used anymore but keep export
     }
 
     function closeRecordDetail() {
@@ -1946,6 +1918,31 @@ const NomoloBridge = (() => {
         }
     }
 
+    async function saveUserName() {
+        const input = document.getElementById('setting-user-name');
+        const name = input ? input.value.trim() : '';
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        if (!name) {
+            toast(jM === 'rpg' ? 'A captain needs a name!' : 'Please enter a name', 'error');
+            return;
+        }
+        localStorage.setItem('nomolo_user_name', name);
+        await saveSetting('user_name', name);
+    }
+
+    async function saveAutomatonPower(level) {
+        await saveSetting('automaton_power_level', level);
+        // Update card borders to reflect selection
+        document.querySelectorAll('.automaton-power-card').forEach(card => {
+            const input = card.querySelector('input[name="automaton_power"]');
+            if (input) {
+                card.style.borderColor = parseInt(input.value) === level
+                    ? 'var(--accent-gold)'
+                    : 'rgba(255,255,255,0.06)';
+            }
+        });
+    }
+
     function resetJourney() {
         const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
         clearJourneyState();
@@ -1954,11 +1951,25 @@ const NomoloBridge = (() => {
 
     // ── LLM Token Management ──────────────────────────────────────────
 
-    const LLM_DEFAULTS = {
-        openai: { endpoint: 'https://api.openai.com', model: 'gpt-4o' },
-        anthropic: { endpoint: 'https://api.anthropic.com', model: 'claude-sonnet-4-20250514' },
-        custom: { endpoint: 'http://localhost:11434', model: '' },
+    const LLM_PROVIDERS = {
+        openai:      { name: 'OpenAI',           endpoint: 'https://api.openai.com/v1',             format: 'openai',    models: ['gpt-4o', 'gpt-4o-mini', 'gpt-4.1', 'gpt-4.1-mini', 'gpt-4.1-nano', 'o3-mini'] },
+        anthropic:   { name: 'Anthropic',         endpoint: 'https://api.anthropic.com',             format: 'anthropic', models: ['claude-sonnet-4-20250514', 'claude-haiku-4-5-20251001', 'claude-opus-4-20250514'] },
+        openrouter:  { name: 'OpenRouter',        endpoint: 'https://openrouter.ai/api/v1',         format: 'openai',    models: ['google/gemini-2.5-flash', 'anthropic/claude-sonnet-4', 'meta-llama/llama-4-maverick', 'deepseek/deepseek-r1', 'openai/gpt-4o'] },
+        google:      { name: 'Google Gemini',     endpoint: 'https://generativelanguage.googleapis.com/v1beta/openai', format: 'openai', models: ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash'] },
+        groq:        { name: 'Groq',              endpoint: 'https://api.groq.com/openai/v1',       format: 'openai',    models: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768'] },
+        together:    { name: 'Together AI',       endpoint: 'https://api.together.xyz/v1',           format: 'openai',    models: ['meta-llama/Llama-3.3-70B-Instruct-Turbo', 'deepseek-ai/DeepSeek-R1'] },
+        mistral:     { name: 'Mistral AI',        endpoint: 'https://api.mistral.ai/v1',             format: 'openai',    models: ['mistral-large-latest', 'mistral-small-latest', 'codestral-latest'] },
+        deepseek:    { name: 'DeepSeek',          endpoint: 'https://api.deepseek.com/v1',           format: 'openai',    models: ['deepseek-chat', 'deepseek-reasoner'] },
+        fireworks:   { name: 'Fireworks AI',      endpoint: 'https://api.fireworks.ai/inference/v1', format: 'openai',    models: ['accounts/fireworks/models/llama-v3p3-70b-instruct'] },
+        ollama:      { name: 'Ollama (local)',     endpoint: 'http://localhost:11434/v1',             format: 'openai',    models: ['llama3.3', 'mistral', 'gemma2', 'phi3', 'codellama'] },
+        lmstudio:    { name: 'LM Studio (local)', endpoint: 'http://localhost:1234/v1',              format: 'openai',    models: [] },
+        custom:      { name: 'Custom endpoint',   endpoint: '',                                      format: 'openai',    models: [] },
     };
+
+    // Backwards compat
+    const LLM_DEFAULTS = Object.fromEntries(
+        Object.entries(LLM_PROVIDERS).map(([k, v]) => [k, { endpoint: v.endpoint, model: v.models[0] || '' }])
+    );
 
     async function initLLMSettings() {
         const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
@@ -1976,11 +1987,31 @@ const NomoloBridge = (() => {
                 if (deleteBtn) deleteBtn.style.display = '';
                 // Pre-fill form
                 const providerEl = document.getElementById('llm-provider');
-                if (providerEl) providerEl.value = data.provider;
+                const savedProviderName = data.provider_name || data.provider;
+                if (providerEl) {
+                    // Try to match saved provider_name to our list
+                    if (LLM_PROVIDERS[savedProviderName]) {
+                        providerEl.value = savedProviderName;
+                    } else {
+                        providerEl.value = data.provider === 'anthropic' ? 'anthropic' : 'custom';
+                    }
+                    onLLMProviderChange();
+                }
                 const endpointEl = document.getElementById('llm-endpoint');
                 if (endpointEl) endpointEl.value = data.endpoint || '';
-                const modelEl = document.getElementById('llm-model');
-                if (modelEl) modelEl.value = data.model || '';
+                // Set model in selector or custom field
+                const modelSel = document.getElementById('llm-model-select');
+                const modelCustom = document.getElementById('llm-model-custom');
+                if (modelSel && data.model) {
+                    const opts = Array.from(modelSel.options).map(o => o.value);
+                    if (opts.includes(data.model)) {
+                        modelSel.value = data.model;
+                        if (modelCustom) modelCustom.style.display = 'none';
+                    } else {
+                        modelSel.value = '__custom__';
+                        if (modelCustom) { modelCustom.style.display = ''; modelCustom.value = data.model; }
+                    }
+                }
             } else {
                 const icon = '<span class="llm-status-icon" style="color: var(--text-muted);">&#9760;</span>';
                 statusEl.innerHTML = jM === 'rpg'
@@ -2002,9 +2033,41 @@ const NomoloBridge = (() => {
 
     function onLLMProviderChange() {
         const provider = document.getElementById('llm-provider').value;
-        const defaults = LLM_DEFAULTS[provider] || LLM_DEFAULTS.custom;
-        document.getElementById('llm-endpoint').value = defaults.endpoint;
-        document.getElementById('llm-model').value = defaults.model;
+        const info = LLM_PROVIDERS[provider] || LLM_PROVIDERS.custom;
+        document.getElementById('llm-endpoint').value = info.endpoint;
+        // Populate model selector
+        const modelSelect = document.getElementById('llm-model-select');
+        const modelCustom = document.getElementById('llm-model-custom');
+        if (modelSelect) {
+            modelSelect.innerHTML = '';
+            (info.models || []).forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                modelSelect.appendChild(opt);
+            });
+            // Add "Custom..." option
+            const customOpt = document.createElement('option');
+            customOpt.value = '__custom__';
+            customOpt.textContent = '— Custom model —';
+            modelSelect.appendChild(customOpt);
+            modelSelect.value = info.models[0] || '__custom__';
+            if (modelCustom) modelCustom.style.display = (info.models.length === 0) ? '' : 'none';
+        }
+        // Show/hide endpoint field (auto for known providers, editable for custom/local)
+        const endpointRow = document.getElementById('llm-endpoint-row');
+        if (endpointRow) {
+            endpointRow.style.display = (provider === 'custom' || provider === 'ollama' || provider === 'lmstudio') ? '' : 'none';
+        }
+    }
+
+    function onLLMModelSelectChange() {
+        const sel = document.getElementById('llm-model-select');
+        const customInput = document.getElementById('llm-model-custom');
+        if (sel && customInput) {
+            customInput.style.display = sel.value === '__custom__' ? '' : 'none';
+            if (sel.value !== '__custom__') customInput.value = '';
+        }
     }
 
     async function saveLLMToken() {
@@ -2012,7 +2075,11 @@ const NomoloBridge = (() => {
         const provider = document.getElementById('llm-provider').value;
         const token = document.getElementById('llm-token').value.trim();
         const endpoint = document.getElementById('llm-endpoint').value.trim();
-        const model = document.getElementById('llm-model').value.trim();
+        const modelSel = document.getElementById('llm-model-select');
+        const modelCustom = document.getElementById('llm-model-custom');
+        const model = (modelSel && modelSel.value !== '__custom__' ? modelSel.value : (modelCustom ? modelCustom.value.trim() : '')).trim();
+        // Use the API format (openai or anthropic) from the provider config
+        const apiFormat = (LLM_PROVIDERS[provider] || LLM_PROVIDERS.custom).format;
 
         if (!token) {
             toast(jM === 'rpg' ? 'Ye need a secret incantation, Captain!' : 'Please enter an API key', 'error');
@@ -2023,7 +2090,7 @@ const NomoloBridge = (() => {
             const resp = await fetch('/api/settings/llm-token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ provider, token, endpoint, model }),
+                body: JSON.stringify({ provider: apiFormat, token, endpoint, model, provider_name: provider }),
             });
             const data = await resp.json();
             if (data.ok) {
@@ -3343,34 +3410,77 @@ const NomoloBridge = (() => {
         const ctaEl = document.getElementById('intro-cta');
         if (!el) return;
 
-        const text = 'My name is [you].\nAnd I want to be a Data Pirate.';
+        const savedName = localStorage.getItem('nomolo_user_name') || '';
+        const line1 = 'My name is ';
+        const line2 = 'And I want to be a Data Pirate.';
         let i = 0;
-        let rendered = '';
         el.innerHTML = '';
 
         const typeInterval = setInterval(() => {
-            if (i < text.length) {
-                if (text[i] === '\n') {
-                    rendered += '<br>';
-                } else {
-                    // Escape HTML but preserve existing content
-                    const ch = text[i].replace(/&/g,'&amp;').replace(/</g,'&lt;');
-                    rendered += ch;
-                }
-                el.innerHTML = rendered;
+            if (i < line1.length) {
+                el.innerHTML = _escHtml(line1.substring(0, i + 1));
                 i++;
             } else {
                 clearInterval(typeInterval);
-                // Show CTA button
-                if (ctaEl) {
-                    ctaEl.style.display = 'inline-block';
-                    ctaEl.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        _completeIntro();
+                // Show name input inline
+                el.innerHTML = _escHtml(line1)
+                    + '<input type="text" id="intro-name-input" class="intro__name-input" '
+                    + 'placeholder="your name" autocomplete="off" '
+                    + 'value="' + _escHtml(savedName) + '">'
+                    + '<span class="intro__period">.</span>';
+                const nameInput = document.getElementById('intro-name-input');
+                if (nameInput) {
+                    nameInput.focus();
+                    nameInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            _saveIntroName();
+                        }
                     });
                 }
+                // Type line 2
+                let j = 0;
+                const line2El = document.createElement('span');
+                line2El.className = 'intro__line2';
+                el.appendChild(document.createElement('br'));
+                el.appendChild(line2El);
+                const typeInterval2 = setInterval(() => {
+                    if (j < line2.length) {
+                        line2El.textContent = line2.substring(0, j + 1);
+                        j++;
+                    } else {
+                        clearInterval(typeInterval2);
+                        // Show CTA
+                        if (ctaEl) {
+                            ctaEl.style.display = 'inline-block';
+                            ctaEl.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                _saveIntroName();
+                            });
+                        }
+                    }
+                }, 60);
             }
         }, 60);
+    }
+
+    function _escHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function _saveIntroName() {
+        const input = document.getElementById('intro-name-input');
+        const name = input ? input.value.trim() : '';
+        if (name) {
+            localStorage.setItem('nomolo_user_name', name);
+            // Also persist to server config
+            fetch('/api/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_name: name }),
+            }).catch(() => {});
+        }
+        _completeIntro();
     }
 
     function skipIntro() {
@@ -3406,17 +3516,25 @@ const NomoloBridge = (() => {
         }
     }
 
-    // ── RAG Chat — The Automaton ──────────────────────────────────────
+    // ── RAG Chat — The Automaton (ChatGPT-style) ──────────────────────
 
-    let _chatHistory = [];
     let _chatReady = false;
+    let _currentChatId = null;
+    let _chatMessages = [];       // current conversation messages
+    let _chatsList = [];          // sidebar list (metadata only)
+    let _chatFolders = [];        // folder names
+    let _ctxChatId = null;        // context menu target
+    let _openFolders = {};        // track open/closed folders
+    let _chatSearchQuery = '';    // sidebar search filter
+    let _ctxFolderName = null;    // folder context menu target
 
-    function initChat() {
-        fetch('/api/chat/status')
-            .then(r => r.json())
-            .then(data => {
-                const statusEl = document.getElementById('automaton-status');
-                if (!statusEl) return;
+    async function initChat() {
+        // Check LLM status
+        try {
+            const resp = await fetch('/api/chat/status');
+            const data = await resp.json();
+            const statusEl = document.getElementById('automaton-status');
+            if (statusEl) {
                 _chatReady = data.chat_ready;
                 if (data.chat_ready) {
                     statusEl.textContent = '\u2705';
@@ -3428,24 +3546,215 @@ const NomoloBridge = (() => {
                     statusEl.textContent = '\u26A0\uFE0F';
                     statusEl.title = 'Vault not indexed yet';
                 }
-            })
-            .catch(() => {});
+            }
+        } catch { /* ignore */ }
+        // Load sidebar
+        await _loadChatList();
+        // Restore last chat or show welcome
+        const lastId = localStorage.getItem('nomolo_last_chat_id');
+        if (lastId && _chatsList.find(c => c.id === lastId)) {
+            await _loadChat(lastId);
+        }
+        // Close context menus on click outside
+        document.addEventListener('click', () => { _hideCtxMenu(); _hideFolderCtxMenu(); });
     }
 
     function toggleChat() {
         const body = document.getElementById('automaton-body');
-        const toggle = document.querySelector('.automaton-chat__toggle');
+        const toggle = document.getElementById('automaton-toggle-btn');
         if (!body) return;
         const showing = body.style.display !== 'none';
-        body.style.display = showing ? 'none' : 'flex';
-        if (toggle) toggle.textContent = showing ? '\u25BC' : '\u25B2';
+        body.style.display = showing ? 'none' : '';
+        if (toggle) toggle.classList.toggle('automaton__toggle--open', !showing);
         if (!showing) {
             const input = document.getElementById('automaton-query');
             if (input) input.focus();
         }
     }
 
-    function sendChat(e) {
+    // ── Sidebar: load, render ────────────────────────────────────────
+
+    async function _loadChatList() {
+        try {
+            const resp = await fetch('/api/chats');
+            const data = await resp.json();
+            _chatsList = data.chats || [];
+            _chatFolders = data.folders || [];
+            _renderSidebar();
+        } catch { /* ignore */ }
+    }
+
+    function _renderSidebar() {
+        const pinnedList = document.getElementById('automaton-pinned-list');
+        const pinnedSection = document.getElementById('automaton-pinned-section');
+        const chatList = document.getElementById('automaton-chat-list');
+        const foldersEl = document.getElementById('automaton-folders');
+        if (!pinnedList || !chatList || !foldersEl) return;
+
+        const pinned = _chatsList.filter(c => c.pinned);
+        const unfiled = _chatsList.filter(c => !c.pinned && !c.folder);
+        const byFolder = {};
+        for (const c of _chatsList) {
+            if (c.folder && !c.pinned) {
+                (byFolder[c.folder] = byFolder[c.folder] || []).push(c);
+            }
+        }
+
+        // Pinned
+        if (pinned.length) {
+            pinnedSection.style.display = '';
+            pinnedList.innerHTML = pinned.map(c => _chatItemHtml(c)).join('');
+        } else {
+            pinnedSection.style.display = 'none';
+        }
+
+        // Folders
+        // Apply search filter
+        const query = _chatSearchQuery.toLowerCase();
+        const filterChat = (c) => !query || (c.title || '').toLowerCase().includes(query);
+
+        let folderHtml = '';
+        for (const fname of _chatFolders) {
+            const fchats = (byFolder[fname] || []).filter(filterChat);
+            if (query && fchats.length === 0) continue; // hide empty folders during search
+            const isOpen = _openFolders[fname] !== false;
+            const safeName = escapeHtml(fname).replace(/'/g, '&#39;');
+            folderHtml += '<div class="automaton__folder">'
+                + '<div class="automaton__folder-header" onclick="NomoloBridge._toggleFolder(\'' + safeName + '\')">'
+                + '<span class="automaton__folder-icon ' + (isOpen ? 'automaton__folder-icon--open' : '') + '">\u25B6</span>'
+                + '<span class="automaton__folder-name">' + escapeHtml(fname) + '</span>'
+                + '<span class="automaton__folder-count">' + fchats.length + '</span>'
+                + '<button class="automaton__folder-ctx-btn" onclick="event.stopPropagation(); NomoloBridge._showFolderCtxMenu(event, \'' + safeName + '\')">\u22EF</button>'
+                + '</div>';
+            if (isOpen) {
+                folderHtml += '<div class="automaton__folder-chats">'
+                    + fchats.map(c => _chatItemHtml(c)).join('') + '</div>';
+            }
+            folderHtml += '</div>';
+        }
+        foldersEl.innerHTML = folderHtml;
+
+        // Unfiled (filtered)
+        chatList.innerHTML = unfiled.filter(filterChat).map(c => _chatItemHtml(c)).join('');
+    }
+
+    function _chatItemHtml(c) {
+        const active = c.id === _currentChatId ? ' automaton__chat-item--active' : '';
+        const pin = c.pinned ? '<span class="automaton__chat-item-pin">\u{1F4CC}</span>' : '';
+        return '<div class="automaton__chat-item' + active + '" onclick="NomoloBridge._selectChat(\'' + c.id + '\')">'
+            + pin
+            + '<span class="automaton__chat-item-title">' + escapeHtml(c.title || 'New Chat') + '</span>'
+            + '<button class="automaton__chat-item-ctx" onclick="event.stopPropagation(); NomoloBridge._showCtxMenu(event, \'' + c.id + '\')">\u22EF</button>'
+            + '</div>';
+    }
+
+    function _toggleFolder(name) {
+        _openFolders[name] = _openFolders[name] === false;
+        _renderSidebar();
+    }
+
+    // ── Load / create / switch conversations ─────────────────────────
+
+    async function _selectChat(chatId) {
+        await _loadChat(chatId);
+    }
+
+    async function _loadChat(chatId) {
+        try {
+            const resp = await fetch('/api/chats/' + chatId);
+            const data = await resp.json();
+            if (!data.ok) return;
+            _currentChatId = chatId;
+            _chatMessages = data.chat.messages || [];
+            localStorage.setItem('nomolo_last_chat_id', chatId);
+            _renderMessages();
+            _renderSidebar();
+        } catch { /* ignore */ }
+    }
+
+    async function newChat() {
+        try {
+            const resp = await fetch('/api/chats', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({}),
+            });
+            const data = await resp.json();
+            if (data.ok) {
+                _currentChatId = data.chat.id;
+                _chatMessages = [];
+                localStorage.setItem('nomolo_last_chat_id', data.chat.id);
+                await _loadChatList();
+                _renderMessages();
+                const input = document.getElementById('automaton-query');
+                if (input) input.focus();
+            }
+        } catch { /* ignore */ }
+    }
+
+    // ── Render messages in main area ────────────────────────────────
+
+    function _renderMessages() {
+        const container = document.getElementById('automaton-messages');
+        const welcome = document.getElementById('automaton-welcome');
+        if (!container) return;
+
+        if (_chatMessages.length === 0) {
+            container.innerHTML = '';
+            if (welcome) container.appendChild(welcome);
+            welcome.style.display = '';
+            return;
+        }
+
+        container.innerHTML = '';
+        _chatMessages.forEach((msg, idx) => {
+            const div = _createMsgEl(msg, idx);
+            container.appendChild(div);
+        });
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function _createMsgEl(msg, idx) {
+        const div = document.createElement('div');
+        div.className = 'automaton__msg automaton__msg--' + msg.role;
+        if (msg.memory_tier) div.classList.add('automaton__msg--' + msg.memory_tier);
+
+        const label = msg.role === 'user' ? '\u{1F3F4}\u200D\u2620\uFE0F' : '\u{1F916}';
+        const pinCls = msg.pinned ? ' automaton__msg-pin--pinned' : '';
+        const pinLabel = msg.pinned ? '\u{1F4CC}' : '\u{1F4CC}';
+        div.innerHTML = '<span class="automaton__msg-icon">' + label + '</span>'
+            + '<div class="automaton__msg-text">' + escapeHtml(msg.content).replace(/\n/g, '<br>') + '</div>'
+            + '<button class="automaton__msg-pin' + pinCls + '" onclick="NomoloBridge._toggleMsgPin(' + idx + ')" title="Pin message">' + pinLabel + '</button>';
+        return div;
+    }
+
+    let _tempMsgId = 0;
+    function _appendTempMsg(role, text) {
+        const container = document.getElementById('automaton-messages');
+        if (!container) return null;
+        const welcome = document.getElementById('automaton-welcome');
+        if (welcome) welcome.style.display = 'none';
+        const id = '_tmp_' + (++_tempMsgId);
+        const div = document.createElement('div');
+        div.id = id;
+        div.className = 'automaton__msg automaton__msg--' + role;
+        const label = role === 'user' ? '\u{1F3F4}\u200D\u2620\uFE0F' : '\u{1F916}';
+        div.innerHTML = '<span class="automaton__msg-icon">' + label + '</span>'
+            + '<div class="automaton__msg-text">' + escapeHtml(text).replace(/\n/g, '<br>') + '</div>';
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+        return id;
+    }
+
+    function _removeTempMsg(id) {
+        if (!id) return;
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    // ── Send message ────────────────────────────────────────────────
+
+    async function sendChat(e) {
         if (e) e.preventDefault();
         const input = document.getElementById('automaton-query');
         const query = (input ? input.value : '').trim();
@@ -3460,79 +3769,83 @@ const NomoloBridge = (() => {
             return;
         }
 
-        // Add user message to UI
-        _appendChatMessage('user', query);
+        // Auto-create conversation if none active
+        if (!_currentChatId) {
+            await newChat();
+        }
+
+        // Show user message immediately
+        _chatMessages.push({ role: 'user', content: query, timestamp: new Date().toISOString(), pinned: false });
+        _renderMessages();
         input.value = '';
 
         // Show typing indicator
-        const typingId = _appendChatMessage('assistant', jM === 'rpg'
+        const typingId = _appendTempMsg('assistant', jM === 'rpg'
             ? '\u2699\uFE0F Processing yer query, Captain...'
             : '\u2699\uFE0F Searching your archive...');
 
-        // Disable input while processing
         const sendBtn = document.getElementById('automaton-send');
         if (sendBtn) sendBtn.disabled = true;
         if (input) input.disabled = true;
 
-        fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query, history: _chatHistory.slice(-6) }),
-        })
-        .then(r => r.json())
-        .then(data => {
-            // Remove typing indicator
-            _removeChatMessage(typingId);
+        // Build history from current messages (last 6)
+        const historySlice = _chatMessages
+            .filter(m => m.role === 'user' || m.role === 'assistant')
+            .slice(-6)
+            .map(m => ({ role: m.role, content: m.content }));
+
+        try {
+            const resp = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query, history: historySlice }),
+            });
+            const data = await resp.json();
+            _removeTempMsg(typingId);
 
             if (data.ok) {
-                _appendChatMessage('assistant', data.response, data.memory_tier);
+                _chatMessages.push({
+                    role: 'assistant',
+                    content: data.response,
+                    memory_tier: data.memory_tier,
+                    sources: data.sources_cited,
+                    timestamp: new Date().toISOString(),
+                    pinned: false,
+                });
+                _renderMessages();
                 _showSources(data.sources_cited);
-                _chatHistory.push({ role: 'user', content: query });
-                _chatHistory.push({ role: 'assistant', content: data.response });
+
+                // Auto-save to backend
+                await _saveCurrentChat();
+                await _loadChatList();
             } else {
-                _appendChatMessage('assistant', data.error || 'Something went wrong.');
+                _chatMessages.push({ role: 'assistant', content: data.error || 'Something went wrong.', timestamp: new Date().toISOString(), pinned: false });
+                _renderMessages();
             }
-        })
-        .catch(err => {
-            _removeChatMessage(typingId);
-            _appendChatMessage('assistant', jM === 'rpg'
-                ? 'The Automaton\'s gears have jammed. Try again.'
-                : 'Failed to get a response. Try again.');
-        })
-        .finally(() => {
+        } catch (err) {
+            _removeTempMsg(typingId);
+            _chatMessages.push({
+                role: 'assistant',
+                content: jM === 'rpg' ? 'The Automaton\'s gears have jammed. Try again.' : 'Failed to get a response. Try again.',
+                timestamp: new Date().toISOString(),
+                pinned: false,
+            });
+            _renderMessages();
+        } finally {
             if (sendBtn) sendBtn.disabled = false;
             if (input) { input.disabled = false; input.focus(); }
-        });
+        }
     }
 
-    let _chatMsgId = 0;
-    function _appendChatMessage(role, text, memoryTier) {
-        const container = document.getElementById('automaton-messages');
-        if (!container) return null;
-
-        // Remove welcome message on first real message
-        const welcome = container.querySelector('.automaton-chat__welcome');
-        if (welcome) welcome.remove();
-
-        const id = 'chat-msg-' + (++_chatMsgId);
-        const div = document.createElement('div');
-        div.id = id;
-        div.className = 'automaton-chat__msg automaton-chat__msg--' + role;
-        if (memoryTier) div.classList.add('automaton-chat__msg--' + memoryTier);
-
-        const label = role === 'user' ? '\u{1F3F4}\u200D\u2620\uFE0F' : '\u{1F916}';
-        div.innerHTML = '<span class="automaton-chat__msg-icon">' + label + '</span>'
-            + '<div class="automaton-chat__msg-text">' + escapeHtml(text).replace(/\n/g, '<br>') + '</div>';
-
-        container.appendChild(div);
-        container.scrollTop = container.scrollHeight;
-        return id;
-    }
-
-    function _removeChatMessage(id) {
-        if (!id) return;
-        const el = document.getElementById(id);
-        if (el) el.remove();
+    async function _saveCurrentChat() {
+        if (!_currentChatId) return;
+        try {
+            await fetch('/api/chats/' + _currentChatId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: _chatMessages }),
+            });
+        } catch { /* ignore */ }
     }
 
     function _showSources(sources) {
@@ -3542,17 +3855,402 @@ const NomoloBridge = (() => {
             return;
         }
         const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
-        let html = '<span class="automaton-chat__sources-label">'
+        let html = '<span class="automaton__sources-label">'
             + (jM === 'rpg' ? '\u{1F4DC} Sources raided:' : '\u{1F4C4} Sources:') + '</span> ';
         for (const s of sources.slice(0, 3)) {
             const label = s.subject || s.source || 'unknown';
-            html += '<span class="automaton-chat__source-tag">'
+            html += '<span class="automaton__source-tag">'
                 + escapeHtml(label.substring(0, 40))
                 + (s.date ? ' (' + s.date + ')' : '') + '</span>';
         }
         el.innerHTML = html;
         el.style.display = 'flex';
     }
+
+    // ── Pin messages ────────────────────────────────────────────────
+
+    async function _toggleMsgPin(idx) {
+        if (!_currentChatId || idx < 0 || idx >= _chatMessages.length) return;
+        const newPinned = !_chatMessages[idx].pinned;
+        _chatMessages[idx].pinned = newPinned;
+        _renderMessages();
+        try {
+            await fetch('/api/chats/' + _currentChatId + '/messages/' + idx + '/pin', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pinned: newPinned }),
+            });
+        } catch { /* ignore */ }
+    }
+
+    // ── Context menu (rename, pin chat, move to folder, delete) ─────
+
+    function _showCtxMenu(event, chatId) {
+        event.stopPropagation();
+        _ctxChatId = chatId;
+        const menu = document.getElementById('automaton-ctx-menu');
+        if (!menu) return;
+        // Update pin label
+        const chat = _chatsList.find(c => c.id === chatId);
+        const pinLabel = document.getElementById('ctx-pin-label');
+        if (pinLabel && chat) {
+            pinLabel.innerHTML = chat.pinned ? '\u{1F4CC} Unpin' : '\u{1F4CC} Pin';
+        }
+        menu.style.display = '';
+        menu.style.left = event.clientX + 'px';
+        menu.style.top = event.clientY + 'px';
+    }
+
+    function _hideCtxMenu() {
+        const menu = document.getElementById('automaton-ctx-menu');
+        if (menu) menu.style.display = 'none';
+        _ctxChatId = null;
+    }
+
+    async function chatCtxAction(action) {
+        const chatId = _ctxChatId;
+        _hideCtxMenu();
+        if (!chatId) return;
+
+        if (action === 'rename') {
+            // Inline rename: turn the title span into an input
+            const itemEl = document.querySelector('.automaton__chat-item[onclick*="' + chatId + '"]');
+            if (!itemEl) return;
+            const titleEl = itemEl.querySelector('.automaton__chat-item-title');
+            if (!titleEl) return;
+            const chat = _chatsList.find(c => c.id === chatId);
+            const oldTitle = chat ? chat.title : '';
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = oldTitle;
+            input.className = 'automaton__inline-input';
+            input.addEventListener('keydown', async (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const val = input.value.trim();
+                    if (val && val !== oldTitle) {
+                        await fetch('/api/chats/' + chatId, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ title: val }),
+                        });
+                    }
+                    await _loadChatList();
+                } else if (e.key === 'Escape') {
+                    await _loadChatList();
+                }
+            });
+            input.addEventListener('blur', async () => {
+                const val = input.value.trim();
+                if (val && val !== oldTitle) {
+                    await fetch('/api/chats/' + chatId, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title: val }),
+                    });
+                }
+                await _loadChatList();
+            });
+            titleEl.replaceWith(input);
+            input.focus();
+            input.select();
+        } else if (action === 'pin') {
+            const chat = _chatsList.find(c => c.id === chatId);
+            if (chat) {
+                await fetch('/api/chats/' + chatId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pinned: !chat.pinned }),
+                });
+                await _loadChatList();
+            }
+        } else if (action === 'folder') {
+            _showFolderPicker(chatId);
+        } else if (action === 'delete') {
+            _showDeleteConfirm(chatId);
+        }
+    }
+
+    // ── Inline modal helper ─────────────────────────────────────────
+
+    function _showModal(html, onClose) {
+        _removeModal();
+        const overlay = document.createElement('div');
+        overlay.className = 'automaton__modal-overlay';
+        overlay.id = 'automaton-modal';
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) { _removeModal(); if (onClose) onClose(); }
+        });
+        const modal = document.createElement('div');
+        modal.className = 'automaton__modal';
+        modal.innerHTML = html;
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => overlay.classList.add('automaton__modal-overlay--visible'));
+        return modal;
+    }
+
+    function _removeModal() {
+        const el = document.getElementById('automaton-modal');
+        if (el) el.remove();
+    }
+
+    // ── Delete confirmation ─────────────────────────────────────────
+
+    function _showDeleteConfirm(chatId) {
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        const chat = _chatsList.find(c => c.id === chatId);
+        const title = chat ? chat.title : 'this conversation';
+        const modal = _showModal(
+            '<div class="automaton__modal-header">'
+            + (jM === 'rpg' ? '\u{1F5D1}\uFE0F Scuttle Transmission?' : '\u{1F5D1}\uFE0F Delete Conversation?')
+            + '</div>'
+            + '<p class="automaton__modal-desc">'
+            + (jM === 'rpg'
+                ? 'This transmission will be lost to the deep. There\'s no retrieving it.'
+                : 'This conversation will be permanently deleted.')
+            + '</p>'
+            + '<p class="automaton__modal-target">"' + escapeHtml(title) + '"</p>'
+            + '<div class="automaton__modal-actions">'
+            + '<button class="automaton__modal-btn automaton__modal-btn--cancel" id="modal-cancel">Cancel</button>'
+            + '<button class="automaton__modal-btn automaton__modal-btn--danger" id="modal-confirm">'
+            + (jM === 'rpg' ? 'Scuttle it' : 'Delete') + '</button>'
+            + '</div>'
+        );
+        modal.querySelector('#modal-cancel').addEventListener('click', _removeModal);
+        modal.querySelector('#modal-confirm').addEventListener('click', async () => {
+            _removeModal();
+            await fetch('/api/chats/' + chatId, { method: 'DELETE' });
+            if (chatId === _currentChatId) {
+                _currentChatId = null;
+                _chatMessages = [];
+                _renderMessages();
+                localStorage.removeItem('nomolo_last_chat_id');
+            }
+            await _loadChatList();
+        });
+    }
+
+    // ── Folder picker ───────────────────────────────────────────────
+
+    function _showFolderPicker(chatId) {
+        const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+        const chat = _chatsList.find(c => c.id === chatId);
+        let folderListHtml = '';
+        if (_chatFolders.length) {
+            folderListHtml = _chatFolders.map(f => {
+                const active = chat && chat.folder === f ? ' automaton__folder-pick--active' : '';
+                return '<button class="automaton__folder-pick' + active + '" data-folder="' + escapeHtml(f) + '">'
+                    + '\u{1F4C1} ' + escapeHtml(f) + '</button>';
+            }).join('');
+        }
+        if (chat && chat.folder) {
+            folderListHtml += '<button class="automaton__folder-pick automaton__folder-pick--none" data-folder="">'
+                + (jM === 'rpg' ? '\u274C Remove from compartment' : '\u274C Remove from folder') + '</button>';
+        }
+        const modal = _showModal(
+            '<div class="automaton__modal-header">'
+            + (jM === 'rpg' ? '\u{1F4C1} Move to Compartment' : '\u{1F4C1} Move to Folder')
+            + '</div>'
+            + '<div class="automaton__folder-picks">' + folderListHtml + '</div>'
+            + '<div class="automaton__folder-new-row">'
+            + '<input type="text" class="automaton__folder-new-input" id="folder-new-input" placeholder="'
+            + (jM === 'rpg' ? 'New compartment name...' : 'New folder name...') + '" autocomplete="off" />'
+            + '<button class="automaton__modal-btn automaton__modal-btn--gold" id="folder-new-btn">Create</button>'
+            + '</div>'
+        );
+        // Click existing folder
+        modal.querySelectorAll('.automaton__folder-pick').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const folder = btn.dataset.folder || null;
+                _removeModal();
+                await fetch('/api/chats/' + chatId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ folder }),
+                });
+                await _loadChatList();
+            });
+        });
+        // Create new folder + move
+        const newInput = modal.querySelector('#folder-new-input');
+        const newBtn = modal.querySelector('#folder-new-btn');
+        const createAndMove = async () => {
+            const name = newInput.value.trim();
+            if (!name) return;
+            if (!_chatFolders.includes(name)) {
+                _chatFolders.push(name);
+                _openFolders[name] = true;
+            }
+            _removeModal();
+            await fetch('/api/chats/' + chatId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folder: name }),
+            });
+            await _loadChatList();
+        };
+        newBtn.addEventListener('click', createAndMove);
+        newInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') createAndMove(); });
+        newInput.focus();
+    }
+
+    // ── Folders — inline creation ───────────────────────────────────
+
+    function createFolder() {
+        const sidebar = document.getElementById('automaton-sidebar');
+        if (!sidebar) return;
+        // Insert an inline input before the "add folder" button
+        const addBtn = sidebar.querySelector('.automaton__add-folder');
+        if (!addBtn) return;
+        // Don't create duplicate inputs
+        if (sidebar.querySelector('.automaton__folder-inline-new')) return;
+
+        const row = document.createElement('div');
+        row.className = 'automaton__folder-inline-new';
+        row.innerHTML = '<span>\u{1F4C1}</span>'
+            + '<input type="text" class="automaton__inline-input" placeholder="Folder name..." autocomplete="off" />';
+        sidebar.insertBefore(row, addBtn);
+
+        const input = row.querySelector('input');
+        input.focus();
+
+        const finish = async () => {
+            const name = input.value.trim();
+            row.remove();
+            if (name && !_chatFolders.includes(name)) {
+                _chatFolders.push(name);
+                _openFolders[name] = true;
+                _renderSidebar();
+            }
+        };
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); finish(); }
+            else if (e.key === 'Escape') { row.remove(); }
+        });
+        input.addEventListener('blur', finish);
+    }
+
+    // ── Chat search ─────────────────────────────────────────────────
+
+    function searchChats(query) {
+        _chatSearchQuery = (query || '').trim();
+        _renderSidebar();
+    }
+
+    // ── Folder context menu ─────────────────────────────────────────
+
+    function _showFolderCtxMenu(event, folderName) {
+        event.stopPropagation();
+        _ctxFolderName = folderName;
+        const menu = document.getElementById('automaton-folder-ctx-menu');
+        if (!menu) return;
+        menu.style.display = '';
+        menu.style.left = event.clientX + 'px';
+        menu.style.top = event.clientY + 'px';
+    }
+
+    function _hideFolderCtxMenu() {
+        const menu = document.getElementById('automaton-folder-ctx-menu');
+        if (menu) menu.style.display = 'none';
+        _ctxFolderName = null;
+    }
+
+    async function folderCtxAction(action) {
+        const folderName = _ctxFolderName;
+        _hideFolderCtxMenu();
+        if (!folderName) return;
+
+        if (action === 'rename') {
+            // Inline rename: find the folder header and replace name with input
+            const headers = document.querySelectorAll('.automaton__folder-header');
+            for (const header of headers) {
+                const nameEl = header.querySelector('.automaton__folder-name');
+                if (nameEl && nameEl.textContent === folderName) {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = folderName;
+                    input.className = 'automaton__inline-input';
+                    input.addEventListener('click', (e) => e.stopPropagation());
+                    const finish = async () => {
+                        const newName = input.value.trim();
+                        if (newName && newName !== folderName) {
+                            await fetch('/api/chats/folders/rename', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ old_name: folderName, new_name: newName }),
+                            });
+                            const idx = _chatFolders.indexOf(folderName);
+                            if (idx >= 0) _chatFolders[idx] = newName;
+                            _openFolders[newName] = _openFolders[folderName];
+                            delete _openFolders[folderName];
+                        }
+                        await _loadChatList();
+                    };
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') { e.preventDefault(); finish(); }
+                        else if (e.key === 'Escape') { _renderSidebar(); }
+                    });
+                    input.addEventListener('blur', finish);
+                    nameEl.replaceWith(input);
+                    input.focus();
+                    input.select();
+                    break;
+                }
+            }
+        } else if (action === 'delete') {
+            const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
+            const modal = _showModal(
+                '<div class="automaton__modal-header">'
+                + (jM === 'rpg' ? '\u{1F5D1}\uFE0F Scuttle Compartment?' : '\u{1F5D1}\uFE0F Delete Folder?')
+                + '</div>'
+                + '<p class="automaton__modal-desc">'
+                + (jM === 'rpg'
+                    ? 'Chats inside will be moved to the Ship\'s Log. They won\'t be deleted.'
+                    : 'Chats inside will be moved to Recent. They won\'t be deleted.')
+                + '</p>'
+                + '<p class="automaton__modal-target">"' + escapeHtml(folderName) + '"</p>'
+                + '<div class="automaton__modal-actions">'
+                + '<button class="automaton__modal-btn automaton__modal-btn--cancel" id="modal-cancel">Cancel</button>'
+                + '<button class="automaton__modal-btn automaton__modal-btn--danger" id="modal-confirm">'
+                + (jM === 'rpg' ? 'Scuttle it' : 'Delete') + '</button>'
+                + '</div>'
+            );
+            modal.querySelector('#modal-cancel').addEventListener('click', _removeModal);
+            modal.querySelector('#modal-confirm').addEventListener('click', async () => {
+                _removeModal();
+                await fetch('/api/chats/folders/' + encodeURIComponent(folderName), { method: 'DELETE' });
+                _chatFolders = _chatFolders.filter(f => f !== folderName);
+                delete _openFolders[folderName];
+                await _loadChatList();
+            });
+        }
+    }
+
+    // ── Sidebar toggle ─────────────────────────────────────────────────
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const main = document.getElementById('main-content');
+        const topbar = document.querySelector('.top-bar');
+        if (!sidebar) return;
+        const collapsed = sidebar.classList.toggle('sidebar--collapsed');
+        if (main) main.classList.toggle('main-content--expanded', collapsed);
+        if (topbar) topbar.classList.toggle('top-bar--expanded', collapsed);
+        localStorage.setItem('nomolo_sidebar_collapsed', collapsed ? '1' : '');
+    }
+
+    // Restore sidebar state on load
+    (function _restoreSidebar() {
+        if (localStorage.getItem('nomolo_sidebar_collapsed') === '1') {
+            const sidebar = document.getElementById('sidebar');
+            const main = document.getElementById('main-content');
+            const topbar = document.querySelector('.top-bar');
+            if (sidebar) sidebar.classList.add('sidebar--collapsed');
+            if (main) main.classList.add('main-content--expanded');
+            if (topbar) topbar.classList.add('top-bar--expanded');
+        }
+    })();
 
     // ── Public API ────────────────────────────────────────────────────
 
@@ -3581,12 +4279,15 @@ const NomoloBridge = (() => {
         loadRecords,
         recordsPage,
         showRecordDetail,
+        toggleRecordDetail,
         closeRecordDetail,
         openVaultFolder,
         rescanSources,
         collectSource,
         updateAllSources,
         saveSetting,
+        saveUserName,
+        saveAutomatonPower,
         resetJourney,
         initJargonToggle,
         toggleJargon,
@@ -3595,6 +4296,7 @@ const NomoloBridge = (() => {
         initLLMSettings,
         toggleLLMForm,
         onLLMProviderChange,
+        onLLMModelSelectChange,
         saveLLMToken,
         deleteLLMToken,
         // Monkey Island interactive features
@@ -3630,5 +4332,17 @@ const NomoloBridge = (() => {
         initChat,
         toggleChat,
         sendChat,
+        newChat,
+        createFolder,
+        chatCtxAction,
+        _selectChat,
+        _showCtxMenu,
+        _toggleFolder,
+        _toggleMsgPin,
+        searchChats,
+        _showFolderCtxMenu,
+        _hideFolderCtxMenu,
+        folderCtxAction,
+        toggleSidebar,
     };
 })();

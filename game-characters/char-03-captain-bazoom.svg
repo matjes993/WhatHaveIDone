@@ -1,0 +1,117 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="300" fill="#FFF8E7"/>
+
+  <!-- Shadow -->
+  <ellipse cx="100" cy="280" rx="55" ry="12" fill="#00000030"/>
+
+  <!-- Cardboard boxes scattered -->
+  <g id="box1" opacity="0.3">
+    <rect x="15" y="240" width="25" height="25" fill="#D2691E" stroke="#8B4513" stroke-width="2"/>
+    <line x1="15" y1="252.5" x2="40" y2="252.5" stroke="#8B4513" stroke-width="1"/>
+    <line x1="27.5" y1="240" x2="27.5" y2="265" stroke="#8B4513" stroke-width="1"/>
+  </g>
+
+  <g id="box2" opacity="0.25">
+    <rect x="165" y="250" width="30" height="20" fill="#D2691E" stroke="#8B4513" stroke-width="2"/>
+    <line x1="165" y1="260" x2="195" y2="260" stroke="#8B4513" stroke-width="1"/>
+    <line x1="180" y1="250" x2="180" y2="270" stroke="#8B4513" stroke-width="1"/>
+  </g>
+
+  <!-- Feet/Legs -->
+  <rect x="85" y="240" width="12" height="35" fill="#4D4D4D" stroke="#333333" stroke-width="2"/>
+  <rect x="103" y="240" width="12" height="35" fill="#4D4D4D" stroke="#333333" stroke-width="2"/>
+
+  <!-- Shoes -->
+  <ellipse cx="91" cy="277" rx="8" ry="6" fill="#8B0000" stroke="#333333" stroke-width="2"/>
+  <ellipse cx="109" cy="277" rx="8" ry="6" fill="#8B0000" stroke="#333333" stroke-width="2"/>
+
+  <!-- Massive muscular body -->
+  <ellipse cx="100" cy="180" rx="38" ry="55" fill="#CD853F" stroke="#333333" stroke-width="2.5"/>
+
+  <!-- Defined musculature - abs -->
+  <ellipse cx="85" cy="165" rx="8" ry="12" fill="#B8733F" stroke="none"/>
+  <ellipse cx="100" cy="165" rx="8" ry="12" fill="#B8733F" stroke="none"/>
+  <ellipse cx="115" cy="165" rx="8" ry="12" fill="#B8733F" stroke="none"/>
+
+  <ellipse cx="85" cy="185" rx="8" ry="12" fill="#B8733F" stroke="none"/>
+  <ellipse cx="100" cy="185" rx="8" ry="12" fill="#B8733F" stroke="none"/>
+  <ellipse cx="115" cy="185" rx="8" ry="12" fill="#B8733F" stroke="none"/>
+
+  <!-- Chest definition -->
+  <ellipse cx="80" cy="150" rx="12" ry="18" fill="#B8733F" stroke="none"/>
+  <ellipse cx="120" cy="150" rx="12" ry="18" fill="#B8733F" stroke="none"/>
+  <line x1="100" y1="135" x2="100" y2="165" stroke="#8B6F47" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Navy Captain's Vest -->
+  <path d="M 62 140 L 62 200 Q 62 210 72 210 L 128 210 Q 138 210 138 200 L 138 140 Z" fill="#232F3E" stroke="#333333" stroke-width="2.5"/>
+
+  <!-- Vest opening (shows muscular chest) -->
+  <path d="M 100 140 L 90 180 L 100 200" fill="none" stroke="#333333" stroke-width="2"/>
+  <path d="M 100 140 L 110 180 L 100 200" fill="none" stroke="#333333" stroke-width="2"/>
+
+  <!-- Vest buttons -->
+  <circle cx="100" cy="155" r="3" fill="#FFD700" stroke="#333333" stroke-width="1"/>
+  <circle cx="100" cy="175" r="3" fill="#FFD700" stroke="#333333" stroke-width="1"/>
+
+  <!-- Muscular arms (no shirt) -->
+  <ellipse cx="50" cy="165" rx="16" ry="24" fill="#CD853F" stroke="#333333" stroke-width="2"/>
+  <ellipse cx="150" cy="165" rx="16" ry="24" fill="#CD853F" stroke="#333333" stroke-width="2"/>
+
+  <!-- Biceps definition -->
+  <ellipse cx="48" cy="150" rx="8" ry="12" fill="#B8733F" stroke="none"/>
+  <ellipse cx="152" cy="150" rx="8" ry="12" fill="#B8733F" stroke="none"/>
+
+  <!-- Hands -->
+  <circle cx="42" cy="195" r="7" fill="#CD853F" stroke="#333333" stroke-width="1.5"/>
+  <circle cx="158" cy="195" r="7" fill="#CD853F" stroke="#333333" stroke-width="1.5"/>
+
+  <!-- Right hand holding pocket watch -->
+  <circle cx="158" cy="195" r="10" fill="#FFD700" stroke="#333333" stroke-width="2"/>
+  <circle cx="158" cy="195" r="8" fill="#FFFFFF" stroke="#333333" stroke-width="1.5"/>
+
+  <!-- Watch face -->
+  <line x1="158" y1="190" x2="158" y2="186" stroke="#333333" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="162" y1="195" x2="166" y2="195" stroke="#333333" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="158" cy="195" r="2" fill="#333333"/>
+
+  <!-- Watch Roman numerals suggestion -->
+  <text x="152" y="198" font-size="8" fill="#333333" font-weight="bold">XII</text>
+
+  <!-- Head: completely bald and shiny -->
+  <circle cx="100" cy="105" r="28" fill="#D2A679" stroke="#333333" stroke-width="2.5"/>
+
+  <!-- Shine on bald head -->
+  <ellipse cx="92" cy="88" rx="10" ry="8" fill="#FFFFFF" opacity="0.5"/>
+
+  <!-- Confident grin -->
+  <path d="M 85 110 Q 100 125 115 110" fill="none" stroke="#333333" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Teeth showing confidence -->
+  <line x1="90" y1="115" x2="110" y2="115" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="92" y1="115" x2="92" y2="118" stroke="#333333" stroke-width="0.5"/>
+  <line x1="96" y1="115" x2="96" y2="118" stroke="#333333" stroke-width="0.5"/>
+  <line x1="100" y1="115" x2="100" y2="118" stroke="#333333" stroke-width="0.5"/>
+  <line x1="104" y1="115" x2="104" y2="118" stroke="#333333" stroke-width="0.5"/>
+  <line x1="108" y1="115" x2="108" y2="118" stroke="#333333" stroke-width="0.5"/>
+
+  <!-- Eyes: confident, squinted -->
+  <path d="M 82 98 Q 85 102 88 98" fill="none" stroke="#333333" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 112 98 Q 115 102 118 98" fill="none" stroke="#333333" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Eyebrows: confident -->
+  <path d="M 80 93 Q 85 90 90 93" fill="none" stroke="#333333" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 110 93 Q 115 90 120 93" fill="none" stroke="#333333" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Rocket-shaped earring -->
+  <g id="earring">
+    <!-- Rocket body -->
+    <path d="M 130 95 L 132 85 L 134 95 Q 134 105 132 110 L 130 110 Q 128 105 128 95 Z" fill="#FF6B35" stroke="#333333" stroke-width="1.5"/>
+    <!-- Flame from rocket -->
+    <path d="M 130 110 L 128 120 L 130 115 L 132 120 Z" fill="#FFD700" stroke="#FF9900" stroke-width="1"/>
+  </g>
+
+  <!-- Heroic stance: arms flexed -->
+  <path d="M 42 195 L 35 180 L 42 160" fill="none" stroke="#333333" stroke-width="2" opacity="0.5"/>
+  <path d="M 158 195 L 165 180 L 158 160" fill="none" stroke="#333333" stroke-width="2" opacity="0.5"/>
+</svg>

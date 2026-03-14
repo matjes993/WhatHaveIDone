@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Ghost Pirate Captain (LeChuck-inspired) -->
+  <!-- Ghostly glow -->
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#3aff6a" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#3aff6a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="100" cy="180" rx="90" ry="130" fill="url(#glow)"/>
+  <!-- Coat -->
+  <path d="M60 170 L55 270 Q55 280 65 280 L80 280 L80 240 L120 240 L120 280 L135 280 Q145 280 145 270 L140 170" fill="#2a1048"/>
+  <!-- Coat details -->
+  <line x1="100" y1="170" x2="100" y2="240" stroke="#4a2068" stroke-width="2"/>
+  <!-- Gold buttons -->
+  <circle cx="95" cy="185" r="3" fill="#d4a843"/>
+  <circle cx="95" cy="205" r="3" fill="#d4a843"/>
+  <circle cx="95" cy="225" r="3" fill="#d4a843"/>
+  <!-- Boots -->
+  <path d="M65 270 L60 290 Q58 295 65 295 L85 295 L85 275" fill="#1a0a30"/>
+  <path d="M115 275 L115 295 L135 295 Q142 295 140 290 L135 270" fill="#1a0a30"/>
+  <!-- Arms -->
+  <rect x="38" y="175" width="22" height="55" rx="8" fill="#2a1048"/>
+  <rect x="140" y="175" width="22" height="55" rx="8" fill="#2a1048"/>
+  <!-- Hook hand -->
+  <circle cx="49" cy="234" r="8" fill="#1a0a30"/>
+  <path d="M49 234 L49 250 Q49 258 44 255 L42 252" fill="none" stroke="#a0a0a0" stroke-width="3" stroke-linecap="round"/>
+  <!-- Ghost hand -->
+  <circle cx="151" cy="234" r="9" fill="#5aee80" opacity="0.7"/>
+  <!-- Head -->
+  <ellipse cx="100" cy="115" rx="42" ry="48" fill="#5aee80" opacity="0.85"/>
+  <!-- Beard (big ghostly beard) -->
+  <path d="M62 130 Q58 180 75 195 Q88 205 100 200 Q112 205 125 195 Q142 180 138 130" fill="#1a3a2a" opacity="0.9"/>
+  <path d="M70 155 Q75 175 85 180" fill="none" stroke="#2a5a3a" stroke-width="2"/>
+  <path d="M130 155 Q125 175 115 180" fill="none" stroke="#2a5a3a" stroke-width="2"/>
+  <!-- Pirate hat -->
+  <path d="M48 95 Q50 55 100 50 Q150 55 152 95 L140 100 Q100 80 60 100 Z" fill="#1a0a30"/>
+  <path d="M60 100 Q100 85 140 100" fill="none" stroke="#d4a843" stroke-width="3"/>
+  <!-- Skull on hat -->
+  <circle cx="100" cy="78" r="10" fill="#d4d4d4"/>
+  <circle cx="96" cy="76" r="3" fill="#1a0a30"/>
+  <circle cx="104" cy="76" r="3" fill="#1a0a30"/>
+  <path d="M96 83 L100 85 L104 83" fill="none" stroke="#1a0a30" stroke-width="1.5"/>
+  <!-- Glowing eyes -->
+  <ellipse cx="85" cy="112" rx="9" ry="10" fill="#1a3a2a"/>
+  <circle cx="85" cy="112" r="5" fill="#ff3030"/>
+  <circle cx="86" cy="111" r="2" fill="#ff8080"/>
+  <ellipse cx="115" cy="112" rx="9" ry="10" fill="#1a3a2a"/>
+  <circle cx="115" cy="112" r="5" fill="#ff3030"/>
+  <circle cx="116" cy="111" r="2" fill="#ff8080"/>
+  <!-- Angry brow -->
+  <line x1="76" y1="100" x2="92" y2="103" stroke="#1a3a2a" stroke-width="3" stroke-linecap="round"/>
+  <line x1="124" y1="100" x2="108" y2="103" stroke="#1a3a2a" stroke-width="3" stroke-linecap="round"/>
+  <!-- Mouth -->
+  <path d="M88 132 Q100 126 112 132" fill="none" stroke="#1a0a30" stroke-width="2.5"/>
+</svg>

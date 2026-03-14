@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Island Merchant / Stan-inspired Used Ship Salesman -->
+  <!-- Loud jacket -->
+  <rect x="62" y="160" width="76" height="90" rx="5" fill="#e84848"/>
+  <!-- Plaid pattern -->
+  <line x1="62" y1="175" x2="138" y2="175" stroke="#f08080" stroke-width="1" opacity="0.5"/>
+  <line x1="62" y1="190" x2="138" y2="190" stroke="#f08080" stroke-width="1" opacity="0.5"/>
+  <line x1="62" y1="205" x2="138" y2="205" stroke="#f08080" stroke-width="1" opacity="0.5"/>
+  <line x1="62" y1="220" x2="138" y2="220" stroke="#f08080" stroke-width="1" opacity="0.5"/>
+  <line x1="62" y1="235" x2="138" y2="235" stroke="#f08080" stroke-width="1" opacity="0.5"/>
+  <line x1="80" y1="160" x2="80" y2="250" stroke="#f08080" stroke-width="1" opacity="0.5"/>
+  <line x1="100" y1="160" x2="100" y2="250" stroke="#f08080" stroke-width="1" opacity="0.5"/>
+  <line x1="120" y1="160" x2="120" y2="250" stroke="#f08080" stroke-width="1" opacity="0.5"/>
+  <!-- Lapels -->
+  <path d="M90 160 L100 190 L100 160" fill="#c83030"/>
+  <path d="M110 160 L100 190 L100 160" fill="#c83030"/>
+  <!-- Shirt & tie -->
+  <rect x="95" y="160" width="10" height="50" fill="white"/>
+  <path d="M97 165 L100 180 L103 165" fill="#1a6bb5"/>
+  <!-- Pants -->
+  <rect x="68" y="248" width="28" height="38" rx="3" fill="#2a2a4a"/>
+  <rect x="104" y="248" width="28" height="38" rx="3" fill="#2a2a4a"/>
+  <!-- Shoes (pointy) -->
+  <path d="M65 282 L55 290 Q52 293 58 293 L98 293 L98 282" fill="#1a1a2a"/>
+  <path d="M102 282 L102 293 L142 293 Q148 293 145 290 L135 282" fill="#1a1a2a"/>
+  <!-- Arms (animated/gesturing) -->
+  <path d="M62 165 Q35 160 25 140 Q22 132 28 132" fill="#e84848"/>
+  <path d="M138 165 Q165 150 172 130 Q175 122 168 125" fill="#e84848"/>
+  <!-- Hands (gesturing wildly) -->
+  <circle cx="28" cy="133" r="8" fill="#d4a070"/>
+  <!-- Pointing finger -->
+  <line x1="22" y1="128" x2="12" y2="120" stroke="#d4a070" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="168" cy="126" r="8" fill="#d4a070"/>
+  <line x1="174" y1="120" x2="182" y2="112" stroke="#d4a070" stroke-width="4" stroke-linecap="round"/>
+  <!-- Head -->
+  <ellipse cx="100" cy="110" rx="35" ry="40" fill="#d4a070"/>
+  <!-- Slicked back hair -->
+  <path d="M65 100 Q62 68 100 60 Q138 68 135 100" fill="#1a1a2a"/>
+  <!-- Hair shine -->
+  <path d="M80 72 Q90 66 100 68" fill="none" stroke="#3a3a5a" stroke-width="2"/>
+  <!-- Big cheesy grin -->
+  <path d="M78 130 Q100 150 122 130" fill="white"/>
+  <path d="M78 130 Q100 135 122 130" fill="none" stroke="#8b5e3c" stroke-width="1.5"/>
+  <!-- Individual teeth -->
+  <line x1="88" y1="130" x2="88" y2="140" stroke="#e8e4d4" stroke-width="0.5"/>
+  <line x1="95" y1="131" x2="95" y2="142" stroke="#e8e4d4" stroke-width="0.5"/>
+  <line x1="105" y1="131" x2="105" y2="142" stroke="#e8e4d4" stroke-width="0.5"/>
+  <line x1="112" y1="130" x2="112" y2="140" stroke="#e8e4d4" stroke-width="0.5"/>
+  <!-- Gold tooth -->
+  <rect x="99" y="132" width="4" height="6" fill="#d4a843"/>
+  <!-- Eyes (shifty) -->
+  <ellipse cx="87" cy="108" rx="7" ry="8" fill="white"/>
+  <ellipse cx="113" cy="108" rx="7" ry="8" fill="white"/>
+  <circle cx="90" cy="109" r="4" fill="#2a2a2a"/>
+  <circle cx="116" cy="109" r="4" fill="#2a2a2a"/>
+  <!-- Raised eyebrows -->
+  <path d="M78 96 Q87 90 96 96" fill="none" stroke="#1a1a2a" stroke-width="2.5"/>
+  <path d="M104 96 Q113 90 122 96" fill="none" stroke="#1a1a2a" stroke-width="2.5"/>
+  <!-- Thin mustache -->
+  <path d="M88 122 Q100 118 112 122" fill="none" stroke="#1a1a2a" stroke-width="2"/>
+  <!-- Nose -->
+  <path d="M97 115 Q100 120 103 115" fill="none" stroke="#b48050" stroke-width="2"/>
+</svg>

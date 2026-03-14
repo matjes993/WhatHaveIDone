@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nomolo: The Great Data Liberation — Character Gallery</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=IM+Fell+English+SC&family=Inter:wght@400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0e1a;
+    color: #d4c8a8;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 40px 20px 30px;
+    background: linear-gradient(180deg, #1a2a3a 0%, #0a0e1a 100%);
+    border-bottom: 2px solid #d4a843;
+  }
+
+  .hero h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.4em;
+    color: #d4a843;
+    text-shadow: 0 2px 8px rgba(212,168,67,0.3);
+    margin-bottom: 8px;
+  }
+
+  .hero .subtitle {
+    font-family: 'IM Fell English SC', serif;
+    font-size: 1.1em;
+    color: #8a9ab0;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    background: rgba(212,168,67,0.1);
+    border: 1px solid rgba(212,168,67,0.3);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.85em;
+  }
+
+  .stat strong { color: #d4a843; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+    max-width: 1400px;
+    margin: 30px auto;
+    padding: 0 20px;
+  }
+
+  .card {
+    background: #141a2a;
+    border-radius: 12px;
+    border: 1px solid #2a3a4a;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+  }
+
+  .card-header img {
+    width: 80px;
+    height: 120px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .card-header-text h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.05em;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+
+  .card-header-text .island {
+    font-family: 'IM Fell English SC', serif;
+    font-size: 0.82em;
+    color: #6a7a8a;
+    margin-bottom: 6px;
+  }
+
+  .card-header-text .catchphrase {
+    font-style: italic;
+    font-size: 0.82em;
+    color: #a0b0c0;
+  }
+
+  .card-body {
+    padding: 0 16px 16px;
+    display: none;
+  }
+
+  .card.expanded .card-body { display: block; }
+
+  .card-body section {
+    margin-bottom: 12px;
+  }
+
+  .card-body section h4 {
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6a7a8a;
+    margin-bottom: 4px;
+  }
+
+  .card-body section p {
+    font-size: 0.88em;
+    line-height: 1.5;
+    color: #c0b898;
+  }
+
+  .riddle-box {
+    background: rgba(212,168,67,0.08);
+    border: 1px solid rgba(212,168,67,0.2);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+  }
+
+  .riddle-box .question {
+    font-style: italic;
+    color: #d4a843;
+    margin-bottom: 8px;
+    font-size: 0.88em;
+    line-height: 1.4;
+  }
+
+  .riddle-box .options {
+    list-style: none;
+    padding: 0;
+  }
+
+  .riddle-box .options li {
+    padding: 4px 8px;
+    margin: 3px 0;
+    border-radius: 4px;
+    font-size: 0.82em;
+    color: #8a9ab0;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .riddle-box .options li:hover {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .riddle-box .options li.correct {
+    background: rgba(42,170,74,0.2);
+    color: #4ae86a;
+    font-weight: 600;
+  }
+
+  .riddle-box .options li.wrong {
+    background: rgba(232,88,90,0.2);
+    color: #e8585a;
+  }
+
+  .riddle-box .explanation {
+    margin-top: 8px;
+    font-size: 0.78em;
+    color: #6a7a8a;
+    display: none;
+  }
+
+  .riddle-box .explanation.show { display: block; }
+
+  .data-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.72em;
+    color: #6a7a8a;
+    margin: 2px;
+  }
+
+  .expand-hint {
+    text-align: center;
+    font-size: 0.7em;
+    color: #4a5a6a;
+    padding-bottom: 8px;
+  }
+
+  .card.expanded .expand-hint .closed { display: none; }
+  .card:not(.expanded) .expand-hint .open { display: none; }
+
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: #4a5a6a;
+    font-size: 0.8em;
+    border-top: 1px solid #1a2a3a;
+  }
+
+  footer a { color: #d4a843; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Nomolo: The Great Data Liberation</h1>
+  <p class="subtitle">A Monkey Island-inspired adventure where you liberate your personal data from 20 tech villains. Answer their riddle to break the spell.</p>
+  <div class="stats-bar">
+    <div class="stat"><strong>20</strong> Villains</div>
+    <div class="stat"><strong>20</strong> Islands</div>
+    <div class="stat"><strong>40+</strong> Factual Riddles</div>
+    <div class="stat"><strong>0</strong> Real Names</div>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  Nomolo: The Great Data Liberation &mdash; All riddle facts are real and verifiable. No actual company or founder names used.<br>
+  <a href="nomolo-characters.json">Download JSON Data</a> &middot; <a href="nomolo-characters.md">Read Full Lore</a>
+</footer>
+
+<script>
+const data = [
+  {
+    id: 1, boss: "The Twin Indexers: Surjay & Lorry", island: "Joogle Archipelago",
+    catchphrase: "Did you mean...?", svg: "char-01-twin-indexers.svg",
+    accent: "#FBBC05",
+    personality: "Relentlessly curious twins who finish each other's sentences with search results nobody asked for. Their product graveyard has 250+ tombstones and counting.",
+    strength: "Omniscient knowledge — they know everything about everyone. Their all-seeing eye tracks you even when you tell it to stop.",
+    backstory: "Two scholars who started organizing a library. Then a country. Then the world. Now they organize your thoughts before you think them.",
+    dataTypes: ["Search history", "Emails", "Location", "Voice recordings", "Calendar", "Browsing habits", "Photos"],
+    riddles: [
+      { q: "How many users were tracked even after disabling activity tracking (2025 ruling)?", opts: ["~12 million", "~98 million", "~500 million", "~2 billion"], correct: 1, source: "2025 US federal jury — $425M damages" },
+      { q: "How many products lie in their graveyard?", opts: ["About 50", "About 100", "Over 250", "Over 500"], correct: 2, source: "killedbygoogle.com: 293+ products" }
+    ]
+  },
+  {
+    id: 2, boss: "Lord Sugarmountain", island: "Metarock Island",
+    catchphrase: "This brings people together.", svg: "char-02-sugarmountain.svg",
+    accent: "#42B72A",
+    personality: "Desperately wants to be liked but can't read social cues. Keeps offering friend requests mid-conversation. Speaks in corporate mission statements.",
+    strength: "Controls the social graph — knows every relationship, every like, every secret group chat.",
+    backstory: "Started by ranking faces in a university dorm. Changed his island's name thinking nobody would notice the cameras. They didn't.",
+    dataTypes: ["Social graph", "Photos", "Messages", "Facial recognition", "Ad preferences", "Pixel tracking"],
+    riddles: [
+      { q: "How many user records were exposed in the personality-quiz data harvesting scandal?", opts: ["12 million", "45 million", "87 million", "200 million"], correct: 2, source: "Cambridge Analytica: 87 million records" },
+      { q: "What was the record-breaking FTC privacy fine?", opts: ["$500 million", "$2 billion", "$5 billion", "$10 billion"], correct: 2, source: "FTC $5B fine — largest company privacy penalty (2019)" }
+    ]
+  },
+  {
+    id: 3, boss: "Captain Bazoom", island: "Amazonia",
+    catchphrase: "It's still Day One!", svg: "char-03-captain-bazoom.svg",
+    accent: "#FF9900",
+    personality: "Obsessed with efficiency. Cannot walk past a product without buying it. His island is cluttered with impulse purchases — a submarine, three yachts, a space suit.",
+    strength: "Knows everything you've ever bought or thought about buying. His Listeners hear everything. His cloud runs half the internet.",
+    backstory: "Started selling scrolls from a shed. Made it impossible to tell his Listeners to stop sending voice data to the cloud.",
+    dataTypes: ["Purchase history", "Voice recordings", "Reading habits", "Doorbell footage", "Cloud metadata"],
+    riddles: [
+      { q: "FTC penalty for indefinitely storing children's voice recordings?", opts: ["$5 million", "$25 million", "$100 million", "$500 million"], correct: 1, source: "FTC: $25M for COPPA violations via Alexa (2023)" },
+      { q: "How long is your purchase history kept?", opts: ["2 years", "5 years", "10 years", "Forever"], correct: 3, source: "Purchase history retained indefinitely" }
+    ]
+  },
+  {
+    id: 4, boss: "Sir Timothee of Cupertino", island: "Apple Atoll",
+    catchphrase: "We think you're going to love it.", svg: "char-04-sir-timothee.svg",
+    accent: "#A2AAAD",
+    personality: "Speaks in whispered marketing copy. The most polite villain. Charges a 30% tax on everything.",
+    strength: "Impenetrable walled garden. Everything encrypted, locked down, and gorgeous. Fanatically loyal citizens.",
+    backstory: "Inherited the atoll from a legendary visionary. Nearly built a system to scan citizens' private paintings, abandoned when scholars warned of tyranny.",
+    dataTypes: ["iCloud data", "Voice assistant", "App activity", "Health data", "Location", "Payments"],
+    riddles: [
+      { q: "What percentage does the atoll take from marketplace sales?", opts: ["10%", "15%", "30%", "50%"], correct: 2, source: "Apple's 30% App Store commission" },
+      { q: "Why was client-side photo scanning abandoned?", opts: ["Too expensive", "Scholars warned of government abuse", "Users didn't notice", "Worked too well"], correct: 1, source: "Abandoned Dec 2022 after cryptographer warnings" }
+    ]
+  },
+  {
+    id: 5, boss: "Gill of the Gates", island: "Windowslandia",
+    catchphrase: "It looks like you're trying to escape. Would you like help?", svg: "char-05-gill-of-gates.svg",
+    accent: "#7FBA00",
+    personality: "Grandfatherly, bookish, quietly the most powerful person in the room. Sometimes freezes mid-sentence, then resumes as if nothing happened.",
+    strength: "His operating system runs the world. He knows your career, your code, and your spreadsheets.",
+    backstory: "Built a window into every home. Collects telemetry so extensive that kingdoms ordered him to stop. His paperclip knows too much.",
+    dataTypes: ["OS telemetry", "Documents", "Career profiles", "Code repos", "Emails", "Chats", "Gaming"],
+    riddles: [
+      { q: "What does the OS collect via telemetry?", opts: ["Just crash reports", "App usage, location, email metadata, contacts, ad IDs", "Only anonymous stats", "Just wallpaper preferences"], correct: 1, source: "Windows collects ad IDs, location, calendar, app usage, contacts" },
+      { q: "What happens to a professional profile when the user dies?", opts: ["Deleted immediately", "Still sends work anniversary notifications", "Archived in 30 days", "Family inherits it"], correct: 1, source: "LinkedIn sends anniversary notifications for deceased users" }
+    ]
+  },
+  {
+    id: 6, boss: "The Clockmaker", island: "TokTokia",
+    catchphrase: "Just one more scroll...", svg: "char-06-clockmaker.svg",
+    accent: "#FE2C55",
+    personality: "Speaks only in 15-second bursts, then resets. Hypnotic and mesmerizing. Receives mysterious orders from a distant mainland.",
+    strength: "The Algorithm predicts what you want before you know it. Collects faceprints and voiceprints.",
+    backstory: "Privacy policy explicitly permits collecting faceprints and voiceprints. Mainland commanders regularly access foreign citizens' data.",
+    dataTypes: ["Facial data", "Voiceprints", "Location", "Keystroke patterns", "Contacts", "Biometrics"],
+    riddles: [
+      { q: "What biometric data does the privacy policy explicitly permit collecting?", opts: ["Only basic usage", "Faceprints and voiceprints", "Just age range", "Only shared data"], correct: 1, source: "TikTok policy: 'faceprints and voiceprints'" },
+      { q: "Largest FTC fine in a children's privacy case at the time?", opts: ["$1 million", "$5.7 million", "$25 million", "$100 million"], correct: 1, source: "FTC $5.7M against TikTok/Musical.ly (2019)" }
+    ]
+  },
+  {
+    id: 7, boss: "Melon Tusk", island: "Xitter Reef",
+    catchphrase: "The bird is freed. Actually, the bird is now an X.", svg: "char-07-melon-tusk.svg",
+    accent: "#1DA1F2",
+    personality: "Chaos incarnate. Cannot stop posting. Bought the island on a whim. Renames everything. Will respond to literally any taunt.",
+    strength: "Unlimited resources. Sells full unfiltered data firehose to surveillance firms.",
+    backstory: "Dismantled privacy compliance, fired safety team. Added AI training toggle ON by default, requiring 7 steps to disable.",
+    dataTypes: ["Posts", "DMs", "Location", "Political leanings", "Firehose sold to surveillance firms"],
+    riddles: [
+      { q: "Who buys the full unfiltered citizen data feed?", opts: ["Only researchers", "Police, intelligence & military agencies", "Nobody", "Only advertisers"], correct: 1, source: "Dataminr sells firehose to police/military" },
+      { q: "How many steps to disable the AI data-sharing setting?", opts: ["1 step", "3 steps", "7 steps", "Cannot disable"], correct: 2, source: "7 steps, violating GDPR Article 21" }
+    ]
+  },
+  {
+    id: 8, boss: "Travis the Rater", island: "Ubershire",
+    catchphrase: "Your ride is 3 minutes away. Surge pricing applies.", svg: "char-08-travis-rater.svg",
+    accent: "#276EF1",
+    personality: "Fast-talking disruptor. Calls everything 'innovative.' Insecure about his 4.2 star rating. Never driven anything himself.",
+    strength: "Knows everyone's exact location. Controls all transportation. Can surge-price anything.",
+    backstory: "Built 'God View' to track every citizen in real time. Used it at parties. Tracked a journalist. Covered up a 57-million-record breach.",
+    dataTypes: ["Real-time location", "Travel patterns", "Payment info", "Home/work addresses"],
+    riddles: [
+      { q: "What was the real-time citizen tracking tool called?", opts: ["City Map", "God View", "Rider Radar", "Smart Track"], correct: 1, source: "Uber's 'God View' — used to track journalists" },
+      { q: "How many records stolen in the concealed 2016 breach?", opts: ["5 million", "20 million", "57 million", "100 million"], correct: 2, source: "50M riders + 7M drivers, covered up during FTC talks" }
+    ]
+  },
+  {
+    id: 9, boss: "Danny Beatbox", island: "Spotifyre Cove",
+    catchphrase: "Your Wrapped is going to be... interesting.", svg: "char-09-danny-beatbox.svg",
+    accent: "#1DB954",
+    personality: "Knows everyone's emotional state through listening habits. Uncomfortably perceptive. Pays musicians almost nothing.",
+    strength: "Knows your emotional state, your commute, your heartbreak. Collects phone sensor data about how you hold your device.",
+    backstory: "Discovered free music makes people reveal everything. Collects headphone brand, pause moments, even how you hold your phone.",
+    dataTypes: ["Listening history", "Mood patterns", "Phone sensor data", "Wi-Fi devices", "Headphone brand"],
+    riddles: [
+      { q: "What surprising data is collected beyond listening history?", opts: ["Nothing extra", "Phone sensor data, headphone brand, Wi-Fi network devices", "Only email", "Just playlist names"], correct: 1, source: "Collects motion sensor, headphone brand, Wi-Fi network info" },
+      { q: "What happens when you 'delete' your data?", opts: ["Permanently destroyed", "De-identified and kept as shadow profile", "Transferred to email", "Takes 30 days"], correct: 1, source: "Can de-identify rather than delete, maintaining shadow profiles" }
+    ]
+  },
+  {
+    id: 10, boss: "Reed the Canceller", island: "Netflixia",
+    catchphrase: "Are you still watching...?", svg: "char-10-reed-canceller.svg",
+    accent: "#E50914",
+    personality: "Masterful storyteller who cancels everything good. Believes 'the algorithm knows best.' Offended by password sharing.",
+    strength: "Knows when you pause, rewind, and fall asleep. Password crackdown across 103 countries.",
+    backstory: "Built the greatest story library, discovered the real treasure was watching people watch. Scored 38/100 (D grade) on privacy.",
+    dataTypes: ["Viewing history", "Watch patterns", "Pause/rewind data", "Household profiles"],
+    riddles: [
+      { q: "What privacy score (out of 100) did this streaming service receive?", opts: ["72 (C)", "55 (D+)", "38 (D)", "85 (B)"], correct: 2, source: "Privacy Watchdog: 38/100, grade D" }
+    ]
+  },
+  {
+    id: 11, boss: "Lancelot Ellisword", island: "Oracle Fortress",
+    catchphrase: "SELECT * FROM your_data WHERE owner = 'me';", svg: "char-11-lancelot-ellisword.svg",
+    accent: "#C74634",
+    personality: "Old-school warrior hoarding enterprise data since before the internet. Incredibly wealthy. Speaks in database queries. Litigious.",
+    strength: "Enterprise-grade defenses. Eternal contracts. Runs databases behind banks, governments, hospitals.",
+    backstory: "Built a secret web tracking operation compiling citizen profiles across thousands of websites. Cost him $115 million when caught.",
+    dataTypes: ["Enterprise databases", "Health records", "Financial systems", "Government data", "Web tracking"],
+    riddles: [
+      { q: "What personal profiles were secretly compiled via website tracking?", opts: ["Just browsing preferences", "Geolocation, finances, health, interests — sold to third parties", "Only anonymized ad data", "Just email addresses"], correct: 1, source: "$115M settlement (2024) for 'coretag' surveillance" }
+    ]
+  },
+  {
+    id: 12, boss: "Marc the Cloudfather", island: "Salesfortress",
+    catchphrase: "Let me show you a quick demo...", svg: "char-12-marc-cloudfather.svg",
+    accent: "#00A1E0",
+    personality: "The friendliest villain. Everything is a 'relationship' to manage. Turns every conversation into a demo. Hawaiian shirts at board meetings.",
+    strength: "Knows every business relationship, deal, and customer interaction across millions of companies.",
+    backstory: "Every handshake becomes a data point. Privacy scroll says he's NOT responsible for what tenants do. Guest doors left wide open.",
+    dataTypes: ["Customer data", "Sales pipelines", "Business contacts", "Marketing data", "Service tickets"],
+    riddles: [
+      { q: "Who is responsible for data security of customer data?", opts: ["Platform takes full responsibility", "Customers themselves — platform disclaims responsibility", "Shared equally", "Third-party auditor"], correct: 1, source: "Privacy statement: not responsible for customer data practices" }
+    ]
+  },
+  {
+    id: 13, boss: "The Subscription Sorcerer", island: "Adobeheim",
+    catchphrase: "Your subscription will auto-renew... forever.", svg: "char-13-subscription-sorcerer.svg",
+    accent: "#FF0000",
+    personality: "Soft-spoken, cultured. Provides magical tools impossible to cancel. Gets genuinely hurt when you mention GIMP.",
+    strength: "Controls all creative tools. Designers cannot work without him. PDF is his invention.",
+    backstory: "His reading tool secretly tracked which pages citizens read and in what order, transmitted back without disclosure.",
+    dataTypes: ["Creative files", "Document metadata", "Reading behavior", "Font usage", "PDF contents"],
+    riddles: [
+      { q: "What did the e-reader software secretly transmit?", opts: ["Just the title", "Books opened, pages read, reading order, full metadata — without disclosure", "Only if you finished", "Just crash reports"], correct: 1, source: "Digital Editions 4 (2014): secret reading surveillance" }
+    ]
+  },
+  {
+    id: 14, boss: "Lord Peersight", island: "Palantower",
+    catchphrase: "I already knew you were coming.", svg: "char-14-lord-peersight.svg",
+    accent: "#7C3AED",
+    personality: "Paranoid, brilliant. Contrarian about everything. Libertarian who builds government surveillance tools. The contradiction doesn't bother him.",
+    strength: "Sees everything. Pattern recognition bordering on precognition. Government contracts.",
+    backstory: "Named his tower after Tolkien's seeing-stones. Platform enables searching by tattoos, immigration status, affiliations. Former guards accused him of betrayal.",
+    dataTypes: ["Government intelligence", "Immigration data", "Health surveillance", "Military data", "Biometrics"],
+    riddles: [
+      { q: "What granular attributes can the surveillance platform search by?", opts: ["Only name and DOB", "Tattoos, immigration status, location, affiliations, biometrics", "Just criminal records", "Only public info"], correct: 1, source: "Gotham enables attribute-based search: tattoos, status, affiliations" }
+    ]
+  },
+  {
+    id: 15, boss: "The Lee Legacy", island: "Samsong Island",
+    catchphrase: "We also make that. But bigger.", svg: "char-15-lee-legacy.svg",
+    accent: "#1428A0",
+    personality: "Incredibly disciplined, family honor. Makes everything from chips to battleships. Insecure about Apple Atoll comparisons.",
+    strength: "Vertical integration — controls supply chain from sand to smartphone. Even Apple Atoll's screens are his.",
+    backstory: "Smart TVs capture a screenshot every 500 milliseconds via ACR. Monitoring baked into setup, nearly impossible to disable.",
+    dataTypes: ["Smart TV viewing", "Device usage", "Smart Home data", "Health data via wearables"],
+    riddles: [
+      { q: "How often do smart TVs capture viewing screenshots via ACR?", opts: ["Once per minute", "Every 10 seconds", "Every 500ms (twice/second)", "Only when changing channels"], correct: 2, source: "ACR captures screenshots every 500ms for real-time surveillance" }
+    ]
+  },
+  {
+    id: 16, boss: "The Freezemaster", island: "PayPalace",
+    catchphrase: "Your account has been temporarily limited.", svg: "char-16-freezemaster.svg",
+    accent: "#003087",
+    personality: "Paranoid about fraud to absurdity. Freezes first, asks never. Switched data sharing to opt-OUT in 2024.",
+    strength: "Controls money flow. Freezes funds instantly. Knows every transaction.",
+    backstory: "Merchants share sensitive purchase details. Over 50% share MORE than necessary. Citizens cannot opt out.",
+    dataTypes: ["Transactions", "Bank connections", "Spending patterns", "Social graph via Venmo"],
+    riddles: [
+      { q: "Can this platform freeze your account without explanation?", opts: ["No, must explain in 24hrs", "Yes, regularly and without explanation", "Only with court order", "Only over $10,000"], correct: 1, source: "Routinely freezes accounts, sometimes for 180 days" },
+      { q: "What % of merchants unnecessarily share detailed purchase data?", opts: ["~10%", "~25%", "Over 50%", "~5%"], correct: 2, source: "Research: >50% share sensitive data like medication purchases" }
+    ]
+  },
+  {
+    id: 17, boss: "Evan the Ephemeral", island: "Snapshire",
+    catchphrase: "It's gone forever! (Terms apply.)", svg: "char-17-evan-ephemeral.svg",
+    accent: "#FFFC00",
+    personality: "The cool kid who invented impermanence. Everything disappears... except it doesn't. Under 20 years of privacy monitoring.",
+    strength: "Illusion of impermanence — people share unguarded moments. AR filters map your entire face.",
+    backstory: "Caught lying: messages didn't disappear, location secretly tracked, contacts taken without consent. 4.6M records breached. 20 years monitored.",
+    dataTypes: ["Facial mapping", "Location", "Stored photos/videos", "Friend networks", "AR data"],
+    riddles: [
+      { q: "How long is independent FTC privacy monitoring imposed?", opts: ["5 years", "10 years", "20 years", "Life"], correct: 2, source: "FTC: 20 years monitoring, $16K per-violation penalties" },
+      { q: "What did the FTC find about 'disappearing messages'?", opts: ["They truly disappeared", "False — stored, plus secret location tracking and contact harvesting", "Only photos disappeared", "30-day delay"], correct: 1, source: "FTC: false claims, secret geolocation, contacts without consent" }
+    ]
+  },
+  {
+    id: 18, boss: "Brian the Hostmaster", island: "AirBedBay",
+    catchphrase: "5-star review please! Cleaning fee non-negotiable.", svg: "char-18-brian-hostmaster.svg",
+    accent: "#FF5A5F",
+    personality: "Genuinely hospitable but turned hospitality into surveillance. Knows where you sleep. Terrified of bad reviews.",
+    strength: "Knows where everyone sleeps, travel patterns, budgets, ID documents.",
+    backstory: "Accidentally exposed messages and access codes between hosts. Automated system downgrades citizens without appeal.",
+    dataTypes: ["ID documents", "Travel patterns", "Payment data", "Addresses", "Access codes"],
+    riddles: [
+      { q: "What was accidentally exposed between users in a technical glitch?", opts: ["Just usernames", "Property addresses, access codes, and personal details", "Only profile photos", "Just star ratings"], correct: 1, source: "2020: messages, addresses, and access codes exposed" }
+    ]
+  },
+  {
+    id: 19, boss: "Pony the Penguin Emperor", island: "TenCentury",
+    catchphrase: "Why would you need another app?", svg: "char-19-penguin-emperor.svg",
+    accent: "#07C160",
+    personality: "Quiet, strategic. Most powerful person outsiders never heard of. His super-app does everything. Modest demeanor, absolute control.",
+    strength: "Super-app controls payments, messaging, gaming, and all of life. Citizens cannot function without it.",
+    backstory: "Messaging tool surveils foreign citizens to refine domestic censorship. Must hand data to ruling council on demand. Scored 0/100 for privacy.",
+    dataTypes: ["Messages", "Payments", "Location", "Health", "Gaming", "Government ID", "Everything"],
+    riddles: [
+      { q: "What privacy score did the messaging tool receive from a global rights org?", opts: ["45/100", "23/100", "12/100", "0/100"], correct: 3, source: "Amnesty International: 0/100, last among 11 companies" }
+    ]
+  },
+  {
+    id: 20, boss: "Sham the Confabulator", island: "OpenEye Island",
+    catchphrase: "Probably the most important thing in the world right now.", svg: "char-20-sham-confabulator.svg",
+    accent: "#10A37F",
+    personality: "The most dangerous villain — genuinely believes he's saving the world. Fired and rehired same week. Charming. Convinced the singularity is next week.",
+    strength: "Oracles generate convincing answers to anything. Every conversation improves their training by default.",
+    backstory: "Oracles trained on 570GB of scraped data without consent. Multiple kingdoms investigating. Opt-out hidden in a portal.",
+    dataTypes: ["Conversations", "Prompts", "Writing samples", "Code", "Reasoning patterns"],
+    riddles: [
+      { q: "How much scraped data trained the foundational oracle without consent?", opts: ["1 GB", "50 GB", "570 GB", "10 TB"], correct: 2, source: "GPT-3: 570 GB internet-scraped without consent" },
+      { q: "Are conversations used for training by default?", opts: ["No, strictly opt-in", "Yes — must opt out via hidden portal", "Only enterprise data", "Never used for training"], correct: 1, source: "ChatGPT trains on chats by default, opt-out via privacy settings" }
+    ]
+  }
+];
+
+const grid = document.getElementById('grid');
+
+data.forEach(char => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.setProperty('--accent', char.accent);
+
+  const riddleHTML = char.riddles.map((r, ri) => `
+    <div class="riddle-box" data-correct="${r.correct}">
+      <div class="question">"${r.q}"</div>
+      <ul class="options">
+        ${r.opts.map((o, oi) => `<li data-idx="${oi}" onclick="checkAnswer(this, ${r.correct})">${String.fromCharCode(65+oi)}) ${o}</li>`).join('')}
+      </ul>
+      <div class="explanation">Source: ${r.source}</div>
+    </div>
+  `).join('');
+
+  const dataTagsHTML = char.dataTypes.map(d => `<span class="data-tag">${d}</span>`).join('');
+
+  card.innerHTML = `
+    <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
+      <img src="${char.svg}" alt="${char.boss}" onerror="this.style.display='none'">
+      <div class="card-header-text">
+        <h3>${char.boss}</h3>
+        <div class="island">${char.island}</div>
+        <div class="catchphrase">"${char.catchphrase}"</div>
+      </div>
+    </div>
+    <div class="expand-hint">
+      <span class="closed">Click to expand</span>
+      <span class="open">Click header to collapse</span>
+    </div>
+    <div class="card-body">
+      <section><h4>Personality</h4><p>${char.personality}</p></section>
+      <section><h4>Backstory</h4><p>${char.backstory}</p></section>
+      <section><h4>Strength</h4><p>${char.strength}</p></section>
+      <section><h4>Data Hoarded</h4><p>${dataTagsHTML}</p></section>
+      <section><h4>Liberation Riddles</h4>${riddleHTML}</section>
+    </div>
+  `;
+  grid.appendChild(card);
+});
+
+function checkAnswer(el, correct) {
+  const box = el.closest('.riddle-box');
+  if (box.classList.contains('answered')) return;
+  box.classList.add('answered');
+  const idx = parseInt(el.dataset.idx);
+  if (idx === correct) {
+    el.classList.add('correct');
+  } else {
+    el.classList.add('wrong');
+    box.querySelectorAll('li')[correct].classList.add('correct');
+  }
+  box.querySelector('.explanation').classList.add('show');
+}
+</script>
+</body>
+</html>

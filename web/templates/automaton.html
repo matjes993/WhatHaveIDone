@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}The Automaton{% endblock %}
+
+{% block content %}
+<div class="automaton automaton--fullpage">
+    <!-- Header bar -->
+    <div class="automaton__topbar">
+        <span class="automaton__icon">&#x1F916;</span>
+        <h3 class="automaton__title jargon" data-rpg="The Automaton" data-real="AI Assistant">The Automaton</h3>
+        <span class="automaton__status" id="automaton-status"></span>
+    </div>
+
+    <!-- Body: sidebar + main, always visible -->
+    <div class="automaton__body automaton__body--fullpage" id="automaton-body">
+        <!-- Sidebar: conversation list -->
+        <aside class="automaton__sidebar" id="automaton-sidebar">
+            <button class="automaton__new-chat" onclick="NomoloBridge.newChat()">
+                <span>+</span>
+                <span class="jargon" data-rpg="New Transmission" data-real="New Chat">New Transmission</span>
+            </button>
+
+            <!-- Search chats -->
+            <div class="automaton__search">
+                <input type="text" class="automaton__search-input" id="automaton-search"
+                    placeholder="Search chats..." autocomplete="off"
+                    oninput="NomoloBridge.searchChats(this.value)" />
+            </div>
+
+            <!-- Pinned section -->
+            <div class="automaton__section" id="automaton-pinned-section" style="display:none">
+                <div class="automaton__section-label">&#x1F4CC; Pinned</div>
+                <div id="automaton-pinned-list"></div>
+            </div>
+
+            <!-- Folders -->
+            <div id="automaton-folders"></div>
+
+            <!-- Unfiled conversations -->
+            <div class="automaton__section" id="automaton-recent-section">
+                <div class="automaton__section-label jargon" data-rpg="Ship's Log" data-real="Recent">Ship's Log</div>
+                <div id="automaton-chat-list"></div>
+            </div>
+
+            <!-- Add folder -->
+            <button class="automaton__add-folder" onclick="NomoloBridge.createFolder()">
+                <span>&#x1F4C1;</span>
+                <span class="jargon" data-rpg="New Compartment" data-real="New Folder">New Compartment</span>
+            </button>
+        </aside>
+
+        <!-- Main chat area -->
+        <div class="automaton__main">
+            <div class="automaton__messages" id="automaton-messages">
+                <div class="automaton__welcome" id="automaton-welcome">
+                    <div class="automaton__welcome-icon">&#x1F916;</div>
+                    <h3 class="jargon" data-rpg="The Automaton awaits yer orders, Captain." data-real="Ask me anything about your data.">The Automaton awaits yer orders, Captain.</h3>
+                    <p class="jargon" data-rpg="Query yer plundered data &mdash; scrolls, soul bonds, time crystals, all of it." data-real="Search across your emails, contacts, calendar, and more.">Query yer plundered data &mdash; scrolls, soul bonds, time crystals, all of it.</p>
+                </div>
+            </div>
+            <div class="automaton__sources" id="automaton-sources" style="display:none"></div>
+            <form class="automaton__input" onsubmit="NomoloBridge.sendChat(event)">
+                <input type="text" class="automaton__field" id="automaton-query"
+                    placeholder="Ask The Automaton..." autocomplete="off" />
+                <button type="submit" class="automaton__send" id="automaton-send">&#x27A4;</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Chat context menu (hidden, positioned via JS) -->
+<div class="automaton__ctx-menu" id="automaton-ctx-menu" style="display:none">
+    <button onclick="NomoloBridge.chatCtxAction('rename')">&#x270F;&#xFE0F; Rename</button>
+    <button onclick="NomoloBridge.chatCtxAction('pin')"><span id="ctx-pin-label">&#x1F4CC; Pin</span></button>
+    <button onclick="NomoloBridge.chatCtxAction('folder')">&#x1F4C1; Move to folder</button>
+    <button onclick="NomoloBridge.chatCtxAction('delete')" class="automaton__ctx-danger">&#x1F5D1; Delete</button>
+</div>
+
+<!-- Folder context menu -->
+<div class="automaton__ctx-menu" id="automaton-folder-ctx-menu" style="display:none">
+    <button onclick="NomoloBridge.folderCtxAction('rename')">&#x270F;&#xFE0F; Rename</button>
+    <button onclick="NomoloBridge.folderCtxAction('delete')" class="automaton__ctx-danger">&#x1F5D1; Delete folder</button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    NomoloBridge.initChat();
+});
+</script>
+{% endblock %}

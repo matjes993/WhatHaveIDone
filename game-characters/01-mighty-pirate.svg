@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Mighty Pirate (Guybrush-inspired) -->
+  <!-- Body -->
+  <rect x="70" y="160" width="60" height="80" rx="5" fill="#1a6bb5"/>
+  <!-- White shirt visible -->
+  <path d="M85 160 L100 185 L115 160" fill="#f5f0e0"/>
+  <!-- Belt -->
+  <rect x="70" y="220" width="60" height="8" fill="#5c3a1e"/>
+  <circle cx="100" cy="224" r="5" fill="#d4a843"/>
+  <!-- Legs -->
+  <rect x="75" y="240" width="22" height="40" rx="3" fill="#6b4c2a"/>
+  <rect x="103" y="240" width="22" height="40" rx="3" fill="#6b4c2a"/>
+  <!-- Boots -->
+  <path d="M72 275 L72 290 Q72 295 77 295 L100 295 L100 278" fill="#3d2510"/>
+  <path d="M100 278 L100 295 L123 295 Q128 295 128 290 L128 275" fill="#3d2510"/>
+  <!-- Arms -->
+  <rect x="48" y="165" width="22" height="50" rx="8" fill="#1a6bb5"/>
+  <rect x="130" y="165" width="22" height="50" rx="8" fill="#1a6bb5"/>
+  <!-- Hands -->
+  <circle cx="59" cy="218" r="9" fill="#f4c08a"/>
+  <circle cx="141" cy="218" r="9" fill="#f4c08a"/>
+  <!-- Head -->
+  <ellipse cx="100" cy="120" rx="38" ry="42" fill="#f4c08a"/>
+  <!-- Hair (blonde ponytail) -->
+  <path d="M62 110 Q60 80 80 75 Q100 68 120 75 Q140 82 138 110" fill="#e8c845"/>
+  <path d="M130 105 Q145 110 148 140 Q150 160 140 170 Q135 155 130 140" fill="#e8c845"/>
+  <!-- Eyes -->
+  <ellipse cx="87" cy="118" rx="7" ry="8" fill="white"/>
+  <ellipse cx="113" cy="118" rx="7" ry="8" fill="white"/>
+  <circle cx="89" cy="119" r="4" fill="#2a5a1e"/>
+  <circle cx="115" cy="119" r="4" fill="#2a5a1e"/>
+  <circle cx="90" cy="118" r="2" fill="black"/>
+  <circle cx="116" cy="118" r="2" fill="black"/>
+  <!-- Nose -->
+  <path d="M97 125 Q100 132 103 125" fill="none" stroke="#c48a5a" stroke-width="2"/>
+  <!-- Smile -->
+  <path d="M88 140 Q100 152 112 140" fill="none" stroke="#8b5e3c" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Goatee -->
+  <path d="M95 148 Q100 158 105 148" fill="#d4a830"/>
+  <!-- Sword at belt -->
+  <line x1="55" y1="230" x2="40" y2="270" stroke="#a0a0a0" stroke-width="4"/>
+  <line x1="48" y1="227" x2="62" y2="233" stroke="#d4a843" stroke-width="5"/>
+</svg>

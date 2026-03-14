@@ -1,0 +1,120 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="blazerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8E8E8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B0B0B0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- 5-star review floating above head -->
+  <g transform="translate(100, 35)">
+    <!-- Stars -->
+    <polygon points="0,-8 2,-2 8,-2 3,2 5,8 0,4 -5,8 -3,2 -8,-2 -2,-2" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+    <polygon points="20,-8 22,-2 28,-2 23,2 25,8 20,4 15,8 17,2 12,-2 18,-2" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+    <polygon points="40,-8 42,-2 48,-2 43,2 45,8 40,4 35,8 37,2 32,-2 38,-2" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+    <polygon points="10,-18 12,-12 18,-12 13,-8 15,-2 10,-6 5,-2 7,-8 2,-12 8,-12" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+    <polygon points="30,-18 32,-12 38,-12 33,-8 35,-2 30,-6 25,-2 27,-8 22,-12 28,-12" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+  </g>
+
+  <!-- Head -->
+  <circle cx="100" cy="75" r="28" fill="#F5DEB3" stroke="#D2B48C" stroke-width="2"/>
+
+  <!-- Friendly hair - clean-cut -->
+  <path d="M 72 50 Q 65 35 100 28 Q 135 35 128 50" fill="#8B4513" stroke="#654321" stroke-width="1.5"/>
+
+  <!-- Friendly smile -->
+  <path d="M 90 80 Q 100 85 110 80" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- Friendly eyes -->
+  <circle cx="85" cy="70" r="3" fill="#000"/>
+  <circle cx="115" cy="70" r="3" fill="#000"/>
+  <!-- Eye shine - welcoming -->
+  <circle cx="86" cy="68" r="1.5" fill="#FFF"/>
+  <circle cx="116" cy="68" r="1.5" fill="#FFF"/>
+
+  <!-- T-shirt under blazer -->
+  <rect x="75" y="100" width="50" height="35" rx="3" fill="#FFF" stroke="#E0E0E0" stroke-width="1.5"/>
+
+  <!-- Blazer -->
+  <path d="M 70 95 L 65 140 Q 65 148 73 148 L 127 148 Q 135 148 135 140 L 130 95"
+        fill="url(#blazerGrad)" stroke="#808080" stroke-width="2"/>
+
+  <!-- Blazer buttons -->
+  <circle cx="100" cy="110" r="2" fill="#333" stroke="#000" stroke-width="0.5"/>
+  <circle cx="100" cy="125" r="2" fill="#333" stroke="#000" stroke-width="0.5"/>
+
+  <!-- Blazer lapels -->
+  <polygon points="85,100 75,140 85,140" fill="#999" stroke="#666" stroke-width="1"/>
+  <polygon points="115,100 125,140 115,140" fill="#999" stroke="#666" stroke-width="1"/>
+
+  <!-- Left arm - welcoming wave -->
+  <ellipse cx="55" cy="120" rx="12" ry="35" fill="#F5DEB3" stroke="#D2B48C" stroke-width="1.5"/>
+  <g transform="translate(45, 90)">
+    <ellipse rx="13" ry="18" fill="#F5DEB3" stroke="#D2B48C" stroke-width="1.5"/>
+    <!-- Wave motion lines -->
+    <path d="M -8 -5 Q -5 -10 -2 -5" stroke="#FF5A5F" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+    <path d="M 0 -8 Q 3 -13 6 -8" stroke="#FF5A5F" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+  </g>
+
+  <!-- Right arm -->
+  <ellipse cx="145" cy="130" rx="12" ry="38" fill="#F5DEB3" stroke="#D2B48C" stroke-width="1.5"/>
+  <circle cx="150" cy="170" r="11" fill="#F5DEB3" stroke="#D2B48C" stroke-width="1.5"/>
+
+  <!-- Stack of white towels in right hand -->
+  <g transform="translate(150, 155)">
+    <!-- Towel 1 -->
+    <rect x="-8" y="-2" width="16" height="8" fill="#FFF" stroke="#E0E0E0" stroke-width="1" rx="1"/>
+    <!-- Towel 2 -->
+    <rect x="-8" y="4" width="16" height="8" fill="#F0F0F0" stroke="#E0E0E0" stroke-width="1" rx="1"/>
+    <!-- Towel 3 -->
+    <rect x="-8" y="10" width="16" height="8" fill="#FFF" stroke="#E0E0E0" stroke-width="1" rx="1"/>
+    <!-- Towel fold shadows -->
+    <line x1="-6" y1="-2" x2="-6" y2="18" stroke="#DDD" stroke-width="0.5" opacity="0.5"/>
+    <line x1="6" y1="-2" x2="6" y2="18" stroke="#DDD" stroke-width="0.5" opacity="0.5"/>
+  </g>
+
+  <!-- Cleaning fee price tag on sleeve -->
+  <g transform="translate(120, 145)">
+    <!-- Tag shape -->
+    <rect x="-12" y="-8" width="24" height="16" rx="2" fill="#FF5A5F" stroke="#E63946" stroke-width="1"/>
+    <circle cx="-10" cy="-6" r="2" fill="#FFF"/>
+    <!-- Price text -->
+    <text x="0" y="2" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="#FFF" text-anchor="middle">$10</text>
+  </g>
+
+  <!-- MASSIVE key ring on belt -->
+  <g transform="translate(100, 175)">
+    <!-- Ring -->
+    <circle cx="0" cy="0" r="12" fill="none" stroke="#FFB800" stroke-width="2.5"/>
+    <!-- Keys hanging from ring -->
+    <g>
+      <!-- Key 1 -->
+      <rect x="-15" y="-2" width="8" height="4" fill="#FFB800" stroke="#FF8C00" stroke-width="1" rx="1"/>
+      <circle cx="-15" cy="0" r="2.5" fill="#FFB800" stroke="#FF8C00" stroke-width="1"/>
+      <!-- Key 2 -->
+      <rect x="-8" y="-16" width="8" height="4" fill="#FFB800" stroke="#FF8C00" stroke-width="1" rx="1"/>
+      <circle cx="-8" cy="-16" r="2.5" fill="#FFB800" stroke="#FF8C00" stroke-width="1"/>
+      <!-- Key 3 -->
+      <rect x="8" y="-12" width="8" height="4" fill="#FFB800" stroke="#FF8C00" stroke-width="1" rx="1"/>
+      <circle cx="8" cy="-12" r="2.5" fill="#FFB800" stroke="#FF8C00" stroke-width="1"/>
+      <!-- Key 4 -->
+      <rect x="15" y="2" width="8" height="4" fill="#FFB800" stroke="#FF8C00" stroke-width="1" rx="1"/>
+      <circle cx="15" cy="4" r="2.5" fill="#FFB800" stroke="#FF8C00" stroke-width="1"/>
+      <!-- Key 5 -->
+      <rect x="5" y="14" width="8" height="4" fill="#FFB800" stroke="#FF8C00" stroke-width="1" rx="1"/>
+      <circle cx="5" cy="16" r="2.5" fill="#FFB800" stroke="#FF8C00" stroke-width="1"/>
+    </g>
+  </g>
+
+  <!-- Pants -->
+  <rect x="82" y="148" width="16" height="38" fill="#00A699" stroke="#008B7A" stroke-width="1.5"/>
+  <rect x="102" y="148" width="16" height="38" fill="#00A699" stroke="#008B7A" stroke-width="1.5"/>
+
+  <!-- Shoes -->
+  <ellipse cx="90" cy="190" rx="10" ry="7" fill="#333" stroke="#000" stroke-width="1"/>
+  <ellipse cx="110" cy="190" rx="10" ry="7" fill="#333" stroke="#000" stroke-width="1"/>
+
+  <!-- Nervous blush on cheeks -->
+  <ellipse cx="72" cy="78" rx="6" ry="4" fill="#FF9999" opacity="0.4"/>
+  <ellipse cx="128" cy="78" rx="6" ry="4" fill="#FF9999" opacity="0.4"/>
+</svg>

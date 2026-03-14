@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Pirate Parrot -->
+  <!-- Tail feathers -->
+  <path d="M90 240 Q70 270 60 295" stroke="#c83a3a" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M95 240 Q80 275 75 295" stroke="#1a6bb5" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M100 242 Q90 278 88 295" stroke="#e8c845" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M105 240 Q100 275 100 295" stroke="#2aaa4a" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <!-- Body -->
+  <ellipse cx="105" cy="195" rx="35" ry="50" fill="#2aaa4a"/>
+  <!-- Belly -->
+  <ellipse cx="108" cy="200" rx="22" ry="35" fill="#e8c845"/>
+  <!-- Wing -->
+  <path d="M72 175 Q55 195 50 220 Q48 230 55 228 Q65 220 75 200 Q78 192 80 185" fill="#1a8a3a"/>
+  <path d="M55 228 Q52 235 48 240 Q45 245 50 243 Q58 238 60 230" fill="#1a6bb5"/>
+  <!-- Feet -->
+  <path d="M95 240 L88 255 L82 250 M88 255 L88 262 M88 255 L94 252" stroke="#d4a843" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M115 240 L118 255 L112 252 M118 255 L118 262 M118 255 L124 250" stroke="#d4a843" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Perch -->
+  <rect x="60" y="258" width="80" height="8" rx="4" fill="#6b4c2a"/>
+  <!-- Head -->
+  <ellipse cx="110" cy="120" rx="32" ry="35" fill="#2aaa4a"/>
+  <!-- Head feathers/crest -->
+  <path d="M105 85 Q110 65 120 70 Q115 75 118 85" fill="#c83a3a"/>
+  <path d="M112 88 Q120 68 128 75 Q122 78 122 88" fill="#e84848"/>
+  <path d="M118 90 Q130 72 135 82 Q128 82 125 92" fill="#c83a3a"/>
+  <!-- Eye area (white patch) -->
+  <ellipse cx="120" cy="115" rx="18" ry="16" fill="white"/>
+  <!-- Eye -->
+  <circle cx="122" cy="114" r="8" fill="#e8c845"/>
+  <circle cx="123" cy="113" r="4" fill="black"/>
+  <circle cx="124" cy="112" r="1.5" fill="white"/>
+  <!-- Beak -->
+  <path d="M135 118 Q155 115 152 125 Q148 132 135 128" fill="#2a2a2a"/>
+  <path d="M135 122 Q150 120 148 125 Q145 130 135 128" fill="#1a1a1a"/>
+  <!-- Upper beak curve -->
+  <path d="M135 118 Q152 112 155 120 Q155 115 152 125" fill="#3a3a3a"/>
+  <!-- Beak nostril -->
+  <circle cx="142" cy="120" r="2" fill="#2a2a2a"/>
+  <!-- Eye patch on parrot! -->
+  <ellipse cx="95" cy="112" rx="10" ry="11" fill="#1a1a1a"/>
+  <line x1="105" y1="108" x2="120" y2="104" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- Tiny pirate hat -->
+  <path d="M88 92 Q90 78 110 75 Q125 78 126 92 L122 95 Q110 88 92 95 Z" fill="#2a2a3a"/>
+  <path d="M92 95 Q110 90 122 95" fill="none" stroke="#d4a843" stroke-width="1.5"/>
+  <!-- Tiny skull -->
+  <circle cx="107" cy="85" r="4" fill="#e8e4d4"/>
+  <circle cx="105" cy="84" r="1.2" fill="#2a2a3a"/>
+  <circle cx="109" cy="84" r="1.2" fill="#2a2a3a"/>
+</svg>

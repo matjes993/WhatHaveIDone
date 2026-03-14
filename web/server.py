@@ -575,6 +575,15 @@ async def intro(request: Request):
     })
 
 
+@app.get("/automaton", response_class=HTMLResponse)
+async def automaton_page(request: Request):
+    """The Automaton — full-page RAG chat interface."""
+    return templates.TemplateResponse("automaton.html", {
+        "request": request,
+        "page": "automaton",
+    })
+
+
 @app.get("/scan", response_class=HTMLResponse)
 async def scan_page(request: Request):
     """Trigger scan and show animated results page."""
@@ -1163,7 +1172,7 @@ async def timeline_page(request: Request):
 
 @app.get("/sources", response_class=HTMLResponse)
 async def sources_page(request: Request):
-    """Sources management — see connected and available data sources."""
+    """Life Map — see all territories where your data lives."""
     config = load_config()
     vault_root = get_vault_root(config)
 
@@ -1256,7 +1265,7 @@ async def sources_page(request: Request):
             source["loot_emoji"] = "\U0001f4dc"
             source["loot_name"] = "Loot"
 
-    # Build villain islands: group sources by villain for the raid map
+    # Build villain islands: group sources by villain for the Life Map
     villain_islands = {}
     for source in all_sources:
         vid = source["villain_id"]
@@ -1298,17 +1307,70 @@ async def sources_page(request: Request):
         else:
             island["status"] = "uncharted"
 
+        # Compute Life Map extras: loot emojis, progress, category badge, impact
+        seen_loot = set()
+        loot_emojis = []
+        categories = []
+        last_raid = None
+        for src in island["sources"]:
+            if src["loot_type"] and src["loot_type"] not in seen_loot:
+                seen_loot.add(src["loot_type"])
+                loot_emojis.append(src["loot_emoji"])
+            categories.append(src["category"])
+            if src["last_updated"]:
+                if last_raid is None or src["last_updated"] > last_raid:
+                    last_raid = src["last_updated"]
+        island["loot_emojis"] = loot_emojis
+        island["loot_types"] = list(seen_loot)
+        island["source_count"] = len(island["sources"])
+        island["sources_collected"] = sum(1 for s in island["sources"] if s["collected"])
+        island["last_raid_time"] = last_raid
+
+        # Category badge: dominant category
+        cat_counts = {}
+        for c in categories:
+            cat_counts[c] = cat_counts.get(c, 0) + 1
+        dominant = max(cat_counts, key=cat_counts.get) if cat_counts else "local"
+        badge_map = {"local": "live", "google": "api", "import": "import"}
+        island["category_badge"] = badge_map.get(dominant, "live")
+
+        # Impact score: min(unique_loot_types * 2 + source_count, 5)
+        score = min(len(seen_loot) * 2 + island["source_count"], 5)
+        island["impact_score"] = score
+        impact_labels = {5: "Legendary Haul", 4: "Rich Plunder", 3: "Decent Plunder", 2: "Modest Treasure", 1: "Small Stash"}
+        island["impact_label"] = impact_labels.get(score, "Small Stash")
+
     # Sort islands: defeated first, then raided, then uncharted
     status_order = {"defeated": 0, "raided": 1, "uncharted": 2}
     sorted_islands = sorted(villain_islands.values(), key=lambda x: (status_order.get(x["status"], 3), x["name"]))
+
+    # Build the treasure summary bar: all loot types lit/dim
+    collected_loot_types = set()
+    for source in all_sources:
+        if source["collected"] and source["loot_type"]:
+            collected_loot_types.add(source["loot_type"])
+
+    all_loot_types = []
+    for loot_id, loot_info in LOOT_TYPES.items():
+        all_loot_types.append({
+            "id": loot_id,
+            "name": loot_info["name"],
+            "emoji": loot_info["emoji"],
+            "collected": loot_id in collected_loot_types,
+        })
+
+    charted_count = sum(1 for i in sorted_islands if i["status"] != "uncharted")
 
     return templates.TemplateResponse("sources.html", {
         "request": request,
         "page": "sources",
         "sources": all_sources,
         "islands": sorted_islands,
+        "all_loot_types": all_loot_types,
         "collected_count": len(collected),
         "total_sources": len(all_sources),
+        "charted_count": charted_count,
+        "total_territories": len(sorted_islands),
         "vault_root": vault_root,
     })
 
@@ -1337,6 +1399,73 @@ async def records_page(request: Request):
         "vaults": vaults,
         "total_records": total_records,
     })
+
+
+# ---------------------------------------------------------------------------
+# Aliases — "Many Faces" / user identity discovery
+# ---------------------------------------------------------------------------
+
+
+@app.get("/aliases", response_class=HTMLResponse)
+async def aliases_page(request: Request):
+    """Many Faces — discover the user's identities across platforms."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    user_name = config.get("user_name", "")
+
+    try:
+        from core.aliases import extract_user_aliases, load_cached_aliases, save_cached_aliases
+
+        # Try cache first
+        alias_data = load_cached_aliases(vault_root)
+        if alias_data is None:
+            alias_data = extract_user_aliases(vault_root, user_name)
+            save_cached_aliases(vault_root, alias_data)
+    except Exception as e:
+        logger.warning("Could not extract aliases: %s", e)
+        alias_data = {"primary_name": user_name or None, "primary_email": None, "aliases": []}
+
+    aliases = alias_data.get("aliases", [])
+    email_aliases = [a for a in aliases if a["type"] == "email"]
+    name_aliases = [a for a in aliases if a["type"] in ("name", "nickname")]
+    org_aliases = [a for a in aliases if a["type"] == "organization"]
+
+    # Build villain icon map
+    villain_icons = {}
+    for vid, vdata in VILLAIN_REGISTRY.items():
+        villain_icons[vid] = vdata["icon"]
+
+    return templates.TemplateResponse("aliases.html", {
+        "request": request,
+        "page": "aliases",
+        "primary_name": alias_data.get("primary_name"),
+        "primary_email": alias_data.get("primary_email"),
+        "email_aliases": email_aliases,
+        "name_aliases": name_aliases,
+        "org_aliases": org_aliases,
+        "villain_icons": villain_icons,
+        "total_aliases": len(aliases),
+    })
+
+
+@app.get("/api/aliases")
+async def api_aliases():
+    """Return extracted alias data as JSON."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    user_name = config.get("user_name", "")
+
+    try:
+        from core.aliases import extract_user_aliases, load_cached_aliases, save_cached_aliases
+
+        alias_data = load_cached_aliases(vault_root)
+        if alias_data is None:
+            alias_data = extract_user_aliases(vault_root, user_name)
+            save_cached_aliases(vault_root, alias_data)
+        return JSONResponse(alias_data)
+    except Exception as e:
+        logger.warning("Could not extract aliases: %s", e)
+        return JSONResponse({"primary_name": user_name or None, "primary_email": None, "aliases": []})
 
 
 @app.get("/api/records")
@@ -1587,13 +1716,26 @@ def _paginate_search_results(results, query, page, per_page):
         # Format date
         date_formatted = ""
         if date_val:
+            dt = None
+            dv = str(date_val)
+            # Try ISO format first
             try:
-                clean = re.sub(r'\.\d+', '', str(date_val))
+                clean = re.sub(r'\.\d+', '', dv)
                 clean = re.sub(r'Z$', '+00:00', clean)
                 dt = datetime.fromisoformat(clean)
-                date_formatted = dt.strftime("%B %d, %Y")
             except Exception:
-                date_formatted = date_val[:10] if len(date_val) >= 10 else date_val
+                pass
+            # Try email date format (RFC 2822): "Wed, 9 Jul 2025 16:39:40 +0100"
+            if dt is None:
+                from email.utils import parsedate_to_datetime
+                try:
+                    dt = parsedate_to_datetime(dv)
+                except Exception:
+                    pass
+            if dt:
+                date_formatted = dt.strftime("%b %d, %Y")
+            else:
+                date_formatted = dv[:10] if len(dv) >= 10 else dv
 
         formatted.append({
             "id": r.get("entry_id", ""),
@@ -1686,17 +1828,23 @@ def _format_record(entry):
 
     # --- Contacts ---
     elif "contact" in source_lower or entry_type == "contact":
-        name_parts = []
-        for k in ("name", "display_name", "full_name"):
-            if entry.get(k):
-                name_parts.append(entry[k])
-                break
-        if not name_parts:
+        title = ""
+        # name can be a string or a dict with display/given/family
+        raw_name = entry.get("name")
+        if isinstance(raw_name, dict):
+            title = raw_name.get("display") or f"{raw_name.get('given', '')} {raw_name.get('family', '')}".strip()
+        elif isinstance(raw_name, str) and raw_name:
+            title = raw_name
+        if not title:
+            for k in ("display_name", "full_name"):
+                v = entry.get(k)
+                if v and isinstance(v, str):
+                    title = v
+                    break
+        if not title:
             first = entry.get("first_name") or entry.get("given_name") or ""
             last = entry.get("last_name") or entry.get("family_name") or ""
-            combined = f"{first} {last}".strip()
-            name_parts.append(combined or "Unknown Contact")
-        title = name_parts[0]
+            title = f"{first} {last}".strip() or "Unknown Contact"
         subtitle = entry.get("organization") or entry.get("company") or entry.get("job_title") or ""
         date = str(entry.get("updated_at") or entry.get("created_at") or "")
         parts = []
@@ -2014,14 +2162,24 @@ def _format_record(entry):
     # Format a human-readable date
     date_formatted = ""
     if date:
+        dt = None
+        dv = str(date)
         try:
-            # Try ISO format first, then common formats
-            clean = re.sub(r'\.\d+', '', str(date))  # strip microseconds
-            clean = re.sub(r'Z$', '+00:00', clean)    # Z -> offset
+            clean = re.sub(r'\.\d+', '', dv)
+            clean = re.sub(r'Z$', '+00:00', clean)
             dt = datetime.fromisoformat(clean)
-            date_formatted = dt.strftime("%B %d, %Y")
         except Exception:
-            date_formatted = date[:10] if len(date) >= 10 else date
+            pass
+        if dt is None:
+            from email.utils import parsedate_to_datetime
+            try:
+                dt = parsedate_to_datetime(dv)
+            except Exception:
+                pass
+        if dt:
+            date_formatted = dt.strftime("%b %d, %Y")
+        else:
+            date_formatted = dv[:10] if len(dv) >= 10 else dv
 
     # --- Extract full body for detail view ---
     body_full = ""
@@ -2053,10 +2211,10 @@ def _format_record(entry):
         "source": source,
         "source_label": loot_info["name"] + "s",
         "source_emoji": loot_info["emoji"],
-        "title": (title or "Untitled")[:120],
-        "subtitle": (subtitle or "")[:120],
-        "preview": (preview or "")[:200],
-        "body": body_full[:5000],
+        "title": str(title or "Untitled")[:120],
+        "subtitle": str(subtitle or "")[:120],
+        "preview": str(preview or "")[:200],
+        "body": str(body_full or "")[:5000],
         "date": date,
         "date_formatted": date_formatted,
         "villain_id": villain_id,
@@ -2105,6 +2263,8 @@ async def settings_page(request: Request):
         "total_records": total_records,
         "source_count": source_count,
         "auto_scan": config.get("auto_scan", False),
+        "user_name": config.get("user_name", ""),
+        "automaton_power_level": config.get("automaton_power_level", 1),
     })
 
 
@@ -2197,6 +2357,7 @@ async def api_save_llm_token(request: Request):
     try:
         body = await request.json()
         provider = body.get("provider", "openai")
+        provider_name = body.get("provider_name", provider)
         token = body.get("token", "").strip()
         endpoint = body.get("endpoint", "").strip()
         model = body.get("model", "").strip()
@@ -2206,6 +2367,7 @@ async def api_save_llm_token(request: Request):
 
         data = {
             "provider": provider,
+            "provider_name": provider_name,
             "token_encrypted": _encrypt_token(token),
             "endpoint": endpoint,
             "model": model,
@@ -2230,6 +2392,7 @@ async def api_get_llm_token():
         masked = "????"
     return JSONResponse({
         "provider": data.get("provider"),
+        "provider_name": data.get("provider_name", data.get("provider")),
         "masked_token": masked,
         "endpoint": data.get("endpoint", ""),
         "model": data.get("model", ""),
@@ -2334,6 +2497,262 @@ async def api_chat(request: Request):
             {"ok": False, "error": str(e)},
             status_code=500,
         )
+
+
+# ---------------------------------------------------------------------------
+# Chat Conversations — Persistence
+# ---------------------------------------------------------------------------
+
+
+def _chats_dir(vault_root: str) -> str:
+    """Return (and create) the .chats directory inside the vault."""
+    d = os.path.join(vault_root, ".chats")
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
+def _load_chat(vault_root: str, chat_id: str) -> Optional[dict]:
+    path = os.path.join(_chats_dir(vault_root), f"{chat_id}.json")
+    if not os.path.exists(path):
+        return None
+    with open(path) as f:
+        return json.load(f)
+
+
+def _save_chat(vault_root: str, chat: dict):
+    path = os.path.join(_chats_dir(vault_root), f"{chat['id']}.json")
+    chat["updated_at"] = datetime.utcnow().isoformat()
+    with open(path, "w") as f:
+        json.dump(chat, f, indent=2)
+
+
+def _delete_chat_file(vault_root: str, chat_id: str):
+    path = os.path.join(_chats_dir(vault_root), f"{chat_id}.json")
+    if os.path.exists(path):
+        os.remove(path)
+
+
+def _list_chats(vault_root: str) -> list[dict]:
+    """List all chats, returning metadata (no messages) sorted by updated_at desc."""
+    d = _chats_dir(vault_root)
+    chats = []
+    for fname in os.listdir(d):
+        if not fname.endswith(".json"):
+            continue
+        try:
+            with open(os.path.join(d, fname)) as f:
+                c = json.load(f)
+            chats.append({
+                "id": c["id"],
+                "title": c.get("title", "New Chat"),
+                "folder": c.get("folder"),
+                "pinned": c.get("pinned", False),
+                "message_count": len(c.get("messages", [])),
+                "created_at": c.get("created_at", ""),
+                "updated_at": c.get("updated_at", ""),
+            })
+        except Exception:
+            continue
+    chats.sort(key=lambda c: c.get("updated_at", ""), reverse=True)
+    return chats
+
+
+@app.get("/api/chats")
+async def api_list_chats():
+    """List all saved conversations (metadata only)."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    chats = _list_chats(vault_root)
+    # Also return folder list
+    folders = sorted(set(c["folder"] for c in chats if c.get("folder")))
+    return JSONResponse({"ok": True, "chats": chats, "folders": folders})
+
+
+@app.post("/api/chats")
+async def api_create_chat(request: Request):
+    """Create a new conversation."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    body = await request.json() if request.headers.get("content-type", "").startswith("application/json") else {}
+    now = datetime.utcnow().isoformat()
+    chat = {
+        "id": str(uuid4()),
+        "title": body.get("title", "New Chat"),
+        "folder": body.get("folder"),
+        "pinned": False,
+        "messages": [],
+        "created_at": now,
+        "updated_at": now,
+    }
+    _save_chat(vault_root, chat)
+    return JSONResponse({"ok": True, "chat": chat})
+
+
+@app.get("/api/chats/{chat_id}")
+async def api_get_chat(chat_id: str):
+    """Load a full conversation with messages."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    chat = _load_chat(vault_root, chat_id)
+    if not chat:
+        return JSONResponse({"ok": False, "error": "Chat not found"}, status_code=404)
+    return JSONResponse({"ok": True, "chat": chat})
+
+
+@app.put("/api/chats/{chat_id}")
+async def api_update_chat(chat_id: str, request: Request):
+    """Update chat: rename, pin, move to folder, or append messages."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    chat = _load_chat(vault_root, chat_id)
+    if not chat:
+        return JSONResponse({"ok": False, "error": "Chat not found"}, status_code=404)
+
+    body = await request.json()
+
+    if "title" in body:
+        chat["title"] = body["title"]
+    if "folder" in body:
+        chat["folder"] = body["folder"] or None
+    if "pinned" in body:
+        chat["pinned"] = bool(body["pinned"])
+    if "messages" in body:
+        chat["messages"] = body["messages"]
+        # Auto-title from first user message if still "New Chat"
+        if chat.get("title") == "New Chat" and chat["messages"]:
+            first_user = next((m for m in chat["messages"] if m.get("role") == "user"), None)
+            if first_user:
+                title = (first_user.get("content") or "")[:60].strip()
+                if len(first_user.get("content", "")) > 60:
+                    title += "..."
+                chat["title"] = title
+
+    _save_chat(vault_root, chat)
+    return JSONResponse({"ok": True, "chat": chat})
+
+
+@app.post("/api/chats/{chat_id}/messages")
+async def api_append_message(chat_id: str, request: Request):
+    """Append a message pair (user + assistant) to a conversation."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    chat = _load_chat(vault_root, chat_id)
+    if not chat:
+        return JSONResponse({"ok": False, "error": "Chat not found"}, status_code=404)
+
+    body = await request.json()
+    new_messages = body.get("messages", [])
+    for msg in new_messages:
+        chat["messages"].append({
+            "role": msg["role"],
+            "content": msg["content"],
+            "timestamp": datetime.utcnow().isoformat(),
+            "pinned": msg.get("pinned", False),
+            "sources": msg.get("sources"),
+            "memory_tier": msg.get("memory_tier"),
+        })
+
+    # Auto-title from first user message if still "New Chat"
+    if chat["title"] == "New Chat" and chat["messages"]:
+        first_user = next((m for m in chat["messages"] if m["role"] == "user"), None)
+        if first_user:
+            title = first_user["content"][:60].strip()
+            if len(first_user["content"]) > 60:
+                title += "..."
+            chat["title"] = title
+
+    _save_chat(vault_root, chat)
+    return JSONResponse({"ok": True, "message_count": len(chat["messages"])})
+
+
+@app.put("/api/chats/{chat_id}/messages/{msg_idx}/pin")
+async def api_pin_message(chat_id: str, msg_idx: int, request: Request):
+    """Toggle pin on a specific message."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    chat = _load_chat(vault_root, chat_id)
+    if not chat:
+        return JSONResponse({"ok": False, "error": "Chat not found"}, status_code=404)
+    if msg_idx < 0 or msg_idx >= len(chat.get("messages", [])):
+        return JSONResponse({"ok": False, "error": "Message not found"}, status_code=404)
+
+    body = await request.json()
+    chat["messages"][msg_idx]["pinned"] = bool(body.get("pinned", True))
+    _save_chat(vault_root, chat)
+    return JSONResponse({"ok": True})
+
+
+@app.delete("/api/chats/{chat_id}")
+async def api_delete_chat(chat_id: str):
+    """Delete a conversation."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    _delete_chat_file(vault_root, chat_id)
+    return JSONResponse({"ok": True})
+
+
+@app.post("/api/chats/folders")
+async def api_create_folder(request: Request):
+    """Create a folder (just returns it — folders are implicit from chat.folder)."""
+    body = await request.json()
+    name = (body.get("name") or "").strip()
+    if not name:
+        return JSONResponse({"ok": False, "error": "Folder name required"}, status_code=400)
+    return JSONResponse({"ok": True, "folder": name})
+
+
+@app.put("/api/chats/folders/rename")
+async def api_rename_folder(request: Request):
+    """Rename a folder across all chats that use it."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    body = await request.json()
+    old_name = body.get("old_name", "").strip()
+    new_name = body.get("new_name", "").strip()
+    if not old_name or not new_name:
+        return JSONResponse({"ok": False, "error": "Both old_name and new_name required"}, status_code=400)
+
+    d = _chats_dir(vault_root)
+    count = 0
+    for fname in os.listdir(d):
+        if not fname.endswith(".json"):
+            continue
+        path = os.path.join(d, fname)
+        try:
+            with open(path) as f:
+                c = json.load(f)
+            if c.get("folder") == old_name:
+                c["folder"] = new_name
+                with open(path, "w") as f:
+                    json.dump(c, f, indent=2)
+                count += 1
+        except Exception:
+            continue
+    return JSONResponse({"ok": True, "updated": count})
+
+
+@app.delete("/api/chats/folders/{folder_name}")
+async def api_delete_folder(folder_name: str):
+    """Remove folder assignment from all chats in that folder."""
+    config = load_config()
+    vault_root = get_vault_root(config)
+    d = _chats_dir(vault_root)
+    count = 0
+    for fname in os.listdir(d):
+        if not fname.endswith(".json"):
+            continue
+        path = os.path.join(d, fname)
+        try:
+            with open(path) as f:
+                c = json.load(f)
+            if c.get("folder") == folder_name:
+                c["folder"] = None
+                with open(path, "w") as f:
+                    json.dump(c, f, indent=2)
+                count += 1
+        except Exception:
+            continue
+    return JSONResponse({"ok": True, "updated": count})
 
 
 # ---------------------------------------------------------------------------

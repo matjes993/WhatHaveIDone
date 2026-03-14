@@ -37,34 +37,51 @@ Want to contribute? github.com/matjes993/nomolo
 
     <!-- Sidebar Navigation -->
     <nav class="sidebar" id="sidebar">
-        <div class="sidebar__logo">
-            <span class="sidebar__logo-icon">N</span>
-            <span class="sidebar__logo-text">NOMOLO &#9875;</span>
+        <div class="sidebar__top">
+            <div class="sidebar__logo">
+                <span class="sidebar__logo-icon">N</span>
+                <span class="sidebar__logo-text">NOMOLO &#9875;</span>
+            </div>
+            <button class="sidebar__collapse-btn" onclick="NomoloBridge.toggleSidebar()" title="Toggle navigation">
+                <span class="sidebar__collapse-icon">&#x00AB;</span>
+            </button>
         </div>
 
         <ul class="sidebar__nav">
             <li>
                 <a href="/" class="sidebar__link {% if page == 'dashboard' or not page %}sidebar__link--active{% endif %}">
                     <span class="sidebar__icon sidebar__icon--emoji">&#127866;</span>
-                    <span class="jargon" data-rpg="SCUMM Bar" data-real="Dashboard">SCUMM Bar</span>
+                    <span class="sidebar__label jargon" data-rpg="SCUMM Bar" data-real="Dashboard">SCUMM Bar</span>
                 </a>
             </li>
             <li>
-                <a href="/records" class="sidebar__link {% if page == 'records' %}sidebar__link--active{% endif %}">
-                    <span class="sidebar__icon sidebar__icon--emoji">&#128220;</span>
-                    <span class="jargon" data-rpg="Loot Log" data-real="Records">Loot Log</span>
+                <a href="/automaton" class="sidebar__link {% if page == 'automaton' %}sidebar__link--active{% endif %}">
+                    <span class="sidebar__icon sidebar__icon--emoji">&#x1F916;</span>
+                    <span class="sidebar__label jargon" data-rpg="The Automaton" data-real="AI Chat">The Automaton</span>
                 </a>
             </li>
             <li>
                 <a href="/sources" class="sidebar__link {% if page == 'sources' %}sidebar__link--active{% endif %}">
                     <span class="sidebar__icon sidebar__icon--emoji">&#128506;&#65039;</span>
-                    <span class="jargon" data-rpg="Raid Targets" data-real="Sources">Raid Targets</span>
+                    <span class="sidebar__label jargon" data-rpg="Life Map" data-real="Data Map">Life Map</span>
+                </a>
+            </li>
+            <li>
+                <a href="/aliases" class="sidebar__link {% if page == 'aliases' %}sidebar__link--active{% endif %}">
+                    <span class="sidebar__icon sidebar__icon--emoji">&#127917;</span>
+                    <span class="sidebar__label jargon" data-rpg="Many Faces" data-real="Identities">Many Faces</span>
+                </a>
+            </li>
+            <li>
+                <a href="/records" class="sidebar__link {% if page == 'records' %}sidebar__link--active{% endif %}">
+                    <span class="sidebar__icon sidebar__icon--emoji">&#128220;</span>
+                    <span class="sidebar__label jargon" data-rpg="Loot Log" data-real="Records">Loot Log</span>
                 </a>
             </li>
             <li>
                 <a href="/settings" class="sidebar__link {% if page == 'settings' %}sidebar__link--active{% endif %}">
                     <span class="sidebar__icon sidebar__icon--emoji">&#9881;&#65039;</span>
-                    <span class="jargon" data-rpg="Ship's Helm" data-real="Settings">Ship's Helm</span>
+                    <span class="sidebar__label jargon" data-rpg="Ship's Helm" data-real="Settings">Ship's Helm</span>
                 </a>
             </li>
         </ul>

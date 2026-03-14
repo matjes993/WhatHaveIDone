@@ -108,6 +108,16 @@ def retrieve_context(query: str, vault_root: str, n_results: int = 8) -> list[di
     return results
 
 
+_STOP_WORDS = frozenset(
+    "i me my we our you your he she it they them this that what which who whom "
+    "how when where why a an the is am are was were be been being have has had "
+    "do does did will would shall should can could may might must and but or nor "
+    "not no so if then than too very just about also into from with for on at by "
+    "to of in up out off over get got did let tell show find all any some many "
+    "much more most other another each every".split()
+)
+
+
 def _text_scan_vault(query: str, vault_root: str, n_results: int = 8) -> list[dict]:
     """Brute-force text scan over vault JSONL files. Slow but always works."""
     try:
@@ -116,7 +126,10 @@ def _text_scan_vault(query: str, vault_root: str, n_results: int = 8) -> list[di
         logger.error("Cannot import core.vault for text scan")
         return []
 
-    query_terms = query.lower().split()
+    query_terms = [t for t in query.lower().split() if t not in _STOP_WORDS]
+    if not query_terms:
+        # If query was all stop words, use original terms
+        query_terms = query.lower().split()
     matches = []
 
     if not os.path.isdir(vault_root):
@@ -132,8 +145,10 @@ def _text_scan_vault(query: str, vault_root: str, n_results: int = 8) -> list[di
                     str(v) for v in entry.values()
                     if isinstance(v, (str, int, float))
                 ).lower()
-                if all(term in text_blob for term in query_terms):
-                    # Build a result dict matching hybrid_search format
+                # Score by how many query terms match (at least half must match)
+                hits = sum(1 for term in query_terms if term in text_blob)
+                min_required = max(1, len(query_terms) // 2)
+                if hits >= min_required:
                     snippet = ""
                     for k in ("body_raw", "body", "content", "text", "description", "subject", "title"):
                         v = entry.get(k)
@@ -144,7 +159,7 @@ def _text_scan_vault(query: str, vault_root: str, n_results: int = 8) -> list[di
                         "entry_id": entry.get("id", ""),
                         "collection": name,
                         "source": name,
-                        "combined_score": 1.0,
+                        "combined_score": hits / len(query_terms),
                         "metadata": {
                             "subject": entry.get("subject") or entry.get("title") or "",
                             "from": entry.get("from") or entry.get("sender") or "",
@@ -153,12 +168,13 @@ def _text_scan_vault(query: str, vault_root: str, n_results: int = 8) -> list[di
                         },
                         "snippet": snippet,
                     })
-                    if len(matches) >= n_results * 3:
+                    if len(matches) >= n_results * 10:
                         break
         except Exception as e:
             logger.warning("Text scan failed for %s: %s", name, e)
             continue
 
+    matches.sort(key=lambda m: m["combined_score"], reverse=True)
     return matches[:n_results]
 
 

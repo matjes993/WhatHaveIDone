@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Island Governor (Elaine-inspired) -->
+  <!-- Dress -->
+  <path d="M72 165 L58 285 Q58 292 68 292 L132 292 Q142 292 142 285 L128 165" fill="#c83a3a"/>
+  <!-- Dress detail -->
+  <path d="M72 165 L58 285" fill="none" stroke="#a82828" stroke-width="1"/>
+  <path d="M128 165 L142 285" fill="none" stroke="#a82828" stroke-width="1"/>
+  <!-- Sash -->
+  <path d="M72 175 L128 175 L132 182 L68 182 Z" fill="#d4a843"/>
+  <!-- Sword at side -->
+  <line x1="145" y1="185" x2="155" y2="250" stroke="#b0b0b0" stroke-width="3"/>
+  <rect x="141" y="180" width="10" height="8" rx="1" fill="#d4a843"/>
+  <!-- Arms -->
+  <path d="M58 170 Q42 185 38 205 Q36 212 42 212" fill="#f4c08a"/>
+  <path d="M142 170 Q155 180 158 195" fill="#f4c08a"/>
+  <!-- Hands -->
+  <circle cx="42" cy="210" r="8" fill="#f4c08a"/>
+  <circle cx="160" cy="198" r="8" fill="#f4c08a"/>
+  <!-- Hand on hip -->
+  <path d="M160 198 Q148 192 142 185" fill="none" stroke="#f4c08a" stroke-width="10"/>
+  <!-- Head -->
+  <ellipse cx="100" cy="112" rx="34" ry="40" fill="#f4c08a"/>
+  <!-- Hair (flowing auburn) -->
+  <path d="M66 105 Q62 65 100 55 Q138 65 134 105" fill="#8b3010"/>
+  <!-- Flowing hair sides -->
+  <path d="M66 105 Q58 120 55 155 Q54 165 60 162 Q65 150 68 130" fill="#8b3010"/>
+  <path d="M134 105 Q142 120 145 155 Q146 165 140 162 Q135 150 132 130" fill="#8b3010"/>
+  <!-- Hair highlights -->
+  <path d="M78 68 Q85 62 95 65" fill="none" stroke="#a84820" stroke-width="2"/>
+  <!-- Tiara/crown -->
+  <path d="M78 80 L82 70 L88 78 L94 65 L100 78 L106 65 L112 78 L118 70 L122 80" fill="none" stroke="#d4a843" stroke-width="2.5"/>
+  <circle cx="100" cy="66" r="3" fill="#58a8e8"/>
+  <!-- Eyes (determined) -->
+  <ellipse cx="88" cy="110" rx="6" ry="7" fill="white"/>
+  <ellipse cx="112" cy="110" rx="6" ry="7" fill="white"/>
+  <circle cx="89" cy="111" r="3.5" fill="#2a7a3a"/>
+  <circle cx="113" cy="111" r="3.5" fill="#2a7a3a"/>
+  <circle cx="90" cy="110" r="2" fill="black"/>
+  <circle cx="114" cy="110" r="2" fill="black"/>
+  <!-- Eyelashes -->
+  <path d="M82 104 Q88 101 94 104" fill="none" stroke="#5a2a08" stroke-width="1.5"/>
+  <path d="M106 104 Q112 101 118 104" fill="none" stroke="#5a2a08" stroke-width="1.5"/>
+  <!-- Nose -->
+  <path d="M98 118 Q100 122 102 118" fill="none" stroke="#d49060" stroke-width="1.5"/>
+  <!-- Confident smile -->
+  <path d="M90 130 Q100 138 110 130" fill="none" stroke="#8b4830" stroke-width="2"/>
+  <!-- Earrings -->
+  <path d="M66 118 L62 128" stroke="#d4a843" stroke-width="2"/>
+  <circle cx="62" cy="131" r="3" fill="#58a8e8"/>
+  <path d="M134 118 L138 128" stroke="#d4a843" stroke-width="2"/>
+  <circle cx="138" cy="131" r="3" fill="#58a8e8"/>
+</svg>

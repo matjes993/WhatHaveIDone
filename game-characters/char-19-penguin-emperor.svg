@@ -1,0 +1,140 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="robeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#07C160;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059349;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="wechatGreen" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#07C160;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059349;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Fortress silhouette in background -->
+  <g opacity="0.15">
+    <polygon points="40,120 50,80 70,90 80,70 100,75 120,70 140,90 150,80 160,120" fill="#000"/>
+    <rect x="55" y="120" width="15" height="40" fill="#000"/>
+    <rect x="130" y="120" width="15" height="40" fill="#000"/>
+    <rect x="70" y="140" width="10" height="20" fill="#000"/>
+    <rect x="120" y="140" width="10" height="20" fill="#000"/>
+  </g>
+
+  <!-- Tiny penguin soldiers at feet -->
+  <!-- Penguin 1 -->
+  <g transform="translate(70, 260)">
+    <!-- Body -->
+    <ellipse cx="0" cy="0" rx="6" ry="8" fill="#000" stroke="#000" stroke-width="0.5"/>
+    <!-- Belly -->
+    <ellipse cx="0" cy="2" rx="3" ry="5" fill="#FFF"/>
+    <!-- Head -->
+    <circle cx="0" cy="-8" r="4" fill="#000" stroke="#000" stroke-width="0.5"/>
+    <!-- Eyes -->
+    <circle cx="-1.5" cy="-8" r="1" fill="#FFF"/>
+    <circle cx="1.5" cy="-8" r="1" fill="#FFF"/>
+    <!-- Tiny feet -->
+    <ellipse cx="-2" cy="8" rx="1.5" ry="1" fill="#FFB800"/>
+    <ellipse cx="2" cy="8" rx="1.5" ry="1" fill="#FFB800"/>
+  </g>
+
+  <!-- Penguin 2 -->
+  <g transform="translate(100, 265)">
+    <ellipse cx="0" cy="0" rx="6" ry="8" fill="#000" stroke="#000" stroke-width="0.5"/>
+    <ellipse cx="0" cy="2" rx="3" ry="5" fill="#FFF"/>
+    <circle cx="0" cy="-8" r="4" fill="#000" stroke="#000" stroke-width="0.5"/>
+    <circle cx="-1.5" cy="-8" r="1" fill="#FFF"/>
+    <circle cx="1.5" cy="-8" r="1" fill="#FFF"/>
+    <ellipse cx="-2" cy="8" rx="1.5" ry="1" fill="#FFB800"/>
+    <ellipse cx="2" cy="8" rx="1.5" ry="1" fill="#FFB800"/>
+  </g>
+
+  <!-- Penguin 3 -->
+  <g transform="translate(130, 260)">
+    <ellipse cx="0" cy="0" rx="6" ry="8" fill="#000" stroke="#000" stroke-width="0.5"/>
+    <ellipse cx="0" cy="2" rx="3" ry="5" fill="#FFF"/>
+    <circle cx="0" cy="-8" r="4" fill="#000" stroke="#000" stroke-width="0.5"/>
+    <circle cx="-1.5" cy="-8" r="1" fill="#FFF"/>
+    <circle cx="1.5" cy="-8" r="1" fill="#FFF"/>
+    <ellipse cx="-2" cy="8" rx="1.5" ry="1" fill="#FFB800"/>
+    <ellipse cx="2" cy="8" rx="1.5" ry="1" fill="#FFB800"/>
+  </g>
+
+  <!-- Main Penguin Emperor body -->
+  <!-- Robe -->
+  <ellipse cx="100" cy="145" rx="42" ry="58" fill="url(#robeGrad)" stroke="#046240" stroke-width="2"/>
+
+  <!-- Robe detail - penguin embroidery patterns -->
+  <g stroke="#FFF" stroke-width="0.8" fill="none" opacity="0.6">
+    <!-- Penguin embroidery 1 -->
+    <circle cx="80" cy="120" r="4"/>
+    <circle cx="75" cy="125" r="1.5"/>
+    <circle cx="85" cy="125" r="1.5"/>
+    <!-- Penguin embroidery 2 -->
+    <circle cx="120" cy="130" r="4"/>
+    <circle cx="115" cy="135" r="1.5"/>
+    <circle cx="125" cy="135" r="1.5"/>
+    <!-- Penguin embroidery 3 -->
+    <circle cx="90" cy="160" r="3.5"/>
+    <circle cx="110" cy="165" r="3.5"/>
+  </g>
+
+  <!-- Robe trim - jade green detail -->
+  <path d="M 60 145 Q 100 130 140 145" stroke="#00A854" stroke-width="2" fill="none"/>
+  <path d="M 58 200 Q 100 210 142 200" stroke="#00A854" stroke-width="2" fill="none"/>
+
+  <!-- Arms hidden in robe -->
+  <ellipse cx="62" cy="145" rx="14" ry="32" fill="url(#robeGrad)" stroke="#046240" stroke-width="1.5"/>
+  <ellipse cx="138" cy="145" rx="14" ry="32" fill="url(#robeGrad)" stroke="#046240" stroke-width="1.5"/>
+
+  <!-- Hands emerging from robe -->
+  <circle cx="55" cy="170" r="10" fill="#F5DEB3" stroke="#D2B48C" stroke-width="1"/>
+  <circle cx="145" cy="170" r="10" fill="#F5DEB3" stroke="#D2B48C" stroke-width="1"/>
+
+  <!-- Jade scepter in right hand -->
+  <g transform="translate(145, 155)">
+    <!-- Scepter staff -->
+    <line x1="0" y1="-20" x2="0" y2="35" stroke="#00A854" stroke-width="3" stroke-linecap="round"/>
+    <!-- Ornamental top with QR code pattern -->
+    <circle cx="0" cy="-25" r="10" fill="#07C160" stroke="#046240" stroke-width="1.5"/>
+    <!-- QR code pattern on scepter top -->
+    <rect x="-6" y="-28" width="3" height="3" fill="#FFF" stroke="#000" stroke-width="0.5"/>
+    <rect x="0" y="-28" width="3" height="3" fill="#FFF" stroke="#000" stroke-width="0.5"/>
+    <rect x="-6" y="-23" width="3" height="3" fill="#000"/>
+    <rect x="3" y="-24" width="2" height="2" fill="#FFF" stroke="#000" stroke-width="0.3"/>
+    <rect x="-2" y="-20" width="2" height="2" fill="#FFF" stroke="#000" stroke-width="0.3"/>
+  </g>
+
+  <!-- Head -->
+  <circle cx="100" cy="70" r="32" fill="#000" stroke="#000" stroke-width="2"/>
+
+  <!-- Penguin head details - eyes -->
+  <circle cx="85" cy="65" r="5" fill="#FFF" stroke="#000" stroke-width="1"/>
+  <circle cx="115" cy="65" r="5" fill="#FFF" stroke="#000" stroke-width="1"/>
+  <circle cx="85" cy="65" r="2.5" fill="#000"/>
+  <circle cx="115" cy="65" r="2.5" fill="#000"/>
+
+  <!-- Calm, reserved expression - slight gaze -->
+  <line x1="82" y1="72" x2="88" y2="73" stroke="#F5DEB3" stroke-width="0.8"/>
+  <line x1="112" y1="72" x2="118" y2="73" stroke="#F5DEB3" stroke-width="0.8"/>
+
+  <!-- Beak/mouth -->
+  <polygon points="95,78 105,78 100,85" fill="#FFB800" stroke="#FF8C00" stroke-width="0.8"/>
+
+  <!-- Crown shaped like speech bubble -->
+  <g transform="translate(100, 35)">
+    <!-- Main crown circle -->
+    <circle cx="0" cy="0" r="14" fill="#07C160" stroke="#046240" stroke-width="2"/>
+    <!-- Speech bubble pointer -->
+    <polygon points="5,12 10,20 2,14" fill="#07C160" stroke="#046240" stroke-width="1.5"/>
+    <!-- Crown points -->
+    <polygon points="-10,-12 -6,-18 -2,-12" fill="#00A854" stroke="#046240" stroke-width="1"/>
+    <polygon points="0,-15 4,-20 8,-15" fill="#00A854" stroke="#046240" stroke-width="1"/>
+    <polygon points="10,-12 14,-18 18,-12" fill="#00A854" stroke="#046240" stroke-width="1"/>
+    <!-- Crown jewels -->
+    <circle cx="-6" cy="-14" r="1.5" fill="#FFD700"/>
+    <circle cx="4" cy="-17" r="1.5" fill="#FFD700"/>
+    <circle cx="14" cy="-14" r="1.5" fill="#FFD700"/>
+  </g>
+
+  <!-- Body glow/aura - regal -->
+  <circle cx="100" cy="145" rx="48" ry="65" fill="none" stroke="#00A854" stroke-width="1" opacity="0.3"/>
+</svg>

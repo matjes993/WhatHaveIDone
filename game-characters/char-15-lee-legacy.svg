@@ -1,0 +1,98 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="300" fill="#F0F4FF"/>
+
+  <!-- Entourage shadows behind -->
+  <g id="entourage" opacity="0.1">
+    <ellipse cx="40" cy="160" rx="20" ry="40" fill="#000000"/>
+    <ellipse cx="160" cy="160" rx="20" ry="40" fill="#000000"/>
+    <ellipse cx="70" cy="140" rx="15" ry="35" fill="#000000"/>
+    <ellipse cx="130" cy="140" rx="15" ry="35" fill="#000000"/>
+  </g>
+
+  <!-- Shadow -->
+  <ellipse cx="100" cy="270" rx="45" ry="12" fill="#1428A0" opacity="0.15"/>
+
+  <!-- Dark blue Korean-style business suit jacket -->
+  <path d="M 70 145 Q 65 170 70 220 L 80 230 L 100 235 L 120 230 L 130 220 Q 135 170 130 145 Z" fill="#1428A0"/>
+
+  <!-- Jacket lapels -->
+  <path d="M 80 150 L 88 170 L 100 160 Z" fill="#0D1A5C"/>
+  <path d="M 120 150 L 112 170 L 100 160 Z" fill="#0D1A5C"/>
+
+  <!-- White shirt front visible -->
+  <rect x="88" y="155" width="24" height="40" fill="#F5F5F5"/>
+
+  <!-- Bow tie -->
+  <rect x="90" y="152" width="6" height="8" fill="#1428A0" rx="1"/>
+  <rect x="104" y="152" width="6" height="8" fill="#1428A0" rx="1"/>
+  <rect x="96" y="154" width="8" height="4" fill="#FF0000" rx="1"/>
+
+  <!-- Left arm with smartwatch -->
+  <rect x="55" y="160" width="15" height="35" fill="#E8D5B7"/>
+  <!-- Smartwatch -->
+  <rect x="55" y="185" width="15" height="15" fill="#1428A0" stroke="#00A1E0" stroke-width="1.5" rx="2"/>
+  <rect x="57" y="187" width="11" height="11" fill="#00A1E0" opacity="0.3"/>
+  <!-- Smartwatch display detail -->
+  <line x1="60" y1="190" x2="65" y2="190" stroke="#FFFFFF" stroke-width="0.5"/>
+  <line x1="60" y1="193" x2="68" y2="193" stroke="#FFFFFF" stroke-width="0.5"/>
+
+  <!-- Right arm with VR headset pushed up on head -->
+  <rect x="130" y="160" width="15" height="35" fill="#E8D5B7"/>
+  <!-- Tablet holstered at side -->
+  <rect x="142" y="175" width="10" height="15" fill="#1428A0" stroke="#00A1E0" stroke-width="1" rx="1"/>
+  <rect x="143" y="176" width="8" height="13" fill="#00A1E0" opacity="0.2"/>
+
+  <!-- Neck -->
+  <rect x="92" y="140" width="16" height="8" fill="#E8D5B7"/>
+
+  <!-- Head -->
+  <circle cx="100" cy="125" r="22" fill="#E8D5B7" stroke="#D4A574" stroke-width="1"/>
+
+  <!-- Skin tone variations -->
+  <ellipse cx="95" cy="120" rx="7" ry="8" fill="#D4A574" opacity="0.3"/>
+  <ellipse cx="105" cy="122" rx="6" ry="7" fill="#D4A574" opacity="0.3"/>
+
+  <!-- Perfect slicked hair -->
+  <path d="M 78 108 Q 78 85 100 80 Q 122 85 122 108" fill="#000000" stroke="#1A1A1A" stroke-width="1"/>
+
+  <!-- Hair slicked detail -->
+  <path d="M 80 90 Q 100 85 120 90" stroke="#333333" stroke-width="1" fill="none" opacity="0.4"/>
+
+  <!-- VR headset on forehead/pushed up -->
+  <g id="vr-headset" transform="translate(100, 82)">
+    <!-- Main band -->
+    <path d="M -15 2 Q -12 -8 0 -10 Q 12 -8 15 2" fill="none" stroke="#1428A0" stroke-width="3" stroke-linecap="round"/>
+    <!-- Left lens -->
+    <circle cx="-8" cy="-3" r="4" fill="#00A1E0" opacity="0.4" stroke="#1428A0" stroke-width="1"/>
+    <!-- Right lens -->
+    <circle cx="8" cy="-3" r="4" fill="#00A1E0" opacity="0.4" stroke="#1428A0" stroke-width="1"/>
+    <!-- Center connector -->
+    <rect x="-2" y="-2" width="4" height="2" fill="#1428A0"/>
+  </g>
+
+  <!-- Eyes - focused, disciplined -->
+  <circle cx="90" cy="120" r="3.5" fill="#000000"/>
+  <circle cx="110" cy="120" r="3.5" fill="#000000"/>
+  <circle cx="91" cy="119" r="1.5" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="111" cy="119" r="1.5" fill="#FFFFFF" opacity="0.6"/>
+
+  <!-- Eyebrows - precise, determined -->
+  <path d="M 84 115 Q 90 113 96 115" stroke="#1A1A1A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M 104 115 Q 110 113 116 115" stroke="#1A1A1A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Nose -->
+  <polygon points="100,122 98,128 102,128" fill="#D4A574"/>
+
+  <!-- Mouth - professional, confident -->
+  <path d="M 94 132 Q 100 134 106 132" stroke="#8B6914" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Disciplined posture line -->
+  <line x1="100" y1="235" x2="100" y2="250" stroke="#1428A0" stroke-width="2" opacity="0.3"/>
+
+  <!-- Samsung blue glow -->
+  <circle cx="100" cy="125" r="26" fill="none" stroke="#1428A0" stroke-width="0.5" opacity="0.2"/>
+
+  <!-- Character name -->
+  <text x="100" y="290" font-size="13" font-family="Arial, sans-serif" font-weight="bold" text-anchor="middle" fill="#1428A0">LEE LEGACY</text>
+</svg>

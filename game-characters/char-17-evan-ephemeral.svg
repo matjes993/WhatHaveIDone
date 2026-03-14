@@ -1,0 +1,75 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fadeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FFFC00;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#FFFC00;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#FFFC00;stop-opacity:0" />
+    </linearGradient>
+    <filter id="ghostWisp">
+      <feGaussianBlur stdDeviation="2"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.6"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+
+  <!-- Ghost wisps - fading elements -->
+  <circle cx="130" cy="100" r="15" fill="#FFFC00" opacity="0.3" filter="url(#ghostWisp)"/>
+  <circle cx="140" cy="130" r="12" fill="#FFFC00" opacity="0.2" filter="url(#ghostWisp)"/>
+  <ellipse cx="150" cy="90" rx="10" ry="20" fill="#FFFC00" opacity="0.25" filter="url(#ghostWisp)"/>
+
+  <!-- Dog-ear filter triangles hovering above head -->
+  <polygon points="65,25 75,35 70,50" fill="#FFFC00" stroke="#F0F000" stroke-width="1.5" filter="url(#ghostWisp)"/>
+  <polygon points="125,25 135,35 130,50" fill="#FFFC00" stroke="#F0F000" stroke-width="1.5" filter="url(#ghostWisp)"/>
+
+  <!-- Head -->
+  <circle cx="100" cy="70" r="28" fill="#FDD835" stroke="#F57F17" stroke-width="2"/>
+
+  <!-- Stylish hair - modern, cool -->
+  <path d="M 72 50 Q 60 40 70 25 Q 85 15 100 12 Q 115 15 130 25 Q 140 40 128 50" fill="#F57F17" stroke="#F57F17" stroke-width="1.5"/>
+
+  <!-- Round Spectacles-style sunglasses -->
+  <circle cx="85" cy="68" r="11" fill="#1a1a1a" stroke="#FFD700" stroke-width="2" opacity="0.9"/>
+  <circle cx="115" cy="68" r="11" fill="#1a1a1a" stroke="#FFD700" stroke-width="2" opacity="0.9"/>
+  <line x1="96" y1="68" x2="104" y2="68" stroke="#FFD700" stroke-width="2"/>
+
+  <!-- Friendly expression -->
+  <path d="M 95 80 Q 100 82 105 80" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Designer clothes with fade effect -->
+  <!-- Upper shirt/jacket -->
+  <path d="M 75 95 L 70 140 Q 70 145 75 145 L 125 145 Q 130 145 130 140 L 125 95 Q 100 85 75 95"
+        fill="url(#fadeGradient)" stroke="#F0F000" stroke-width="2"/>
+
+  <!-- Shirt collar -->
+  <polygon points="90,95 100,92 110,95 105,105 95,105" fill="#FFF" stroke="#F0F000" stroke-width="1"/>
+
+  <!-- Left arm - fading -->
+  <ellipse cx="60" cy="115" rx="13" ry="38" fill="url(#fadeGradient)" stroke="#F0F000" stroke-width="1.5" opacity="0.8"/>
+  <circle cx="52" cy="155" r="11" fill="#FDD835" stroke="#F0F000" stroke-width="1.5"/>
+
+  <!-- Right arm - fading -->
+  <ellipse cx="140" cy="115" rx="13" ry="38" fill="url(#fadeGradient)" stroke="#F0F000" stroke-width="1.5" opacity="0.8"/>
+  <circle cx="148" cy="155" r="11" fill="#FDD835" stroke="#F0F000" stroke-width="1.5"/>
+
+  <!-- Trendy designer pants -->
+  <rect x="82" y="145" width="14" height="40" fill="#1a1a1a" stroke="#F0F000" stroke-width="1.5"/>
+  <rect x="104" y="145" width="14" height="40" fill="#1a1a1a" stroke="#F0F000" stroke-width="1.5"/>
+
+  <!-- Sneakers - cool design -->
+  <ellipse cx="89" cy="190" rx="9" ry="8" fill="#FFF" stroke="#F0F000" stroke-width="1.5"/>
+  <ellipse cx="111" cy="190" rx="9" ry="8" fill="#FFF" stroke="#F0F000" stroke-width="1.5"/>
+  <ellipse cx="89" cy="192" rx="7" ry="3" fill="#FFFC00"/>
+  <ellipse cx="111" cy="192" rx="7" ry="3" fill="#FFFC00"/>
+
+  <!-- Half-faded speech bubble -->
+  <g opacity="0.4" filter="url(#ghostWisp)">
+    <rect x="65" y="200" width="80" height="35" rx="5" fill="#FFFC00" stroke="#F0F000" stroke-width="1.5"/>
+    <polygon points="75,235 70,245 80,235" fill="#FFFC00" stroke="#F0F000" stroke-width="1"/>
+    <text x="105" y="225" font-family="Arial" font-size="8" fill="#333" text-anchor="middle" opacity="0.5">...</text>
+  </g>
+
+  <!-- Designer sunglasses detail - bright reflection -->
+  <circle cx="82" cy="62" r="3" fill="#FFF" opacity="0.8"/>
+  <circle cx="112" cy="62" r="3" fill="#FFF" opacity="0.8"/>
+</svg>

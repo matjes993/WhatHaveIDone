@@ -1,0 +1,92 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="300" fill="#E8F4F8"/>
+
+  <!-- Shadow -->
+  <ellipse cx="100" cy="270" rx="45" ry="12" fill="#00000020"/>
+
+  <!-- Sword on back - visible behind head -->
+  <g id="sword">
+    <line x1="130" y1="20" x2="160" y2="80" stroke="#C0C0C0" stroke-width="8" stroke-linecap="round"/>
+    <line x1="130" y1="20" x2="160" y2="80" stroke="#888888" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+    <!-- Sword guard -->
+    <rect x="125" y="15" width="12" height="20" fill="#FFD700" rx="2"/>
+  </g>
+
+  <!-- Legs in white pants -->
+  <rect x="75" y="180" width="20" height="50" fill="#F5F5F5"/>
+  <rect x="105" y="180" width="20" height="50" fill="#F5F5F5"/>
+
+  <!-- Shoes -->
+  <ellipse cx="85" cy="232" rx="12" ry="10" fill="#333333"/>
+  <ellipse cx="115" cy="232" rx="12" ry="10" fill="#333333"/>
+  <ellipse cx="85" cy="230" rx="10" ry="7" fill="#FFD700"/>
+  <ellipse cx="115" cy="230" rx="10" ry="7" fill="#FFD700"/>
+
+  <!-- Navy captain's jacket -->
+  <path d="M 60 140 Q 50 160 55 180 L 75 180 L 75 140 Z" fill="#001F3F"/>
+  <path d="M 140 140 Q 150 160 145 180 L 125 180 L 125 140 Z" fill="#001F3F"/>
+  <rect x="75" y="140" width="50" height="45" fill="#F5F5F5" rx="8"/>
+
+  <!-- Jacket lapels -->
+  <path d="M 80 145 L 85 165 L 100 150 Z" fill="#001F3F"/>
+  <path d="M 120 145 L 115 165 L 100 150 Z" fill="#001F3F"/>
+
+  <!-- Gold buttons -->
+  <circle cx="88" cy="155" r="4" fill="#FFD700"/>
+  <circle cx="100" cy="160" r="4" fill="#FFD700"/>
+  <circle cx="112" cy="155" r="4" fill="#FFD700"/>
+
+  <!-- Armor plates under jacket (tiny text detail) -->
+  <rect x="78" y="148" width="14" height="12" fill="#C0C0C0" opacity="0.7"/>
+  <rect x="108" y="148" width="14" height="12" fill="#C0C0C0" opacity="0.7"/>
+  <text x="80" y="154" font-size="4" font-family="monospace" fill="#333333" opacity="0.6">§§§</text>
+  <text x="110" y="154" font-size="4" font-family="monospace" fill="#333333" opacity="0.6">§§§</text>
+
+  <!-- Neck -->
+  <rect x="90" y="125" width="20" height="15" fill="#D4A574"/>
+
+  <!-- Head -->
+  <circle cx="100" cy="115" r="25" fill="#D4A574"/>
+
+  <!-- Tanned skin detail -->
+  <ellipse cx="95" cy="110" rx="8" ry="10" fill="#C9956A" opacity="0.3"/>
+  <ellipse cx="105" cy="112" rx="7" ry="8" fill="#C9956A" opacity="0.3"/>
+
+  <!-- Silver/white hair -->
+  <path d="M 75 100 Q 75 85 100 80 Q 125 85 125 100" fill="#E8E8E8"/>
+  <path d="M 75 100 Q 75 85 100 80 Q 125 85 125 100" stroke="#D0D0D0" stroke-width="2" fill="none"/>
+
+  <!-- Hair spikes for character -->
+  <polygon points="85,82 82,70 88,80" fill="#D0D0D0"/>
+  <polygon points="100,78 98,65 103,77" fill="#D0D0D0"/>
+  <polygon points="115,82 118,70 112,80" fill="#D0D0D0"/>
+
+  <!-- Aviator sunglasses -->
+  <circle cx="88" cy="112" r="8" fill="#FFD700" stroke="#C74634" stroke-width="2"/>
+  <circle cx="112" cy="112" r="8" fill="#FFD700" stroke="#C74634" stroke-width="2"/>
+  <line x1="96" y1="112" x2="104" y2="112" stroke="#C74634" stroke-width="2"/>
+  <!-- Glass reflect -->
+  <circle cx="86" cy="110" r="3" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="110" cy="110" r="3" fill="#FFFFFF" opacity="0.7"/>
+
+  <!-- Nose -->
+  <polygon points="100,118 98,125 102,125" fill="#C9956A"/>
+
+  <!-- Mouth - confident smirk -->
+  <path d="M 95 130 Q 100 133 105 130" stroke="#8B4513" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- Oracle red accent - shoulder cape detail -->
+  <path d="M 65 145 Q 60 155 65 170" fill="#C74634" stroke="#A03020" stroke-width="2"/>
+  <path d="M 135 145 Q 140 155 135 170" fill="#C74634" stroke="#A03020" stroke-width="2"/>
+
+  <!-- Captain's hat -->
+  <ellipse cx="100" cy="82" rx="28" ry="12" fill="#001F3F"/>
+  <ellipse cx="100" cy="80" rx="26" ry="10" fill="#001F3F"/>
+  <path d="M 72 82 Q 100 75 128 82" fill="#001F3F" stroke="#FFD700" stroke-width="2"/>
+  <!-- Gold trim on hat -->
+  <ellipse cx="100" cy="82" rx="28" ry="3" fill="#FFD700" opacity="0.8"/>
+
+  <!-- Eccentric pirate-captain-samurai vibe -->
+  <text x="100" y="290" font-size="14" font-family="Arial, sans-serif" font-weight="bold" text-anchor="middle" fill="#001F3F">LANCELOT</text>
+</svg>

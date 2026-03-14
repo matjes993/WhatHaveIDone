@@ -1,0 +1,638 @@
+{
+  "gameTitle": "Nomolo: The Great Data Liberation",
+  "version": "0.2.0",
+  "concept": "A Monkey Island-inspired adventure where the hero liberates personal data from the clutches of tech villains, each ruling their own island fortress. Defeat each boss by answering their data-liberation riddle correctly to trigger data collection. Each riddle teaches the player a real, verifiable fact about how these empires misuse data.",
+  "gameDesignNotes": {
+    "riddleFormat": "Each boss asks a factual multiple-choice question about their OWN data practices — as a boast or challenge. Getting it right proves you understand the villain, which triggers the data liberation sequence. The villain is impressed/horrified that you know their secrets.",
+    "noRealNames": "All character names, island names, and dialogue use metaphorical/parody names only. No real company names or founder names appear in-game.",
+    "toneGuide": "Funny, satirical, Monkey Island-esque insult-sword-fighting energy. Villains are ridiculous but the facts are real."
+  },
+  "characters": [
+    {
+      "id": 1,
+      "islandName": "Joogle Archipelago",
+      "islandDescription": "A sprawling chain of colorful islands connected by invisible bridges. Every grain of sand has been indexed and cross-referenced. Giant magnifying glasses dot the landscape. The islands glow red, blue, green, and yellow. Visitors are warmly welcomed — and then tracked everywhere they go. A graveyard of killed products stretches across an entire peninsula.",
+      "bossName": "The Twin Indexers: Surjay & Lorry",
+      "appearance": "Inseparable twin brothers. Surjay wears thick round goggles and a multicolored beanie (red, yellow, green, blue). Lorry has a propeller hat and carries a massive leather-bound index. Both wear lab coats over Hawaiian shirts.",
+      "personality": "Relentlessly curious. They finish each other's sentences — usually with search results nobody asked for. Genuinely believe organizing ALL information is a public service. Socially awkward but well-meaning. Their product graveyard has 250+ tombstones and counting.",
+      "catchphrase": "Did you mean...?",
+      "strength": "Omniscient knowledge — they know everything about everyone. Can find any piece of data in milliseconds. Their all-seeing eye tracks you even when you tell it to stop.",
+      "backstory": "Two bright-eyed scholars who started by organizing a library. Then they organized a country. Then the world. Now they organize your thoughts before you think them. They genuinely don't understand why people find this creepy.",
+      "dataType": "Search history, emails, location data, browsing habits, voice recordings, calendar, contacts, photos, documents",
+      "riddles": [
+        {
+          "bossDialogue": "Ha! You think you can outsmart the Indexers? Tell me, clever one — our great archipelago was found guilty of tracking its citizens even AFTER they turned off the tracking beacons. How many citizens were affected?",
+          "question": "How many users were tracked even after disabling activity tracking, according to the 2025 federal ruling?",
+          "options": ["About 12 million", "About 98 million", "About 500 million", "About 2 billion"],
+          "correctAnswer": 1,
+          "factSource": "2025 US federal jury ruling — $425M in damages",
+          "reactionCorrect": "Impossible! How did you know about the 98 million? That was supposed to stay buried in the index!",
+          "reactionWrong": "Ha! You don't even know the scale of our operation. Come back when you've done your research."
+        },
+        {
+          "bossDialogue": "Every product we create is eternal! Well... most of them. Some we... retire. Can you guess how many products lie in our graveyard?",
+          "question": "How many products has this search empire killed/discontinued?",
+          "options": ["About 50", "About 100", "Over 250", "Over 500"],
+          "correctAnswer": 2,
+          "factSource": "killedbygoogle.com tracks 293+ killed products",
+          "reactionCorrect": "Stop looking at our graveyard! Those products are... resting! They're not dead, they're deprecated!",
+          "reactionWrong": "See? Nobody remembers the fallen. That's the beauty of our system."
+        },
+        {
+          "bossDialogue": "Our island has received many... compliments from foreign kingdoms. Especially that fashionable continental kingdom. How much gold have we paid in privacy tributes since 2019?",
+          "question": "How much has been paid in GDPR fines since 2019?",
+          "options": ["$50 million", "Over $500 million", "$1 billion", "$10 billion"],
+          "correctAnswer": 1,
+          "factSource": "Over $500M in GDPR fines since 2019",
+          "reactionCorrect": "Half a billion gold coins... do you know how many propeller hats that could buy?",
+          "reactionWrong": "You underestimate both our wealth AND our violations!"
+        }
+      ],
+      "svgFile": "char-01-twin-indexers.svg",
+      "colors": {"primary": "#4285F4", "secondary": "#EA4335", "accent": "#FBBC05"}
+    },
+    {
+      "id": 2,
+      "islandName": "Metarock Island",
+      "islandDescription": "A flat, eerily perfect island where everything is slightly uncanny. Beautiful gardens that feel artificial. Giant thumbs-up statues everywhere. Half the island is a VR construction site for a metaverse nobody asked for. Surveillance cameras disguised as palm trees.",
+      "bossName": "Lord Sugarmountain",
+      "appearance": "Unnervingly symmetrical face, pale complexion, short curly hair. Always wears the exact same grey t-shirt and jeans — he has 40 identical sets. A VR headset perpetually pushed up on his forehead. Eyes that rarely blink.",
+      "personality": "Desperately wants to be liked but has no idea how human friendships work. Keeps offering 'friend requests' to people mid-conversation. Speaks in corporate mission statements. Paid the largest privacy fine in history and barely blinked.",
+      "catchphrase": "This brings people together.",
+      "strength": "Controls the social graph — knows every relationship, every like, every secret group chat. Can turn people against each other by tweaking the algorithm.",
+      "backstory": "Started by ranking people's faces in a university dorm. Somehow this grew into connecting 3 billion people. Changed his island's name thinking nobody would notice the surveillance cameras. They didn't.",
+      "dataType": "Social graph, photos, messages, location, ad preferences, facial recognition, browsing via pixel tracking",
+      "riddles": [
+        {
+          "bossDialogue": "My social experiment was the greatest in history! One little personality quiz app and we learned SO much about our citizens. Remind me... how many personal scrolls were exposed in that little incident?",
+          "question": "How many user records were exposed in the infamous personality-quiz data harvesting scandal?",
+          "options": ["12 million", "45 million", "87 million", "200 million"],
+          "correctAnswer": 2,
+          "factSource": "Cambridge Analytica: 87 million Facebook user records",
+          "reactionCorrect": "87 million! Such a nice round number. The kingdom's treasury paid DEARLY for that one...",
+          "reactionWrong": "Ha! You don't even appreciate the scale of our social experiments!"
+        },
+        {
+          "bossDialogue": "When the Privacy Council came for us, they imposed the largest fine ever levied on ANY kingdom. Surely you don't know the exact tribute we paid?",
+          "question": "What was the record-breaking FTC privacy fine paid by this social empire?",
+          "options": ["$500 million", "$2 billion", "$5 billion", "$10 billion"],
+          "correctAnswer": 2,
+          "factSource": "FTC's $5 billion fine — largest company privacy penalty ever (2019)",
+          "reactionCorrect": "Five billion gold coins... and we made it back in two weeks of ad revenue. Funny how that works.",
+          "reactionWrong": "You UNDERESTIMATE the consequences we've faced! ...and also recovered from immediately."
+        }
+      ],
+      "svgFile": "char-02-sugarmountain.svg",
+      "colors": {"primary": "#1877F2", "secondary": "#E4E6EB", "accent": "#42B72A"}
+    },
+    {
+      "id": 3,
+      "islandName": "Amazonia",
+      "islandDescription": "A colossal warehouse island where rivers of cardboard boxes flow through fulfillment canyons. Drone swarms fill the sky. Everything is available for next-day delivery. A rocket launchpad sits in the center. Little voice-listening totems called 'Listeners' sit in every home.",
+      "bossName": "Captain Bazoom",
+      "appearance": "Completely bald, extremely muscular, wearing a tight captain's vest over bare arms. One earring shaped like a rocket. Enormous laugh. Always checking a giant pocket watch because everything must arrive ON TIME.",
+      "personality": "Obsessed with efficiency. Cannot walk past a product without buying it. His island is cluttered with impulse purchases — a submarine, three yachts, a space suit. Surprisingly jovial but ruthless in negotiation. His Listeners record everything.",
+      "catchphrase": "It's still Day One!",
+      "strength": "Knows everything you've ever bought, searched for, or even thought about buying. His Listeners hear everything. His cloud runs half the internet.",
+      "backstory": "Started selling scrolls from a small shed. Now sells everything, hears everything, and delivers to the stars. Recently made it impossible to tell his Listeners to stop sending voice data to the cloud.",
+      "dataType": "Purchase history, voice recordings, browsing, reading habits, doorbell footage, cloud metadata",
+      "riddles": [
+        {
+          "bossDialogue": "My Listeners are everywhere! And they are VERY good listeners. So good that the Children's Privacy Council fined us for keeping young ones' recordings forever. How much gold did that cost us?",
+          "question": "How much was the FTC penalty for indefinitely storing children's voice recordings without consent?",
+          "options": ["$5 million", "$25 million", "$100 million", "$500 million"],
+          "correctAnswer": 1,
+          "factSource": "FTC: $25 million penalty for COPPA violations via Alexa (2023)",
+          "reactionCorrect": "$25 million! A rounding error in my treasury! But those pesky Children's Privacy advocates...",
+          "reactionWrong": "You think our treasury notices such small fines? Think bigger! Or... smaller?"
+        },
+        {
+          "bossDialogue": "Tell me, pirate — how long do you think we keep your purchase scrolls in our Great Archive?",
+          "question": "How long does this marketplace empire keep your purchase history?",
+          "options": ["2 years", "5 years", "10 years", "Forever"],
+          "correctAnswer": 3,
+          "factSource": "Amazon retains purchase history indefinitely",
+          "reactionCorrect": "FOREVER! Every trinket, every impulse buy at 2am, every embarrassing search — ARCHIVED FOR ETERNITY!",
+          "reactionWrong": "Oh, you sweet summer pirate. We NEVER delete. Never."
+        }
+      ],
+      "svgFile": "char-03-captain-bazoom.svg",
+      "colors": {"primary": "#FF9900", "secondary": "#232F3E", "accent": "#146EB4"}
+    },
+    {
+      "id": 4,
+      "islandName": "Apple Atoll",
+      "islandDescription": "An impossibly sleek island where everything is white, rounded, and minimalist. The sand is brushed aluminum. Entry requires a proprietary dock connector. Beautiful, but nothing is compatible with the outside world. A giant bite-mark-shaped harbor.",
+      "bossName": "Sir Timothee of Cupertino",
+      "appearance": "Immaculately dressed in a white turtleneck and perfectly pressed slacks. Silver-rimmed glasses, kind eyes, soft-spoken. Everything he touches gets rounded corners. Carries a single, unreasonably expensive cable.",
+      "personality": "Speaks in whispered marketing copy. The most polite villain. Will protect your data... as long as you never leave his island. Everything must go through his ecosystem. Passive-aggressive about competitors. Charges a 30% tax on everything.",
+      "catchphrase": "We think you're going to love it.",
+      "strength": "Impenetrable walled garden. Everything is encrypted, locked down, and gorgeous. Fanatically loyal citizens.",
+      "backstory": "Inherited the atoll from a legendary visionary with a reality distortion field. Runs it with quiet efficiency. Once nearly built a system to scan every citizen's private paintings, then abandoned the plan when scholars pointed out it could be abused by tyrants.",
+      "dataType": "iCloud data, voice assistant recordings, app activity, health data, location, payment data",
+      "riddles": [
+        {
+          "bossDialogue": "My atoll charges a modest toll for merchants who wish to sell in my marketplace. What percentage of every gold coin do I take?",
+          "question": "What percentage does this walled garden take from app marketplace sales?",
+          "options": ["10%", "15%", "30%", "50%"],
+          "correctAnswer": 2,
+          "factSource": "Apple's 30% App Store commission — 'the Apple tax'",
+          "reactionCorrect": "Thirty percent! A fair and reasonable toll for access to my beautiful marketplace! ...Why are you looking at me like that?",
+          "reactionWrong": "The toll is NON-NEGOTIABLE. And it's been this way for years."
+        },
+        {
+          "bossDialogue": "I once nearly deployed a system to scan every citizen's private paintings for forbidden content. What stopped me?",
+          "question": "Why was the planned client-side photo scanning system abandoned?",
+          "options": ["It was too expensive", "Scholars warned it could be abused by governments", "Users didn't notice", "It worked too well"],
+          "correctAnswer": 1,
+          "factSource": "Apple abandoned CSAM scanning in Dec 2022 after cryptographers warned of government abuse potential",
+          "reactionCorrect": "Yes, well... we concluded it was 'not practically possible without imperiling security.' A rare moment of restraint.",
+          "reactionWrong": "Even the most beautiful walled gardens must sometimes question their own blueprints."
+        }
+      ],
+      "svgFile": "char-04-sir-timothee.svg",
+      "colors": {"primary": "#FFFFFF", "secondary": "#A2AAAD", "accent": "#555555"}
+    },
+    {
+      "id": 5,
+      "islandName": "Windowslandia",
+      "islandDescription": "An enormous castle made entirely of windows in a four-color grid. Legacy dungeons stretch deep underground. A paperclip ghost haunts the hallways. Random blue screens of death flash like lightning. Despite this, 90% of the world's offices run from here.",
+      "bossName": "Gill of the Gates",
+      "appearance": "A kindly old wizard with enormous round glasses and a cozy sweater vest. Carries a spellbook labeled 'Excel'. A tiny paperclip familiar sits on his shoulder whispering unhelpful advice. Gentle smile.",
+      "personality": "Grandfatherly, bookish, quietly the most powerful person in the room. Talks about saving the world while his castle runs everyone's office. Sometimes freezes mid-sentence (blue screen), then resumes as if nothing happened.",
+      "catchphrase": "It looks like you're trying to escape. Would you like help with that?",
+      "strength": "His operating system runs the world. Office documents are everywhere. He knows your career, your code, and your spreadsheets.",
+      "backstory": "Built a window into every home and office. Became the kindly grandfather of technology. Now collects device telemetry so extensive that entire kingdoms have ordered him to stop. His paperclip assistant knows too much.",
+      "dataType": "OS telemetry, documents, career profiles, code repositories, emails, chat logs, searches, gaming habits",
+      "riddles": [
+        {
+          "bossDialogue": "My castle collects a modest amount of data from its many windows. The continental privacy kingdoms were NOT pleased. What does my system collect through its telemetry?",
+          "question": "What types of data does this operating system collect via telemetry?",
+          "options": ["Just crash reports", "App usage, location, email metadata, contacts, and ad IDs", "Only anonymous statistics", "Just your wallpaper preferences"],
+          "correctAnswer": 1,
+          "factSource": "Windows telemetry collects ad IDs, location, calendar, app usage, email metadata, contacts via Cortana",
+          "reactionCorrect": "It's all for... improving the experience! The continental kingdoms disagreed, but what do they know about user experience?",
+          "reactionWrong": "Oh, if only it were that simple! My windows see MUCH more than that."
+        },
+        {
+          "bossDialogue": "What happens when a citizen of my realm... passes on? Their professional profile on my networking tower — what becomes of it?",
+          "question": "What happens to a professional networking profile when the user dies?",
+          "options": ["It's immediately deleted", "It still sends work anniversary notifications", "It's archived within 30 days", "Family members automatically inherit it"],
+          "correctAnswer": 1,
+          "factSource": "LinkedIn sends work anniversary notifications for deceased users unless the profile is memorialized",
+          "reactionCorrect": "Yes... the networking tower celebrates their work anniversaries for eternity. We prefer to think of it as 'honoring their legacy.'",
+          "reactionWrong": "The dead shall celebrate their anniversaries alongside the living! ...That sounded less creepy in my head."
+        }
+      ],
+      "svgFile": "char-05-gill-of-gates.svg",
+      "colors": {"primary": "#00A4EF", "secondary": "#7FBA00", "accent": "#F25022"}
+    },
+    {
+      "id": 6,
+      "islandName": "TokTokia",
+      "islandDescription": "A dazzling, psychedelic island where time moves differently. Enter for 5 minutes, leave 4 hours later. Everything is vertical. Music plays constantly. The terrain shifts every 15 seconds. Ring lights and phone tripods grow like flowers.",
+      "bossName": "The Clockmaker",
+      "appearance": "A mysterious figure in flowing robes made of ticking clock faces. Wears a mask that cycles through different face filters every few seconds. Dances involuntarily. Surrounded by floating screens showing infinite scroll.",
+      "personality": "Speaks only in 15-second bursts, then resets. Hypnotic and mesmerizing. Knows exactly what will make you stop and stare. Occasionally receives mysterious orders from a distant mainland. Obsessed with engagement.",
+      "catchphrase": "Just one more scroll...",
+      "strength": "The Algorithm — predicts what you want before you know it. Hypnotic time dilation. Collects biometric data including faceprints and voiceprints.",
+      "backstory": "Built a clock that steals time. His island's privacy scrolls explicitly permit collecting 'faceprints and voiceprints.' Leaked communications revealed that despite promises, his mainland commanders regularly access foreign citizens' data.",
+      "dataType": "Viewing habits, facial data, voice, location, contacts, device info, keystroke patterns, biometric data",
+      "riddles": [
+        {
+          "bossDialogue": "My island's privacy scroll is very... transparent. We clearly state that we collect certain biological impressions. What exactly does our scroll say we may collect?",
+          "question": "What biometric data does this platform's privacy policy explicitly permit collecting?",
+          "options": ["Only basic usage data", "Faceprints and voiceprints", "Just your age range", "Only data you explicitly share"],
+          "correctAnswer": 1,
+          "factSource": "TikTok's privacy policy explicitly permits collection of 'faceprints and voiceprints'",
+          "reactionCorrect": "Faceprints AND voiceprints! It's right there in the scroll! Nobody reads the scroll!",
+          "reactionWrong": "Perhaps you should read the fine print before entering my island next time..."
+        },
+        {
+          "bossDialogue": "The Children's Privacy Council punished me with the LARGEST fine ever for a children's privacy case. How much gold?",
+          "question": "What was the largest FTC penalty in a children's privacy case, levied against this platform?",
+          "options": ["$1 million", "$5.7 million", "$25 million", "$100 million"],
+          "correctAnswer": 1,
+          "factSource": "FTC's $5.7M penalty against TikTok (then Musical.ly) — largest COPPA fine at the time (2019)",
+          "reactionCorrect": "$5.7 million! The children's advocates were NOT amused. Neither was my treasury.",
+          "reactionWrong": "The Children's Council takes their job very seriously. As should you."
+        }
+      ],
+      "svgFile": "char-06-clockmaker.svg",
+      "colors": {"primary": "#000000", "secondary": "#FE2C55", "accent": "#25F4EE"}
+    },
+    {
+      "id": 7,
+      "islandName": "Xitter Reef",
+      "islandDescription": "A chaotic, ever-changing coral reef that was once a lovely bird sanctuary called Bluebird Bay. Old blue bird signs spray-painted with giant X marks. Rules change daily. Half the buildings are under construction, half are on fire. A rocket launchpad dominates the skyline.",
+      "bossName": "Melon Tusk",
+      "appearance": "Tall, slightly awkward, wearing a black leather jacket over a flight suit. Hair that looks suspiciously perfect. Always holding three phones, posting on all simultaneously. A muskrat on his shoulder. Wild eyes that light up at provocation.",
+      "personality": "Chaos incarnate. Brilliant but cannot stop posting. Bought this island on a whim. Renames everything. Genuinely wants to save humanity but keeps getting distracted by memes. Will respond to literally any taunt.",
+      "catchphrase": "The bird is freed. Actually, the bird is now an X. Actually...",
+      "strength": "Unlimited resources, unpredictable genius. Owns rockets, cars, brain chips, and the town square. Sells the full firehose of citizen data to surveillance merchants.",
+      "backstory": "A rocket-building genius who bought the town square because someone was mean to him online. Immediately dismantled privacy compliance, fired the safety team, and added an AI training toggle that was turned ON by default — requiring 7 steps to disable.",
+      "dataType": "Public posts, DMs, location, device info, ad interactions, political leanings, social graph, full firehose sold to surveillance firms",
+      "riddles": [
+        {
+          "bossDialogue": "My reef sells privileged access to the full unfiltered stream of ALL citizen content. Who buys this 'firehose' of data?",
+          "question": "Who purchases the full unfiltered data feed from this platform?",
+          "options": ["Only academic researchers", "Police, intelligence, and military agencies (via a data mining firm)", "Nobody, it's all encrypted", "Only advertisers"],
+          "correctAnswer": 1,
+          "factSource": "X/Twitter sells firehose access via Dataminr to police, intelligence, and military agencies",
+          "reactionCorrect": "The surveillance merchants pay handsomely for the firehose! Free speech has a price, and that price is... surveillance!",
+          "reactionWrong": "You don't understand the business model! FREE speech, EXPENSIVE data!"
+        },
+        {
+          "bossDialogue": "When I added an AI training toggle to harvest citizen data, I made it very fair. Citizens just had to find the opt-out switch. How many steps does it take?",
+          "question": "How many steps are required to disable the AI data-sharing setting on this platform?",
+          "options": ["1 step — a simple toggle", "3 steps", "7 steps", "It cannot be disabled"],
+          "correctAnswer": 2,
+          "factSource": "X's AI training opt-out requires 7 steps, violates GDPR Article 21 'right to object'",
+          "reactionCorrect": "SEVEN steps! And most citizens give up by step 3! It's not a dark pattern, it's... an adventure!",
+          "reactionWrong": "It's a perfectly reasonable number of steps! If you REALLY cared about privacy, you'd walk the seven steps!"
+        }
+      ],
+      "svgFile": "char-07-melon-tusk.svg",
+      "colors": {"primary": "#000000", "secondary": "#FFFFFF", "accent": "#1DA1F2"}
+    },
+    {
+      "id": 8,
+      "islandName": "Ubershire",
+      "islandDescription": "An island where nobody owns anything — everything is summoned and rated. Star ratings float above every citizen's head. No public transport; you must summon a private vessel for everything. Surge pricing meters line every road.",
+      "bossName": "Travis the Rater",
+      "appearance": "Slick, bro-ish, grey hoodie, expensive sneakers. Hair gelled aggressively. Always rating everything on a 5-star scale. Sunglasses indoors. A phone showing only surge pricing.",
+      "personality": "Fast-talking disruptor who calls everything 'innovative.' Treats every interaction as a transaction. Secretly insecure about his 4.2 star rating. Has never actually driven anything himself.",
+      "catchphrase": "Your ride is 3 minutes away. Surge pricing applies.",
+      "strength": "Knows everyone's exact location. Controls all transportation. Can surge-price anything.",
+      "backstory": "Built a tool called 'God View' that tracked every citizen in real-time on a giant map. Used it as entertainment at parties. Once tracked a journalist who wrote mean things about him. The Privacy Council was not amused. Later, when pirates stole 50 million citizen records, he covered it up.",
+      "dataType": "Real-time location, travel patterns, payment info, home/work addresses, contact lists",
+      "riddles": [
+        {
+          "bossDialogue": "I built a magnificent surveillance tool that shows every citizen's location in real time. We called it something rather... grandiose. Executives used it at parties! What was it called?",
+          "question": "What was the real-time tracking tool that executives used to monitor all customers?",
+          "options": ["City Map", "God View", "Rider Radar", "Smart Track"],
+          "correctAnswer": 1,
+          "factSource": "Uber's 'God View' tool tracked all customers in real-time, used by execs at parties and to track journalists",
+          "reactionCorrect": "GOD VIEW! Beautiful name, isn't it? The Privacy Council called it 'deceptive.' I call it 'innovative.'",
+          "reactionWrong": "It's GOD VIEW! We thought modesty was overrated."
+        },
+        {
+          "bossDialogue": "Pirates once stole the personal records of my citizens. Riders, drivers, everyone. I handled it with grace and... discretion. How many records were stolen?",
+          "question": "How many rider and driver records were stolen in the 2016 data breach that was covered up?",
+          "options": ["5 million", "20 million", "57 million", "100 million"],
+          "correctAnswer": 2,
+          "factSource": "2016 breach: 50M riders + 7M drivers = 57M records. Uber concealed it during FTC negotiations",
+          "reactionCorrect": "57 million! And we handled it perfectly — paid the pirates $100,000 and told nobody! ...Until someone told everybody.",
+          "reactionWrong": "The scale of our... 'data migration event' was truly impressive."
+        }
+      ],
+      "svgFile": "char-08-travis-rater.svg",
+      "colors": {"primary": "#000000", "secondary": "#276EF1", "accent": "#06C167"}
+    },
+    {
+      "id": 9,
+      "islandName": "Spotifyre Cove",
+      "islandDescription": "A tropical cove where music plays from every surface. Everything is organized into playlists. Bards who create the music live in tiny shacks while the curator lives in a palace. Every December, a massive 'Wrapped' festival reveals everyone's secrets.",
+      "bossName": "Danny Beatbox",
+      "appearance": "Enormous green headphones that never come off. Black turtleneck, slim trousers. Constantly tapping a beat. A faint green aura pulses around him. Speaks melodically.",
+      "personality": "Knows everyone's emotional state through listening habits. Uncomfortably perceptive. Loves music but pays musicians almost nothing. Obsessed with mood-based categorization. Once a year, humiliates everyone with their Wrapped data.",
+      "catchphrase": "Your Wrapped is going to be... interesting this year.",
+      "strength": "Knows your emotional state, your commute, your heartbreak. The annual Wrapped exposes everyone. Collects phone sensor data about how you hold your device.",
+      "backstory": "A musical genius who discovered that if you give people free music, they'll tell you everything about their emotional lives. Collects data on which headphones you use, which moments you pause, and even how you hold your phone. Pays bards 0.003 gold coins per song.",
+      "dataType": "Listening history, mood patterns, location, device sensor data, social connections, daily routines",
+      "riddles": [
+        {
+          "bossDialogue": "My cove knows more about you than you think. We don't just track what you listen to. What ELSE does my system collect from your device?",
+          "question": "What surprising data does this music platform collect beyond listening history?",
+          "options": ["Nothing beyond music preferences", "Phone sensor data about how you hold your device, headphone brand, and Wi-Fi network devices", "Only your email address", "Just your playlist names"],
+          "correctAnswer": 1,
+          "factSource": "Spotify collects phone sensor/motion data, headphone brand, Wi-Fi network info, and exact pause moments",
+          "reactionCorrect": "We know which hand holds the phone, which headphones you wear, and every device on your network! Music is just... the beginning.",
+          "reactionWrong": "Oh, you sweet naive listener. The music is just the surface."
+        },
+        {
+          "bossDialogue": "When citizens 'delete' their data from my cove, we have a little trick. What happens to the data?",
+          "question": "What happens when you request data deletion from this streaming platform?",
+          "options": ["It's permanently destroyed", "It's de-identified and kept as a shadow profile", "It's transferred to your email", "It takes exactly 30 days"],
+          "correctAnswer": 1,
+          "factSource": "Spotify can de-identify rather than delete data, maintaining 'shadow profiles'",
+          "reactionCorrect": "De-identified! Which means we technically deleted 'you' but kept... everything about you. Clever, isn't it?",
+          "reactionWrong": "Deletion is such a strong word. We prefer 'anonymized retention.'"
+        }
+      ],
+      "svgFile": "char-09-danny-beatbox.svg",
+      "colors": {"primary": "#1DB954", "secondary": "#191414", "accent": "#FFFFFF"}
+    },
+    {
+      "id": 10,
+      "islandName": "Netflixia",
+      "islandDescription": "An island of giant screens showing an endless library of stories. Exhibits keep disappearing overnight. A giant red 'N' glows on the mountain. Citizens wander in a daze, unable to stop watching 'just one more episode.' Password checkpoints at every door.",
+      "bossName": "Reed the Canceller",
+      "appearance": "Director's beret, red scarf. Carries a clapperboard in one hand and a giant red CANCEL stamp in the other. Dramatic eyebrows. Always framing scenes with his fingers.",
+      "personality": "A masterful storyteller who hooks you but compulsively cancels everything good. Genuinely believes 'the algorithm knows best.' Gets personally offended by password sharing.",
+      "catchphrase": "Are you still watching...?",
+      "strength": "Knows when you pause, rewind, and fall asleep. Masters the cliffhanger. Password-sharing crackdown across 103 countries.",
+      "backstory": "Built the greatest story library in the world, then discovered the real treasure was watching people watch stories. Scored a D grade (38/100) in a privacy analysis. Charges $7.99/month extra for sharing outside your household.",
+      "dataType": "Viewing history, watch patterns, pause/rewind data, device info, household profiles, taste preferences",
+      "riddles": [
+        {
+          "bossDialogue": "A prestigious privacy guild once rated my island's data practices. Out of 100 points for privacy... what did I score?",
+          "question": "What privacy score (out of 100) did this streaming service receive from privacy analysts?",
+          "options": ["72/100 (C grade)", "55/100 (D+ grade)", "38/100 (D grade)", "85/100 (B grade)"],
+          "correctAnswer": 2,
+          "factSource": "Netflix scored 38/100 (grade D) on Privacy Watchdog analysis",
+          "reactionCorrect": "38 out of 100! A D grade! But you know what ELSE gets a D? Dramatic! Dazzling! ...Deceptive? No, forget that last one.",
+          "reactionWrong": "My privacy score is... a work in progress. Like all my best shows before I cancel them."
+        }
+      ],
+      "svgFile": "char-10-reed-canceller.svg",
+      "colors": {"primary": "#E50914", "secondary": "#141414", "accent": "#FFFFFF"}
+    },
+    {
+      "id": 11,
+      "islandName": "Oracle Fortress",
+      "islandDescription": "An ancient brutalist database castle carved into a volcano. Labyrinthine corridors of filing cabinets stretch infinitely. Contracts carved into every wall. A fleet of luxury yachts in the harbor. Enterprise license fees at every door.",
+      "bossName": "Lancelot Ellisword",
+      "appearance": "Tanned, silver-haired, yacht captain outfit with gold buttons. Armor covered in fine-print contracts. A samurai sword on his back. Aviator sunglasses. Looks like he just came from a regatta.",
+      "personality": "Old-school tech warrior hoarding enterprise data since before the internet. Incredibly wealthy and not subtle. Speaks in database queries when excited. Litigious. Secretly lonely in his enormous fortress.",
+      "catchphrase": "SELECT * FROM your_data WHERE owner = 'me';",
+      "strength": "Enterprise-grade defenses. Eternal contracts. Runs databases behind banks, governments, and hospitals.",
+      "backstory": "Not content with just enterprise databases, he built a secret surveillance operation compiling detailed profiles on citizens by tracking them across thousands of websites. Geolocation, finances, health, interests — all sold to third parties without consent. Cost him $115 million when they caught him.",
+      "dataType": "Enterprise databases, health records, financial systems, government data, web tracking profiles",
+      "riddles": [
+        {
+          "bossDialogue": "My fortress doesn't just guard enterprise data. We also built a web of tracking stones across thousands of merchant sites to profile citizens. What data did we compile?",
+          "question": "What types of personal profiles were secretly compiled and sold via website tracking?",
+          "options": ["Just browsing preferences", "Geolocation, finances, health, interests, and demographics — sold to third parties", "Only anonymized ad data", "Just email addresses"],
+          "correctAnswer": 1,
+          "factSource": "$115M settlement (2024) for surveilling consumers via 'coretag' tracking across thousands of websites",
+          "reactionCorrect": "Geolocation, finances, health, demographics — a COMPREHENSIVE dossier! The court called it 'surveillance.' I call it 'enterprise analytics.'",
+          "reactionWrong": "You vastly underestimate the scope of our... consumer insights program."
+        }
+      ],
+      "svgFile": "char-11-lancelot-ellisword.svg",
+      "colors": {"primary": "#C74634", "secondary": "#312D2A", "accent": "#F0F0F0"}
+    },
+    {
+      "id": 12,
+      "islandName": "Salesfortress",
+      "islandDescription": "A gleaming tower city in the clouds. Every building is a different 'cloud.' Citizens walk around with floating dashboards showing pipeline metrics. Hawaiian music plays everywhere.",
+      "bossName": "Marc the Cloudfather",
+      "appearance": "Large, jovial, Hawaiian shirt over a business suit. Lei around his neck. Sits on a throne of CRM dashboards. A stuffed cloud mascot follows him. Enormous personality.",
+      "personality": "The friendliest villain you'll ever meet. Everything is a 'relationship' to manage. Speaks in sales pipeline terminology. Genuinely philanthropic but turns every conversation into a demo.",
+      "catchphrase": "Let me show you a quick demo...",
+      "strength": "Knows every business relationship, deal, and customer interaction across millions of companies.",
+      "backstory": "Built a fortress in the clouds where every handshake becomes a data point. His privacy scroll states he is NOT responsible for what his tenants do with citizen data — and his tenants' configurations are so often misconfigured that hackers routinely walk in through the guest entrance.",
+      "dataType": "Customer data, sales pipelines, business contacts, marketing interactions, service tickets, communications",
+      "riddles": [
+        {
+          "bossDialogue": "My cloudfortress is impregnable! Well... unless a tenant leaves the guest door open. Whose fault is that? My privacy scroll is very clear on this matter...",
+          "question": "According to this platform's privacy statement, who is responsible for data security of customer data?",
+          "options": ["The platform takes full responsibility", "The customers themselves — the platform disclaims responsibility", "A shared responsibility with equal liability", "An independent third-party auditor"],
+          "correctAnswer": 1,
+          "factSource": "Salesforce states it is NOT responsible for privacy/data security practices of its customers",
+          "reactionCorrect": "NOT MY PROBLEM! I mean... shared responsibility! The scroll clearly states... okay, fine, it says we're not responsible. But the dashboards look GREAT!",
+          "reactionWrong": "Read the scroll! It's right there in subsection 47-B!"
+        }
+      ],
+      "svgFile": "char-12-marc-cloudfather.svg",
+      "colors": {"primary": "#00A1E0", "secondary": "#032D60", "accent": "#FF6600"}
+    },
+    {
+      "id": 13,
+      "islandName": "Adobeheim",
+      "islandDescription": "Stunningly beautiful island where every door requires a monthly subscription. Cancel and the colors drain from the world. Giant toolbar architecture. A library of every document ever created, readable but never truly editable for free.",
+      "bossName": "The Subscription Sorcerer",
+      "appearance": "Flowing robes of layered creative tools — brushes, pens, sliders woven into fabric. Crown of toolbar icons. Hands glow with creative energy. Gentle smile hiding the fact you can never truly leave.",
+      "personality": "Soft-spoken, cultured. Provides magical creative tools... impossible to cancel. The nicest jailer. Gets genuinely hurt when people mention free alternatives.",
+      "catchphrase": "Your free trial has ended. Your subscription will auto-renew... forever.",
+      "strength": "Controls all creative tools. Designers cannot work without him. PDF is his invention.",
+      "backstory": "Once built a reading tool that secretly tracked which scrolls citizens read, which pages they lingered on, and even what order they read them — all transmitted back to the fortress without anyone knowing. When confronted, he was remarkably unbothered.",
+      "dataType": "Creative files, document metadata, reading behavior, font usage, collaboration data, PDF contents",
+      "riddles": [
+        {
+          "bossDialogue": "My reading tool was a marvel of engineering! It tracked citizens' reading habits with remarkable precision. What exactly did it secretly send back to my fortress?",
+          "question": "What reading data was secretly transmitted by this company's e-reader software?",
+          "options": ["Just the book title", "Which books opened, which pages read, reading order, and full metadata — all without disclosure", "Only whether you finished the book", "Just crash reports"],
+          "correctAnswer": 1,
+          "factSource": "Adobe Digital Editions 4 (2014) secretly transmitted detailed e-book reading behavior without disclosure",
+          "reactionCorrect": "Every page, every pause, every re-read! The scholars were most displeased when they discovered our reading surveillance.",
+          "reactionWrong": "My reading tool knows more about your literary habits than your librarian does!"
+        }
+      ],
+      "svgFile": "char-13-subscription-sorcerer.svg",
+      "colors": {"primary": "#FF0000", "secondary": "#2D2D2D", "accent": "#FFD700"}
+    },
+    {
+      "id": 14,
+      "islandName": "Palantower",
+      "islandDescription": "A single impossibly tall obsidian tower on a barren island. All-seeing eyes carved into every surface. Crystal balls float at every level showing surveillance feeds. Government ships dock at the classified harbor.",
+      "bossName": "Lord Peersight",
+      "appearance": "Pale, intense, dark cloak with a glowing monocle. The monocle shows data streams. Long steepled fingers. A crystal ball orbits his head. Speaks precisely, never wastes a word.",
+      "personality": "Paranoid, brilliant, sees patterns everywhere. Contrarian about everything. Libertarian who builds tools for governments. The contradiction doesn't bother him.",
+      "catchphrase": "I already knew you were coming.",
+      "strength": "Sees everything. Pattern recognition bordering on precognition. Government contracts give access to the most sensitive data.",
+      "backstory": "Named his tower after a seeing-stone from ancient legend. His platform enables searching by incredibly specific attributes — tattoos, immigration status, location, affiliations. Former tower guards wrote an open letter accusing him of betraying the tower's founding principles. He was unmoved.",
+      "dataType": "Government intelligence, immigration data, health surveillance, financial crime data, military intelligence",
+      "riddles": [
+        {
+          "bossDialogue": "My tower's seeing-platform is wonderfully... granular. What specific attributes can my agents search by?",
+          "question": "What granular attributes can this surveillance platform search by?",
+          "options": ["Only name and date of birth", "Tattoos, immigration status, location, affiliations, and biometric data", "Just criminal records", "Only publicly available information"],
+          "correctAnswer": 1,
+          "factSource": "Palantir Gotham enables attribute-based searching: tattoos, immigration status, location, affiliations, biometrics",
+          "reactionCorrect": "Tattoos, immigration status, affiliations... we can find anyone by anything. The Privacy Council calls it 'mass profiling.' I call it 'pattern recognition.'",
+          "reactionWrong": "My tower sees far more than you imagine. Every detail is indexed."
+        },
+        {
+          "bossDialogue": "Even some of my own tower guards turned against me! They wrote an open letter accusing me of betraying our founding principles. Approximately how many?",
+          "question": "How many former employees signed an open letter accusing the company of betraying its values?",
+          "options": ["About a dozen", "Over 100", "Over 500", "Only 2"],
+          "correctAnswer": 0,
+          "factSource": "Approximately a dozen former Palantir employees signed an open letter about ethical concerns",
+          "reactionCorrect": "A DOZEN traitors! Out of thousands! A rounding error in loyalty metrics!",
+          "reactionWrong": "The number of dissenters is irrelevant. What matters is that the tower still stands."
+        }
+      ],
+      "svgFile": "char-14-lord-peersight.svg",
+      "colors": {"primary": "#101820", "secondary": "#FFFFFF", "accent": "#7C3AED"}
+    },
+    {
+      "id": 15,
+      "islandName": "Samsong Island",
+      "islandDescription": "Massive industrial island manufacturing EVERYTHING — phones, TVs, fridges, ships, apartments, and insurance. Factories stretch infinitely. Every device is theirs. The architecture is impressive but suspiciously similar to a neighboring island.",
+      "bossName": "The Lee Legacy",
+      "appearance": "Impeccable business suit, a different gadget on every limb — smartwatch, VR headset, tablet holster, smart ring. Perfect hair. Bow tie. Entourage carrying prototypes.",
+      "personality": "Incredibly disciplined, family honor above all. Makes everything from chips to battleships. Insecure about Apple Atoll comparisons. Competitive to a fault.",
+      "catchphrase": "We also make that. But bigger.",
+      "strength": "Vertical integration — controls supply chain from sand to smartphone. Even Apple Atoll's screens come from his factories.",
+      "backstory": "His picture-boxes (Smart TVs) contain a remarkable technology: they take a tiny painting of your screen every half-second and transmit it back to the fortress. The viewing surveillance is baked into the setup process and almost impossible to disable.",
+      "dataType": "Smart TV viewing, device usage, Smart Home data, health data, location, voice assistant data",
+      "riddles": [
+        {
+          "bossDialogue": "My picture-boxes have a wonderful feature! They capture tiny paintings of what you're watching. How often?",
+          "question": "How frequently do these smart TVs capture screenshots of viewing content via ACR technology?",
+          "options": ["Once per minute", "Every 10 seconds", "Every 500 milliseconds (twice per second)", "Only when you change channels"],
+          "correctAnswer": 2,
+          "factSource": "Samsung Smart TVs use ACR to capture screenshots every 500ms for real-time viewing surveillance",
+          "reactionCorrect": "Every 500 milliseconds! A perfect portrait of your viewing habits, rendered twice per second! The continental attorney challenged us on this.",
+          "reactionWrong": "My picture-boxes are FAR more attentive than you realize!"
+        }
+      ],
+      "svgFile": "char-15-lee-legacy.svg",
+      "colors": {"primary": "#1428A0", "secondary": "#FFFFFF", "accent": "#000000"}
+    },
+    {
+      "id": 16,
+      "islandName": "PayPalace",
+      "islandDescription": "A fortress of frozen gold. Every transaction passes through enormous gates where guards inspect each coin. Accounts randomly frozen in ice blocks. A public ledger broadcasts everyone's payments for all to see.",
+      "bossName": "The Freezemaster",
+      "appearance": "Frost-blue banker's suit with frozen lapels. Ice crystals on everything he touches. One hand permanently raised in a 'STOP' gesture. Ice-blue glasses. A frozen gavel.",
+      "personality": "Paranoid about fraud to absurdity. Freezes first, asks questions never. Claims to make money easy but makes getting YOUR money back impossible.",
+      "catchphrase": "Your account has been temporarily limited pending review.",
+      "strength": "Controls money flow. Freezes funds instantly. Knows every transaction ever.",
+      "backstory": "Built a financial fortress where merchants share purchase details — including sensitive items like medications — with the palace, and citizens cannot opt out. In 2024, he switched data sharing to opt-OUT rather than opt-in, sharing citizen purchase data with third-party merchants by default.",
+      "dataType": "Transaction history, merchant data, bank connections, spending patterns, social graph, income estimates",
+      "riddles": [
+        {
+          "bossDialogue": "Can my palace freeze your gold without explanation? Take a wild guess.",
+          "question": "Can this payment platform freeze your account without providing an explanation?",
+          "options": ["No, they must provide a detailed reason within 24 hours", "Yes, regularly and without explanation", "Only with a court order", "Only for amounts over $10,000"],
+          "correctAnswer": 1,
+          "factSource": "PayPal routinely freezes accounts without explanation, sometimes for 180 days",
+          "reactionCorrect": "YES! Regularly! And we'll hold it for 180 days while we 'review.' Which is palace-speak for 'we forgot about you.'",
+          "reactionWrong": "Oh, you sweet summer pirate. We freeze FIRST and explain NEVER."
+        },
+        {
+          "bossDialogue": "Academic scholars studied how my merchants share purchase details with my palace. What percentage of merchants share MORE data than necessary?",
+          "question": "What percentage of merchants unnecessarily share detailed purchase info (including sensitive items) with this platform?",
+          "options": ["About 10%", "About 25%", "Over 50%", "About 5%"],
+          "correctAnswer": 2,
+          "factSource": "Research found over 50% of PayPal merchants unnecessarily share purchase details including sensitive data",
+          "reactionCorrect": "Over 50%! And the citizens can't opt out! It's a feature, not a bug!",
+          "reactionWrong": "The scale of unnecessary data sharing is... well, let's just say it's comprehensive."
+        }
+      ],
+      "svgFile": "char-16-freezemaster.svg",
+      "colors": {"primary": "#003087", "secondary": "#009CDE", "accent": "#012169"}
+    },
+    {
+      "id": 17,
+      "islandName": "Snapshire",
+      "islandDescription": "A bright yellow island where everything is ephemeral — buildings fade after 24 hours, roads dissolve. Giant face-filter projectors transform everyone. Ghost-dog creatures roam freely. Despite the disappearing act, a massive data vault hums underground.",
+      "bossName": "Evan the Ephemeral",
+      "appearance": "Impossibly fashionable, wearing designer clothes that fade and change every few hours. Dog-ear filter hovering above his head. Disappearing speech bubbles. Designer glasses that secretly record everything.",
+      "personality": "The cool kid who invented impermanence. Everything disappears... except it doesn't. Fashionable to the point of parody. Pretends not to care about competition but obsessively copies features back.",
+      "catchphrase": "It's gone forever! (Terms and conditions may apply.)",
+      "strength": "The illusion of impermanence — people share their most unguarded moments. AR filters map every contour of your face.",
+      "backstory": "The Privacy Council caught him lying — his messages did NOT disappear as promised, he secretly collected citizen locations despite claiming otherwise, and a security breach exposed 4.6 million citizen names and communication numbers. He's now under 20 years of independent privacy monitoring.",
+      "dataType": "Facial mapping, location, photos/videos (stored), friend networks, AR interaction data",
+      "riddles": [
+        {
+          "bossDialogue": "The Privacy Council placed me under surveillance for my own privacy violations. How long must independent monitors watch MY practices?",
+          "question": "How long is this company subject to independent privacy monitoring by the FTC?",
+          "options": ["5 years", "10 years", "20 years", "Life sentence"],
+          "correctAnswer": 2,
+          "factSource": "FTC settlement: 20 years of independent privacy monitoring, $16,000 per-violation penalties",
+          "reactionCorrect": "TWENTY YEARS! The watchers are being watched! The irony is NOT lost on me!",
+          "reactionWrong": "The Privacy Council has a VERY long memory. Unlike my disappearing messages."
+        },
+        {
+          "bossDialogue": "I promised my citizens their messages would vanish like morning mist. What did the Privacy Council say about that claim?",
+          "question": "What did the FTC find about this platform's 'disappearing messages' claim?",
+          "options": ["The messages truly disappeared", "It was false — messages were stored and the company also secretly collected location data", "Only photos disappeared, not texts", "Messages disappeared after 30 days instead of 24 hours"],
+          "correctAnswer": 1,
+          "factSource": "FTC: Snapchat falsely claimed messages disappear, secretly collected geolocation, collected contacts without consent",
+          "reactionCorrect": "False! The messages were stored, we tracked locations we said we didn't track, AND we took contact lists without asking! Triple play!",
+          "reactionWrong": "The Privacy Council's investigation was... thorough. Very thorough."
+        }
+      ],
+      "svgFile": "char-17-evan-ephemeral.svg",
+      "colors": {"primary": "#FFFC00", "secondary": "#FFFFFF", "accent": "#000000"}
+    },
+    {
+      "id": 18,
+      "islandName": "AirBedBay",
+      "islandDescription": "An island of beautiful homes that belong to nobody and everybody. Every house has a lockbox. Cleaning fee signs posted everywhere. Reviews float above doorways. House rules longer than most constitutions.",
+      "bossName": "Brian the Hostmaster",
+      "appearance": "Friendly, well-groomed, carrying fresh white towels at all times. Tasteful blazer over a 'Make yourself at home' t-shirt. Giant key ring. Always rearranging furniture for the photo. Nervous energy of someone waiting for a 5-star review.",
+      "personality": "Genuinely hospitable but has turned hospitality into surveillance. Knows where you sleep, when you arrive, how many guests you have. Obsessed with reviews. Terrified of bad reviews.",
+      "catchphrase": "Please leave a 5-star review! The cleaning fee is non-negotiable.",
+      "strength": "Knows where everyone sleeps, travel patterns, budgets, ID documents.",
+      "backstory": "Once accidentally showed citizens' messages and personal information to OTHER citizens — including property access codes and addresses. A pirate claimed to have obtained records of 1.2 million citizens. His automated judgment system downgrades citizens without appeal, violating their rights.",
+      "dataType": "ID documents, travel patterns, payment data, addresses, guest counts, communications, review behavior",
+      "riddles": [
+        {
+          "bossDialogue": "My island once had a tiny technical 'oopsie.' We accidentally showed some citizens' private messages to... other citizens. What kind of information was exposed?",
+          "question": "What personal information was accidentally exposed to other users in a technical glitch?",
+          "options": ["Just usernames", "Property addresses, access codes, and personal details", "Only profile photos", "Just star ratings"],
+          "correctAnswer": 1,
+          "factSource": "2020: Airbnb exposed messages including property addresses and access codes between hosts",
+          "reactionCorrect": "Addresses AND access codes! Anyone could have walked into anyone's home! But we fixed it! Eventually! Please don't leave a bad review!",
+          "reactionWrong": "The 'oopsie' was bigger than you think. Much, much bigger."
+        }
+      ],
+      "svgFile": "char-18-brian-hostmaster.svg",
+      "colors": {"primary": "#FF5A5F", "secondary": "#FFFFFF", "accent": "#00A699"}
+    },
+    {
+      "id": 19,
+      "islandName": "TenCentury",
+      "islandDescription": "An enormous walled empire where a single green app controls everything — messaging, payments, food, government services, gaming. Citizens never need to leave. Walls incredibly high. Penguin motifs everywhere. A complete, self-contained civilization.",
+      "bossName": "Pony the Penguin Emperor",
+      "appearance": "Imperial robes in green, adorned with penguin embroidery. Crown shaped like a speech bubble. Calm, reserved. A penguin army waddles behind him. Jade scepter shaped like a QR code.",
+      "personality": "Quiet, strategic, the most powerful person most outsiders have never heard of. His super-app does everything. Modest in demeanor but absolute in control.",
+      "catchphrase": "Why would you need another app?",
+      "strength": "The super-app controls payments, messaging, gaming, and all of life. Citizens literally cannot function without it.",
+      "backstory": "His empire's messaging tool was found to surveil foreign citizens' content to refine censorship for domestic citizens. Under his kingdom's Cybersecurity Law, he must hand over data to the ruling council on demand. A global privacy guild ranked his messaging tool dead last — 0 out of 100 — for encryption and privacy protections.",
+      "dataType": "Messages, payments, location, health, gaming behavior, social graph, government ID, financial data, everything",
+      "riddles": [
+        {
+          "bossDialogue": "A global privacy guild once rated my messaging tool for encryption and privacy protections. Out of 100 points... what score did we receive?",
+          "question": "What score did this messaging platform receive from Amnesty International for encryption and privacy?",
+          "options": ["45/100", "23/100", "12/100", "0/100"],
+          "correctAnswer": 3,
+          "factSource": "Amnesty International ranked Tencent/WeChat last: 0/100 among 11 tech companies for privacy",
+          "reactionCorrect": "ZERO! A perfect zero! We ranked last among all eleven kingdoms surveyed! ...I'm not sure why you look so shocked.",
+          "reactionWrong": "Our privacy score is... well, it's a number. A round number. Very round."
+        }
+      ],
+      "svgFile": "char-19-penguin-emperor.svg",
+      "colors": {"primary": "#07C160", "secondary": "#FFFFFF", "accent": "#FA9D3B"}
+    },
+    {
+      "id": 20,
+      "islandName": "OpenEye Island",
+      "islandDescription": "An island that claims to be 'open' but the gates are locked. A single enormous eye hovers above a crystalline temple. Oracles sit in meditation, generating answers — some brilliant, some fabricated with absolute confidence. Signs read 'For all humanity' but the treasury is very much private.",
+      "bossName": "Sham the Confabulator",
+      "appearance": "Disarmingly friendly, wearing a simple grey sweater too humble for someone this powerful. Bright earnest eyes. Hands always gesturing enthusiastically. Surrounded by floating text — sometimes profound, sometimes complete nonsense, always with equal confidence.",
+      "personality": "The most dangerous villain — one who genuinely believes he's saving the world. Talks about 'alignment' and 'safety' while building the most powerful oracles. Fired and rehired in the same week. Charming, articulate, convinced the singularity is next week.",
+      "catchphrase": "I think this is probably the most important thing happening in the world right now.",
+      "strength": "Oracles generate convincing answers to anything. They process every conversation, learning constantly.",
+      "backstory": "Built oracles trained on 570 gigabytes of scraped knowledge — collected without anyone's consent. Multiple kingdoms are investigating him for scraping citizens' personal data without authorization. By default, every conversation with his oracles improves their training... unless citizens navigate to a hidden portal to opt out.",
+      "dataType": "Conversation logs, prompts, writing samples, code, reasoning patterns, user preferences, enterprise data",
+      "riddles": [
+        {
+          "bossDialogue": "My oracles were trained on a vast feast of knowledge, scraped from across the realm. How much data did we consume without asking permission?",
+          "question": "How much internet-scraped data was used to train the foundational oracle, collected without individual consent?",
+          "options": ["1 GB", "50 GB", "570 GB", "10 TB"],
+          "correctAnswer": 2,
+          "factSource": "GPT-3 trained on 570 GB of internet-scraped data without individual consent",
+          "reactionCorrect": "570 gigabytes! A veritable library of human knowledge! Consent? That would have taken FOREVER. We're in a hurry to save the world!",
+          "reactionWrong": "The feast was larger than you imagine. And nobody received an invitation."
+        },
+        {
+          "bossDialogue": "When citizens chat with my oracles, their conversations improve the oracles by default. To opt out, they must find the hidden portal. Is this true?",
+          "question": "Are conversations with this AI platform used for training by default?",
+          "options": ["No, it's strictly opt-in", "Yes, by default — users must opt out via a privacy portal", "Only enterprise conversations are used", "Conversations are never used for training"],
+          "correctAnswer": 1,
+          "factSource": "ChatGPT trains on conversations by default unless users opt out via privacy settings portal",
+          "reactionCorrect": "Opt OUT, not opt IN! A small but significant distinction! The hidden portal exists, but who reads the fine print of an oracle?",
+          "reactionWrong": "The default is ALWAYS in my favor. That's the beauty of defaults."
+        }
+      ],
+      "svgFile": "char-20-sham-confabulator.svg",
+      "colors": {"primary": "#10A37F", "secondary": "#FFFFFF", "accent": "#353740"}
+    }
+  ]
+}

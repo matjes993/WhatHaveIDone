@@ -1,0 +1,437 @@
+{% extends "base.html" %}
+{% block title %}Many Faces{% endblock %}
+
+{% block content %}
+<div class="aliases-page">
+    <!-- Header -->
+    <header class="aliases-page__header">
+        <div>
+            <h1 class="aliases-page__title jargon" data-rpg="Many Faces" data-real="Your Identities">Many Faces</h1>
+            <p class="aliases-page__subtitle jargon"
+               data-rpg="Your identities across the seas &mdash; {{ total_aliases }} known faces"
+               data-real="Your identities across platforms &mdash; {{ total_aliases }} known identities">
+                Your identities across the seas &mdash; {{ total_aliases }} known faces
+            </p>
+        </div>
+    </header>
+
+    <!-- Primary Identity Card -->
+    <div class="aliases-page__primary-card">
+        <div class="aliases-page__primary-badge jargon" data-rpg="CAPTAIN" data-real="PRIMARY">CAPTAIN</div>
+        <div class="aliases-page__primary-identity">
+            <h2 class="aliases-page__primary-name">{{ primary_name or 'Unknown Captain' }}</h2>
+            {% if primary_email %}
+            <p class="aliases-page__primary-email">{{ primary_email }}</p>
+            {% endif %}
+        </div>
+        <div class="aliases-page__primary-icon">&#x1F3F4;&#x200D;&#x2620;&#xFE0F;</div>
+    </div>
+
+    <!-- Email Aliases -->
+    {% if email_aliases %}
+    <div class="aliases-page__section">
+        <h2 class="aliases-page__section-title jargon"
+            data-rpg="&#x1F4E7; Signal Flags"
+            data-real="&#x1F4E7; Email Addresses">
+            &#x1F4E7; Signal Flags
+        </h2>
+        <div class="aliases-page__grid">
+            {% for alias in email_aliases %}
+            <div class="aliases-page__row {% if loop.first %}aliases-page__row--primary{% endif %}">
+                <div class="aliases-page__row-main">
+                    <span class="aliases-page__row-value">{{ alias.value }}</span>
+                    {% if loop.first %}
+                    <span class="aliases-page__badge aliases-page__badge--primary">PRIMARY</span>
+                    {% endif %}
+                </div>
+                <div class="aliases-page__row-meta">
+                    <span class="aliases-page__row-villain-icon">{{ villain_icons.get(alias.villain, '&#x1F3AD;') }}</span>
+                    <span class="aliases-page__row-source">{{ alias.source }}</span>
+                    {% if alias.usage_count > 0 %}
+                    <span class="aliases-page__row-count jargon"
+                          data-rpg="{{ '{:,}'.format(alias.usage_count) }} sightings"
+                          data-real="{{ '{:,}'.format(alias.usage_count) }} appearances">
+                        {{ '{:,}'.format(alias.usage_count) }} sightings
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Name Aliases -->
+    {% if name_aliases %}
+    <div class="aliases-page__section">
+        <h2 class="aliases-page__section-title jargon"
+            data-rpg="&#x1F464; Known Aliases"
+            data-real="&#x1F464; Names">
+            &#x1F464; Known Aliases
+        </h2>
+        <div class="aliases-page__grid">
+            {% for alias in name_aliases %}
+            <div class="aliases-page__row">
+                <div class="aliases-page__row-main">
+                    <span class="aliases-page__row-value">{{ alias.value }}</span>
+                    <span class="aliases-page__row-type-tag">{{ alias.type }}</span>
+                </div>
+                <div class="aliases-page__row-meta">
+                    <span class="aliases-page__row-villain-icon">{{ villain_icons.get(alias.villain, '&#x1F3AD;') }}</span>
+                    <span class="aliases-page__row-source">{{ alias.source }}</span>
+                    {% if alias.usage_count > 0 %}
+                    <span class="aliases-page__row-count jargon"
+                          data-rpg="{{ '{:,}'.format(alias.usage_count) }} sightings"
+                          data-real="{{ '{:,}'.format(alias.usage_count) }} appearances">
+                        {{ '{:,}'.format(alias.usage_count) }} sightings
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Organization Aliases -->
+    {% if org_aliases %}
+    <div class="aliases-page__section">
+        <h2 class="aliases-page__section-title jargon"
+            data-rpg="&#x1F3E2; Guild Affiliations"
+            data-real="&#x1F3E2; Organizations">
+            &#x1F3E2; Guild Affiliations
+        </h2>
+        <div class="aliases-page__grid">
+            {% for alias in org_aliases %}
+            <div class="aliases-page__row">
+                <div class="aliases-page__row-main">
+                    <span class="aliases-page__row-value">{{ alias.value }}</span>
+                </div>
+                <div class="aliases-page__row-meta">
+                    <span class="aliases-page__row-villain-icon">{{ villain_icons.get(alias.villain, '&#x1F3AD;') }}</span>
+                    <span class="aliases-page__row-source">{{ alias.source }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Empty State -->
+    {% if total_aliases == 0 %}
+    <div class="aliases-page__empty">
+        <div class="aliases-page__empty-icon">&#x1F3AD;</div>
+        <p class="aliases-page__empty-text jargon"
+           data-rpg="No faces discovered yet. Raid some islands to reveal yer identities!"
+           data-real="No identities found yet. Import some data sources to discover your aliases.">
+            No faces discovered yet. Raid some islands to reveal yer identities!
+        </p>
+        <a href="/sources" class="aliases-page__empty-cta jargon"
+           data-rpg="&#x2694; Set Sail for the Raid Map"
+           data-real="Go to Sources">
+            &#x2694; Set Sail for the Raid Map
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div class="aliases-page__footer">
+        <p class="aliases-page__footer-text jargon"
+           data-rpg="These are the faces the Merchant Lords know ye by"
+           data-real="These are your known identities across platforms">
+            These are the faces the Merchant Lords know ye by
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+/* ── Aliases Page ──────────────────────────────────────────────────────── */
+
+.aliases-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.aliases-page__header {
+    margin-bottom: 24px;
+}
+
+.aliases-page__title {
+    font-family: var(--font-heading);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+}
+
+.aliases-page__subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ── Primary Identity Card ─────────────────────────────────────────── */
+
+.aliases-page__primary-card {
+    background: var(--bg-card);
+    border: 2px solid var(--accent-gold);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.08), inset 0 0 60px rgba(255, 215, 0, 0.02);
+}
+
+.aliases-page__primary-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.aliases-page__primary-badge {
+    background: var(--accent-gold);
+    color: #0a0a1a;
+    font-family: var(--font-heading);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.aliases-page__primary-identity {
+    flex: 1;
+    min-width: 0;
+}
+
+.aliases-page__primary-name {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--accent-gold);
+    margin: 0 0 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.aliases-page__primary-email {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.aliases-page__primary-icon {
+    font-size: 36px;
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+/* ── Sections ──────────────────────────────────────────────────────── */
+
+.aliases-page__section {
+    margin-bottom: 28px;
+}
+
+.aliases-page__section-title {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 12px;
+}
+
+/* ── Alias Rows ────────────────────────────────────────────────────── */
+
+.aliases-page__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.aliases-page__row {
+    background: var(--bg-glass);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.aliases-page__row:hover {
+    background: var(--bg-glass-hover);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.aliases-page__row--primary {
+    border-color: rgba(255, 215, 0, 0.15);
+    background: rgba(255, 215, 0, 0.03);
+}
+
+.aliases-page__row--primary:hover {
+    border-color: rgba(255, 215, 0, 0.25);
+    background: rgba(255, 215, 0, 0.05);
+}
+
+.aliases-page__row-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+}
+
+.aliases-page__row-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.aliases-page__row-type-tag {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.aliases-page__badge--primary {
+    background: var(--accent-gold);
+    color: #0a0a1a;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.aliases-page__row-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.aliases-page__row-villain-icon {
+    font-size: 16px;
+}
+
+.aliases-page__row-source {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.aliases-page__row-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    padding-left: 6px;
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Empty State ───────────────────────────────────────────────────── */
+
+.aliases-page__empty {
+    text-align: center;
+    padding: 48px 24px;
+}
+
+.aliases-page__empty-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.aliases-page__empty-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 16px;
+}
+
+.aliases-page__empty-cta {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-gold);
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.aliases-page__empty-cta:hover {
+    background: rgba(255, 215, 0, 0.08);
+    border-color: rgba(255, 215, 0, 0.5);
+}
+
+/* ── Footer ────────────────────────────────────────────────────────── */
+
+.aliases-page__footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.aliases-page__footer-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin: 0;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+    .aliases-page {
+        padding: 16px;
+    }
+
+    .aliases-page__row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .aliases-page__row-meta {
+        padding-left: 0;
+    }
+
+    .aliases-page__primary-card {
+        flex-wrap: wrap;
+    }
+
+    .aliases-page__primary-icon {
+        display: none;
+    }
+}
+</style>
+{% endblock %}

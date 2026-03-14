@@ -1,235 +1,160 @@
+<!--
+🏴‍☠️ Ahoy, source code explorer!
+You've found the Life Map — every territory ye've charted or conquered.
+The Flatcloud rewards those who reclaim their data. All of it.
+-->
 {% extends "base.html" %}
-{% block title %}Raid Targets{% endblock %}
+{% block title %}Life Map{% endblock %}
 
 {% block content %}
-<div class="raid-page">
-    <header class="raid-page__header">
+<div class="lifemap-page">
+    <!-- Header -->
+    <header class="lifemap-page__header">
         <div>
-            <h1 class="raid-page__title jargon" data-rpg="The Seven Seas" data-real="Data Sources">The Seven Seas</h1>
-            <p class="raid-page__subtitle jargon"
-               title="Islands you've successfully raided"
-               data-rpg-title="Islands ye've successfully raided"
-               data-real-title="Number of data sources connected"
-               data-rpg="&#9876; {{ collected_count }} of {{ total_sources }} islands plundered &mdash; Choose yer next target, Captain"
-               data-real="{{ collected_count }} of {{ total_sources }} sources connected">
-                &#9876; {{ collected_count }} of {{ total_sources }} islands plundered &mdash; Choose yer next target, Captain
+            <h1 class="lifemap-page__title jargon" data-rpg="Life Map" data-real="Life Map">Life Map</h1>
+            <p class="lifemap-page__subtitle jargon"
+               data-rpg="&#128506;&#65039; {{ charted_count }} of {{ total_territories }} territories charted"
+               data-real="{{ charted_count }} of {{ total_territories }} territories charted">
+                &#128506;&#65039; {{ charted_count }} of {{ total_territories }} territories charted
             </p>
         </div>
-        <div class="raid-page__actions">
-            <button class="raid-page__raid-all" onclick="NomoloBridge.updateAllSources()">
-                &#9876; <span class="jargon" data-rpg="Raid All Islands" data-real="Update All">Raid All Islands</span>
+        <div class="lifemap-page__actions">
+            <button class="lifemap-page__loot-all" onclick="NomoloBridge.updateAllSources()">
+                &#128176; <span class="jargon" data-rpg="Loot Everything" data-real="Collect All">Loot Everything</span>
             </button>
-            <button class="raid-page__scan" onclick="NomoloBridge.rescanSources()">
-                &#128301; <span class="jargon" data-rpg="Scan the Horizon" data-real="Rescan">Scan the Horizon</span>
+            <button class="lifemap-page__scan" onclick="NomoloBridge.rescanSources()">
+                &#128301; <span class="jargon" data-rpg="Scan Horizon" data-real="Rescan">Scan Horizon</span>
             </button>
         </div>
     </header>
 
-    <!-- The Raid Map — Ocean Container -->
-    <div class="raid-map" id="raid-map">
-        <!-- Parchment texture overlay -->
-        <div class="raid-map__parchment"></div>
-
-        <!-- Wave overlay top -->
-        <div class="raid-map__wave raid-map__wave--top"></div>
-
-        <!-- Compass Rose -->
-        <div class="raid-map__compass" title="Nomolo Compass Rose">
-            <div class="raid-map__compass-ring">
-                <span class="raid-map__compass-n">N</span>
-                <span class="raid-map__compass-e">E</span>
-                <span class="raid-map__compass-s">S</span>
-                <span class="raid-map__compass-w">W</span>
-                <div class="raid-map__compass-needle"></div>
-            </div>
-        </div>
-
-        <!-- Sea creatures (ambient decoration) -->
-        <div class="raid-map__creature raid-map__creature--1" aria-hidden="true">&#128025;</div>
-        <div class="raid-map__creature raid-map__creature--2" aria-hidden="true">&#129433;</div>
-        <div class="raid-map__creature raid-map__creature--3" aria-hidden="true">&#128032;</div>
-
-        <!-- Dotted route line SVG -->
-        <svg class="raid-map__routes" aria-hidden="true" width="100%" height="100%">
-            <defs>
-                <filter id="route-glow">
-                    <feGaussianBlur stdDeviation="2" result="blur"/>
-                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-            </defs>
-        </svg>
-
-        <!-- Your Ship -->
-        <div class="raid-map__ship" title="NOMOLO &mdash; Your Ship">&#9875;</div>
-
-        <!-- Map legend -->
-        <div class="raid-map__legend" aria-label="Map Legend">
-            <div class="raid-map__legend-item">
-                <span class="raid-map__legend-dot raid-map__legend-dot--uncharted"></span>
-                <span class="jargon" data-rpg="Uncharted" data-real="Available">Uncharted</span>
-            </div>
-            <div class="raid-map__legend-item">
-                <span class="raid-map__legend-dot raid-map__legend-dot--raided"></span>
-                <span class="jargon" data-rpg="Raided" data-real="Connected">Raided</span>
-            </div>
-            <div class="raid-map__legend-item">
-                <span class="raid-map__legend-dot raid-map__legend-dot--defeated"></span>
-                <span class="jargon" data-rpg="Defeated" data-real="Complete">Defeated</span>
-            </div>
-        </div>
-
-        <!-- Island Grid -->
-        <div class="raid-map__grid">
-            {% for island in islands %}
-            <div class="raid-island raid-island--{{ island.status }}"
-                 data-villain="{{ island.id }}"
-                 data-status="{{ island.status }}"
-                 style="--villain-color: {{ island.color }}"
-                 onclick="NomoloBridge.openRaidBriefing('{{ island.id }}')"
-                 tabindex="0"
-                 role="button"
-                 aria-label="{{ island.name }}">
-
-                <!-- Palm trees / decoration for non-uncharted -->
-                {% if island.status != 'uncharted' %}
-                <div class="raid-island__palms" aria-hidden="true">&#127796;</div>
-                {% endif %}
-
-                <!-- Status badge -->
-                <div class="raid-island__status">
-                    {% if island.status == 'uncharted' %}
-                    <span title="Uncharted">&#127787;&#65039;</span>
-                    {% elif island.status == 'raided' %}
-                    <span title="Raided">&#9876;&#65039;</span>
-                    {% elif island.status == 'defeated' %}
-                    <span title="Defeated">&#128128;</span>
-                    {% endif %}
-                </div>
-
-                <!-- Island emoji/landmark -->
-                <div class="raid-island__emoji">
-                    {% if island.status == 'uncharted' %}
-                    <span class="raid-island__mystery">?</span>
-                    {% else %}
-                    {{ island.icon }}
-                    {% endif %}
-                </div>
-
-                <!-- Villain name -->
-                <div class="raid-island__name jargon"
-                     data-rpg="{{ island.name if island.status != 'uncharted' else '???' }}"
-                     data-real="{{ island.company if island.status != 'uncharted' else '???' }}">
-                    {{ island.name if island.status != 'uncharted' else '???' }}
-                </div>
-
-                <!-- Company subtitle -->
-                {% if island.status != 'uncharted' %}
-                <div class="raid-island__subtitle jargon"
-                     data-rpg="{{ island.company }}" data-real="">
-                    {{ island.company }}
-                </div>
-                {% endif %}
-
-                <!-- Loot count -->
-                {% if island.raided %}
-                <div class="raid-island__loot">
-                    &#128176; {{ "{:,}".format(island.total_loot) }}
-                    <span class="jargon" data-rpg="Scrolls" data-real="records">Scrolls</span>
-                </div>
-                {% endif %}
-
-                <!-- Map fragment indicator -->
-                <div class="raid-island__fragment {% if island.raided %}raid-island__fragment--collected{% endif %}"
-                     title="{{ island.fragment_name or 'Map Fragment' }}">
-                    &#128506;&#65039;
-                </div>
-
-                <!-- Raid action -->
-                <div class="raid-island__action">
-                    {% if island.status == 'uncharted' %}
-                    <span class="jargon" data-rpg="&#128506; Chart This Island" data-real="Connect">&#128506; Chart This Island</span>
-                    {% elif island.status == 'raided' %}
-                    <span class="jargon" data-rpg="&#9876; Raid Again" data-real="Refresh">&#9876; Raid Again</span>
-                    {% elif island.status == 'defeated' %}
-                    <span class="jargon" data-rpg="&#128128; Conquered" data-real="Complete">&#128128; Conquered</span>
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-
-        <!-- Wave overlay bottom -->
-        <div class="raid-map__wave raid-map__wave--bottom"></div>
+    <!-- Treasure Summary Bar -->
+    <div class="lifemap-treasure-bar">
+        {% for loot in all_loot_types %}
+        <span class="lifemap-treasure-bar__item {% if loot.collected %}lifemap-treasure-bar__item--collected{% else %}lifemap-treasure-bar__item--uncollected{% endif %}"
+              title="{{ loot.name }}">
+            {{ loot.emoji }}
+        </span>
+        {% endfor %}
     </div>
 
-    <!-- Raid Briefing Panel (hidden by default) -->
-    <div class="raid-briefing" id="raid-briefing" style="display: none;">
-        <div class="raid-briefing__backdrop" onclick="NomoloBridge.closeRaidBriefing()"></div>
-        <div class="raid-briefing__panel">
-            <div class="raid-briefing__pixel-border"></div>
-            <button class="raid-briefing__close" onclick="NomoloBridge.closeRaidBriefing()" aria-label="Close">&times;</button>
+    <!-- Territory Cards -->
+    <div class="lifemap-territories" id="lifemap-territories">
+        {% for island in islands %}
+        <div class="territory territory--{{ island.status }}"
+             id="territory-{{ island.id }}"
+             data-villain="{{ island.id }}"
+             data-status="{{ island.status }}"
+             style="--villain-color: {{ island.color }}">
 
-            <div class="raid-briefing__scroll-top" aria-hidden="true">&#128220; MISSION BRIEFING &#128220;</div>
-
-            <div class="raid-briefing__header">
-                <!-- Villain portrait -->
-                <div class="raid-briefing__portrait" id="briefing-portrait">
-                    <span class="raid-briefing__portrait-emoji" id="briefing-emoji"></span>
-                </div>
-                <div class="raid-briefing__identity">
-                    <h2 class="raid-briefing__name jargon" id="briefing-name" data-rpg="" data-real=""></h2>
-                    <p class="raid-briefing__tagline" id="briefing-tagline"></p>
-                    <div class="raid-briefing__status-badge" id="briefing-status-badge"></div>
-                </div>
-            </div>
-
-            <p class="raid-briefing__description" id="briefing-description"></p>
-
-            <!-- Loot types available -->
-            <div class="raid-briefing__section">
-                <h3 class="raid-briefing__section-title jargon" data-rpg="&#128176; Available Plunder" data-real="Data Types">&#128176; Available Plunder</h3>
-                <div class="raid-briefing__loot-types" id="briefing-loot-types"></div>
-            </div>
-
-            <!-- Map fragment -->
-            <div class="raid-briefing__section">
-                <h3 class="raid-briefing__section-title">&#128506; Map Fragment</h3>
-                <div class="raid-briefing__fragment" id="briefing-fragment">
-                    <span class="raid-briefing__fragment-emoji" id="briefing-fragment-emoji"></span>
-                    <div class="raid-briefing__fragment-info">
-                        <strong id="briefing-fragment-name"></strong>
-                        <p id="briefing-fragment-desc"></p>
+            <!-- Collapsed Row -->
+            <div class="territory__row" onclick="NomoloBridge.toggleTerritory('{{ island.id }}')" tabindex="0" role="button" aria-label="{{ island.name }}">
+                <!-- Left: Icon + Name + Record Count -->
+                <div class="territory__left">
+                    <span class="territory__icon" style="color: {{ island.color }}">
+                        {% if island.status == 'uncharted' %}
+                        <span class="territory__mystery">?</span>
+                        {% else %}
+                        {{ island.icon }}
+                        {% endif %}
+                    </span>
+                    <div class="territory__identity">
+                        <span class="territory__name jargon"
+                              data-rpg="{{ island.name if island.status != 'uncharted' else '???' }}"
+                              data-real="{{ island.company if island.status != 'uncharted' else '???' }}">
+                            {{ island.name if island.status != 'uncharted' else '???' }}
+                        </span>
+                        {% if island.raided %}
+                        <span class="territory__record-count">{{ "{:,}".format(island.total_loot) }} <span class="jargon" data-rpg="scrolls" data-real="records">scrolls</span></span>
+                        {% endif %}
                     </div>
                 </div>
-            </div>
 
-            <!-- Raid stats -->
-            <div class="raid-briefing__section">
-                <h3 class="raid-briefing__section-title jargon" data-rpg="&#128200; Raid Intelligence" data-real="Collection Stats">&#128200; Raid Intelligence</h3>
-                <div class="raid-briefing__stats" id="briefing-stats"></div>
-            </div>
+                <!-- Center: Loot Emojis + Progress Bar + X/Y -->
+                <div class="territory__center">
+                    <div class="territory__loot-emojis">
+                        {% for emoji in island.loot_emojis %}
+                        <span class="territory__loot-emoji {% if island.status == 'uncharted' %}territory__loot-emoji--silhouette{% endif %}">{{ emoji }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="territory__progress">
+                        <span class="territory__progress-bar">
+                            {% for i in range(island.source_count) %}{% if i < island.sources_collected %}&#9646;{% else %}&#9647;{% endif %}{% endfor %}
+                        </span>
+                        <span class="territory__progress-count">{{ island.sources_collected }}/{{ island.source_count }}</span>
+                    </div>
+                </div>
 
-            <!-- Actions -->
-            <div class="raid-briefing__actions">
-                <button class="raid-briefing__cta" id="briefing-raid-btn" onclick="NomoloBridge.raidIsland()">
-                    &#128163; <span class="jargon" data-rpg="RAID THIS ISLAND" data-real="COLLECT DATA">RAID THIS ISLAND</span>
-                </button>
-                <div class="raid-briefing__options">
-                    <label class="raid-briefing__option">
-                        <input type="checkbox" id="briefing-insult-fight">
-                        <span class="jargon" data-rpg="&#9876; Insult Fight First" data-real="Show dialogue">&#9876; Insult Fight First</span>
-                    </label>
-                    <button class="raid-briefing__quiz-btn" id="briefing-quiz-btn" onclick="NomoloBridge.quizVillain()">
-                        &#10068; <span class="jargon" data-rpg="Quiz Me" data-real="Trivia">Quiz Me</span>
+                <!-- Right: Last Raid + Badge + CTA -->
+                <div class="territory__right">
+                    {% if island.last_raid_time %}
+                    <span class="territory__last-raid" data-raid-time="{{ island.last_raid_time }}"></span>
+                    {% endif %}
+                    <span class="territory__badge territory__badge--{{ island.category_badge }}">
+                        {% if island.category_badge == 'live' %}
+                        &#9889; Live
+                        {% elif island.category_badge == 'api' %}
+                        &#128273; API
+                        {% elif island.category_badge == 'import' %}
+                        &#128230; Import
+                        {% else %}
+                        &#9889; Live
+                        {% endif %}
+                    </span>
+                    <button class="territory__cta" onclick="event.stopPropagation(); NomoloBridge.raidTerritory('{{ island.id }}')">
+                        {% if island.raided %}
+                        <span class="jargon" data-rpg="Mhh, let's loot again" data-real="Re-collect">Mhh, let's loot again</span>
+                        {% else %}
+                        <span class="jargon" data-rpg="Arrr &mdash; let's go loot!" data-real="Connect">Arrr &mdash; let's go loot!</span>
+                        {% endif %}
                     </button>
                 </div>
             </div>
+
+            <!-- Expanded Detail (hidden by default) -->
+            <div class="territory__detail" id="territory-detail-{{ island.id }}" style="display: none;">
+                <!-- Impact Score -->
+                <div class="territory__impact">
+                    <span class="territory__impact-score">
+                        {% for i in range(5) %}{% if i < island.impact_score %}&#128176;{% else %}&#11036;{% endif %}{% endfor %}
+                    </span>
+                    <span class="territory__impact-label">{{ island.impact_label }}</span>
+                </div>
+
+                <!-- Per-source rows -->
+                <div class="territory__sources">
+                    {% for src in island.sources %}
+                    <div class="territory__source-row">
+                        <span class="territory__source-emoji">{{ src.loot_emoji if src.loot_emoji else '&#128220;' }}</span>
+                        <span class="territory__source-name">{{ src.name }}</span>
+                        <span class="territory__source-status">
+                            {% if src.collected %}
+                            &#9989; {{ "{:,}".format(src.records) }}
+                            {% else %}
+                            &#128274; <span class="jargon" data-rpg="Locked" data-real="Locked">Locked</span>
+                            {% endif %}
+                        </span>
+                        {% if src.last_updated %}
+                        <span class="territory__source-updated" data-raid-time="{{ src.last_updated }}"></span>
+                        {% endif %}
+                        <button class="territory__source-btn" onclick="NomoloBridge.raidSource('{{ src.id }}')">
+                            {% if src.collected %}
+                            <span class="jargon" data-rpg="Re-raid" data-real="Re-collect">Re-raid</span>
+                            {% else %}
+                            <span class="jargon" data-rpg="Loot" data-real="Collect">Loot</span>
+                            {% endif %}
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
+        {% endfor %}
     </div>
 
     <!-- Footer -->
-    <div class="raid-page__footer">
-        <button class="plunder-footer__btn" onclick="NomoloBridge.openVaultFolder()">
+    <div class="lifemap-page__footer">
+        <button class="lifemap-page__footer-btn" onclick="NomoloBridge.openVaultFolder()">
             &#128230; <span class="jargon" data-rpg="Open the treasure chest" data-real="Open in Finder">Open the treasure chest</span>
         </button>
     </div>
@@ -246,202 +171,40 @@
 (function() {
     // Parse island data
     const ISLANDS = JSON.parse(document.getElementById('island-data').textContent);
-    let _currentIsland = null;
 
-    // ── Init Raid Map ────────────────────────────────────────────────
-    function initRaidMap() {
-        // Add hover tooltip behavior (CSS handles the visual effects)
-        document.querySelectorAll('.raid-island').forEach(el => {
-            el.addEventListener('keydown', e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    el.click();
-                }
-            });
-        });
+    // ── Toggle Territory ──────────────────────────────────────────────
+    function toggleTerritory(villainId) {
+        const detail = document.getElementById('territory-detail-' + villainId);
+        const card = document.getElementById('territory-' + villainId);
+        if (!detail || !card) return;
 
-        // Draw dotted route lines between islands
-        drawRouteLines();
-    }
+        const isExpanded = detail.style.display !== 'none';
+        detail.style.display = isExpanded ? 'none' : 'block';
+        card.classList.toggle('territory--expanded', !isExpanded);
 
-    // ── Draw Route Lines ─────────────────────────────────────────────
-    function drawRouteLines() {
-        const svg = document.querySelector('.raid-map__routes');
-        if (!svg) return;
-        const grid = document.querySelector('.raid-map__grid');
-        if (!grid) return;
-        const islands = grid.querySelectorAll('.raid-island');
-        if (islands.length < 2) return;
-
-        // Get positions relative to the SVG/map container
-        const mapRect = svg.closest('.raid-map').getBoundingClientRect();
-
-        const points = [];
-        islands.forEach(el => {
-            const rect = el.getBoundingClientRect();
-            points.push({
-                x: rect.left - mapRect.left + rect.width / 2,
-                y: rect.top - mapRect.top + rect.height / 2,
-                status: el.dataset.status
-            });
-        });
-
-        // Draw lines between consecutive islands
-        let pathD = '';
-        for (let i = 0; i < points.length - 1; i++) {
-            pathD += `M ${points[i].x} ${points[i].y} L ${points[i+1].x} ${points[i+1].y} `;
-        }
-
-        if (pathD) {
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', pathD);
-            path.setAttribute('fill', 'none');
-            path.setAttribute('stroke', 'rgba(255, 215, 0, 0.12)');
-            path.setAttribute('stroke-width', '2');
-            path.setAttribute('stroke-dasharray', '6,8');
-            path.setAttribute('filter', 'url(#route-glow)');
-            svg.appendChild(path);
-        }
-    }
-
-    // ── Open Raid Briefing ───────────────────────────────────────────
-    function openRaidBriefing(villainId) {
-        const island = ISLANDS.find(i => i.id === villainId);
-        if (!island) return;
-        _currentIsland = island;
-
-        const panel = document.getElementById('raid-briefing');
-
-        // Portrait
-        document.getElementById('briefing-emoji').textContent = island.icon || '?';
-        const portrait = document.getElementById('briefing-portrait');
-        portrait.style.borderColor = island.color;
-        portrait.style.boxShadow = `0 0 30px ${island.color}40`;
-
-        // Identity
-        const nameEl = document.getElementById('briefing-name');
-        nameEl.textContent = island.name;
-        nameEl.setAttribute('data-rpg', island.name);
-        nameEl.setAttribute('data-real', island.company);
-        document.getElementById('briefing-tagline').textContent = island.tagline;
-
-        // Status badge
-        const statusBadge = document.getElementById('briefing-status-badge');
-        const jStat = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
-        const statusEmojis = jStat === 'rpg'
-            ? { uncharted: '\u{1F32B}\uFE0F Uncharted', raided: '\u2694\uFE0F Raided', defeated: '\u{1F480} Defeated' }
-            : { uncharted: '\u{1F32B}\uFE0F Available', raided: '\u2694\uFE0F Connected', defeated: '\u{1F480} Fully Imported' };
-        statusBadge.textContent = statusEmojis[island.status] || island.status;
-        statusBadge.className = 'raid-briefing__status-badge raid-briefing__status-badge--' + island.status;
-
-        // Description
-        document.getElementById('briefing-description').textContent = island.description;
-
-        // Loot types
-        const lootContainer = document.getElementById('briefing-loot-types');
-        const LOOT_ICONS = {
-            'scroll': '\u{1F4DC}', 'soul_bond': '\u{1F91D}', 'time_crystal': '\u231B',
-            'footprint': '\u{1F9ED}', 'waypoint': '\u{1F516}', 'memory_shard': '\u{1F52E}',
-            'whisper': '\u{1F4AC}', 'manuscript': '\u{1F4CB}', 'vision': '\u{1F52E}',
-            'echo': '\u{1F3B5}', 'coin': '\u{1F4B0}', 'proclamation': '\u{1F409}',
-            'life_force': '\u2764\uFE0F'
-        };
-        let lootHtml = '';
-        const seenTypes = new Set();
-        (island.sources || []).forEach(src => {
-            if (src.loot_type && !seenTypes.has(src.loot_type)) {
-                seenTypes.add(src.loot_type);
-                const icon = LOOT_ICONS[src.loot_type] || '\u{1F4DC}';
-                lootHtml += `<span class="raid-briefing__loot-badge" title="${src.loot_name}">${icon} ${src.loot_name}</span>`;
-            }
-        });
-        const jLoot = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
-        lootContainer.innerHTML = lootHtml || '<span style="color: rgba(255,255,255,0.3)">' + (jLoot === 'rpg' ? 'Unknown treasures await...' : 'No data types detected yet') + '</span>';
-
-        // Map fragment
-        document.getElementById('briefing-fragment-emoji').textContent = island.fragment_emoji || '\u{1F5FA}\uFE0F';
-        document.getElementById('briefing-fragment-name').textContent = island.fragment_name || 'Unknown Fragment';
-        document.getElementById('briefing-fragment-desc').textContent = island.fragment_desc || 'This fragment remains shrouded in mystery.';
-        const fragEl = document.getElementById('briefing-fragment');
-        fragEl.className = 'raid-briefing__fragment' + (island.raided ? ' raid-briefing__fragment--collected' : '');
-
-        // Raid stats
-        const statsContainer = document.getElementById('briefing-stats');
-        let statsHtml = '';
-        (island.sources || []).forEach(src => {
-            const icon = LOOT_ICONS[src.loot_type] || '\u{1F4DC}';
-            const status = src.collected ? '\u2705' : '\u{1F512}';
-            const jM = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
-            const count = src.collected
-                ? src.records.toLocaleString() + (jM === 'rpg' ? ' pieces of loot' : ' records')
-                : (jM === 'rpg' ? 'Not yet raided' : 'Not collected');
-            statsHtml += `<div class="raid-briefing__stat-row">
-                <span>${icon} ${src.name}</span>
-                <span>${status} ${count}</span>
-            </div>`;
-        });
-        statsContainer.innerHTML = statsHtml;
-
-        // CTA button
-        const ctaBtn = document.getElementById('briefing-raid-btn');
-        if (island.status === 'defeated') {
-            ctaBtn.innerHTML = '\u{1F480} <span class="jargon" data-rpg="RAID AGAIN" data-real="REFRESH DATA">RAID AGAIN</span>';
-        } else if (island.status === 'raided') {
-            ctaBtn.innerHTML = '\u2694\uFE0F <span class="jargon" data-rpg="CONTINUE RAIDING" data-real="COLLECT MORE">CONTINUE RAIDING</span>';
-        } else {
-            ctaBtn.innerHTML = '\u{1F4A3} <span class="jargon" data-rpg="RAID THIS ISLAND" data-real="COLLECT DATA">RAID THIS ISLAND</span>';
-        }
-
-        // Show panel
-        panel.style.display = 'flex';
-        requestAnimationFrame(() => panel.classList.add('raid-briefing--open'));
-
-        // Re-apply jargon to new DOM elements
-        if (typeof NomoloBridge !== 'undefined' && NomoloBridge.applyJargon) {
+        // Re-apply jargon to newly visible elements
+        if (!isExpanded && typeof NomoloBridge !== 'undefined' && NomoloBridge.applyJargon) {
             const jMode = localStorage.getItem('nomolo_jargon_mode') || 'rpg';
             NomoloBridge.applyJargon(jMode);
         }
     }
 
-    // ── Close Raid Briefing ──────────────────────────────────────────
-    function closeRaidBriefing() {
-        const panel = document.getElementById('raid-briefing');
-        panel.classList.remove('raid-briefing--open');
-        setTimeout(() => { panel.style.display = 'none'; }, 300);
-        _currentIsland = null;
-    }
-
-    // ── Raid Island ──────────────────────────────────────────────────
-    function raidIsland() {
-        if (!_currentIsland) return;
-
-        // Check insult fight checkbox
-        const insultCheck = document.getElementById('briefing-insult-fight');
-        if (insultCheck && insultCheck.checked) {
-            // Trigger insult fight first, then collect
-            if (typeof NomoloBridge !== 'undefined' && NomoloBridge.startInsultFight) {
-                NomoloBridge.startInsultFight(_currentIsland.id);
-            }
-        }
-
-        // Collect all sources for this island
-        const sources = _currentIsland.sources || [];
+    // ── Raid Territory (all sources) ──────────────────────────────────
+    function raidTerritory(villainId) {
+        const island = ISLANDS.find(i => i.id === villainId);
+        if (!island) return;
+        const sources = island.sources || [];
         sources.forEach(src => {
             NomoloBridge.collectSource(src.id);
         });
-
-        closeRaidBriefing();
     }
 
-    // ── Quiz Villain ─────────────────────────────────────────────────
-    function quizVillain() {
-        if (!_currentIsland) return;
-        if (typeof NomoloBridge !== 'undefined' && NomoloBridge.startVillainRiddle) {
-            NomoloBridge.startVillainRiddle(_currentIsland.id);
-        }
+    // ── Raid Single Source ─────────────────────────────────────────────
+    function raidSource(sourceId) {
+        NomoloBridge.collectSource(sourceId);
     }
 
-    // ── Relative time for raid dates ─────────────────────────────────
+    // ── Relative Time Rendering ───────────────────────────────────────
     function relativeTime(isoStr) {
         if (!isoStr) return '';
         const date = new Date(isoStr);
@@ -461,25 +224,41 @@
         return prefix + ' ' + months[date.getMonth()] + ' ' + date.getDate();
     }
 
+    function renderRelativeTimes() {
+        document.querySelectorAll('[data-raid-time]').forEach(el => {
+            const ts = el.getAttribute('data-raid-time');
+            el.textContent = relativeTime(ts);
+        });
+    }
+
+    // ── Keyboard support for collapsed rows ───────────────────────────
+    function initKeyboard() {
+        document.querySelectorAll('.territory__row').forEach(el => {
+            el.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    el.click();
+                }
+            });
+        });
+    }
+
     // Init on load
     document.addEventListener('DOMContentLoaded', () => {
-        initRaidMap();
+        renderRelativeTimes();
+        initKeyboard();
     });
 
     // Expose to NomoloBridge
     if (typeof NomoloBridge !== 'undefined') {
-        NomoloBridge.initRaidMap = initRaidMap;
-        NomoloBridge.openRaidBriefing = openRaidBriefing;
-        NomoloBridge.closeRaidBriefing = closeRaidBriefing;
-        NomoloBridge.raidIsland = raidIsland;
-        NomoloBridge.quizVillain = quizVillain;
+        NomoloBridge.toggleTerritory = toggleTerritory;
+        NomoloBridge.raidTerritory = raidTerritory;
+        NomoloBridge.raidSource = raidSource;
     } else {
         window.NomoloBridge = window.NomoloBridge || {};
-        window.NomoloBridge.initRaidMap = initRaidMap;
-        window.NomoloBridge.openRaidBriefing = openRaidBriefing;
-        window.NomoloBridge.closeRaidBriefing = closeRaidBriefing;
-        window.NomoloBridge.raidIsland = raidIsland;
-        window.NomoloBridge.quizVillain = quizVillain;
+        window.NomoloBridge.toggleTerritory = toggleTerritory;
+        window.NomoloBridge.raidTerritory = raidTerritory;
+        window.NomoloBridge.raidSource = raidSource;
     }
 })();
 </script>

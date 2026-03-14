@@ -7,6 +7,22 @@
         <h1 class="settings-page__title jargon" data-rpg="Ship's Helm" data-real="Settings">Ship's Helm</h1>
     </header>
 
+    <!-- Identity -->
+    <section class="settings-section">
+        <h2 class="settings-section__title jargon" data-rpg="Captain's Identity" data-real="Your Identity">Captain's Identity</h2>
+
+        <div class="setting-row">
+            <div class="setting-row__info">
+                <span class="setting-row__label jargon" data-rpg="Captain's Name" data-real="Your Name">Captain's Name</span>
+                <span class="setting-row__desc jargon" data-rpg="What shall the crew call ye?" data-real="How should Nomolo address you?">What shall the crew call ye?</span>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="text" id="setting-user-name" class="llm-input" style="width: 180px;" placeholder="Enter your name" autocomplete="off" value="{{ user_name or '' }}">
+                <button class="setting-row__action jargon" data-rpg="Aye" data-real="Save" onclick="NomoloBridge.saveUserName()">Aye</button>
+            </div>
+        </div>
+    </section>
+
     <!-- Data Storage -->
     <section class="settings-section">
         <h2 class="settings-section__title jargon" data-rpg="Treasure Hold" data-real="Data Storage">Treasure Hold</h2>
@@ -100,7 +116,16 @@
                     <select id="llm-provider" class="llm-select" onchange="NomoloBridge.onLLMProviderChange()">
                         <option value="openai">OpenAI</option>
                         <option value="anthropic">Anthropic (Claude)</option>
-                        <option value="custom">Custom / Local</option>
+                        <option value="openrouter">OpenRouter</option>
+                        <option value="google">Google Gemini</option>
+                        <option value="groq">Groq</option>
+                        <option value="together">Together AI</option>
+                        <option value="mistral">Mistral AI</option>
+                        <option value="deepseek">DeepSeek</option>
+                        <option value="fireworks">Fireworks AI</option>
+                        <option value="ollama">Ollama (local)</option>
+                        <option value="lmstudio">LM Studio (local)</option>
+                        <option value="custom">Custom endpoint</option>
                     </select>
                 </div>
             </div>
@@ -112,19 +137,87 @@
             </div>
             <div class="setting-row" style="border-bottom: none;">
                 <div class="setting-row__info" style="width: 100%;">
-                    <label class="setting-row__label jargon" data-rpg="Oracle's Port" data-real="API Endpoint" for="llm-endpoint" style="margin-bottom: 6px;">Oracle's Port</label>
-                    <input type="text" id="llm-endpoint" class="llm-input" placeholder="https://api.openai.com">
+                    <label class="setting-row__label jargon" data-rpg="Oracle's Tongue" data-real="Model" for="llm-model-select" style="margin-bottom: 6px;">Oracle's Tongue</label>
+                    <select id="llm-model-select" class="llm-select" onchange="NomoloBridge.onLLMModelSelectChange()">
+                        <option value="gpt-4o">gpt-4o</option>
+                        <option value="gpt-4o-mini">gpt-4o-mini</option>
+                        <option value="__custom__">— Custom model —</option>
+                    </select>
+                    <input type="text" id="llm-model-custom" class="llm-input" placeholder="Enter model name..." style="display: none; margin-top: 6px;" autocomplete="off">
                 </div>
             </div>
-            <div class="setting-row" style="border-bottom: none;">
+            <div class="setting-row" id="llm-endpoint-row" style="border-bottom: none; display: none;">
                 <div class="setting-row__info" style="width: 100%;">
-                    <label class="setting-row__label jargon" data-rpg="Oracle's Tongue" data-real="Model" for="llm-model" style="margin-bottom: 6px;">Oracle's Tongue</label>
-                    <input type="text" id="llm-model" class="llm-input" placeholder="gpt-4o">
+                    <label class="setting-row__label jargon" data-rpg="Oracle's Port" data-real="API Endpoint" for="llm-endpoint" style="margin-bottom: 6px;">Oracle's Port</label>
+                    <input type="text" id="llm-endpoint" class="llm-input" placeholder="https://api.openai.com/v1" autocomplete="off">
                 </div>
             </div>
             <div style="display: flex; gap: 8px; padding-top: 8px;">
                 <button class="setting-row__action jargon" data-rpg="Seal the Scroll" data-real="Save" onclick="NomoloBridge.saveLLMToken()">Seal the Scroll</button>
                 <button class="setting-row__action setting-row__action--danger jargon" data-rpg="Burn the Scroll" data-real="Delete" id="llm-delete-btn" style="display: none;" onclick="NomoloBridge.deleteLLMToken()">Burn the Scroll</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Automaton Powers -->
+    <section class="settings-section">
+        <h2 class="settings-section__title jargon" data-rpg="Automaton Powers" data-real="AI Permissions">Automaton Powers</h2>
+
+        <div class="setting-row">
+            <div class="setting-row__info" style="width: 100%;">
+                <span class="setting-row__desc jargon"
+                      data-rpg="How much power does the Automaton wield aboard yer ship?"
+                      data-real="What can the AI assistant do?">How much power does the Automaton wield aboard yer ship?</span>
+
+                <div class="automaton-power-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+                    <!-- Level 1: Cabin Boy / Read Only -->
+                    <label class="automaton-power-card" style="display: flex; flex-direction: column; gap: 6px; padding: 14px; background: var(--bg-glass); border: 2px solid {% if automaton_power_level == 1 %}var(--accent-gold){% else %}rgba(255,255,255,0.06){% endif %}; border-radius: 10px; cursor: pointer; transition: border-color 0.2s;">
+                        <input type="radio" name="automaton_power" value="1" {{ 'checked' if automaton_power_level == 1 else '' }} onchange="NomoloBridge.saveAutomatonPower(1)" style="display: none;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 20px;">&#128065;</span>
+                            <strong class="jargon" data-rpg="Cabin Boy" data-real="Read Only" style="font-size: 13px; color: var(--text-primary);">Cabin Boy</strong>
+                        </div>
+                        <span class="jargon" style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;"
+                              data-rpg="Query data, search vault, answer questions. Cannot modify anything."
+                              data-real="Query data, search archive, answer questions. Cannot modify anything.">Query data, search vault, answer questions. Cannot modify anything.</span>
+                    </label>
+
+                    <!-- Level 2: First Mate / Organize -->
+                    <label class="automaton-power-card" style="display: flex; flex-direction: column; gap: 6px; padding: 14px; background: var(--bg-glass); border: 2px solid {% if automaton_power_level == 2 %}var(--accent-gold){% else %}rgba(255,255,255,0.06){% endif %}; border-radius: 10px; cursor: pointer; transition: border-color 0.2s;">
+                        <input type="radio" name="automaton_power" value="2" {{ 'checked' if automaton_power_level == 2 else '' }} onchange="NomoloBridge.saveAutomatonPower(2)" style="display: none;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 20px;">&#128221;</span>
+                            <strong class="jargon" data-rpg="First Mate" data-real="Organize" style="font-size: 13px; color: var(--text-primary);">First Mate</strong>
+                        </div>
+                        <span class="jargon" style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;"
+                              data-rpg="Level 1 + create/rename/delete chat folders, tag records, organize data."
+                              data-real="Level 1 + create/rename/delete chat folders, tag records, organize data.">Level 1 + create/rename/delete chat folders, tag records, organize data.</span>
+                    </label>
+
+                    <!-- Level 3: Quartermaster / Collect -->
+                    <label class="automaton-power-card" style="display: flex; flex-direction: column; gap: 6px; padding: 14px; background: var(--bg-glass); border: 2px solid {% if automaton_power_level == 3 %}var(--accent-gold){% else %}rgba(255,255,255,0.06){% endif %}; border-radius: 10px; cursor: pointer; transition: border-color 0.2s;">
+                        <input type="radio" name="automaton_power" value="3" {{ 'checked' if automaton_power_level == 3 else '' }} onchange="NomoloBridge.saveAutomatonPower(3)" style="display: none;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 20px;">&#9876;&#65039;</span>
+                            <strong class="jargon" data-rpg="Quartermaster" data-real="Collect" style="font-size: 13px; color: var(--text-primary);">Quartermaster</strong>
+                        </div>
+                        <span class="jargon" style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;"
+                              data-rpg="Level 2 + trigger raids/scans, connect sources, run collection autonomously."
+                              data-real="Level 2 + trigger scans, connect sources, run collection autonomously.">Level 2 + trigger raids/scans, connect sources, run collection autonomously.</span>
+                    </label>
+
+                    <!-- Level 4: Captain / Full Access -->
+                    <label class="automaton-power-card" style="display: flex; flex-direction: column; gap: 6px; padding: 14px; background: var(--bg-glass); border: 2px solid {% if automaton_power_level == 4 %}var(--accent-gold){% else %}rgba(255,255,255,0.06){% endif %}; border-radius: 10px; cursor: pointer; transition: border-color 0.2s;">
+                        <input type="radio" name="automaton_power" value="4" {{ 'checked' if automaton_power_level == 4 else '' }} onchange="NomoloBridge.saveAutomatonPower(4)" style="display: none;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 20px;">&#128081;</span>
+                            <strong class="jargon" data-rpg="Captain" data-real="Full Access" style="font-size: 13px; color: var(--text-primary);">Captain</strong>
+                        </div>
+                        <span class="jargon" style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;"
+                              data-rpg="Level 3 + modify settings, delete records, manage all of Nomolo."
+                              data-real="Level 3 + modify settings, delete records, manage all of Nomolo.">Level 3 + modify settings, delete records, manage all of Nomolo.</span>
+                    </label>
+                </div>
             </div>
         </div>
     </section>

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Voodoo Priestess -->
+  <!-- Dress -->
+  <path d="M70 165 L55 285 Q55 290 60 290 L140 290 Q145 290 145 285 L130 165" fill="#6b1a6b"/>
+  <!-- Dress pattern -->
+  <circle cx="80" cy="210" r="4" fill="#9a3a9a" opacity="0.6"/>
+  <circle cx="110" cy="230" r="4" fill="#9a3a9a" opacity="0.6"/>
+  <circle cx="90" cy="255" r="4" fill="#9a3a9a" opacity="0.6"/>
+  <circle cx="120" cy="200" r="4" fill="#9a3a9a" opacity="0.6"/>
+  <!-- Star patterns -->
+  <text x="75" y="245" font-size="12" fill="#d4a843" opacity="0.5">✦</text>
+  <text x="115" y="260" font-size="12" fill="#d4a843" opacity="0.5">✦</text>
+  <!-- Necklace area -->
+  <path d="M78 165 Q100 180 122 165" fill="none" stroke="#d4a843" stroke-width="2"/>
+  <circle cx="100" cy="178" r="6" fill="#d4a843"/>
+  <circle cx="88" cy="174" r="3" fill="#e8585a"/>
+  <circle cx="112" cy="174" r="3" fill="#e8585a"/>
+  <!-- Arms -->
+  <path d="M55 170 L40 210 Q38 218 42 220 L48 218 L58 185" fill="#8b5e3c"/>
+  <path d="M145 170 L160 210 Q162 218 158 220 L152 218 L142 185" fill="#8b5e3c"/>
+  <!-- Hands -->
+  <circle cx="42" cy="218" r="8" fill="#8b5e3c"/>
+  <circle cx="158" cy="218" r="8" fill="#8b5e3c"/>
+  <!-- Voodoo doll in hand -->
+  <rect x="150" y="195" width="12" height="18" rx="3" fill="#c8b47a"/>
+  <circle cx="156" cy="193" r="5" fill="#c8b47a"/>
+  <line x1="148" y1="202" x2="164" y2="202" stroke="#c8b47a" stroke-width="3"/>
+  <circle cx="154" cy="191" r="1.5" fill="#2a2a2a"/>
+  <circle cx="158" cy="191" r="1.5" fill="#2a2a2a"/>
+  <!-- Pin in doll -->
+  <line x1="156" y1="198" x2="156" y2="188" stroke="#a0a0a0" stroke-width="1"/>
+  <circle cx="156" cy="187" r="2" fill="#ff3030"/>
+  <!-- Head -->
+  <ellipse cx="100" cy="115" rx="35" ry="40" fill="#8b5e3c"/>
+  <!-- Hair/headdress -->
+  <path d="M65 105 Q60 60 100 50 Q140 60 135 105" fill="#1a1a2e"/>
+  <!-- Headdress wrap -->
+  <path d="M62 100 Q100 90 138 100 L140 108 Q100 95 60 108 Z" fill="#d4a843"/>
+  <!-- Feather -->
+  <path d="M125 95 Q140 60 135 40 Q130 55 128 70 Q125 80 125 95" fill="#e8585a"/>
+  <path d="M125 95 Q138 65 140 40 Q136 55 133 70" fill="#c83a3a"/>
+  <!-- Eyes -->
+  <ellipse cx="88" cy="115" rx="7" ry="8" fill="white"/>
+  <ellipse cx="112" cy="115" rx="7" ry="8" fill="white"/>
+  <circle cx="89" cy="116" r="4" fill="#4a2a10"/>
+  <circle cx="113" cy="116" r="4" fill="#4a2a10"/>
+  <circle cx="90" cy="115" r="2" fill="black"/>
+  <circle cx="114" cy="115" r="2" fill="black"/>
+  <!-- Eyeliner -->
+  <path d="M80 110 Q88 108 96 110" fill="none" stroke="#1a1a2e" stroke-width="1.5"/>
+  <path d="M104 110 Q112 108 120 110" fill="none" stroke="#1a1a2e" stroke-width="1.5"/>
+  <!-- Nose -->
+  <path d="M98 122 Q100 126 102 122" fill="none" stroke="#6b3e20" stroke-width="1.5"/>
+  <!-- Lips -->
+  <path d="M90 134 Q100 142 110 134" fill="#c83a3a"/>
+  <path d="M90 134 Q100 138 110 134" fill="#e8585a"/>
+  <!-- Earrings -->
+  <circle cx="65" cy="125" r="5" fill="#d4a843"/>
+  <circle cx="135" cy="125" r="5" fill="#d4a843"/>
+</svg>

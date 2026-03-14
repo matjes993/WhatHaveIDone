@@ -1,0 +1,116 @@
+<svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="300" fill="#E0F2FE"/>
+
+  <!-- Cloud base for sitting -->
+  <g id="cloud-base">
+    <ellipse cx="100" cy="200" rx="60" ry="25" fill="#FFFFFF" stroke="#00A1E0" stroke-width="2"/>
+    <circle cx="75" cy="195" r="18" fill="#FFFFFF" stroke="#00A1E0" stroke-width="2"/>
+    <circle cx="125" cy="195" r="18" fill="#FFFFFF" stroke="#00A1E0" stroke-width="2"/>
+    <circle cx="100" cy="180" r="20" fill="#FFFFFF" stroke="#00A1E0" stroke-width="2"/>
+    <!-- Cloud shadow/depth -->
+    <ellipse cx="100" cy="220" rx="55" ry="8" fill="#00A1E0" opacity="0.2"/>
+  </g>
+
+  <!-- Shadow under character -->
+  <ellipse cx="100" cy="260" rx="40" ry="10" fill="#00000015"/>
+
+  <!-- Legs on cloud -->
+  <rect x="80" y="185" width="16" height="25" fill="#8B7355"/>
+  <rect x="104" y="185" width="16" height="25" fill="#8B7355"/>
+
+  <!-- Shoes -->
+  <ellipse cx="88" cy="212" rx="10" ry="8" fill="#333333"/>
+  <ellipse cx="112" cy="212" rx="10" ry="8" fill="#333333"/>
+
+  <!-- Business suit jacket (under Hawaiian shirt) -->
+  <path d="M 70 130 L 75 170 L 85 175 L 100 175 L 115 175 L 125 170 L 130 130 Z" fill="#1a1a1a"/>
+
+  <!-- Hawaiian shirt overlay - vibrant flower patterns -->
+  <rect x="75" y="130" width="50" height="50" fill="#FF6600" rx="4"/>
+  <!-- Flower 1 - bright pink -->
+  <circle cx="85" cy="145" r="4" fill="#FF1493"/>
+  <circle cx="81" cy="141" r="2" fill="#FFB6C1"/>
+  <circle cx="89" cy="141" r="2" fill="#FFB6C1"/>
+  <circle cx="81" cy="149" r="2" fill="#FFB6C1"/>
+  <circle cx="89" cy="149" r="2" fill="#FFB6C1"/>
+  <circle cx="85" cy="145" r="2" fill="#FFD700"/>
+
+  <!-- Flower 2 - purple -->
+  <circle cx="110" cy="150" r="4" fill="#9932CC"/>
+  <circle cx="106" cy="146" r="2" fill="#DDA0DD"/>
+  <circle cx="114" cy="146" r="2" fill="#DDA0DD"/>
+  <circle cx="106" cy="154" r="2" fill="#DDA0DD"/>
+  <circle cx="114" cy="154" r="2" fill="#DDA0DD"/>
+  <circle cx="110" cy="150" r="2" fill="#FFD700"/>
+
+  <!-- Flower 3 - yellow -->
+  <circle cx="95" cy="160" r="3.5" fill="#FFD700"/>
+  <circle cx="91" cy="157" r="2" fill="#FFFF99"/>
+  <circle cx="99" cy="157" r="2" fill="#FFFF99"/>
+  <circle cx="91" cy="163" r="2" fill="#FFFF99"/>
+  <circle cx="99" cy="163" r="2" fill="#FFFF99"/>
+  <circle cx="95" cy="160" r="1.5" fill="#FF6600"/>
+
+  <!-- Shirt buttons -->
+  <circle cx="100" cy="140" r="2.5" fill="#FFD700"/>
+  <circle cx="100" cy="150" r="2.5" fill="#FFD700"/>
+  <circle cx="100" cy="160" r="2.5" fill="#FFD700"/>
+
+  <!-- Neck -->
+  <rect x="92" y="120" width="16" height="10" fill="#D4A574"/>
+
+  <!-- Lei/flower garland around neck -->
+  <ellipse cx="100" cy="125" rx="22" ry="8" fill="none" stroke="#FF1493" stroke-width="3" opacity="0.8"/>
+  <circle cx="85" cy="124" r="3" fill="#FF1493"/>
+  <circle cx="90" cy="121" r="3" fill="#FFD700"/>
+  <circle cx="110" cy="121" r="3" fill="#FFD700"/>
+  <circle cx="115" cy="124" r="3" fill="#FF1493"/>
+
+  <!-- Head -->
+  <circle cx="100" cy="105" r="22" fill="#D4A574"/>
+
+  <!-- Hair - friendly and full -->
+  <path d="M 78 95 Q 78 75 100 70 Q 122 75 122 95" fill="#8B7355" stroke="#6B5344" stroke-width="2"/>
+
+  <!-- Hair curls for warmth -->
+  <circle cx="82" cy="82" r="4" fill="#8B7355"/>
+  <circle cx="118" cy="82" r="4" fill="#8B7355"/>
+  <circle cx="100" cy="72" r="5" fill="#8B7355"/>
+
+  <!-- Eyes - warm and friendly -->
+  <circle cx="90" cy="102" r="4" fill="#000000"/>
+  <circle cx="110" cy="102" r="4" fill="#000000"/>
+  <circle cx="91" cy="101" r="1.5" fill="#FFFFFF"/>
+  <circle cx="111" cy="101" r="1.5" fill="#FFFFFF"/>
+
+  <!-- Eyebrows - friendly -->
+  <path d="M 85 98 Q 90 96 95 98" stroke="#6B5344" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M 105 98 Q 110 96 115 98" stroke="#6B5344" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- Nose -->
+  <polygon points="100,105 98,110 102,110" fill="#C9956A"/>
+
+  <!-- Big warm smile -->
+  <path d="M 92 112 Q 100 118 108 112" stroke="#8B4513" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 94 113 Q 100 115 106 113" fill="#FFB6C1" opacity="0.5"/>
+
+  <!-- Floating cloud mascot beside him -->
+  <g id="cloud-mascot" transform="translate(145, 150)">
+    <ellipse cx="0" cy="0" rx="15" ry="12" fill="#FFFFFF" stroke="#00A1E0" stroke-width="1.5"/>
+    <circle cx="-12" cy="-3" r="8" fill="#FFFFFF" stroke="#00A1E0" stroke-width="1.5"/>
+    <circle cx="12" cy="-3" r="8" fill="#FFFFFF" stroke="#00A1E0" stroke-width="1.5"/>
+    <circle cx="0" cy="-12" r="9" fill="#FFFFFF" stroke="#00A1E0" stroke-width="1.5"/>
+    <!-- Cloud eyes -->
+    <circle cx="-4" cy="-2" r="1.5" fill="#00A1E0"/>
+    <circle cx="4" cy="-2" r="1.5" fill="#00A1E0"/>
+    <!-- Cloud smile -->
+    <path d="M -3 2 Q 0 4 3 2" stroke="#00A1E0" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- Salesforce blue accent - energy glow -->
+  <circle cx="100" cy="105" r="26" fill="none" stroke="#00A1E0" stroke-width="1" opacity="0.3"/>
+
+  <!-- Character name -->
+  <text x="100" y="290" font-size="14" font-family="Arial, sans-serif" font-weight="bold" text-anchor="middle" fill="#00A1E0">MARC</text>
+</svg>

@@ -1,5 +1,13 @@
 # Nomolo — Learnings
 
+## 2026-03-13 (session 2)
+
+- **Don't split repos prematurely**: OpenClaw has 22 repos (many contributors, independent lifecycles). CLI-Anything has 1 repo (one team, full control). Nomolo is closer to CLI-Anything — one person + AI. Separate repos add coordination tax (dependency versioning, cross-repo PRs, interface freezing) without benefit until you actually have independent teams.
+- **Clean module boundaries > repo boundaries**: The one-way dependency rule (`core/` ← `web/`, `core/` ← `mcp`, never reverse) gives the same isolation as separate repos without the overhead. Git worktrees enable parallel work on the same repo.
+- **The missing layer is "thinking"**: collect → store → display skips the most valuable step. A knowledge lifecycle layer (linking, enriching, normalizing, forgetting) is what turns raw data into something worth querying.
+- **Forgetting is as important as remembering**: Users need to selectively delete data with cascade awareness — if you forget a person, insights referencing them need updating. A "forgetting log" (you deleted something, but you know *that* you deleted it) preserves intentionality.
+- **LLM-as-gatekeeper is clever but not deterministic**: Using an LLM to judge whether an external query is safe sounds elegant, but prompt injection can bypass it. Hard technical limits (field-level access, rate limits, token budgets) must be the real enforcement layer, with LLM as a convenience layer on top.
+
 ## 2026-03-13
 
 - **Simplicity beats features**: A 5-screen journey with graphs, leaderboards, stat pills, expansion cards, fun fact quizzes, and badges was "complete shit." A 3-screen flow (hook → work → done) with a breathing orb and a big number is what users actually want. When in doubt, remove.

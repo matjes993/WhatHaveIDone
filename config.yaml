@@ -1,31 +1,13 @@
-# Nomolo (NOMOLO) Configuration
-
-# Directory where all vaults are stored
-# Default: 'vaults/' subfolder next to nomolo.py
-# Override with an absolute path if you want vaults elsewhere:
-#   /Volumes/ExternalDrive/my_vaults
-#   ~/Desktop/my_vaults
-vault_root: vaults
-
-# Gmail Collector settings
-gmail:
-  # Concurrent batch workers (auto-reduces on rate limits)
-  max_workers: 8
-  # Messages per batch API request (100 = Gmail max, fastest)
-  batch_size: 100
-  # Messages fetched per listing page
-  page_size: 500
-  # OAuth scope (readonly = safe, no email modification)
-  scope: https://www.googleapis.com/auth/gmail.readonly
-  # Path to Google OAuth credentials
-  credentials_file: credentials.json
-  token_file: token.json
-
-# Google Contacts Collector settings
 contacts:
-  # OAuth scope (readonly = safe, no contact modification)
-  scope: https://www.googleapis.com/auth/contacts.readonly
-  # Uses same credentials.json as Gmail
   credentials_file: credentials.json
-  # Separate token (contacts need a different scope)
+  scope: https://www.googleapis.com/auth/contacts.readonly
   token_file: token_contacts.json
+gmail:
+  batch_size: 100
+  credentials_file: credentials.json
+  max_workers: 8
+  page_size: 500
+  scope: https://www.googleapis.com/auth/gmail.readonly
+  token_file: token.json
+user_name: diebyme
+vault_root: vaults

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Cannoneer / Pirate Crew Member -->
+  <!-- Body (stocky) -->
+  <rect x="65" y="155" width="70" height="85" rx="8" fill="#d4d4d4"/>
+  <!-- Striped shirt -->
+  <rect x="65" y="155" width="70" height="85" rx="8" fill="white"/>
+  <rect x="65" y="163" width="70" height="8" fill="#1a3a6b"/>
+  <rect x="65" y="179" width="70" height="8" fill="#1a3a6b"/>
+  <rect x="65" y="195" width="70" height="8" fill="#1a3a6b"/>
+  <rect x="65" y="211" width="70" height="8" fill="#1a3a6b"/>
+  <rect x="65" y="227" width="70" height="8" fill="#1a3a6b"/>
+  <!-- Belt -->
+  <rect x="62" y="236" width="76" height="10" fill="#5c3a1e"/>
+  <circle cx="100" cy="241" r="6" fill="#d4a843"/>
+  <!-- Pants -->
+  <rect x="68" y="246" width="26" height="35" rx="3" fill="#6b4c2a"/>
+  <rect x="106" y="246" width="26" height="35" rx="3" fill="#6b4c2a"/>
+  <!-- Boots -->
+  <path d="M65 278 L60 292 Q58 296 66 296 L96 296 L96 278" fill="#3d2510"/>
+  <path d="M104 278 L104 296 L134 296 Q142 296 140 292 L135 278" fill="#3d2510"/>
+  <!-- Boot fold -->
+  <path d="M65 278 L96 278" fill="none" stroke="#5a3818" stroke-width="2"/>
+  <path d="M104 278 L135 278" fill="none" stroke="#5a3818" stroke-width="2"/>
+  <!-- Arms (muscular) -->
+  <path d="M65 160 Q42 165 35 185 Q32 195 38 195 L45 190 Q50 178 58 168" fill="#d4a070"/>
+  <path d="M135 160 Q158 165 165 185 Q168 195 162 195 L155 190 Q150 178 142 168" fill="#d4a070"/>
+  <!-- Cannonball in hand -->
+  <circle cx="38" cy="195" r="12" fill="#2a2a2a"/>
+  <circle cx="35" cy="192" r="3" fill="#4a4a4a" opacity="0.4"/>
+  <!-- Fist -->
+  <circle cx="162" cy="192" r="10" fill="#d4a070"/>
+  <!-- Head -->
+  <ellipse cx="100" cy="110" rx="36" ry="40" fill="#d4a070"/>
+  <!-- Bandana -->
+  <path d="M64 100 Q100 82 136 100 L138 108 Q100 88 62 108 Z" fill="#c83a3a"/>
+  <!-- Bandana knot -->
+  <circle cx="140" cy="104" r="5" fill="#c83a3a"/>
+  <path d="M144 104 L155 115" stroke="#c83a3a" stroke-width="4" stroke-linecap="round"/>
+  <path d="M144 106 L152 120" stroke="#a82828" stroke-width="3" stroke-linecap="round"/>
+  <!-- Eye patch -->
+  <ellipse cx="85" cy="115" rx="12" ry="13" fill="#1a1a1a"/>
+  <line x1="85" y1="102" x2="115" y2="98" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- Good eye -->
+  <ellipse cx="115" cy="115" rx="8" ry="9" fill="white"/>
+  <circle cx="116" cy="116" r="5" fill="#4a3020"/>
+  <circle cx="117" cy="115" r="2.5" fill="black"/>
+  <!-- Scar across face -->
+  <path d="M80 105 L90 130" fill="none" stroke="#c88a6a" stroke-width="2" stroke-linecap="round"/>
+  <!-- Nose (broken looking) -->
+  <path d="M98 122 Q102 128 105 122" fill="none" stroke="#b48050" stroke-width="2"/>
+  <!-- Stubble -->
+  <circle cx="85" cy="138" r="1" fill="#8b7050" opacity="0.4"/>
+  <circle cx="90" cy="142" r="1" fill="#8b7050" opacity="0.4"/>
+  <circle cx="95" cy="140" r="1" fill="#8b7050" opacity="0.4"/>
+  <circle cx="105" cy="140" r="1" fill="#8b7050" opacity="0.4"/>
+  <circle cx="110" cy="138" r="1" fill="#8b7050" opacity="0.4"/>
+  <circle cx="115" cy="142" r="1" fill="#8b7050" opacity="0.4"/>
+  <!-- Grimacing mouth -->
+  <path d="M88 138 Q95 135 100 138 Q105 135 112 138" fill="none" stroke="#5a3010" stroke-width="2.5"/>
+</svg>
