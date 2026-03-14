@@ -31,6 +31,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from core.vectordb import get_client, get_full_entry, get_status, _get_embedding_fn
 from core.search_engine import hybrid_search, get_fts_entry_count, index_all, _get_fts_db_path
+from core.knowledge import KnowledgeEngine
+from core.knowledge.schema import (
+    EntityType,
+    HypothesisStatus,
+    IdentifierSystem,
+    RelationshipType,
+    ResolutionMethod,
+)
 
 logger = logging.getLogger("nomolo.mcp")
 
@@ -74,6 +82,7 @@ app = Server("nomolo")
 _client = None
 _config = None
 _vault_root = None
+_knowledge: KnowledgeEngine | None = None
 
 
 TOOLS = [
@@ -174,6 +183,127 @@ TOOLS = [
             "properties": {},
         },
     ),
+    # -------------------------------------------------------------------
+    # Knowledge Graph tools
+    # -------------------------------------------------------------------
+    Tool(
+        name="graph_stats",
+        description="Survey the Captain's knowledge graph — how many souls (people), bonds (relationships), places, events, messages, and hypotheses are charted. The big picture of everything connected.",
+        inputSchema={
+            "type": "object",
+            "properties": {},
+        },
+    ),
+    Tool(
+        name="find_people",
+        description="Search for known souls (people) in the knowledge graph. Find by name, email, phone, or browse all. Returns identity details, connected emails/phones, and source provenance.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name to search for (partial match supported)",
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Email address to look up (exact match)",
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "Phone number to look up (exact match)",
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Max results (default: 20)",
+                    "default": 20,
+                },
+            },
+        },
+    ),
+    Tool(
+        name="get_graph_entity",
+        description="Get full details of any entity in the knowledge graph — person, organization, place, event, message, bookmark, note. Includes properties, relationships, provenance trail, and external identifiers.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "entity_id": {
+                    "type": "string",
+                    "description": "The entity UUID from a previous search or connection result",
+                },
+            },
+            "required": ["entity_id"],
+        },
+    ),
+    Tool(
+        name="get_connections",
+        description="Reveal the web of connections for any entity. For a person: who they know, what events they attended, messages sent/received. For an event: who attended, where it was. Returns relationship type, direction, and connected entity summaries.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "entity_id": {
+                    "type": "string",
+                    "description": "The entity UUID to explore connections for",
+                },
+                "relationship_type": {
+                    "type": "string",
+                    "enum": ["knows", "works_at", "sent", "received", "attended", "located_at", "mentions", "member_of", "created", "related_to"],
+                    "description": "Filter to a specific relationship type (optional)",
+                },
+                "include_history": {
+                    "type": "boolean",
+                    "description": "Include ended/superseded relationships (default: false)",
+                    "default": False,
+                },
+            },
+            "required": ["entity_id"],
+        },
+    ),
+    Tool(
+        name="entity_timeline",
+        description="View the life story of an entity across time — when relationships started and ended, job changes, location moves, event attendance. A chronological biography built from all data sources.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "entity_id": {
+                    "type": "string",
+                    "description": "The entity UUID to build a timeline for",
+                },
+            },
+            "required": ["entity_id"],
+        },
+    ),
+    Tool(
+        name="open_hypotheses",
+        description="Show unresolved mysteries in the knowledge graph — suspected identity merges, missing links, data gaps. These are the Captain's open investigations. You can help resolve them.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer",
+                    "description": "Max hypotheses to return (default: 20)",
+                    "default": 20,
+                },
+            },
+        },
+    ),
+    Tool(
+        name="resolve_hypothesis",
+        description="Resolve an open hypothesis — confirm or deny a suspected identity merge, missing link, or data gap. Provide reasoning for the decision.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "hypothesis_id": {
+                    "type": "string",
+                    "description": "The hypothesis UUID to resolve",
+                },
+                "confirmed": {
+                    "type": "boolean",
+                    "description": "True to confirm the hypothesis, False to deny it",
+                },
+            },
+            "required": ["hypothesis_id", "confirmed"],
+        },
+    ),
 ]
 
 
@@ -194,6 +324,20 @@ async def call_tool(name: str, arguments: dict):
         return await _handle_get_entry(arguments)
     elif name == "list_sources":
         return await _handle_list_sources(arguments)
+    elif name == "graph_stats":
+        return await _handle_graph_stats(arguments)
+    elif name == "find_people":
+        return await _handle_find_people(arguments)
+    elif name == "get_graph_entity":
+        return await _handle_get_graph_entity(arguments)
+    elif name == "get_connections":
+        return await _handle_get_connections(arguments)
+    elif name == "entity_timeline":
+        return await _handle_entity_timeline(arguments)
+    elif name == "open_hypotheses":
+        return await _handle_open_hypotheses(arguments)
+    elif name == "resolve_hypothesis":
+        return await _handle_resolve_hypothesis(arguments)
     else:
         return [TextContent(type="text", text=f"Arrr! Unknown order: {name}. That's not in the Captain's handbook.")]
 
@@ -403,11 +547,306 @@ def _format_results_json(results, query):
 
 
 # ---------------------------------------------------------------------------
+# Knowledge Graph handlers
+# ---------------------------------------------------------------------------
+
+def _entity_summary(entity) -> dict:
+    """Create a compact summary of an entity for JSON output."""
+    summary = {
+        "id": entity.id,
+        "type": entity.type.value,
+    }
+    props = entity.properties
+    # Include key identifying fields
+    for field in ["name", "title", "subject", "url", "body"]:
+        if field in props and props[field]:
+            val = props[field]
+            if field == "body" and isinstance(val, str) and len(val) > 200:
+                val = val[:200] + "..."
+            summary[field] = val
+    return summary
+
+
+async def _handle_graph_stats(args):
+    if not _knowledge:
+        return [TextContent(type="text", text='{"error": "Knowledge graph not initialized. Run ingestion first."}')]
+
+    stats = _knowledge.stats()
+    # Add entity type breakdown
+    breakdown = {}
+    for et in EntityType:
+        count = _knowledge.count_entities(et)
+        if count > 0:
+            breakdown[et.value] = count
+
+    output = {
+        "totals": stats,
+        "entity_breakdown": breakdown,
+        "hypotheses_open": len(_knowledge.get_open_hypotheses(limit=1000)),
+    }
+    return [TextContent(type="text", text=json.dumps(output, ensure_ascii=False))]
+
+
+async def _handle_find_people(args):
+    if not _knowledge:
+        return [TextContent(type="text", text='{"error": "Knowledge graph not initialized."}')]
+
+    email = args.get("email", "")
+    phone = args.get("phone", "")
+    name = args.get("name", "")
+    limit = min(args.get("limit", 20), 100)
+
+    results = []
+
+    # Exact lookup by email
+    if email:
+        entity = _knowledge.find_by_identifier(IdentifierSystem.EMAIL, email.lower())
+        if entity:
+            results.append(entity)
+
+    # Exact lookup by phone
+    if phone and not results:
+        entity = _knowledge.find_by_identifier(IdentifierSystem.PHONE, phone)
+        if entity:
+            results.append(entity)
+
+    # Name search: browse all people and filter
+    if name or (not email and not phone):
+        people = _knowledge.find_entities(EntityType.PERSON, limit=500)
+        name_lower = name.lower() if name else ""
+        for person in people:
+            if len(results) >= limit:
+                break
+            if person in results:
+                continue
+            person_name = person.properties.get("name", "")
+            if not name or (person_name and name_lower in person_name.lower()):
+                results.append(person)
+
+    # Enrich with identifiers
+    output = []
+    for entity in results[:limit]:
+        entry = _entity_summary(entity)
+        identifiers = _knowledge.get_identifiers(entity.id)
+        if identifiers:
+            entry["identifiers"] = [
+                {"system": ident.system.value, "value": ident.value}
+                for ident in identifiers
+            ]
+        provs = _knowledge.get_provenance(entity.id)
+        if provs:
+            entry["sources"] = list({p.source_name for p in provs})
+        output.append(entry)
+
+    return [TextContent(type="text", text=json.dumps(
+        {"people": output, "total": len(output)}, ensure_ascii=False, default=str
+    ))]
+
+
+async def _handle_get_graph_entity(args):
+    if not _knowledge:
+        return [TextContent(type="text", text='{"error": "Knowledge graph not initialized."}')]
+
+    entity_id = args.get("entity_id", "")
+    if not entity_id:
+        return [TextContent(type="text", text='{"error": "entity_id is required."}')]
+
+    entity = _knowledge.get_entity(entity_id)
+    if not entity:
+        return [TextContent(type="text", text=f'{{"error": "Entity not found: {entity_id}"}}')]
+
+    output = {
+        "id": entity.id,
+        "type": entity.type.value,
+        "properties": entity.properties,
+        "created_at": entity.created_at.isoformat() if entity.created_at else None,
+    }
+
+    # Identifiers
+    identifiers = _knowledge.get_identifiers(entity.id)
+    if identifiers:
+        output["identifiers"] = [
+            {"system": i.system.value, "value": i.value, "verified": i.verified}
+            for i in identifiers
+        ]
+
+    # Provenance
+    provs = _knowledge.get_provenance(entity.id)
+    if provs:
+        output["provenance"] = [
+            {
+                "source": p.source_name,
+                "source_record_id": p.source_record_id,
+                "confidence": p.confidence,
+                "ingested_at": p.ingested_at.isoformat() if p.ingested_at else None,
+            }
+            for p in provs
+        ]
+
+    # Relationship summary (counts by type)
+    rels = _knowledge.get_relationships(entity.id, current_only=True)
+    if rels:
+        rel_counts = {}
+        for r in rels:
+            rel_counts[r.type.value] = rel_counts.get(r.type.value, 0) + 1
+        output["relationship_summary"] = rel_counts
+        output["total_connections"] = len(rels)
+
+    return [TextContent(type="text", text=json.dumps(output, ensure_ascii=False, default=str))]
+
+
+async def _handle_get_connections(args):
+    if not _knowledge:
+        return [TextContent(type="text", text='{"error": "Knowledge graph not initialized."}')]
+
+    entity_id = args.get("entity_id", "")
+    if not entity_id:
+        return [TextContent(type="text", text='{"error": "entity_id is required."}')]
+
+    entity = _knowledge.get_entity(entity_id)
+    if not entity:
+        return [TextContent(type="text", text=f'{{"error": "Entity not found: {entity_id}"}}')]
+
+    rel_type_str = args.get("relationship_type")
+    include_history = args.get("include_history", False)
+
+    rel_type = None
+    if rel_type_str:
+        try:
+            rel_type = RelationshipType(rel_type_str)
+        except ValueError:
+            return [TextContent(type="text", text=f'{{"error": "Unknown relationship type: {rel_type_str}"}}')]
+
+    rels = _knowledge.get_relationships(
+        entity_id,
+        rel_type=rel_type,
+        current_only=not include_history,
+    )
+
+    connections = []
+    for rel in rels:
+        other_id = rel.target_id if rel.source_id == entity_id else rel.source_id
+        other = _knowledge.get_entity(other_id)
+
+        conn = {
+            "relationship": rel.type.value,
+            "direction": "outgoing" if rel.source_id == entity_id else "incoming",
+            "entity": _entity_summary(other) if other else {"id": other_id, "type": "unknown"},
+        }
+        if rel.valid_from:
+            conn["since"] = rel.valid_from.isoformat()
+        if rel.valid_to:
+            conn["until"] = rel.valid_to.isoformat()
+        if rel.superseded_at:
+            conn["superseded"] = True
+        connections.append(conn)
+
+    output = {
+        "entity": _entity_summary(entity),
+        "connections": connections,
+        "total": len(connections),
+    }
+    return [TextContent(type="text", text=json.dumps(output, ensure_ascii=False, default=str))]
+
+
+async def _handle_entity_timeline(args):
+    if not _knowledge:
+        return [TextContent(type="text", text='{"error": "Knowledge graph not initialized."}')]
+
+    entity_id = args.get("entity_id", "")
+    if not entity_id:
+        return [TextContent(type="text", text='{"error": "entity_id is required."}')]
+
+    entity = _knowledge.get_entity(entity_id)
+    if not entity:
+        return [TextContent(type="text", text=f'{{"error": "Entity not found: {entity_id}"}}')]
+
+    timeline = _knowledge.entity_timeline(entity_id)
+
+    output = {
+        "entity": _entity_summary(entity),
+        "timeline": [
+            {
+                "date": event["date"].isoformat() if hasattr(event["date"], "isoformat") else str(event["date"]),
+                "event": event["event"],
+                "relationship": event["relationship"],
+                "with": event["with"],
+                "with_id": event["with_id"],
+            }
+            for event in timeline
+        ],
+        "total_events": len(timeline),
+    }
+    return [TextContent(type="text", text=json.dumps(output, ensure_ascii=False, default=str))]
+
+
+async def _handle_open_hypotheses(args):
+    if not _knowledge:
+        return [TextContent(type="text", text='{"error": "Knowledge graph not initialized."}')]
+
+    limit = min(args.get("limit", 20), 100)
+    hypotheses = _knowledge.get_open_hypotheses(limit=limit)
+
+    output_list = []
+    for hyp in hypotheses:
+        entry = {
+            "id": hyp.id,
+            "type": hyp.type.value,
+            "confidence": hyp.confidence,
+            "status": hyp.status.value,
+            "created_at": hyp.created_at.isoformat() if hyp.created_at else None,
+        }
+        # Enrich with entity details
+        entities = []
+        for eid in hyp.entity_ids:
+            e = _knowledge.get_entity(eid)
+            if e:
+                entities.append(_entity_summary(e))
+        entry["entities"] = entities
+
+        if hyp.evidence:
+            entry["evidence"] = hyp.evidence
+
+        output_list.append(entry)
+
+    return [TextContent(type="text", text=json.dumps(
+        {"hypotheses": output_list, "total": len(output_list)},
+        ensure_ascii=False, default=str,
+    ))]
+
+
+async def _handle_resolve_hypothesis(args):
+    if not _knowledge:
+        return [TextContent(type="text", text='{"error": "Knowledge graph not initialized."}')]
+
+    hypothesis_id = args.get("hypothesis_id", "")
+    confirmed = args.get("confirmed")
+
+    if not hypothesis_id:
+        return [TextContent(type="text", text='{"error": "hypothesis_id is required."}')]
+    if confirmed is None:
+        return [TextContent(type="text", text='{"error": "confirmed (true/false) is required."}')]
+
+    try:
+        _knowledge.resolve_hypothesis(
+            hypothesis_id,
+            confirmed=confirmed,
+            method=ResolutionMethod.LLM,
+        )
+        action = "confirmed" if confirmed else "denied"
+        return [TextContent(type="text", text=json.dumps(
+            {"status": "resolved", "action": action, "hypothesis_id": hypothesis_id}
+        ))]
+    except Exception as e:
+        return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
 async def main():
-    global _client, _config, _vault_root
+    global _client, _config, _vault_root, _knowledge
 
     # Suppress noisy logs in MCP mode
     logging.basicConfig(level=logging.WARNING, stream=sys.stderr)
@@ -419,6 +858,14 @@ async def main():
     # Ensure FTS database directory exists (hybrid search will use it)
     fts_path = _get_fts_db_path(_vault_root, _config)
     os.makedirs(os.path.dirname(fts_path), exist_ok=True)
+
+    # Initialize knowledge graph (if DB exists or vault has data)
+    try:
+        _knowledge = KnowledgeEngine(_vault_root)
+        logger.info("Knowledge graph initialized at %s", _knowledge.db_path)
+    except Exception as e:
+        logger.warning("Knowledge graph not available: %s", e)
+        _knowledge = None
 
     async with stdio_server() as (read, write):
         await app.run(read, write, app.create_initialization_options())

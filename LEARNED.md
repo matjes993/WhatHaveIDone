@@ -1,5 +1,31 @@
 # Nomolo — Learnings
 
+## 2026-03-14 (session 3, part 3)
+
+- **Prefer richest entity on identifier lookup**: When the same email/phone appears on multiple entities (e.g., a bare person from email parsing AND a full contact record), deterministic `fetchone()` may pick the wrong one. Always `ORDER BY length(properties) DESC` to get the most complete entity. This is a general principle: when deduplication hasn't run yet, disambiguate by richness.
+- **Overlap detection needs both path and extension matching**: A file at `Library/Mail/V10/msg.emlx` should be skipped by the deep scanner because Mail.app already has a dedicated collector. Matching only by path misses files in unexpected locations; matching only by extension produces false positives. The two-layer approach (path pattern OR extension) catches both cases with minimal false positives.
+- **Skip system directories early, not late**: Checking SKIP_DIRS in `os.walk` via `dirs[:]` in-place modification is both correct and performant — it prunes entire subtrees. Doing the check later (per-file) wastes time walking directories that produce no results.
+- **Query accuracy benchmarks should test the full pipeline**: Testing individual components (adapter, resolver, store) catches unit-level bugs. But accuracy of end-to-end queries (find person by email, count relationships, check entity resolution) reveals integration issues like identifier attachment, merge ordering, and property inheritance that unit tests miss.
+
+## 2026-03-14 (session 3, continued)
+
+- **Adapters are the right abstraction layer**: One adapter per source, each yielding CanonicalRecords. Adding a new source = one function, zero changes to graph builder or entity resolution. The adapter pattern makes 11 sources feel like one.
+- **Default limits bite in tests**: `find_entities(limit=100)` silently truncates results. Always use `count_entities()` for assertions about totals. This applies to any paginated API — never assume the default page size covers everything.
+- **Field name mismatches between generators and adapters are inevitable**: The Slack generator used `"sender"` but the adapter expected `"user"`. When you control both ends, pick one convention and stick to it. When you don't, try multiple field names with fallbacks.
+- **Integration tests catch what unit tests miss**: All 117 unit tests passed, but the integration test revealed adapter bugs, field mismatches, and query limit issues that only surface when real data flows through the full pipeline.
+
+## 2026-03-14 (session 3)
+
+- **Three pillars, not two**: core (storage) and web (display) aren't enough. The agent layer (LLM reasoning) is the actual product — it's what makes raw data useful. Keep it architecturally separate so the core stays deterministic and testable without LLM dependencies.
+- **JSONL vault as single source of truth**: Derived indexes (SQLite graph, ChromaDB vectors) should always be rebuildable from raw vault data. This makes the system portable — copy one folder, everything regenerates on any machine.
+- **Entity resolution is a 3-tier problem**: Start with cheap deterministic matching (email/phone exact match catches 80%). Use probabilistic matching (Jaro-Winkler) for ambiguous names. Save expensive LLM resolution for the agent layer, where it's metered and optional.
+- **Bitemporal modeling prevents data loss**: Tracking both "when was this true in reality" and "when did we learn this" means you never lose historical context. People change jobs, get married, move cities — the graph should reflect the full timeline, not just the current snapshot.
+- **Append-only annotations are worth the complexity**: Letting scrolls (plugins) only ADD data, never modify, means a bad scroll can never corrupt your vault. Uninstall = remove annotations, original data untouched. The read-time merge of original + annotations adds complexity but the safety guarantee is worth it.
+- **Community plugins need two safety tiers**: Requiring agent review for every plugin kills contribution momentum. Safe scrolls (pure computation, no I/O) can run without review. Power scrolls (network, dependencies) need review. This balances openness with safety.
+- **External identifiers bridge private and public knowledge**: ISBN, UPC, DOI, IMDB IDs let you connect personal data (your books, purchases, movies) to public metadata without sharing anything. Design the identifiers table early — it's cheap to store and enables massive enrichment later.
+- **Hypotheses are the graph's curiosity engine**: Instead of only storing confirmed facts, track suspected connections and data gaps. This feeds gamification (quests to resolve mysteries) and makes the system actively smarter over time.
+- **Machine adaptivity should be automatic**: Don't force users to choose embedding models. Detect hardware, pick the right tier, let power users override. Re-embedding on upgrade is a one-time cost, not a migration nightmare, because the JSONL vault is the source of truth.
+
 ## 2026-03-13 (session 2)
 
 - **Don't split repos prematurely**: OpenClaw has 22 repos (many contributors, independent lifecycles). CLI-Anything has 1 repo (one team, full control). Nomolo is closer to CLI-Anything — one person + AI. Separate repos add coordination tax (dependency versioning, cross-repo PRs, interface freezing) without benefit until you actually have independent teams.
