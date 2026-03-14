@@ -75,10 +75,13 @@ def _get_fts_db_path(vault_root, config=None):
     """Resolve the FTS database file path."""
     config = config or {}
     search_cfg = config.get("search", {})
-    fts_dir = search_cfg.get("fts_dir", os.path.join(vault_root, DEFAULT_FTS_DIR))
-    fts_dir = os.path.expanduser(fts_dir)
-    if not os.path.isabs(fts_dir):
-        fts_dir = os.path.join(vault_root, fts_dir)
+    fts_dir = search_cfg.get("fts_dir")
+    if fts_dir:
+        fts_dir = os.path.expanduser(fts_dir)
+        if not os.path.isabs(fts_dir):
+            fts_dir = os.path.join(vault_root, fts_dir)
+    else:
+        fts_dir = os.path.join(vault_root, DEFAULT_FTS_DIR)
     return os.path.join(fts_dir, DEFAULT_FTS_FILE)
 
 
