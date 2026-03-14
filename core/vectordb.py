@@ -31,6 +31,8 @@ EMBEDDING_FIELDS = {
     "Calendar": "event_for_embedding",
     "Maps": "location_for_embedding",
     "TextStream": "text_for_embedding",
+    "Bookmarks": "bookmark_for_embedding",
+    "Photos": "photo_for_embedding",
 }
 
 # Default embedding model (local, no API key needed)

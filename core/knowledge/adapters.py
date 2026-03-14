@@ -344,8 +344,8 @@ def read_vault_jsonl(vault_root: str) -> dict[str, list[dict]]:
 
     source_dirs = {
         "gmail": "Gmail_Primary",
-        "google_contacts": "Contacts/contacts.jsonl",
-        "mac_contacts": "Contacts/mac_contacts.jsonl",
+        "google_contacts": "Contacts_Google",
+        "mac_contacts": "Contacts",
         "calendar": "Calendar",
         "imessage": "Messages",
         "whatsapp": "WhatsApp",
@@ -364,7 +364,7 @@ def read_vault_jsonl(vault_root: str) -> dict[str, list[dict]]:
         if full_path.is_file() and full_path.suffix == ".jsonl":
             entries.extend(_read_jsonl_file(full_path))
         elif full_path.is_dir():
-            for jsonl_file in sorted(full_path.rglob("*.jsonl")):
+            for jsonl_file in sorted(full_path.rglob("*.jsonl*")):
                 entries.extend(_read_jsonl_file(jsonl_file))
 
         if entries:
@@ -374,12 +374,31 @@ def read_vault_jsonl(vault_root: str) -> dict[str, list[dict]]:
 
 
 def _read_jsonl_file(path) -> list[dict]:
-    """Read a single JSONL file and return list of dicts."""
+    """Read a single JSONL or JSONL.ZST file and return list of dicts."""
     import json
 
     entries = []
-    with open(path, "r", encoding="utf-8") as f:
-        for line in f:
+    fh = None
+    path_str = str(path)
+
+    if path_str.endswith(".zst"):
+        try:
+            import zstandard as zstd
+            import io
+            dctx = zstd.ZstdDecompressor()
+            raw = open(path_str, "rb")
+            reader = dctx.stream_reader(raw)
+            fh = io.TextIOWrapper(reader, encoding="utf-8")
+        except ImportError:
+            return entries
+    else:
+        fh = open(path_str, "r", encoding="utf-8")
+
+    if fh is None:
+        return entries
+
+    with fh:
+        for line in fh:
             line = line.strip()
             if line:
                 try:

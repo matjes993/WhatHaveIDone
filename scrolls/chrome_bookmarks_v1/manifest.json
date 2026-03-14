@@ -1,0 +1,13 @@
+{
+    "id": "chrome_bookmarks_v1",
+    "name": "Chrome Bookmarks Extractor",
+    "version": "1.0.0",
+    "author": "Nomolo Core Team",
+    "description": "Extracts bookmarks from Google Chrome's Bookmarks JSON file. Captures title, URL, folder hierarchy, and timestamps. Works on macOS.",
+    "tier": "safe",
+    "target_source": "chrome_bookmarks",
+    "output_vault_dir": "Bookmarks",
+    "requires": [],
+    "permissions": ["filesystem"],
+    "min_nomolo_version": "0.1.0"
+}
