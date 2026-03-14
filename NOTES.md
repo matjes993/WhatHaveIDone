@@ -1,5 +1,49 @@
 # Nomolo — Session Notes
 
+## 2026-03-13 (session 3): Full UI Audit + Quiz Redesign + Pitch Deck
+
+### What we built
+- **Test suite overhaul** — rewrote from 146 to 349 test cases across 28 suites covering every page, API, jargon consistency, and accessibility
+- **Quiz redesign** — replaced boring trivia ("Which year was X most active?") with engaging Over/Under, More/Less, Before/After formats that test intuition and reveal surprises
+- **Automaton UX** — added 4 suggested query buttons on welcome screen, LLM config warning with link to settings
+- **Aliases UX** — added hint card when email/org sections are empty, guiding users to Life Map
+- **Pitch deck** — incorporated "Memory Escape Velocity" pitch (PDF + PITCH.md) into docs/
+
+### Bugs fixed
+- **Port 8000→3000** in FDA permission guide (would send users to dead URL)
+- **"1 known faces"** grammar (singular/plural handling)
+- **"Yer Plunder"→"Loot Log"** title mismatch with sidebar nav
+- **"Re-raid"→"Raid Again"** inconsistent CTA text
+- **Unix epoch dates** — pre-1990 dates now rejected, fixing "54.7 years of history" bug
+- **15+ jargon gaps** — Contacts/Calendar in Expert Modal, welcome headlines, done step, FDA links
+
+### Security fixes
+- Removed `vault_path` from `/api/credentials/status` (leaked full filesystem path)
+- Stripped `how_to_earn` from hidden power-ups in RPG API (exposed easter egg conditions)
+
+### UX improvements
+- Keyboard focus styles (`:focus-visible` with cyan outline)
+- Meta description and theme-color tags
+- Placeholder jargon toggle support in app.js
+- Stat legend tooltips on dashboard (STR/WIS/DEX/INT/CHA/END explained on hover)
+- Power-Ups card on dashboard now links to /achievements page
+- Achievements page header CSS fixed (was using dashboard classes)
+
+### Key vision crystallized
+From the pitch deck — the core thesis:
+- **"Superintelligence + Fragmented Data = A Toy. Superintelligence + Unified Personal Datacore = A Sovereign Jarvis."**
+- **"The internet gave everyone access to information. Nomolo gives everyone access to their own capability."**
+- Three convergence points: Model Intelligence + Edge Compute + Data Rights = Now is the moment
+
+### What's next
+- **Insights Dashboard** — proactive AI that surfaces patterns without being asked
+- **File Upload UI** — drag-and-drop for WhatsApp/Telegram/Slack exports
+- **Timeline** — chronological life scroll across all sources
+- **Year in Review / Wrapped** — the viral screenshot moment
+- **Relationship Map** — visual graph of people across sources
+
+---
+
 ## 2026-03-13 (session 2): Life Map + Aliases + Automaton Powers + Architecture
 
 ### What we built
