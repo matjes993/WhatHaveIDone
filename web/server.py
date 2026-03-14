@@ -47,6 +47,17 @@ STATIC_DIR = os.path.join(WEB_DIR, "static")
 logger = logging.getLogger("nomolo.web")
 
 # ---------------------------------------------------------------------------
+# Automaton Power Levels
+# ---------------------------------------------------------------------------
+
+AUTOMATON_POWER_LEVELS = {
+    1: {"rpg_name": "Cabin Boy",      "real_name": "Read Only",    "description": "Query data, search vault, answer questions. Cannot modify anything."},
+    2: {"rpg_name": "First Mate",     "real_name": "Organize",     "description": "Level 1 + create/rename/delete chat folders, tag records, organize data."},
+    3: {"rpg_name": "Quartermaster",  "real_name": "Collect",      "description": "Level 2 + trigger raids/scans, connect sources, run collection autonomously."},
+    4: {"rpg_name": "Captain",        "real_name": "Full Access",  "description": "Level 3 + modify settings, delete records, manage all of Nomolo."},
+}
+
+# ---------------------------------------------------------------------------
 # Import scanner and game modules
 # ---------------------------------------------------------------------------
 
@@ -2264,6 +2275,7 @@ async def settings_page(request: Request):
         "auto_scan": config.get("auto_scan", False),
         "user_name": config.get("user_name", ""),
         "automaton_power_level": config.get("automaton_power_level", 1),
+        "automaton_power_levels": AUTOMATON_POWER_LEVELS,
     })
 
 
@@ -2278,6 +2290,27 @@ async def api_save_setting(request: Request):
         with open(config_path, "w") as f:
             yaml.dump(config, f, default_flow_style=False)
         return JSONResponse({"ok": True})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/api/settings/automaton-power")
+async def api_save_automaton_power(request: Request):
+    """Save the Automaton power level (1-4) to config.yaml."""
+    try:
+        body = await request.json()
+        level = body.get("level")
+        if not isinstance(level, int) or level < 1 or level > 4:
+            return JSONResponse(
+                {"ok": False, "error": "level must be an integer between 1 and 4"},
+                status_code=400,
+            )
+        config_path = os.path.join(PROJECT_ROOT, "config.yaml")
+        config = load_config()
+        config["automaton_power_level"] = level
+        with open(config_path, "w") as f:
+            yaml.dump(config, f, default_flow_style=False)
+        return JSONResponse({"ok": True, "level": level})
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 

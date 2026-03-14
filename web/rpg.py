@@ -356,6 +356,72 @@ VILLAIN_REGISTRY = {
 }
 
 # ---------------------------------------------------------------------------
+# LOOT TYPES — RPG names for real-world data categories
+# ---------------------------------------------------------------------------
+
+LOOT_TYPES = {
+    "scroll":      {"emoji": "📜", "name": "Scroll",      "real": "Email"},
+    "soul_bond":   {"emoji": "💎", "name": "Soul Bond",    "real": "Contact"},
+    "time_crystal":{"emoji": "🔮", "name": "Time Crystal", "real": "Calendar Event"},
+    "footprint":   {"emoji": "🔗", "name": "Footprint",    "real": "Browser Record"},
+    "star_chart":  {"emoji": "⭐", "name": "Star Chart",   "real": "Bookmark"},
+    "waypoint":    {"emoji": "📍", "name": "Waypoint",     "real": "Location"},
+    "memory_shard":{"emoji": "📸", "name": "Memory Shard", "real": "Photo/Video"},
+    "whisper":     {"emoji": "💬", "name": "Whisper",       "real": "Chat Message"},
+    "manuscript":  {"emoji": "📝", "name": "Manuscript",    "real": "Note"},
+    "proclamation":{"emoji": "📣", "name": "Proclamation",  "real": "Social Post"},
+    "echo":        {"emoji": "🎵", "name": "Echo",          "real": "Music Track"},
+    "tome":        {"emoji": "📚", "name": "Tome",          "real": "Book"},
+    "coin":        {"emoji": "🪙", "name": "Coin",          "real": "Financial Record"},
+    "life_force":  {"emoji": "❤️", "name": "Life Force",    "real": "Health Data"},
+}
+
+# ---------------------------------------------------------------------------
+# VAULT DIR → LOOT — Maps vault directory names to loot type IDs
+# ---------------------------------------------------------------------------
+
+VAULT_DIR_TO_LOOT = {
+    "Gmail_Primary": "scroll",
+    "Contacts": "soul_bond",
+    "Contacts_Google": "soul_bond",
+    "Calendar": "time_crystal",
+    "Calendar_Google": "time_crystal",
+    "Browser": "footprint",
+    "Bookmarks": "star_chart",
+    "Maps": "waypoint",
+    "Photos": "memory_shard",
+    "Messages": "whisper",
+    "WhatsApp": "whisper",
+    "Telegram": "whisper",
+    "Slack": "whisper",
+    "Notes": "manuscript",
+    "Twitter": "proclamation",
+    "Facebook": "proclamation",
+    "Instagram": "proclamation",
+    "Spotify": "echo",
+    "Music": "echo",
+    "YouTube": "echo",
+    "Books": "tome",
+    "Netflix": "echo",
+    "Reddit": "proclamation",
+    "PayPal": "coin",
+    "Finance": "coin",
+    "Amazon": "coin",
+    "Shopping": "coin",
+    "Health": "life_force",
+    "Safari": "footprint",
+    "Mail": "scroll",
+    "LinkedIn": "proclamation",
+}
+
+
+def get_loot_types_for_villain(villain_id):
+    """Return the set of loot type IDs available from a villain's sources."""
+    villain = VILLAIN_REGISTRY.get(villain_id, {})
+    return {VAULT_DIR_TO_LOOT.get(d) for d in villain.get("vault_dirs", []) if VAULT_DIR_TO_LOOT.get(d)}
+
+
+# ---------------------------------------------------------------------------
 # CHARACTER PORTRAITS — Villain-specific SVG mappings
 # ---------------------------------------------------------------------------
 # Character-specific SVGs from nomolo-characters.json (v0.3.0).

@@ -1,186 +1,221 @@
 """
-Alias extraction — discovers the user's identities across platforms.
-Scans vault data for email addresses, names, nicknames, and usernames.
+Alias extraction — discovers the user's identities across vault data.
+Scans Gmail, Contacts, and config for email addresses, names, and nicknames.
 """
 
 import json
 import os
 import re
+import time
 import logging
 from collections import Counter
-from datetime import datetime, timezone
+
+from core.vault import read_all_entries
 
 logger = logging.getLogger("nomolo.aliases")
 
-# Regex for email extraction
-_EMAIL_RE = re.compile(r'[\w\.-]+@[\w\.-]+\.\w+')
-
-# Map vault directory names to Flatcloud villain IDs
-VAULT_TO_VILLAIN = {
-    "Gmail_Primary": "omniscient_eye",
-    "Contacts_Google": "omniscient_eye",
-    "Contacts": "walled_garden",
-    "Messages": "walled_garden",
-    "WhatsApp": "hydra_of_faces",
-    "LinkedIn": "professional_masque",
-    "Twitter": "chaos_herald",
-    "Telegram": "shadow_courier",
-    "Slack": "corporate_hive",
-}
-
-# Map vault directory names to human-readable source names
-VAULT_TO_SOURCE = {
-    "Gmail_Primary": "Gmail",
-    "Contacts_Google": "Google Contacts",
-    "Contacts": "Contacts",
-    "Messages": "iMessage",
-    "WhatsApp": "WhatsApp",
-    "LinkedIn": "LinkedIn",
-    "Twitter": "Twitter",
-    "Telegram": "Telegram",
-    "Slack": "Slack",
-}
-
-# Max files to scan per vault directory (performance guard)
-_MAX_FILES_PER_VAULT = 1000
-
-# Cache file name
+_EMAIL_RE = re.compile(r"[\w.\-+]+@[\w.\-]+\.\w+")
 _CACHE_FILENAME = ".nomolo_aliases.json"
+_CACHE_MAX_AGE_SECS = 3600  # 1 hour
 
 
-def extract_user_aliases(vault_root, user_name=None):
+def load_cached_aliases(vault_root: str) -> dict | None:
+    """Load cached aliases if fresh (< 1 hour old). Public API."""
+    return _load_cache(vault_root)
+
+
+def save_cached_aliases(vault_root: str, data: dict):
+    """Save alias data to cache file. Public API."""
+    _save_cache(vault_root, data)
+
+
+def extract_user_aliases(vault_root: str, user_name: str | None = None) -> dict:
     """
     Scan vault directories for the user's own identities.
 
-    Args:
-        vault_root: Path to the vaults directory.
-        user_name: Optional known user name to match against contacts.
-
-    Returns dict with:
-        primary_name: str or None
-        primary_email: str or None
-        aliases: list of dicts with type, value, source, villain, usage_count
+    Returns dict with primary_name, primary_email, and aliases list.
+    Each alias has type, value, source, and optionally usage_count.
     """
+    # --- Check cache first ---
+    cached = _load_cache(vault_root)
+    if cached is not None:
+        return cached
+
     aliases = []
 
-    # --- 1. Gmail vault: find user's primary email from "from" fields ---
+    # --- 1. Gmail: find user emails from SENT messages ---
     gmail_dir = os.path.join(vault_root, "Gmail_Primary")
     if os.path.isdir(gmail_dir):
         aliases.extend(_scan_gmail(gmail_dir))
 
-    # --- 2. Google Contacts: find user's own card ---
-    google_contacts_dir = os.path.join(vault_root, "Contacts_Google")
-    if os.path.isdir(google_contacts_dir):
-        aliases.extend(_scan_contacts(google_contacts_dir, "Contacts_Google", user_name))
+    # --- 2. Read config.yaml for user_name (if not provided) ---
+    if not user_name:
+        user_name = _read_config_user_name()
 
-    # --- 3. Local Contacts (macOS "Me" card) ---
+    # --- 3. Contacts: find user's own card ---
     contacts_dir = os.path.join(vault_root, "Contacts")
     if os.path.isdir(contacts_dir):
-        aliases.extend(_scan_contacts(contacts_dir, "Contacts", user_name))
+        # Collect known user emails from Gmail scan for matching
+        known_emails = {a["value"] for a in aliases if a["type"] == "email"}
+        aliases.extend(_scan_contacts(contacts_dir, known_emails, user_name))
 
-    # --- 4. Messages: frequent sender is likely the user ---
-    messages_dir = os.path.join(vault_root, "Messages")
-    if os.path.isdir(messages_dir):
-        aliases.extend(_scan_messages(messages_dir))
+    # --- 4. Google Contacts ---
+    google_contacts_dir = os.path.join(vault_root, "Contacts_Google")
+    if os.path.isdir(google_contacts_dir):
+        known_emails = {a["value"] for a in aliases if a["type"] == "email"}
+        aliases.extend(_scan_contacts(google_contacts_dir, known_emails, user_name))
 
-    # --- 5. Config fallback: always include user_name if provided ---
+    # --- 5. Config fallback: include user_name as a name alias ---
     if user_name:
         aliases.append({
             "type": "name",
             "value": user_name,
             "source": "Config",
-            "villain": None,
             "usage_count": 0,
         })
 
-    # Deduplicate by (type, value) — keep the one with highest usage_count
+    # Ensure every alias has usage_count (default 0)
+    for a in aliases:
+        a.setdefault("usage_count", 0)
+
+    # Deduplicate by (type, value) — keep highest usage_count
     aliases = _deduplicate(aliases)
 
-    # Sort: emails first (by usage_count desc), then names, then nicknames
-    type_order = {"email": 0, "name": 1, "nickname": 2, "organization": 3}
-    aliases.sort(key=lambda a: (type_order.get(a["type"], 99), -a["usage_count"], a["value"]))
+    # Sort: emails first by usage_count desc, then names, then nicknames
+    type_order = {"email": 0, "name": 1, "nickname": 2}
+    aliases.sort(key=lambda a: (
+        type_order.get(a["type"], 99),
+        -a.get("usage_count", 0),
+        a["value"],
+    ))
 
-    # Determine primary identity
+    # Determine primaries — prefer name with highest usage count
     primary_email = None
     primary_name = None
-
     for a in aliases:
         if a["type"] == "email" and primary_email is None:
             primary_email = a["value"]
         if a["type"] == "name" and primary_name is None:
-            primary_name = a["value"]
-
-    if primary_name is None and user_name:
+            # Prefer high-usage name over config name
+            if a.get("usage_count", 0) > 0:
+                primary_name = a["value"]
+    if not primary_name:
         primary_name = user_name
 
-    return {
+    result = {
         "primary_name": primary_name,
         "primary_email": primary_email,
         "aliases": aliases,
     }
 
+    _save_cache(vault_root, result)
+    return result
+
 
 # ── Gmail scanning ────────────────────────────────────────────────────────
 
 def _scan_gmail(gmail_dir):
-    """Scan Gmail JSON files for sender emails. Most common 'from' is the user."""
-    from_counter = Counter()
-    reply_to_counter = Counter()
-    files_scanned = 0
+    """Scan Gmail JSONL entries for the user's own email addresses and names.
 
-    for file_path in _walk_json_files(gmail_dir):
-        if files_scanned >= _MAX_FILES_PER_VAULT:
-            break
-        files_scanned += 1
+    Strategy: the user's email appears most often as a TO recipient
+    (they receive mail to their own address). Also extract names from
+    the to_list entries matching the primary email.
+    """
+    to_counter = Counter()  # email → count as recipient
+    to_names = {}           # email → Counter of display names
+    reply_to_emails = set()
 
-        try:
-            data = _read_json_file(file_path)
-            if data is None:
-                continue
-
-            entries = data if isinstance(data, list) else [data]
-            for entry in entries:
-                if not isinstance(entry, dict):
-                    continue
-
-                # Extract from field
-                from_val = entry.get("from", "")
-                if isinstance(from_val, str):
-                    for email in _EMAIL_RE.findall(from_val):
-                        from_counter[email.lower()] += 1
-
-                # Extract reply_to field
-                reply_to = entry.get("reply_to", "")
-                if isinstance(reply_to, str):
-                    for email in _EMAIL_RE.findall(reply_to):
-                        reply_to_counter[email.lower()] += 1
-
-        except Exception:
+    for entry in read_all_entries(gmail_dir):
+        if not isinstance(entry, dict):
             continue
 
+        # Count TO recipients — user's own email is the most frequent
+        to_list = entry.get("to_list", [])
+        if isinstance(to_list, list):
+            for addr in to_list:
+                if isinstance(addr, dict):
+                    email = addr.get("email", "")
+                    name = addr.get("name", "")
+                elif isinstance(addr, str):
+                    found = _EMAIL_RE.findall(addr)
+                    email = found[0] if found else ""
+                    name = ""
+                else:
+                    continue
+                if email:
+                    email = email.lower()
+                    to_counter[email] += 1
+                    if name and name.strip():
+                        to_names.setdefault(email, Counter())[name.strip()] += 1
+
+        # Fallback: parse "to" string if to_list is empty
+        if not to_list:
+            to_val = entry.get("to", "")
+            if isinstance(to_val, str):
+                for email in _EMAIL_RE.findall(to_val):
+                    to_counter[email.lower()] += 1
+
+        # Collect reply_to emails
+        reply_to = entry.get("reply_to", "")
+        if isinstance(reply_to, str):
+            for rt_email in _EMAIL_RE.findall(reply_to):
+                reply_to_emails.add(rt_email.lower())
+
+    if not to_counter:
+        return []
+
+    # The user's email(s) dominate the TO field — pick the top ones
+    # that appear in >10% of messages
+    total = sum(to_counter.values())
+    threshold = max(total * 0.05, 50)  # at least 50 appearances
+
     aliases = []
-    source = VAULT_TO_SOURCE["Gmail_Primary"]
-    villain = VAULT_TO_VILLAIN["Gmail_Primary"]
-
-    # The most common "from" email is likely the user's
-    for email, count in from_counter.most_common(5):
-        aliases.append({
-            "type": "email",
-            "value": email,
-            "source": source,
-            "villain": villain,
-            "usage_count": count,
-        })
-
-    # Also check reply_to for additional email identities
-    for email, count in reply_to_counter.most_common(3):
-        if not any(a["value"] == email for a in aliases):
+    for email, count in to_counter.most_common():
+        if count >= threshold:
             aliases.append({
                 "type": "email",
                 "value": email,
-                "source": source,
-                "villain": villain,
+                "source": "Gmail",
                 "usage_count": count,
+            })
+        else:
+            break
+
+    # Extract names the user goes by from to_list entries.
+    # to_names maps email → Counter of display names. Only keep names
+    # that appear frequently (they're how the user is addressed).
+    user_emails = {a["value"] for a in aliases}
+    name_counts = Counter()
+    for email in user_emails:
+        name_counts.update(to_names.get(email, Counter()))
+
+    for name, count in name_counts.most_common():
+        if count < 20:
+            break  # Noise threshold — must appear in 20+ emails
+        # Skip email-like or very short
+        if "@" in name or len(name) < 3:
+            continue
+        # Skip names with digits (customer IDs)
+        if any(c.isdigit() for c in name):
+            continue
+        # Skip names with >3 words (event titles)
+        if len(name.split()) > 3:
+            continue
+        aliases.append({
+            "type": "name",
+            "value": name,
+            "source": "Gmail",
+            "usage_count": count,
+        })
+
+    # Add reply_to if they match user emails
+    for email in reply_to_emails:
+        if email in user_emails and email not in {a["value"] for a in aliases if a["type"] == "email"}:
+            aliases.append({
+                "type": "email",
+                "value": email,
+                "source": "Gmail",
+                "usage_count": 0,
             })
 
     return aliases
@@ -188,248 +223,149 @@ def _scan_gmail(gmail_dir):
 
 # ── Contacts scanning ─────────────────────────────────────────────────────
 
-def _scan_contacts(contacts_dir, vault_key, user_name=None):
-    """Scan contact JSON files for emails, names, nicknames."""
+def _scan_contacts(contacts_dir, known_user_emails, user_name=None):
+    """Scan Contacts JSONL for the user's own card. Extract names/nicknames."""
     aliases = []
-    source = VAULT_TO_SOURCE.get(vault_key, vault_key)
-    villain = VAULT_TO_VILLAIN.get(vault_key)
-    files_scanned = 0
+    source = "Google Contacts" if "Google" in contacts_dir else "Contacts"
 
-    for file_path in _walk_json_files(contacts_dir):
-        if files_scanned >= _MAX_FILES_PER_VAULT:
-            break
-        files_scanned += 1
-
-        try:
-            data = _read_json_file(file_path)
-            if data is None:
-                continue
-
-            contacts = data if isinstance(data, list) else [data]
-            for contact in contacts:
-                if not isinstance(contact, dict):
-                    continue
-
-                # Check if this is the user's own card
-                is_user_card = _is_user_card(contact, user_name)
-                if not is_user_card and user_name:
-                    continue
-
-                # Extract emails
-                emails = contact.get("emails", [])
-                if isinstance(emails, list):
-                    for em in emails:
-                        val = em.get("value", em) if isinstance(em, dict) else em
-                        if isinstance(val, str) and _EMAIL_RE.match(val):
-                            aliases.append({
-                                "type": "email",
-                                "value": val.lower(),
-                                "source": source,
-                                "villain": villain,
-                                "usage_count": 0,
-                            })
-
-                # Extract names
-                names = contact.get("names", [])
-                if isinstance(names, list):
-                    for nm in names:
-                        display = nm.get("displayName", nm) if isinstance(nm, dict) else nm
-                        if isinstance(display, str) and display.strip():
-                            aliases.append({
-                                "type": "name",
-                                "value": display.strip(),
-                                "source": source,
-                                "villain": villain,
-                                "usage_count": 0,
-                            })
-                elif isinstance(names, str) and names.strip():
-                    aliases.append({
-                        "type": "name",
-                        "value": names.strip(),
-                        "source": source,
-                        "villain": villain,
-                        "usage_count": 0,
-                    })
-
-                # Check for name in top-level fields
-                for name_key in ("name", "displayName", "display_name", "full_name"):
-                    name_val = contact.get(name_key)
-                    if isinstance(name_val, str) and name_val.strip():
-                        aliases.append({
-                            "type": "name",
-                            "value": name_val.strip(),
-                            "source": source,
-                            "villain": villain,
-                            "usage_count": 0,
-                        })
-
-                # Extract nicknames
-                nicknames = contact.get("nicknames", [])
-                if isinstance(nicknames, list):
-                    for nn in nicknames:
-                        val = nn.get("value", nn) if isinstance(nn, dict) else nn
-                        if isinstance(val, str) and val.strip():
-                            aliases.append({
-                                "type": "nickname",
-                                "value": val.strip(),
-                                "source": source,
-                                "villain": villain,
-                                "usage_count": 0,
-                            })
-
-                # Extract organizations
-                orgs = contact.get("organizations", [])
-                if isinstance(orgs, list):
-                    for org in orgs:
-                        org_name = org.get("name", org) if isinstance(org, dict) else org
-                        if isinstance(org_name, str) and org_name.strip():
-                            aliases.append({
-                                "type": "organization",
-                                "value": org_name.strip(),
-                                "source": source,
-                                "villain": villain,
-                                "usage_count": 0,
-                            })
-
-        except Exception:
+    for entry in read_all_entries(contacts_dir):
+        if not isinstance(entry, dict):
             continue
+
+        if not _is_user_card(entry, known_user_emails, user_name):
+            continue
+
+        # Extract names
+        for key in ("name", "displayName", "display_name", "full_name"):
+            val = entry.get(key)
+            if isinstance(val, str) and val.strip():
+                aliases.append({"type": "name", "value": val.strip(), "source": source})
+
+        names = entry.get("names", [])
+        if isinstance(names, list):
+            for nm in names:
+                display = nm.get("displayName", nm) if isinstance(nm, dict) else nm
+                if isinstance(display, str) and display.strip():
+                    aliases.append({"type": "name", "value": display.strip(), "source": source})
+
+        # Extract nicknames
+        nicknames = entry.get("nicknames", [])
+        if isinstance(nicknames, list):
+            for nn in nicknames:
+                val = nn.get("value", nn) if isinstance(nn, dict) else nn
+                if isinstance(val, str) and val.strip():
+                    aliases.append({"type": "nickname", "value": val.strip(), "source": source})
+
+        nickname = entry.get("nickname")
+        if isinstance(nickname, str) and nickname.strip():
+            aliases.append({"type": "nickname", "value": nickname.strip(), "source": source})
+
+        # Extract emails from contact card
+        emails = entry.get("emails", [])
+        if isinstance(emails, list):
+            for em in emails:
+                val = em.get("value", em) if isinstance(em, dict) else em
+                if isinstance(val, str) and _EMAIL_RE.match(val):
+                    aliases.append({"type": "email", "value": val.lower(), "source": source})
 
     return aliases
 
 
-def _is_user_card(contact, user_name):
+def _is_user_card(contact, known_emails, user_name):
     """Check if a contact record is likely the user's own card."""
-    if not user_name:
-        # Without a user_name, check for "me" card markers
-        metadata = contact.get("metadata", {})
-        if isinstance(metadata, dict):
-            sources = metadata.get("sources", [])
-            if isinstance(sources, list):
-                for src in sources:
-                    if isinstance(src, dict) and src.get("type") == "PROFILE":
-                        return True
+    # Explicit own-card markers
+    if contact.get("type") == "own_card":
+        return True
+    if contact.get("is_me") or contact.get("isMe"):
+        return True
 
-        # macOS "Me" card detection
-        if contact.get("is_me") or contact.get("isMe"):
-            return True
+    # Google profile source marker
+    metadata = contact.get("metadata", {})
+    if isinstance(metadata, dict):
+        sources = metadata.get("sources", [])
+        if isinstance(sources, list):
+            for src in sources:
+                if isinstance(src, dict) and src.get("type") == "PROFILE":
+                    return True
 
-        return False
+    # Match by email
+    emails = contact.get("emails", [])
+    if isinstance(emails, list):
+        for em in emails:
+            val = em.get("value", em) if isinstance(em, dict) else em
+            if isinstance(val, str) and val.lower() in known_emails:
+                return True
 
-    # Match against user_name (case-insensitive partial match)
-    name_lower = user_name.lower()
-    for key in ("name", "displayName", "display_name", "full_name"):
-        val = contact.get(key, "")
-        if isinstance(val, str) and name_lower in val.lower():
-            return True
-
-    names = contact.get("names", [])
-    if isinstance(names, list):
-        for nm in names:
-            display = nm.get("displayName", nm) if isinstance(nm, dict) else nm
-            if isinstance(display, str) and name_lower in display.lower():
+    # Match by name
+    if user_name:
+        name_lower = user_name.lower()
+        for key in ("name", "displayName", "display_name", "full_name"):
+            val = contact.get(key, "")
+            if isinstance(val, str) and name_lower in val.lower():
                 return True
 
     return False
 
 
-# ── Messages scanning ─────────────────────────────────────────────────────
+# ── Config ─────────────────────────────────────────────────────────────────
 
-def _scan_messages(messages_dir):
-    """Scan Messages for the most frequent sender (likely the user)."""
-    sender_counter = Counter()
-    files_scanned = 0
-
-    for file_path in _walk_json_files(messages_dir):
-        if files_scanned >= _MAX_FILES_PER_VAULT:
-            break
-        files_scanned += 1
-
-        try:
-            data = _read_json_file(file_path)
-            if data is None:
-                continue
-
-            messages = data if isinstance(data, list) else [data]
-            for msg in messages:
-                if not isinstance(msg, dict):
-                    continue
-
-                # Check "is_from_me" flag (iMessage style)
-                if msg.get("is_from_me") or msg.get("isFromMe"):
-                    sender = msg.get("sender") or msg.get("handle") or msg.get("from", "")
-                    if isinstance(sender, str) and sender.strip():
-                        sender_counter[sender.strip()] += 1
-
-        except Exception:
-            continue
-
-    aliases = []
-    source = VAULT_TO_SOURCE["Messages"]
-    villain = VAULT_TO_VILLAIN["Messages"]
-
-    for sender, count in sender_counter.most_common(3):
-        alias_type = "email" if _EMAIL_RE.match(sender) else "name"
-        aliases.append({
-            "type": alias_type,
-            "value": sender.lower() if alias_type == "email" else sender,
-            "source": source,
-            "villain": villain,
-            "usage_count": count,
-        })
-
-    return aliases
-
-
-# ── Helpers ───────────────────────────────────────────────────────────────
-
-def _walk_json_files(directory):
-    """Walk directory and yield paths to .json files."""
+def _read_config_user_name():
+    """Read user_name from config.yaml in project root."""
+    config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.yaml")
     try:
-        for root, _dirs, files in os.walk(directory):
-            for f in sorted(files):
-                if f.endswith(".json") and not f.startswith("."):
-                    yield os.path.join(root, f)
+        with open(config_path, "r", encoding="utf-8") as f:
+            # Simple YAML parsing for 'user_name: value' — no PyYAML dependency
+            for line in f:
+                line = line.strip()
+                if line.startswith("user_name:"):
+                    return line.split(":", 1)[1].strip()
     except (OSError, PermissionError):
         pass
+    return None
 
 
-def _read_json_file(file_path):
-    """Read and parse a JSON file. Returns None on failure."""
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except (json.JSONDecodeError, OSError, PermissionError, UnicodeDecodeError):
-        return None
+# ── Cache ──────────────────────────────────────────────────────────────────
 
-
-def _deduplicate(aliases):
-    """Deduplicate aliases by (type, value). Keep highest usage_count."""
-    seen = {}
-    for alias in aliases:
-        key = (alias["type"], alias["value"].lower())
-        if key not in seen or alias["usage_count"] > seen[key]["usage_count"]:
-            seen[key] = alias
-    return list(seen.values())
-
-
-# ── Cache ─────────────────────────────────────────────────────────────────
-
-def load_cached_aliases(vault_root):
-    """Load cached alias data from disk. Returns dict or None."""
+def _load_cache(vault_root):
+    """Load cached aliases if fresh (< 1 hour old)."""
     cache_path = os.path.join(vault_root, _CACHE_FILENAME)
     try:
         with open(cache_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError, OSError, PermissionError):
-        return None
+            data = json.load(f)
+        cached_at = data.get("cached_at", 0)
+        if time.time() - cached_at < _CACHE_MAX_AGE_SECS:
+            logger.debug("Using cached aliases from %s", cache_path)
+            return data
+    except (FileNotFoundError, json.JSONDecodeError, OSError, KeyError, TypeError):
+        pass
+    return None
 
 
-def save_cached_aliases(vault_root, data):
-    """Save alias data to disk cache with timestamp."""
+def _save_cache(vault_root, data):
+    """Save alias data to cache file with timestamp."""
     cache_path = os.path.join(vault_root, _CACHE_FILENAME)
-    data["cached_at"] = datetime.now(timezone.utc).isoformat()
+    data["cached_at"] = time.time()
     try:
         with open(cache_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
     except (OSError, PermissionError) as e:
-        logger.warning("Could not save alias cache to %s: %s", cache_path, e)
+        logger.warning("Could not save alias cache: %s", e)
+
+
+# ── Helpers ────────────────────────────────────────────────────────────────
+
+def _deduplicate(aliases):
+    """Deduplicate by (type, lowercase value). Keep highest usage_count."""
+    seen = {}
+    for alias in aliases:
+        key = (alias["type"], alias["value"].lower())
+        existing = seen.get(key)
+        if existing is None or alias.get("usage_count", 0) > existing.get("usage_count", 0):
+            seen[key] = alias
+    return list(seen.values())
+
+
+if __name__ == "__main__":
+    import sys
+    result = extract_user_aliases(sys.argv[1] if len(sys.argv) > 1 else "vaults")
+    print(json.dumps(result, indent=2))
